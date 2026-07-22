@@ -1,0 +1,23 @@
+import { ADMIN_BASE } from "@admin/utils/adminPath";
+
+export const DASHBOARD: string = "/admin/dashboard/all?cache_bust=1760961466261";
+export const ORDERS: string = "/admin/orders";
+export const PRODUCTS: string = "/admin/product";
+export const FRAUD_CHECK: string = "/admin/fraud-check";
+export const CUSTOMERS: string = "/admin/customers";
+export const COURIERS: string = "/admin/couriers";
+export const STOCKY: string = "/admin/stocky";
+export const WEBSITES: string = "/admin/websites";
+export const TEAM: string = "/admin/team";
+export const ACTIVITY: string = "/admin/activity";
+export const SUBSCRIPTION: string = "/admin/subscription";
+export const PUSH_BULLET: string = "/admin/push-bullet";
+export const CAMPAIN: string = "/admin/campain";
+export const SETTING: string = "/admin/setting";
+export const ADD_ON: string = "/admin/add-on";
+export const Landing_Page: string = "/admin/landing-page";
+export const RETURN: string = "/admin/return";
+export const REPORT_ISSUE: string = "/admin/report-issue";
+export const REPORT: string = "/admin/report";
+export const PURCHASES: string = "/admin/purchases";
+export const ACCOUNTS: string = "/admin/account";
