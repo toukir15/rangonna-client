@@ -1,4 +1,5 @@
 "use client";
+import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import { useState, useEffect, createContext } from "react";
 import React from "react";
 import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
@@ -26,9 +27,7 @@ const Page: React.FC = () => {
     const [tableLoading, setTableLoading] = useState<boolean>(true);
     const [isImageOpen, setIsImageOpen] = useState<boolean>(false);
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
-    const [selectedOrders, setSelectedOrders] = useState<string[]>([]);
-    const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
-    const [currentPage, setCurrentPage] = useState<number>(() => {
+    const [selectedOrders, setSelectedOrders] = useState<string[]>([]);    const [currentPage, setCurrentPage] = useState<number>(() => {
         if (typeof window !== "undefined") {
             const savedPage = localStorage.getItem("fulfillmentCurrentPage");
             return savedPage ? Number(savedPage) : 1;
@@ -188,27 +187,25 @@ const Page: React.FC = () => {
         setModalMode("Edit");
         setAdvanceModalOpen(true);
     };
+  useTableRefreshRegister(fetchOrdersList);
+
 
     return (
         <AuthLayout>
             <NoScrollLayout>
                 <div className="2xl:pt-4 pt-2 2xl:px-4 px-3 mb-3">
                     <div className="md:flex lg:flex-wrap items-center   gap-3">
-                        <div className="flex items-center gap-3 ">
+                        <div className="flex flex-wrap items-center items-center gap-3 ">
                             <h1 className="2xl:text-2xl lg:text-xl text-lg font-semibold dark:text-gray-300 text-gray-800 ">
                                 Order Fulfillment
                             </h1>
-                            <div >
-                                <Button
-                                    className="flex items-center !px-2 !bg-indigo-500 !py-1.5"
-                                    onClick={() => setIsFilterOpen((prev) => !prev)}
-                                >
-                                    <Icon name={isFilterOpen ? "close" : "filter_alt"} size={20} />
-                                </Button>
-                            </div>
-
+              <AllFilter
+                                isStatusFilter={true}
+                                statusOption={statusOption}
+                                selectedStatus={selectedStatus}
+                                setSelectedStatus={setSelectedStatus}
+                            />
                         </div>
-
                         <div className="lg:w-80 w-full md:my-0 my-2">
                             <PageSearch
                                 value={searchTerm}
@@ -218,17 +215,7 @@ const Page: React.FC = () => {
                             />
                         </div>
                     </div>
-                    {
-                        isFilterOpen && <div >
-                            <AllFilter
-                                isFilterOpen={isFilterOpen}
-                                isStatusFilter={true}
-                                statusOption={statusOption}
-                                selectedStatus={selectedStatus}
-                                setSelectedStatus={setSelectedStatus}
-                            />
-                        </div>
-                    }
+                    
                 </div>
 
             </NoScrollLayout>

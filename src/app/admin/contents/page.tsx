@@ -1,4 +1,5 @@
 "use client";
+import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 
 import dynamic from "next/dynamic";
 import Icon from "@admin/components/core/Icon/Icon";
@@ -177,6 +178,8 @@ const Page = (): JSX.Element => {
       setPriorityUpdateLoading(false);
     }
   };
+  useTableRefreshRegister(getContentsList);
+
 
   return (
     <AuthLayout>

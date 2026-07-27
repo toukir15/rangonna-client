@@ -122,7 +122,7 @@ const BlogTable: React.FC = () => {
                           <button
                             className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg"
                             onClick={() =>
-                              router.push(`/blog/edit/${item?._id}`)
+                              router.push(`/admin/blog/edit/${item?._id}`)
                             }
                           >
                             Edit

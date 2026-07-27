@@ -1,8 +1,7 @@
 "use client";
 
-import Image from "next/image";
 import type { ReactNode } from "react";
-import whiteLogo from "@admin/assets/logo/whiteLogo.png";
+import AdminBrandLogo from "@admin/components/core/Brand/AdminBrandLogo";
 
 interface AuthSplitLayoutProps {
   title: string;
@@ -47,14 +46,7 @@ export default function AuthSplitLayout({
         />
 
         <div className="relative z-10">
-          <Image
-            src={whiteLogo}
-            alt="Rangonaa"
-            width={160}
-            height={48}
-            className="h-10 w-auto object-contain"
-            priority
-          />
+          <AdminBrandLogo size="lg" variant="dark" />
         </div>
 
         <div className="relative z-10 my-10 max-w-md space-y-8">
@@ -96,15 +88,8 @@ export default function AuthSplitLayout({
       <div className="flex min-h-screen flex-1 flex-col bg-gray-50 dark:bg-zinc-950">
         <div className="flex flex-1 items-center justify-center px-5 py-10 sm:px-8">
           <div className="w-full max-w-[420px]">
-            <div className="mb-8 lg:hidden">
-              <Image
-                src={whiteLogo}
-                alt="Rangonaa"
-                width={140}
-                height={42}
-                className="h-9 w-auto object-contain brightness-0 dark:invert"
-                priority
-              />
+            <div className="mb-8 lg:hidden text-center">
+              <AdminBrandLogo size="xl" variant="green" />
             </div>
 
             <div className="rounded-2xl border border-gray-200/80 bg-white p-7 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 sm:p-8">

@@ -1,4 +1,5 @@
 "use client";
+import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import { IWebsiteOption, SelectOption } from "@admin/@interfaces/common.interface";
 import {
   DeleteIncompleteOrderResponse,
@@ -79,8 +80,6 @@ const Page: React.FC = () => {
     value: "all",
     label: "All Website",
   });
-  const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
-
   const debouncedSearchTerm = useDebounce<string>(searchTerm, 300);
   const abortRef = useRef<AbortController | null>(null);
   const baseApi = process.env.NEXT_PUBLIC_FRAUD_BASE_URL;
@@ -234,7 +233,6 @@ const Page: React.FC = () => {
     };
 
     fetchFraudData();
-
     return () => {
       controller.abort();
     };
@@ -331,6 +329,9 @@ const Page: React.FC = () => {
     fetchWebList();
   }, [canFetchPageData]);
 
+  useTableRefreshRegister(fetchInCompleat);
+
+
   return (
     <AuthLayout>
       <Alert
@@ -345,7 +346,7 @@ const Page: React.FC = () => {
         <h6 className="text-md my-4">
           Are you sure you want to remove this order?
         </h6>
-        <div className="flex items-center justify-center my-8">
+        <div className="flex flex-wrap items-center items-center justify-center my-8">
           <Icon
             name="cancel"
             variant="outlined"
@@ -356,19 +357,17 @@ const Page: React.FC = () => {
       </Alert>
 
       <NoScrollLayout>
-        <div className="2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 md:flex items-center gap-3  mb-2">
-          <div className="flex items-center gap-3">
+        <div className="2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 md:flex flex-wrap items-center items-center gap-3  mb-2">
+          <div className="flex flex-wrap items-center items-center gap-3">
             <h2 className="2xl:text-2xl font-poppins dark:text-gray-300 font-semibold text-nowrap">
               Incomplete Orders
             </h2>
-            <div>
-              <Button
-                className="flex items-center !px-2 !bg-indigo-500 !py-1.5"
-                onClick={() => setIsFilterOpen((prev) => !prev)}
-              >
-                <Icon name={isFilterOpen ? "close" : "filter_alt"} size={20} />
-              </Button>
-            </div>
+              <AllFilter
+              isWebsiteFilter={true}
+              websiteOptions={websiteOptions}
+              selectedWebsite={selectedWebsite}
+              setSelectedWebsite={setSelectedWebsite}
+            />
           </div>
           <div className="md:w-80  w-full md:mt-0 mt-2">
             <PageSearch
@@ -379,17 +378,7 @@ const Page: React.FC = () => {
             />
           </div>
         </div>
-        {isFilterOpen && (
-          <div className="md: mx-3">
-            <AllFilter
-              isFilterOpen={isFilterOpen}
-              isWebsiteFilter={true}
-              websiteOptions={websiteOptions}
-              selectedWebsite={selectedWebsite}
-              setSelectedWebsite={setSelectedWebsite}
-            />
-          </div>
-        )}
+        
       </NoScrollLayout>
 
       <div className="2xl:px-4 px-3 min-h-[83%] relative">
@@ -462,7 +451,7 @@ const Page: React.FC = () => {
                       <span>{order?.customer?.first_name || noData}</span>
                     </div>
 
-                    <div className="mt-2 flex items-center">
+                    <div className="mt-2 flex flex-wrap items-center items-center">
                       {order?.customer?.phone ? (
                         <>
                           <a href={`tel:${order.customer.phone}`}>
@@ -507,7 +496,7 @@ const Page: React.FC = () => {
                           <p className="font-semibold text-md">
                             {li?.title || noData}
                           </p>
-                          <div className="flex items-center mt-1">
+                          <div className="flex flex-wrap items-center items-center mt-1">
                             <p>{li?.price ?? noData}</p>
                             <Icon
                               name="production_quantity_limits"

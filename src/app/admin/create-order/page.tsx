@@ -19,7 +19,6 @@ import { GlobalService } from "@admin/@services/apis/GlobalService/Global.servic
 import { useGlobalContext } from "@admin/context/GlobalContext";
 import { useRouter } from "next/navigation";
 import { setCookie } from "cookies-next";
-import { IWebsiteOption } from "@admin/@interfaces/common.interface";
 import ImagePreviewModal from "@admin/components/core/ImagePreview/ImagePreviewModal";
 
 const ProductSchema = yup.object({
@@ -41,7 +40,6 @@ const ProductSchema = yup.object({
   payment: yup.mixed().required("Payment method is required"),
   shipping: yup.string().required("Shipping method is required"),
   source: yup.string().required("Source is required"),
-  domain: yup.string().required("Website list is required"),
   email: yup.string(),
 });
 
@@ -53,7 +51,6 @@ const defaultValue = {
   payment: "cash on delivery",
   shipping: "",
   source: "",
-  domain: "",
 };
 
 const page: React.FC = () => {
@@ -66,7 +63,7 @@ const page: React.FC = () => {
   const [orderDetails, setOrderDetails] = useState<any>({ line_items: [] });
   const [discount, setDiscount] = useState<number | null>();
   const [shippingPrice, setShippingPrice] = useState<number>(0);
-  const [websiteOptions, setWebsiteOptions] = useState<IWebsiteOption[]>([]);
+  const [domain, setDomain] = useState<string>("");
   const [isImageOpen, setIsImageOpen] = useState<boolean>(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
@@ -101,13 +98,12 @@ const page: React.FC = () => {
     GlobalService.getWebsiteList()
       .then((res: any) => {
         if (res?.success) {
-          const options = res.data
-            .filter((item: any) => item.web_name !== "Naviforce Wholesale")
-            .map((item: any) => ({
-              label: item.web_name,
-              value: item.web_url,
-            }));
-          setWebsiteOptions(options);
+          const websites = res.data.filter(
+            (item: any) => item.web_name !== "Naviforce Wholesale",
+          );
+          if (websites.length > 0) {
+            setDomain(websites[0].web_url);
+          }
         } else {
           ToastService.error(res?.message);
         }
@@ -122,14 +118,11 @@ const page: React.FC = () => {
     handleSubmit,
     control,
     setError,
-    watch,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(ProductSchema),
     defaultValues: defaultValue,
   });
-
-  const url = watch("domain");
 
   const subTotal = orderDetails.line_items.reduce(
     (sum: number, item: any) => sum + item.total,
@@ -168,7 +161,7 @@ const page: React.FC = () => {
         })),
         shipping_line: { title: formData.shipping, total: shippingPrice },
         source: formData.source,
-        domain: formData.domain,
+        domain,
         status: formData.source === "showroom" ? "in-transit" : "pending",
         payment: {
           title: formData.payment,
@@ -221,7 +214,7 @@ const page: React.FC = () => {
     try {
       const res = await productService.getProductSuggestion({
         searchTerm: val,
-        domain: url,
+        domain,
       });
       if (res?.success) {
         setFilteredProducts(res.data);
@@ -347,70 +340,36 @@ const page: React.FC = () => {
               </div>
             </div>
 
-            {/* Order Source & Website */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div
-                className={`rounded-xl border bg-white dark:bg-gray-800 dark:border-gray-700 shadow-sm overflow-hidden ${errors?.source?.message ? "border-red-400" : "border-gray-200"
-                  }`}
-              >
-                <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
-                  <h2 className="font-semibold text-base text-[#bc1115] flex items-center gap-2">
-                    <Icon name="campaign" variant="outlined" />
-                    Order Source
-                  </h2>
-                </div>
-
-                <div className="p-4">
-                  <Controller
-                    name="source"
-                    control={control}
-                    render={({ field }) => (
-                      <RadioOrderGroup
-                        name={field.name}
-                        options={sourceOptions}
-                        value={field.value}
-                        onChange={(s) => field.onChange(s.value)}
-                      />
-                    )}
-                  />
-                  {errors?.source?.message && (
-                    <p className="text-xs text-red-500 mt-2">
-                      {errors.source.message}
-                    </p>
-                  )}
-                </div>
+            {/* Order Source */}
+            <div
+              className={`rounded-xl border bg-white dark:bg-gray-800 dark:border-gray-700 shadow-sm overflow-hidden ${errors?.source?.message ? "border-red-400" : "border-gray-200"
+                }`}
+            >
+              <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+                <h2 className="font-semibold text-base text-[#bc1115] flex items-center gap-2">
+                  <Icon name="campaign" variant="outlined" />
+                  Order Source
+                </h2>
               </div>
 
-              <div
-                className={`rounded-xl border bg-white dark:bg-gray-800 dark:border-gray-700 shadow-sm overflow-hidden ${errors?.domain?.message ? "border-red-400" : "border-gray-200"
-                  }`}
-              >
-                <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
-                  <h2 className="font-semibold text-base text-[#bc1115] flex items-center gap-2">
-                    <Icon name="language" variant="outlined" />
-                    Website List
-                  </h2>
-                </div>
-
-                <div className="p-4">
-                  <Controller
-                    name="domain"
-                    control={control}
-                    render={({ field }) => (
-                      <RadioOrderGroup
-                        name={field.name}
-                        options={websiteOptions}
-                        value={field.value}
-                        onChange={(s) => field.onChange(s.value)}
-                      />
-                    )}
-                  />
-                  {errors?.domain?.message && (
-                    <p className="text-xs text-red-500 mt-2">
-                      {errors.domain.message}
-                    </p>
+              <div className="p-4">
+                <Controller
+                  name="source"
+                  control={control}
+                  render={({ field }) => (
+                    <RadioOrderGroup
+                      name={field.name}
+                      options={sourceOptions}
+                      value={field.value}
+                      onChange={(s) => field.onChange(s.value)}
+                    />
                   )}
-                </div>
+                />
+                {errors?.source?.message && (
+                  <p className="text-xs text-red-500 mt-2">
+                    {errors.source.message}
+                  </p>
+                )}
               </div>
             </div>
           </div>
@@ -440,12 +399,12 @@ const page: React.FC = () => {
                     type="text"
                     value={productSearch}
                     onChange={handleSearchChange}
-                    disabled={!url}
+                    disabled={!domain}
                     placeholder="Search for a product"
                     className={`w-full rounded-lg border p-2.5 pr-10 bg-white dark:bg-gray-800 outline-none transition
                 border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100
                 dark:border-gray-600 dark:focus:border-blue-400 dark:focus:ring-blue-900/30
-                ${!url ? "opacity-50 cursor-not-allowed" : ""}`}
+                ${!domain ? "opacity-50 cursor-not-allowed" : ""}`}
                     onKeyDown={(e) => e.key === "Enter" && handleSearchSubmit(e)}
                     onFocus={() =>
                       productSearch.length >= 2 && setShowSuggestions(true)
@@ -708,7 +667,7 @@ const page: React.FC = () => {
               <div className="px-4 pb-4">
                 <Button
                   type="submit"
-                  className="w-full !h-11 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium shadow-sm"
+                  className="w-full !inline-flex !h-11 !items-center !justify-center !rounded-lg !bg-green-600 !px-4 !py-0 text-white font-medium shadow-sm hover:!bg-green-700"
                 >
                   {isSubmit ? <ButtonLoader /> : `Confirm Order - ৳${due}`}
                 </Button>

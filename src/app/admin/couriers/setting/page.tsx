@@ -1,4 +1,5 @@
 "use client";
+import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import { useEffect, useRef, useState } from "react";
 import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
 import Button from "@admin/components/core/Button/Button";
@@ -28,9 +29,7 @@ const Page: React.FC = () => {
     setPopupIndex(popupIndex === index ? null : index);
   };
   const [isAlertOpen, setIsAlertOpen] = useState<boolean>(false);
-  const [remove, setRemove] = useState<{ id: string } | null>(null);
-  const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
-  const [selectedCourierType, setSelectedCourierType] = useState<SelectOption>({
+  const [remove, setRemove] = useState<{ id: string } | null>(null);  const [selectedCourierType, setSelectedCourierType] = useState<SelectOption>({
     value: "all",
     label: "All Courier",
   });
@@ -197,6 +196,9 @@ const Page: React.FC = () => {
     }
   };
 
+  useTableRefreshRegister(fetchCouriers);
+
+
   return (
     <AuthLayout>
       <Alert
@@ -211,7 +213,7 @@ const Page: React.FC = () => {
         <h6 className="text-md my-4">
           Are you sure you want to remove this group?
         </h6>
-        <div className="flex items-center justify-center my-8">
+        <div className="flex flex-wrap items-center items-center justify-center my-8">
           <Icon
             name="delete"
             variant="outlined"
@@ -226,17 +228,12 @@ const Page: React.FC = () => {
             <h1 className="text-xl font-semibold dark:text-gray-300">
               Courier Settings
             </h1>
-            <div>
-              <Button
-                className="flex items-center !px-2 !bg-indigo-500 !py-1.5"
-                onClick={() => setIsFilterOpen((prev) => !prev)}
-              >
-                <Icon
-                  name={isFilterOpen ? "close" : "filter_alt"}
-                  size={20}
-                />
-              </Button>
-            </div>
+              <AllFilter
+                isCourierTypeFilter={true}
+                courierTypeOptions={courierTypeOptions}
+                selectedCourierType={selectedCourierType}
+                setSelectedCourierType={setSelectedCourierType}
+              />
             {permissionList.includes("courier_create") && (
               <Button
                 onClick={handleAddClick}
@@ -247,17 +244,7 @@ const Page: React.FC = () => {
             )}
           </div>
 
-          {isFilterOpen && (
-            <div>
-              <AllFilter
-                isFilterOpen={isFilterOpen}
-                isCourierTypeFilter={true}
-                courierTypeOptions={courierTypeOptions}
-                selectedCourierType={selectedCourierType}
-                setSelectedCourierType={setSelectedCourierType}
-              />
-            </div>
-          )}
+          
         </div>
       </NoScrollLayout>
       <div className="md:p-4 p-4 ">

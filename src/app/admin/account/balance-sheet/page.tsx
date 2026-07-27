@@ -1,4 +1,5 @@
 "use client";
+import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
 import React, { useState, useEffect, JSX, createContext } from "react";
 import { ToastService } from "@admin/utils/toastr.service";
@@ -55,6 +56,8 @@ const Page = (): JSX.Element => {
         setBalanceLoading(false);
       });
   };
+  useTableRefreshRegister(getAccountList);
+
 
   return (
     <AuthLayout>

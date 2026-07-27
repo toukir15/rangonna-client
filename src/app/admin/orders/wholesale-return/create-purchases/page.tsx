@@ -102,7 +102,7 @@ const Page: React.FC = () => {
       .then((res: any) => {
         if (res?.success) {
           ToastService.success(res?.message);
-          router.push(`/orders/wholesale-return/view/${res?.data?._id}`);
+          router.push(`/admin/orders/wholesale-return/view/${res?.data?._id}`);
         } else {
           ToastService.error(res?.message);
         }

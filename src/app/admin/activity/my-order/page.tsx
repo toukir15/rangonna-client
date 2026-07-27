@@ -1,4 +1,5 @@
 "use client";
+import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import {
   IWebsiteOption,
   IWebsiteRes,
@@ -31,9 +32,7 @@ const Page: React.FC = () => {
   const [selectedWebsite, setSelectedWebsite] = useState<SelectOption>({
     value: "all",
     label: "All Website",
-  });
-  const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
-  const [ordersPerPage, setOrdersPerPage] = useState<number>(20);
+  });  const [ordersPerPage, setOrdersPerPage] = useState<number>(20);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const debouncedSearchTerm = useDebounce<string>(searchTerm, 300);
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -101,26 +100,25 @@ const Page: React.FC = () => {
         setTableLoading(false);
       });
   };
+  useTableRefreshRegister(fetchOrderHistoryReport);
+
 
   return (
     <AuthLayout>
       <NoScrollLayout>
         <div className="2xl:pt-4 pt-2 2xl:px-4 px-3 w-full">
           <div className="lg:flex lg:flex-wrap  items-center md:justify-between pb-2">
-            <div className="md:flex items-center md:space-x-4 w-full">
-              <div className="flex items-center gap-3">
+            <div className="md:flex flex-wrap items-center items-center md:space-x-4 w-full">
+              <div className="flex flex-wrap items-center items-center gap-3">
                 <h1 className="2xl:text-2xl lg:text-xl text-lg font-semibold dark:text-gray-300 text-gray-800 flex text-nowrap">
                   My Order
                 </h1>
-                <Button
-                  className="flex items-center !px-2 !bg-indigo-500 !py-1.5"
-                  onClick={() => setIsFilterOpen((prev) => !prev)}
-                >
-                  <Icon
-                    name={isFilterOpen ? "close" : "filter_alt"}
-                    size={20}
-                  />
-                </Button>
+              <AllFilter
+                isWebsiteFilter={true}
+                websiteOptions={websiteOptions}
+                selectedWebsite={selectedWebsite}
+                setSelectedWebsite={setSelectedWebsite}
+              />
               </div>
               <div className="4xl:w-72  w-full md:mt-0 mt-2">
                 <PageSearch
@@ -131,17 +129,7 @@ const Page: React.FC = () => {
               </div>
             </div>
           </div>
-          {isFilterOpen && (
-            <div className=" -mt-4 md:mt-0">
-              <AllFilter
-                isFilterOpen={isFilterOpen}
-                isWebsiteFilter={true}
-                websiteOptions={websiteOptions}
-                selectedWebsite={selectedWebsite}
-                setSelectedWebsite={setSelectedWebsite}
-              />
-            </div>
-          )}
+          
         </div>
       </NoScrollLayout>
 

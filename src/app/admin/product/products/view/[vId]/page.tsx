@@ -1,4 +1,5 @@
 "use client";
+import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import { IWebsiteOption, SelectOption } from "@admin/@interfaces/common.interface";
 import { GlobalService } from "@admin/@services/apis/GlobalService/Global.service";
 import SelectComponent from "@admin/components/core/Select/Select";
@@ -104,6 +105,8 @@ const Page: React.FC = () => {
     { status: "transfer", name: "Transfer" },
     { status: "adjustment", name: "Adjustment" },
   ];
+  useTableRefreshRegister(getReportIssue);
+
 
   return (
     <AuthLayout>

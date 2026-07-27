@@ -1,4 +1,5 @@
 "use client";
+import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import {
   IWebsiteOption,
   IWebsiteResponse,
@@ -29,9 +30,7 @@ const Page: React.FC = () => {
   const [selectedWebsite, setSelectedWebsite] = useState<SelectOption>({
     value: "all",
     label: "All Website",
-  });
-  const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
-  const [ordersPerPage, setOrdersPerPage] = useState<number>(20);
+  });  const [ordersPerPage, setOrdersPerPage] = useState<number>(20);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const debouncedSearchTerm = useDebounce<string>(searchTerm, 300);
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -151,6 +150,9 @@ const Page: React.FC = () => {
     }
   };
 
+  useTableRefreshRegister(fetchOrderByProfit);
+
+
   return (
     <AuthLayout>
       <Alert
@@ -164,7 +166,7 @@ const Page: React.FC = () => {
         <h6 className="text-md my-4">
           Are you sure you want to remove this group?
         </h6>
-        <div className="flex items-center justify-center my-8">
+        <div className="flex flex-wrap items-center items-center justify-center my-8">
           <Icon
             name="delete"
             variant="outlined"
@@ -175,17 +177,17 @@ const Page: React.FC = () => {
       </Alert>
       <NoScrollLayout>
         <div className="2xl:pt-4 pt-2 2xl:px-4 px-3 w-full">
-          <div className="sm:flex items-center gap-3 w-full pb-2">
-            <div className="flex items-center gap-3">
+          <div className="sm:flex flex-wrap items-center items-center gap-3 w-full pb-2">
+            <div className="flex flex-wrap items-center items-center gap-3">
               <h1 className="2xl:text-2xl lg:text-xl text-lg font-semibold dark:text-gray-300 text-gray-800 text-nowrap">
                 Order By Profit
               </h1>
-              <Button
-                className="flex items-center !px-2 !bg-indigo-500 !py-1.5"
-                onClick={() => setIsFilterOpen((prev) => !prev)}
-              >
-                <Icon name={isFilterOpen ? "close" : "filter_alt"} size={20} />
-              </Button>
+              <AllFilter
+                isWebsiteFilter={true}
+                websiteOptions={websiteOptions}
+                selectedWebsite={selectedWebsite}
+                setSelectedWebsite={setSelectedWebsite}
+              />
             </div>
             <div className="sm:w-80 w-full sm:mt-0 mt-2">
               <PageSearch
@@ -195,17 +197,7 @@ const Page: React.FC = () => {
               />
             </div>
           </div>
-          {
-            isFilterOpen && <div className="md:mt-0 -mt-4">
-              <AllFilter
-                isWebsiteFilter={true}
-                isFilterOpen={isFilterOpen}
-                websiteOptions={websiteOptions}
-                selectedWebsite={selectedWebsite}
-                setSelectedWebsite={setSelectedWebsite}
-              />
-            </div>
-          }
+          
         </div>
       </NoScrollLayout>
 

@@ -1,5 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
+import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Icon from "@admin/components/core/Icon/Icon";
 import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
 import React, { useState, useEffect, createContext } from "react";
@@ -57,9 +58,7 @@ const Page: React.FC = () => {
   const debouncedSearchTerm = useDebounce<string>(searchTerm, 300);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [modalMode, setModalMode] = useState<"Add" | "Edit">("Add");
-  const [isHydrated, setIsHydrated] = useState(false);
-  const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
-  const [filter, setFilter] = useState<string>("all");
+  const [isHydrated, setIsHydrated] = useState(false);  const [filter, setFilter] = useState<string>("all");
   const [websiteOptions, setWebsiteOptions] = useState<IWebsiteOption[]>([]);
   const [selectedWebsite, setSelectedWebsite] = useState<SelectOption>({
     value: "all",
@@ -114,9 +113,7 @@ const Page: React.FC = () => {
 
       if (res?.success) {
         setReturnListData(res?.data?.data || []);
-        setTotalExpenses(res?.data?.meta?.total_record || 0);
-        setIsFilterOpen(false)
-      } else {
+        setTotalExpenses(res?.data?.meta?.total_record || 0);      } else {
         ToastService.error(res?.message);
       }
     } catch (err: any) {
@@ -300,6 +297,8 @@ const Page: React.FC = () => {
       );
     }
   }, [selectedWebsite]);
+  useTableRefreshRegister(fetchReturnList);
+
 
   return (
     <AuthLayout>
@@ -318,11 +317,20 @@ const Page: React.FC = () => {
       </Alert>
 
       <NoScrollLayout>
-        <div className="md:flex items-center gap-3 2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 mb-2">
-          <div className="flex items-center gap-4 ">
+        <div className="md:flex flex-wrap items-center items-center gap-3 2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 mb-2">
+          <div className="flex flex-wrap items-center items-center gap-4 ">
             <h2 className="2xl:text-2xl lg:text-xl text-lg text-blue-900 font-semibold dark:text-gray-300 text-nowrap">
               Return Lists
             </h2>
+              <AllFilter
+              isWebsiteFilter={true}
+              websiteOptions={websiteOptions}
+              selectedWebsite={selectedWebsite}
+              setSelectedWebsite={setSelectedWebsite}
+              isCalendarFilter={true}
+              range={range}
+              setRange={setRange}
+            />
             <div>
               {permissionList.includes("order_return_create") && (
                 <Button
@@ -333,14 +341,6 @@ const Page: React.FC = () => {
                   <span className="ml-1">Add Return</span>
                 </Button>
               )}
-            </div>
-            <div>
-              <Button
-                className="flex items-center !px-2 !bg-indigo-500 !py-1.5"
-                onClick={() => setIsFilterOpen((prev) => !prev)}
-              >
-                <Icon name={isFilterOpen ? "close" : "filter_alt"} size={20} />
-              </Button>
             </div>
 
 
@@ -354,21 +354,7 @@ const Page: React.FC = () => {
           </div>
         </div>
 
-        {
-          isFilterOpen && <div className="md: mx-4">
-            <AllFilter
-              isWebsiteFilter={true}
-              isFilterOpen={isFilterOpen}
-              websiteOptions={websiteOptions}
-              selectedWebsite={selectedWebsite}
-              setSelectedWebsite={setSelectedWebsite}
-              isCalendarFilter={true}
-              range={range}
-              setRange={setRange}
-            />
-          </div>
-        }
-
+        
         <div className="px-4 lg:mt-0">
           <ReturnTab
             filter={filter}

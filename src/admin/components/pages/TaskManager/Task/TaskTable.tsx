@@ -125,7 +125,7 @@ const TaskTable: React.FC = () => {
                 {hasPermission(permissionList, "task_view") && (
                   <Link
                     className="bg-blue-500 px-4 py-1 rounded-lg text-white text-center w-20 cursor-pointer"
-                    href={`/task-manager/task/view/${data?._id}`}
+                    href={`/admin/task-manager/task/view/${data?._id}`}
                   >
                     View
                   </Link>

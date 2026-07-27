@@ -1,4 +1,5 @@
 "use client";
+import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import { useState, useEffect, useRef, createContext } from "react";
 import React from "react";
 import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
@@ -63,9 +64,7 @@ const page: React.FC = () => {
     { value: "all", label: "All Courier" },
     { value: "pathao", label: "Pathao" },
     { value: "steadfast", label: "SteadFast" },
-  ];
-  const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
-  const [selectedOrders, setSelectedOrders] = useState<string[]>([]);
+  ];  const [selectedOrders, setSelectedOrders] = useState<string[]>([]);
   const [isCheck, setIsCheck] = useState<boolean>(false);
   const [isProcessing, setProcessing] = useState<boolean>(false);
   const [isPaused, setPaused] = useState<boolean>(false);
@@ -167,9 +166,7 @@ const page: React.FC = () => {
     })
       .then((res: IPathaoBookingCountResponse) => {
         if (res?.success) {
-          setAllStatusCount(res.data);
-          setIsFilterOpen(false);
-        } else {
+          setAllStatusCount(res.data);        } else {
           ToastService.error(res?.message);
         }
       })
@@ -317,31 +314,36 @@ const page: React.FC = () => {
       count: statusCount?.complete,
     },
   ];
+  useTableRefreshRegister(fetchOrdersList);
+
 
   return (
     <AuthLayout>
       <NoScrollLayout>
         <div className="2xl:pt-4 pt-2 2xl:px-4 px-3">
           <div className="lg:flex lg:flex-wrap items-center md:justify-between pb-2">
-            <div className="md:flex items-center justify-between w-full">
-              <div className="flex items-center gap-3">
+            <div className="md:flex flex-wrap items-center items-center justify-between w-full">
+              <div className="flex flex-wrap items-center items-center gap-3">
                 <h1 className="2xl:text-2xl lg:text-xl text-lg font-semibold dark:text-gray-300 text-gray-800 ">
                   Courier Booking
                 </h1>
-                <div>
-                  <Button
-                    className="flex items-center !px-2 !bg-indigo-500 !py-1.5"
-                    onClick={() => setIsFilterOpen((prev) => !prev)}
-                  >
-                    <Icon
-                      name={isFilterOpen ? "close" : "filter_alt"}
-                      size={20}
-                    />
-                  </Button>
-                </div>
+              <AllFilter
+                isWebsiteFilter={true}
+                websiteOptions={websiteOptions}
+                selectedWebsite={selectedWebsite}
+                setSelectedWebsite={setSelectedWebsite}
+                isCourierTypeFilter={true}
+                courierTypeOptions={courierTypeOptions}
+                selectedCourierType={selectedCourierType}
+                setSelectedCourierType={(value) => {
+                  setSelectedCourierType(value);
+                  setBookingCurrentPage(1);
+                }}
+                setCurrentPage={setBookingCurrentPage}
+              />
 
                 {permissionList.includes("courier_booking_create") && (
-                  <div className="flex items-center justify-end space-x-5 ">
+                  <div className="flex flex-wrap items-center items-center justify-end space-x-5 ">
                     {!isProcessing ? (
                       <Button
                         className="bg-blue-600 flex items-center !px-4"
@@ -382,25 +384,7 @@ const page: React.FC = () => {
         </div>
 
         <div className="px-3">
-          {isFilterOpen && (
-            <div>
-              <AllFilter
-                isFilterOpen={isFilterOpen}
-                isWebsiteFilter={true}
-                websiteOptions={websiteOptions}
-                selectedWebsite={selectedWebsite}
-                setSelectedWebsite={setSelectedWebsite}
-                isCourierTypeFilter={true}
-                courierTypeOptions={courierTypeOptions}
-                selectedCourierType={selectedCourierType}
-                setSelectedCourierType={(value) => {
-                  setSelectedCourierType(value);
-                  setBookingCurrentPage(1);
-                }}
-                setCurrentPage={setBookingCurrentPage}
-              />
-            </div>
-          )}
+          
           <CourierOrderTab
             filter={filter}
             searchQuery={searchQuery}

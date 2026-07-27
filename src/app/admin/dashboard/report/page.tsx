@@ -1,4 +1,5 @@
 "use client";
+import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import { Tbody, Td, Th, Thead, Tr } from "@admin/components/Table/Table";
 import TableWrapper from "@admin/components/Table/TableWrapper";
 import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
@@ -23,9 +24,7 @@ const Page: React.FC = () => {
   const [tableLoading, setTableLoading] = useState<boolean>(true);
   // const [currentPage, setCurrentPage] = useState<number>(1);
   // const [totalOrders, setTotalOrders] = useState<number>(0);
-  // const totalPages = Math.ceil(totalOrders / ordersPerPage);
-  const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
-  // default: current month will be passed
+  // const totalPages = Math.ceil(totalOrders / ordersPerPage);  // default: current month will be passed
   const [selectedMonth, setSelectedMonth] = useState<Date | null>(new Date());
 
   // const handleLogsPerPageChange = (newLogsPerPage: number) => {
@@ -95,6 +94,8 @@ const Page: React.FC = () => {
     const name = monthNames[mm - 1];
     return name ? `${name}-${yyyy}` : value;
   };
+  useTableRefreshRegister(fetchMarOrderSummaryReport);
+
 
 
 
@@ -103,32 +104,20 @@ const Page: React.FC = () => {
       <NoScrollLayout>
         <div className="2xl:pt-4 pt-2 2xl:px-4 px-3 w-full">
           <div className="lg:flex lg:flex-wrap  items-center md:justify-between pb-2">
-            <div className="md:flex items-center md:space-x-4 w-full">
-              <div className="flex items-center gap-3">
+            <div className="md:flex flex-wrap items-center items-center md:space-x-4 w-full">
+              <div className="flex flex-wrap items-center items-center gap-3">
                 <h1 className="2xl:text-2xl lg:text-xl text-lg font-semibold dark:text-gray-300 text-gray-800 md:mb-0 mb-2 flex text-nowrap">
                     Dashboard Report
                 </h1>
-                <div>
-              <Button
-                className="flex items-center !px-2 !bg-indigo-500 !py-1.5"
-                onClick={() => setIsFilterOpen((prev) => !prev)}
-              >
-                <Icon name={isFilterOpen ? "close" : "filter_alt"} size={20} />
-              </Button>
-            </div>
-              </div>
-            </div>
-          </div>
-          {
-          isFilterOpen && <div >
-            <AllFilter
-              isFilterOpen={isFilterOpen}
+              <AllFilter
               isDateFilter={true}
               selectedMonth={selectedMonth}
               setSelectedMonth={setSelectedMonth}
             />
+              </div>
+            </div>
           </div>
-        }
+          
         </div>
       </NoScrollLayout>
 

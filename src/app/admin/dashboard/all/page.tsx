@@ -45,8 +45,6 @@ const page = () => {
     DEFAULT_DATE_RANGE,
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
-
   useEffect(() => {
     if (userInfo?.need_password_change) {
       setIsModalOpen(true);
@@ -246,9 +244,7 @@ const page = () => {
         });
 
         if (statusRes?.success) {
-          setAllStatus(statusRes.data);
-          setIsFilterOpen(false);
-        } else {
+          setAllStatus(statusRes.data);        } else {
           ToastService.error(
             statusRes?.message || "Failed to load status data",
           );
@@ -261,6 +257,7 @@ const page = () => {
     };
 
     const debounceTimer = setTimeout(fetchData, 300);
+
     return () => clearTimeout(debounceTimer);
   }, [selectedWebsite, range, isInitialized, canFetchPageData]);
 
@@ -268,26 +265,12 @@ const page = () => {
     <AuthLayout>
       <NoScrollLayout>
         <div className="2xl:px-4 px-3 2xl:pt-4 sm:pt-3 pt-2">
-          <div className="flex sm:mb-4 mb-4 gap-3">
+          <div className="flex flex-wrap items-center sm:mb-4 mb-4 gap-3">
             <h2 className="2xl:text-2xl lg:text-xl text-lg text-blue-900 font-semibold dark:text-gray-300 text-nowrap">
               All Orders
             </h2>
-            <div>
-              <Button
-                className="flex items-center !px-2 !bg-indigo-500 !py-1.5"
-                onClick={() => setIsFilterOpen((prev) => !prev)}
-              >
-                <Icon name={isFilterOpen ? "close" : "filter_alt"} size={20} />
-              </Button>
-            </div>
-          </div>
-        </div>
-
-        {isFilterOpen && (
-          <div className="md: mx-4">
-            <AllFilter
+              <AllFilter
               isWebsiteFilter={true}
-              isFilterOpen={isFilterOpen}
               websiteOptions={websiteOptions}
               selectedWebsite={selectedWebsite}
               setSelectedWebsite={setSelectedWebsite}
@@ -296,7 +279,9 @@ const page = () => {
               setRange={setRange}
             />
           </div>
-        )}
+        </div>
+
+        
       </NoScrollLayout>
 
       <div className="2xl:px-4 px-3">

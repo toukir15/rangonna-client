@@ -1,5 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
+import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { OrderActivityService } from "@admin/@services/apis/RepoetService/OrderActivity.service";
 import CalendarRange from "@admin/components/core/Calendar/CalendarRange";
 import { Tbody, Td, Th, Thead, Tr } from "@admin/components/Table/Table";
@@ -74,6 +75,8 @@ const Page: React.FC = () => {
         setTableLoading(false);
       });
   };
+  useTableRefreshRegister(getActivityLogs);
+
 
   return (
     <AuthLayout>

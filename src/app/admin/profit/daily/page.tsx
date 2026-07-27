@@ -1,4 +1,5 @@
 "use client";
+import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import {
   IWebsiteOption,
   IWebsiteResponse,
@@ -43,8 +44,6 @@ const Page: React.FC = () => {
     setOrdersPerPage(newLogsPerPage);
     localStorage.setItem("ordersLogsPerPage", newLogsPerPage.toString());
   };
-  const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
-
   useEffect(() => {
     fetchWebList();
   }, []);
@@ -97,24 +96,26 @@ const Page: React.FC = () => {
         setTableLoading(false);
       });
   };
+  useTableRefreshRegister(fetchDailyProfit);
+
 
   return (
     <AuthLayout>
       <NoScrollLayout>
         <div className="2xl:pt-4 pt-2 2xl:px-4 px-3 w-full">
-          <div className="md:flex pb-2 gap-3">
-            <div className="flex items-center gap-3">
+          <div className="md:flex flex-wrap items-center pb-2 gap-3">
+            <div className="flex flex-wrap items-center items-center gap-3">
               <h1 className="2xl:text-2xl lg:text-xl text-lg font-semibold dark:text-gray-300 text-gray-800 text-nowrap">
                 Daily Profit
               </h1>
-              <Button
-                className="flex items-center !px-2 !bg-indigo-500 !py-1.5"
-                onClick={() => setIsFilterOpen((prev) => !prev)}
-              >
-                <Icon name={isFilterOpen ? "close" : "filter_alt"} size={20} />
-              </Button>
+              <AllFilter
+                isWebsiteFilter={true}
+                websiteOptions={websiteOptions}
+                selectedWebsite={selectedWebsite}
+                setSelectedWebsite={setSelectedWebsite}
+              />
             </div>
-            <div className="md:flex items-center w-full justify-between">
+            <div className="md:flex flex-wrap items-center items-center w-full justify-between">
               <div className="md:w-80 w-full md:mt-0 mt-2">
                 <PageSearch
                   value={searchTerm}
@@ -124,17 +125,7 @@ const Page: React.FC = () => {
               </div>
             </div>
           </div>
-          {
-            isFilterOpen && <div className="md:mt-0 -mt-4">
-              <AllFilter
-                isWebsiteFilter={true}
-                isFilterOpen={isFilterOpen}
-                websiteOptions={websiteOptions}
-                selectedWebsite={selectedWebsite}
-                setSelectedWebsite={setSelectedWebsite}
-              />
-            </div>
-          }
+          
         </div>
       </NoScrollLayout>
 

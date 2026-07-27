@@ -1,4 +1,5 @@
 "use client";
+import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import Icon from "@admin/components/core/Icon/Icon";
 import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
 import React, { useState, useEffect, createContext } from "react";
@@ -44,9 +45,7 @@ const Page: React.FC = () => {
   const [isNoteModalOpen, setIsNoteModalOpen] = useState<boolean>(false);
   const [modalMode, setModalMode] = useState<"Create" | "Edit" | "Duplicate">(
     "Create"
-  );
-  const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
-  const [isAlertOpen, setIsAlertOpen] = useState<boolean>(false);
+  );  const [isAlertOpen, setIsAlertOpen] = useState<boolean>(false);
   const [remove, setRemove] = useState<string | null>(null);
   const [filter, setFilter] = useState<string>(() => {
     if (typeof window !== "undefined") {
@@ -195,6 +194,8 @@ const Page: React.FC = () => {
       }
     });
   }, []);
+  useTableRefreshRegister(fetchTask);
+
   return (
     <AuthLayout>
       <Alert
@@ -209,7 +210,7 @@ const Page: React.FC = () => {
         <h6 className="text-md my-4">
           Are you sure you want to remove this group?
         </h6>
-        <div className="flex items-center justify-center my-8">
+        <div className="flex flex-wrap items-center items-center justify-center my-8">
           <Icon
             name="delete"
             variant="outlined"
@@ -220,18 +221,21 @@ const Page: React.FC = () => {
       </Alert>
       <NoScrollLayout>
         <div className=" 2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 md:pb-0 mb-2">
-          <div className="sm:flex items-center gap-3">
-            <div className="flex items-center gap-3">
+          <div className="sm:flex flex-wrap items-center items-center gap-3">
+            <div className="flex flex-wrap items-center items-center gap-3">
               <h2 className="2xl:text-2xl lg:text-xl text-lg text-blue-900 font-semibold dark:text-gray-300 text-nowrap">
                 Task List
               </h2>
-              <Button
-                className="flex items-center !px-2 !bg-indigo-500 !py-1.5"
-                onClick={() => setIsFilterOpen((prev) => !prev)}
-              >
-                <Icon name={isFilterOpen ? "close" : "filter_alt"} size={20} />
-              </Button>
-              {permissionList.includes("task_create") && (
+              <AllFilter
+                isWebsiteFilter={true}
+                websiteOptions={userOption}
+                selectedWebsite={selectedUser}
+                setSelectedWebsite={setSelectedUser}
+                isStatusFilter={true}
+                statusOption={priorityOption}
+                selectedStatus={selectedPriority}
+                setSelectedStatus={setSelectedPriority}
+              />{permissionList.includes("task_create") && (
                 <Button
                   className="!bg-green-200 !text-green-600 !py-1.5 !px-4 text-nowrap"
                   onClick={handleAddClick}
@@ -249,21 +253,6 @@ const Page: React.FC = () => {
               />
             </div>
           </div>
-          {
-            isFilterOpen && <div className="md:mt-0 -mt-4">
-              <AllFilter
-                isWebsiteFilter={true}
-                isFilterOpen={isFilterOpen}
-                websiteOptions={userOption}
-                selectedWebsite={selectedUser}
-                setSelectedWebsite={setSelectedUser}
-                isStatusFilter={true}
-                statusOption={priorityOption}
-                selectedStatus={selectedPriority}
-                setSelectedStatus={setSelectedPriority}
-              />
-            </div>
-          }
           <div className="lg:mt-0 mt-3">
             <TaskTab
               filter={filter}

@@ -1,4 +1,5 @@
 "use client";
+import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import React, { useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
@@ -366,6 +367,8 @@ const Page: React.FC = () => {
 
   const reasonLabel =
     reasonOptions.find((item) => item.value === refund?.reason)?.label || "--";
+  useTableRefreshRegister(fetchSingleRefund);
+
 
   return (
     <AuthLayout>

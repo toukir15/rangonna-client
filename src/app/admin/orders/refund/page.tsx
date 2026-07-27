@@ -1,5 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
+import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Icon from "@admin/components/core/Icon/Icon";
 import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
 import React, { useState, useEffect, createContext } from "react";
@@ -40,9 +41,7 @@ const Page: React.FC = () => {
   const [modalMode, setModalMode] = useState<"Add" | "Edit">("Add");
   const [selectedRefund, setSelectedRefund] = useState<any>(null);
   const [statusUpdateOnly, setStatusUpdateOnly] = useState<boolean>(false);
-  const [isHydrated, setIsHydrated] = useState(false);
-  const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
-  const [filter, setFilter] = useState<string>("all");
+  const [isHydrated, setIsHydrated] = useState(false);  const [filter, setFilter] = useState<string>("all");
   const [range, setRange] = useLocalStorageDateRange(
     "supplierReportDateRange",
     DEFAULT_DATE_RANGE,
@@ -86,9 +85,7 @@ const Page: React.FC = () => {
 
       if (res?.success) {
         setReturnListData(res?.data?.data || []);
-        setTotalExpenses(res?.data?.meta?.total_record || 0);
-        setIsFilterOpen(false);
-      } else {
+        setTotalExpenses(res?.data?.meta?.total_record || 0);      } else {
         ToastService.error(res?.message);
       }
     } catch (err: any) {
@@ -130,15 +127,22 @@ const Page: React.FC = () => {
     setCurrentPage(1);
     localStorage.setItem("return_list_filter", newFilter);
   };
+  useTableRefreshRegister(fetchReturnList);
+
 
   return (
     <AuthLayout>
       <NoScrollLayout>
-        <div className="md:flex items-center gap-3 2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 mb-2">
-          <div className="flex items-center gap-4 ">
+        <div className="md:flex flex-wrap items-center items-center gap-3 2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 mb-2">
+          <div className="flex flex-wrap items-center items-center gap-4 ">
             <h2 className="2xl:text-2xl lg:text-xl text-lg text-blue-900 font-semibold dark:text-gray-300 text-nowrap">
               Refund Lists
             </h2>
+              <AllFilter
+              isCalendarFilter={true}
+              range={range}
+              setRange={setRange}
+            />
             <div>
               {permissionList.includes("order_refund_create") && (
                 <Button
@@ -149,14 +153,6 @@ const Page: React.FC = () => {
                 </Button>
               )}
             </div>
-            <div>
-              <Button
-                className="flex items-center !px-2 !bg-indigo-500 !py-1.5"
-                onClick={() => setIsFilterOpen((prev) => !prev)}
-              >
-                <Icon name={isFilterOpen ? "close" : "filter_alt"} size={20} />
-              </Button>
-            </div>
           </div>
           <div className="md:w-80 w-full md:my-0 my-2">
             <PageSearch
@@ -166,18 +162,6 @@ const Page: React.FC = () => {
             />
           </div>
         </div>
-
-        {isFilterOpen && (
-          <div className="md: mx-4">
-            <AllFilter
-              isFilterOpen={isFilterOpen}
-              isCalendarFilter={true}
-              range={range}
-              setRange={setRange}
-            />
-          </div>
-        )}
-
         <div className="px-4 lg:mt-0">
           <RefundTab
             filter={filter}

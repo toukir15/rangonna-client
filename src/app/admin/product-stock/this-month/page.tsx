@@ -1,4 +1,5 @@
 "use client";
+import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import Icon from "@admin/components/core/Icon/Icon";
 import { Tbody, Td, Th, Thead, Tr } from "@admin/components/Table/Table";
 import TableWrapper from "@admin/components/Table/TableWrapper";
@@ -30,9 +31,7 @@ const Page: React.FC = () => {
   const debouncedSearchTerm = useDebounce<string>(searchTerm, 300);
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
-  };
-  const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
-  const [tableLoading, setTableLoading] = useState<boolean>(true);
+  };  const [tableLoading, setTableLoading] = useState<boolean>(true);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalOrders, setTotalOrders] = useState<number>(0);
   const totalPages = Math.ceil(totalOrders / ordersPerPage);
@@ -81,24 +80,24 @@ const Page: React.FC = () => {
   useEffect(() => {
     getProductReport();
   }, [range, debouncedSearchTerm, currentPage, ordersPerPage]);
+  useTableRefreshRegister(getProductReport);
+
 
   return (
     <AuthLayout>
       <NoScrollLayout>
         <div className="2xl:pt-4 pt-2 2xl:px-4 px-3 w-full mb-2">
-          <div className="sm:flex items-center gap-3 w-full">
-            <div className="flex items-center gap-3">
+          <div className="sm:flex flex-wrap items-center items-center gap-3 w-full">
+            <div className="flex flex-wrap items-center items-center gap-3">
               <h1 className="2xl:text-2xl lg:text-xl text-lg font-semibold dark:text-gray-300 text-gray-800  text-nowrap">
                 This Month Stock Report
               </h1>
-              <Button
-                className="flex items-center !px-2 !bg-indigo-500 !py-1.5"
-                onClick={() => setIsFilterOpen((prev) => !prev)}
-              >
-                <Icon name={isFilterOpen ? "close" : "filter_alt"} size={20} />
-              </Button>
+              <AllFilter
+                isCalendarFilter={true}
+                range={range}
+                setRange={setRange}
+              />
             </div>
-
             <div className="sm:w-80 w-full sm:mt-0 mt-2">
               <PageSearch
                 value={searchTerm}
@@ -107,16 +106,7 @@ const Page: React.FC = () => {
               />
             </div>
           </div>
-          {isFilterOpen && (
-            <div className=" -mt-4 md:mt-0">
-              <AllFilter
-                isFilterOpen={isFilterOpen}
-                isCalendarFilter={true}
-                range={range}
-                setRange={setRange}
-              />
-            </div>
-          )}
+          
         </div>
       </NoScrollLayout>
 

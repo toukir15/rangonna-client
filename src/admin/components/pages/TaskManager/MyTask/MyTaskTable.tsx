@@ -114,7 +114,7 @@ const MyTaskTable: React.FC = () => {
 
               <Td>
                 <Link
-                  href={`/task-manager/my-task/view/${data?._id}`}
+                  href={`/admin/task-manager/my-task/view/${data?._id}`}
                   className="bg-blue-500 px-4 py-1 rounded-lg text-white text-center w-20 cursor-pointer"
                 >
                   View

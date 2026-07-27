@@ -1,5 +1,6 @@
 "use client";
 
+import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
 import { useEffect, useRef, useState } from "react";
 import { ToastService } from "@admin/utils/toastr.service";
@@ -61,6 +62,8 @@ const Page = () => {
 
     setIsModalOpen(true);
   };
+
+  useTableRefreshRegister(fetchWebList);
 
   return (
     <AuthLayout>

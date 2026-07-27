@@ -1,4 +1,5 @@
 "use client";
+import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import { IWebsiteOption, SelectOption } from "@admin/@interfaces/common.interface";
 import { GlobalService } from "@admin/@services/apis/GlobalService/Global.service";
 import { Tbody, Td, Th, Thead, Tr } from "@admin/components/Table/Table";
@@ -37,8 +38,6 @@ const Page: React.FC = () => {
     "supplierReportDateRange",
     DEFAULT_DATE_RANGE
   );
-  const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
-
   useEffect(() => {
     fetchWebList();
   }, []);
@@ -91,29 +90,20 @@ const Page: React.FC = () => {
         setTableLoading(false);
       });
   };
+  useTableRefreshRegister(fetchCancelReport);
+
 
   return (
     <AuthLayout>
       <NoScrollLayout>
         <div className="2xl:pt-4 pt-2 2xl:px-4 px-3 w-full">
           <div className="lg:flex lg:flex-wrap  items-center md:justify-between pb-2">
-            <div className="flex items-center gap-3 w-full">
+            <div className="flex flex-wrap items-center items-center gap-3 w-full">
               <h1 className="2xl:text-2xl lg:text-xl text-lg font-semibold dark:text-gray-300 text-gray-800 flex text-nowrap">
                 Cancel Report
               </h1>
-              <Button
-                className="flex items-center !px-2 !bg-indigo-500 !py-1.5"
-                onClick={() => setIsFilterOpen((prev) => !prev)}
-              >
-                <Icon name={isFilterOpen ? "close" : "filter_alt"} size={20} />
-              </Button>
-            </div>
-          </div>
-          {
-            isFilterOpen && <div className="md:mt-0 -mt-4">
               <AllFilter
                 isWebsiteFilter={true}
-                isFilterOpen={isFilterOpen}
                 websiteOptions={websiteOptions}
                 selectedWebsite={selectedWebsite}
                 setSelectedWebsite={setSelectedWebsite}
@@ -122,7 +112,8 @@ const Page: React.FC = () => {
                 setRange={setRange}
               />
             </div>
-          }
+          </div>
+          
         </div>
       </NoScrollLayout>
 

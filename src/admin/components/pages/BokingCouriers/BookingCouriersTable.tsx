@@ -235,7 +235,7 @@ const BookingCouriersTable: React.FC = () => {
                           <button
                             onClick={() =>
                               router.push(
-                                `/orders/edit/${String(order?.order?._id)}`
+                                `/admin/orders/edit/${String(order?.order?._id)}`
                               )
                             }
                             className="block w-full text-left px-4 py-2 hover:bg-gray-100 rounded-lg dark:hover:bg-gray-600"

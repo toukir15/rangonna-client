@@ -408,7 +408,7 @@ const RefundTable: React.FC = () => {
 
                 <Td>
                   <div className="">
-                    <Link href={`/orders/refund/view/${item?._id}`}>
+                    <Link href={`/admin/orders/refund/view/${item?._id}`}>
                       <Button
                         type="button"
                         className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 !px-4 !py-1 !text-xs font-bold text-white shadow-sm transition hover:bg-blue-700"

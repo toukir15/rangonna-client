@@ -150,7 +150,7 @@ export default function CreatePermissionPage() {
       if (res?.success) {
         ToastService.success(res?.message || "Permission created successfully");
         dispatchPermissionsRefresh();
-        router.push(`/team/permission/edit-permission/${res?.data?._id}`);
+        router.push(`/admin/team/permission/edit-permission/${res?.data?._id}`);
       } else {
         ToastService.error(res?.message || "Failed to create permission");
       }

@@ -1,6 +1,5 @@
 import React, { useRef, useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import Icon from "@admin/components/core/Icon/Icon";
 import { UserInfoModalProps } from "@admin/@interfaces/common.interface";
 import { hasPermission } from "@admin/utils";
@@ -10,10 +9,12 @@ const UserInfoModal: React.FC<UserInfoModalProps> = ({
   showUserDropdown,
   setShowUserDropdown,
   showAlert,
-  userLogo,
 }) => {
-  const { permissionList } = useGlobalContext();
+  const { permissionList, userInfo } = useGlobalContext();
   const userDropdownRef = useRef<HTMLDivElement | null>(null);
+
+  const userInitial =
+    userInfo?.name?.trim()?.charAt(0)?.toUpperCase() || "U";
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -32,26 +33,40 @@ const UserInfoModal: React.FC<UserInfoModalProps> = ({
   }, [setShowUserDropdown]);
 
   return (
-    <div>
-      <div
-        className="flex items-center border border-gray-300 bg-gray-400 rounded-md p-2 cursor-pointer "
+    <div className="relative" ref={userDropdownRef}>
+      <button
+        type="button"
+        aria-label="User menu"
+        aria-expanded={showUserDropdown}
         onClick={() => setShowUserDropdown(!showUserDropdown)}
+        className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-green-200 bg-green-50 text-sm font-semibold text-green-700 transition-colors hover:bg-green-100 dark:border-green-500/30 dark:bg-green-950/40 dark:text-green-300 dark:hover:bg-green-900/50"
       >
-        <Image className="w-auto h-5 " src={userLogo} alt="user logo" />
-      </div>
+        {userInitial}
+      </button>
 
       {showUserDropdown && (
-        <div
-          ref={userDropdownRef}
-          className="absolute -right-2 mt-3 w-72 overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 shadow-2xl z-50 backdrop-blur-sm"
-        >
-          <div className="p-2">
+        <div className="absolute right-0 mt-2 w-72 overflow-hidden rounded-xl border border-black/10 bg-white shadow-xl dark:border-white/10 dark:bg-gray-900 z-50">
+          {userInfo?.name && (
+            <div className="border-b border-black/5 px-4 py-3 dark:border-white/10">
+              <p className="truncate text-sm font-semibold text-gray-900 dark:text-gray-100">
+                {userInfo.name}
+              </p>
+              {userInfo.email && (
+                <p className="truncate text-xs text-gray-500 dark:text-gray-400">
+                  {userInfo.email}
+                </p>
+              )}
+            </div>
+          )}
+
+          <div className="p-1.5">
             <Link
               href="/admin/profile"
-              className="group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-200 transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+              onClick={() => setShowUserDropdown(false)}
+              className="group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
             >
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300 group-hover:scale-105 transition-transform duration-200">
-                <Icon name="person" variant="outlined" />
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300">
+                <Icon name="person" variant="outlined" size={18} />
               </div>
               <div>
                 <p>My Profile</p>
@@ -64,10 +79,11 @@ const UserInfoModal: React.FC<UserInfoModalProps> = ({
             {hasPermission(permissionList, "task_my_task_view") && (
               <Link
                 href="/admin/task-manager/my-task"
-                className="group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-200 transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                onClick={() => setShowUserDropdown(false)}
+                className="group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
               >
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400 group-hover:scale-105 transition-transform duration-200">
-                  <Icon name="fact_check" variant="outlined" />
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400">
+                  <Icon name="fact_check" variant="outlined" size={18} />
                 </div>
                 <div>
                   <p>My Task</p>
@@ -77,36 +93,19 @@ const UserInfoModal: React.FC<UserInfoModalProps> = ({
                 </div>
               </Link>
             )}
-
-            {hasPermission(permissionList, "leave_application_my_view") && (
-              <Link
-                href="/admin/team/my-leave"
-                className="group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-200 transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-              >
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400 group-hover:scale-105 transition-transform duration-200">
-                  <Icon name="event_busy" variant="outlined" />
-                </div>
-                <div>
-                  <p>My Leave</p>
-                  <p className="text-xs font-normal text-gray-400 dark:text-gray-500">
-                    Track leave requests
-                  </p>
-                </div>
-              </Link>
-            )}
           </div>
 
-          {/* Footer */}
-          <div className="border-t border-gray-100 dark:border-gray-700 p-2">
+          <div className="border-t border-black/5 p-1.5 dark:border-white/10">
             <button
+              type="button"
               onClick={() => {
                 showAlert();
-                setShowUserDropdown(!showUserDropdown);
+                setShowUserDropdown(false);
               }}
-              className="group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-red-600 dark:text-red-400 transition-all duration-200 hover:bg-red-50 dark:hover:bg-red-500/10"
+              className="group flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-red-600 transition-colors hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-500/10"
             >
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-red-50 text-red-500 dark:bg-red-500/10 dark:text-red-400 group-hover:scale-105 transition-transform duration-200">
-                <Icon name="logout" variant="outlined" />
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-50 text-red-500 dark:bg-red-500/10 dark:text-red-400">
+                <Icon name="logout" variant="outlined" size={18} />
               </div>
               <div>
                 <p>Log Out</p>

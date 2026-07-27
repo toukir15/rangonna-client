@@ -1,4 +1,5 @@
 "use client";
+import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import Icon from "@admin/components/core/Icon/Icon";
 import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
 import React, { useRef, useState, useEffect } from "react";
@@ -134,6 +135,9 @@ const Page: React.FC = () => {
     setModalOpen(true);
     setPaymentData(item);
   };
+
+  useTableRefreshRegister(fetchPurchasesReturn);
+
 
   return (
     <AuthLayout>
@@ -283,7 +287,7 @@ const Page: React.FC = () => {
                     <Td className=" uppercase">{item?.status}</Td>
                     <Td>
                       <Link
-                        href={`/purchase/return/view/${item?._id}`}
+                        href={`/admin/purchase/return/view/${item?._id}`}
                         className="bg-blue-500 px-4 py-1 rounded-lg text-white text-center w-20 cursor-pointer"
                       >
                         View
@@ -314,7 +318,7 @@ const Page: React.FC = () => {
                                     className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg "
                                     onClick={() =>
                                       router.push(
-                                        `/purchase/return/edit-purchases/${item?._id}`
+                                        `/admin/purchase/return/edit-purchases/${item?._id}`
                                       )
                                     }
                                   >

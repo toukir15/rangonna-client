@@ -1,4 +1,5 @@
 "use client";
+import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import Icon from "@admin/components/core/Icon/Icon";
 import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
 import React, { useRef, useState, useEffect, createContext } from "react";
@@ -49,9 +50,7 @@ const Page: React.FC = () => {
   const popupRef = useRef<HTMLDivElement | null>(null);
   const togglePopup = (index: number) => {
     setPopupIndex(popupIndex === index ? null : index);
-  };
-  const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
-  const [productPerPage, setProductPerPage] = useState<number>(10);
+  };  const [productPerPage, setProductPerPage] = useState<number>(10);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalProduct, setTotalProduct] = useState<number>(0);
   const totalPages = Math.ceil(totalProduct / productPerPage);
@@ -240,6 +239,9 @@ const Page: React.FC = () => {
     { label: "Out of Stock", value: "out-of-stock" },
   ];
 
+  useTableRefreshRegister(fetchProduct);
+
+
   return (
     <AuthLayout>
       <Alert
@@ -253,7 +255,7 @@ const Page: React.FC = () => {
         <h6 className="text-md my-4">
           Are you sure you want to remove this Product?
         </h6>
-        <div className="flex items-center justify-center my-8">
+        <div className="flex flex-wrap items-center items-center justify-center my-8">
           <Icon
             name="delete"
             variant="outlined"
@@ -264,35 +266,12 @@ const Page: React.FC = () => {
       </Alert>
       <NoScrollLayout>
         <div className=" 2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 md:pb-0 mb-2">
-          <div className="md:flex items-center 4xl:gap-4 gap-2">
-            <div className="flex items-center gap-3">
+          <div className="md:flex flex-wrap items-center items-center 4xl:gap-4 gap-2">
+            <div className="flex flex-wrap items-center items-center gap-3">
               <h2 className="2xl:text-2xl lg:text-xl text-lg text-blue-900 font-semibold dark:text-gray-300 text-nowrap">
                 All Product Price
               </h2>
-              <div>
-                <Button
-                  className="flex items-center !px-2 !bg-indigo-500 !py-1.5"
-                  onClick={() => setIsFilterOpen((prev) => !prev)}
-                >
-                  <Icon
-                    name={isFilterOpen ? "close" : "filter_alt"}
-                    size={20}
-                  />
-                </Button>
-              </div>
-            </div>
-            <div className="4xl:w-72 md:w-64 w-full md:mt-0 mt-2">
-              <PageSearch
-                value={searchTerm}
-                onChange={handleSearchChange}
-                wrapperClass="w-full"
-              />
-            </div>
-          </div>
-          {isFilterOpen && (
-            <div className=" -mt-4 md:mt-0">
               <AllFilter
-                isFilterOpen={isFilterOpen}
                 isCategoryOptionFilter={true}
                 categoryOptions={categoryOptions || []}
                 selectedCategory={selectedCategory}
@@ -307,7 +286,15 @@ const Page: React.FC = () => {
                 setSelectedStatus={setSelectedStatus}
               />
             </div>
-          )}
+            <div className="4xl:w-72 md:w-64 w-full md:mt-0 mt-2">
+              <PageSearch
+                value={searchTerm}
+                onChange={handleSearchChange}
+                wrapperClass="w-full"
+              />
+            </div>
+          </div>
+          
         </div>
       </NoScrollLayout>
       <ProductsPriceContext.Provider

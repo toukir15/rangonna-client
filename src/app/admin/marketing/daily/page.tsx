@@ -1,4 +1,5 @@
 "use client";
+import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import {
   IWebsiteOption,
   IWebsiteResponse,
@@ -172,6 +173,8 @@ const Page: React.FC = () => {
     setCurrentPage(1);
     setSelectedWebsite(option);
   };
+  useTableRefreshRegister(fetchDailyReport);
+
 
   return (
     <AuthLayout>

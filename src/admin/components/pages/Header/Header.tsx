@@ -5,9 +5,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ToastService } from "@admin/utils/toastr.service";
 import Image from "next/image";
-import logo from "@admin/assets/logo/logo update-03.png";
 import Icon from "@admin/components/core/Icon/Icon";
 import userLogo from "@admin/assets/images/user.png";
+import AdminBrandLogo from "@admin/components/core/Brand/AdminBrandLogo";
 import UserInfoModal from "./UserInfoModal";
 import LogOutLogo from "@admin/assets/images/logOut.png";
 import { useGlobalContext } from "@admin/context/GlobalContext";
@@ -18,7 +18,6 @@ import Cookies from "js-cookie";
 import { GlobalService } from "@admin/@services/apis/GlobalService/Global.service";
 import Button from "@admin/components/core/Button/Button";
 import { getStatusStyle } from "@admin/utils/system.utils";
-import whiteLogo from "@admin/assets/logo/whiteLogo.png";
 import { ensureSocketConnected } from "@admin/@config/socket.config";
 import {
   INeedOrdersNotification,
@@ -58,7 +57,6 @@ export default function Header() {
     userInfo,
     isSidebarOpen,
     setIsSidebarOpen,
-    isDarkMode,
     beginLogout,
   } = useGlobalContext();
   const router = useRouter();
@@ -450,7 +448,7 @@ export default function Header() {
     if (suggestion?.status) {
       localStorage.setItem("viewOrderStatus", suggestion.status);
     }
-    router.push(`/orders/view/${encodeURIComponent(suggestion?._id)}`);
+    router.push(`/admin/orders/view/${encodeURIComponent(suggestion?._id)}`);
     setFilteredSuggestions([]);
   };
 
@@ -458,7 +456,7 @@ export default function Header() {
     if (e.key === "Enter" && filteredSuggestions.length === 1) {
       const suggestion: any = filteredSuggestions[0];
       localStorage.setItem("viewOrderStatus", suggestion?.status);
-      router.push(`/orders/view/${encodeURIComponent(suggestion?._id)}`);
+      router.push(`/admin/orders/view/${encodeURIComponent(suggestion?._id)}`);
       setShowSuggestions(false);
       setFilteredSuggestions([]);
     }
@@ -543,71 +541,54 @@ export default function Header() {
           </div>
         </div>
       </Alert>
-      <header
-        className="sticky top-0 z-50 dark:bg-black dark:shadow-gray-700 bg-white shadow-gray-100 shadow-sm px-4 flex justify-between items-center no-print border-b dark:border-gray-900"
-        style={{ height: "60px" }}
-      >
-        <div className="flex items-center space-x-1">
+      <header className="sticky top-0 z-50 flex h-[60px] items-center gap-3 border-b border-black/10 bg-white/95 px-3 backdrop-blur-md no-print dark:border-white/10 dark:bg-gray-950/95 md:px-4">
+        <div className="flex min-w-0 shrink-0 items-center gap-2">
           {isAuthenticated && (
-            <div
-              onClick={() => {
-                const newState = !isSidebarOpen;
-                setIsSidebarOpen(newState);
-              }}
+            <button
+              type="button"
+              aria-label="Toggle sidebar"
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-black/5 text-gray-700 transition-colors hover:bg-gray-100 dark:border-white/10 dark:text-gray-200 dark:hover:bg-gray-900 xl:inline-flex"
             >
               <Icon
-                name={isSidebarOpen === true ? "menu" : "menu_open"}
+                name={isSidebarOpen ? "menu" : "menu_open"}
                 variant="outlined"
-                size="38px"
-                className="px-2.5 cursor-pointer dark:text-white"
+                size={22}
               />
-            </div>
+            </button>
           )}
 
           <Link
             href={isAuthenticated ? "/admin/dashboard/all" : "/admin"}
-            className="flex items-center ml-12"
+            className="flex items-center"
           >
-            {isDarkMode ? (
-              <Image
-                src={whiteLogo}
-                className="h-11 w-auto md:block hidden"
-                alt={""}
-              />
-            ) : (
-              <Image
-                src={logo}
-                className="h-8 w-auto md:block hidden"
-                alt={""}
-              />
-            )}
+            <AdminBrandLogo size="sm" variant="green" />
           </Link>
         </div>
-        <div className=" xl:block hidden">
+
+        <div className="hidden flex-1 justify-center xl:flex">
           {isAuthenticated && (
             <div
-              className="relative"
+              className="relative w-full max-w-xl"
               onBlur={handleBlur}
               onFocus={() => setShowSuggestions(true)}
             >
-              <div>
-                <input
-                  type="text"
-                  ref={searchInputRef}
-                  placeholder="Search Orders"
-                  className="px-2 py-1.5 min-w-96 pr-10  border dark:text-white dark:bg-black dark:border-gray-700 border-gray-300 rounded-lg shadow-sm focus:ring-1 focus:ring-green-400 focus:dark:ring-gray-700 focus:outline-none"
-                  value={searchId ?? ""}
-                  onChange={handleInputChange}
-                  onKeyDown={handleKeyPress}
-                />
-                <span className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-400 mt-1">
-                  <Icon name={"search"} variant="outlined" />
-                </span>
-              </div>
+              <input
+                type="text"
+                ref={searchInputRef}
+                placeholder="Search orders by ID, phone, name..."
+                className="h-9 w-full rounded-lg border border-black/5 bg-gray-50 pl-3 pr-10 text-sm text-gray-800 outline-none transition focus:border-green-400 focus:ring-2 focus:ring-green-100 dark:border-white/10 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-green-500 dark:focus:ring-green-500/20"
+                value={searchId ?? ""}
+                onChange={handleInputChange}
+                onKeyDown={handleKeyPress}
+              />
+              <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
+                <Icon name="search" variant="outlined" size={18} />
+              </span>
               {showSuggestions && filteredSuggestions.length > 0 && (
                 <div
                   ref={suggestionBoxRef}
-                  className="absolute top-full left-0 right-0 bg-white dark:bg-gray-700 dark:border-gray-500 border dark:text-gray-300 border-gray-300 shadow-lg max-h-64 overflow-y-auto z-10 mt-1 rounded-lg"
+                  className="absolute top-full left-0 right-0 z-10 mt-1.5 max-h-64 overflow-y-auto rounded-xl border border-black/10 bg-white shadow-lg dark:border-white/10 dark:bg-gray-900"
                 >
                   <ul>
                     {filteredSuggestions.map(
@@ -653,56 +634,50 @@ export default function Header() {
           )}
         </div>
 
-        <div className="flex items-center md:space-x-6">
+        <div className="ml-auto flex shrink-0 items-center gap-2 md:gap-2.5">
           {pathname === "/admin" || pathname === "/admin/signup" ? null : (
             <DarkModeToggle />
           )}
 
           {isAuthenticated ? (
-            <div className="flex items-center space-x-4 relative ">
-              {permissionList.includes("showroom_order_create") && (
-                <Link href="/admin/create-showroom-order">
-                  <Button className="bg-green-600 hover:bg-green-700 px-4 md:block hidden py-1.5 rounded-md text-white shadow">
-                    Showroom Order
-                  </Button>
-                </Link>
-              )}
+            <>
               {permissionList.includes("order_create") && (
-                <Link href="/admin/create-order">
-                  <Button className="bg-red-600 hover:bg-red-700 px-4 md:block hidden py-1.5 rounded-md text-white shadow">
-                    Create Order
-                  </Button>
+                <Link
+                  href="/admin/create-order"
+                  className="hidden md:inline-flex h-9 items-center rounded-lg bg-green-600 px-3.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-green-700"
+                >
+                  Create Order
                 </Link>
               )}
 
-              <Button
+              <button
+                type="button"
                 onClick={handleCashClean}
-                className="bg-green-600 hover:bg-green-700 px-4 lg:block hidden py-1.5 rounded-md text-white shadow "
+                className="hidden lg:inline-flex h-9 shrink-0 items-center rounded-lg border border-black/10 bg-white px-3.5 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:border-green-200 hover:bg-green-50 hover:text-green-700 dark:border-white/10 dark:bg-gray-900 dark:text-gray-200 dark:hover:border-green-500/30 dark:hover:bg-green-950/40 dark:hover:text-green-300"
               >
                 Clear Cash
-              </Button>
+              </button>
 
-              {/* Notification Bell */}
               <div className="relative">
-                <div className="relative">
-                  <Icon
-                    name="notifications"
-                    variant="outlined"
-                    className={`text-lg h-auto cursor-pointer dark:text-white ${
-                      bellVibrating ? "animate-notify-vibrate" : ""
-                    }`}
-                    onClick={() => setShowNotifications(!showNotifications)}
-                  />
+                <button
+                  type="button"
+                  aria-label="Notifications"
+                  onClick={() => setShowNotifications(!showNotifications)}
+                  className={`relative inline-flex h-9 w-9 items-center justify-center rounded-lg border border-black/5 text-gray-700 transition-colors hover:bg-gray-100 dark:border-white/10 dark:text-gray-200 dark:hover:bg-gray-900 ${
+                    bellVibrating ? "animate-notify-vibrate" : ""
+                  }`}
+                >
+                  <Icon name="notifications" variant="outlined" size={20} />
                   {unreadOrderAlertCount > 0 && (
-                    <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 rounded-full bg-red-500 text-white text-[10px] flex items-center justify-center">
+                    <span className="absolute -right-1 -top-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-semibold text-white">
                       {unreadOrderAlertCount}
                     </span>
                   )}
-                </div>
+                </button>
                 {showNotifications && (
                   <div
                     ref={notificationsRef}
-                    className="absolute right-0 mt-2 w-80 bg-white border border-gray-200 dark:bg-gray-700 dark:border-gray-500 dark:text-gray-300 shadow-lg rounded-lg z-20 overflow-hidden"
+                    className="absolute right-0 z-20 mt-2 w-80 overflow-hidden rounded-xl border border-black/10 bg-white shadow-xl dark:border-white/10 dark:bg-gray-900"
                   >
                     {needOrderAlerts.length === 0 ? (
                       <div className="w-full p-8 flex flex-col items-center justify-center text-center bg-gray-50 dark:bg-gray-800/40">
@@ -859,19 +834,20 @@ export default function Header() {
                   </div>
                 )}
               </div>
+
               <UserInfoModal
                 showUserDropdown={showUserDropdown}
                 setShowUserDropdown={setShowUserDropdown}
                 showAlert={showAlert}
                 userLogo={userLogo}
               />
-            </div>
+            </>
           ) : (
-            <div className="flex space-x-4">
+            <div className="flex items-center gap-2">
               {pathname === "/admin" && (
                 <Link
                   href="/admin/signup"
-                  className="bg-red-600 lg:mr-12 px-4 py-1.5 rounded-md text-white shadow hover:bg-red-700 transition duration-300"
+                  className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-red-700"
                 >
                   Sign Up
                 </Link>
@@ -880,7 +856,7 @@ export default function Header() {
               {pathname === "/admin/signup" && (
                 <Link
                   href="/admin"
-                  className="bg-green-600 lg:mr-12 px-4 py-1.5 rounded-lg text-white shadow hover:bg-green-700 transition duration-300"
+                  className="rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-green-700"
                 >
                   Login
                 </Link>

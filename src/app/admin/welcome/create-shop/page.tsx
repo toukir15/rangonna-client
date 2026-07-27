@@ -1,4 +1,5 @@
 "use client";
+import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import Input from "@admin/components/core/Input/Input";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -121,6 +122,8 @@ const Page: React.FC = () => {
         setIsSubmit(false);
       });
   };
+  useTableRefreshRegister(fetchWebAddress);
+
 
   return (
     <div className="h-screen">

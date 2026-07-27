@@ -175,7 +175,7 @@ const UsersTable: React.FC = () => {
                             <button
 
                               onClick={() => {
-                                router.push(`/team/member/edit/${item?._id}`);
+                                router.push(`/admin/team/member/edit/${item?._id}`);
                               }}
                               className="block w-full text-left px-4 py-2 hover:bg-gray-100 rounded-lg dark:hover:bg-gray-600"
                             >

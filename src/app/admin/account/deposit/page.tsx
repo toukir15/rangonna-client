@@ -1,4 +1,5 @@
 "use client";
+import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import Icon from "@admin/components/core/Icon/Icon";
 import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
 import React, { useState, useEffect, createContext } from "react";
@@ -39,9 +40,7 @@ const Page: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [modalMode, setModalMode] = useState<"Add" | "Edit">("Add");
   const [isAlertOpen, setIsAlertOpen] = useState<boolean>(false);
-  const [remove, setRemove] = useState<string | null>(null);
-  const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
-  const [range, setRange] = useLocalStorageDateRange(
+  const [remove, setRemove] = useState<string | null>(null);  const [range, setRange] = useLocalStorageDateRange(
     "depositDateRange",
     DEFAULT_DATE_RANGE,
   );
@@ -126,6 +125,8 @@ const Page: React.FC = () => {
       setTableLoading(false);
     }
   };
+  useTableRefreshRegister(getDeposit);
+
 
   return (
     <AuthLayout>
@@ -141,7 +142,7 @@ const Page: React.FC = () => {
         <h6 className="text-md my-4">
           Are you sure you want to remove this group?
         </h6>
-        <div className="flex items-center justify-center my-8">
+        <div className="flex flex-wrap items-center items-center justify-center my-8">
           <Icon
             name="delete"
             variant="outlined"
@@ -152,12 +153,17 @@ const Page: React.FC = () => {
       </Alert>
       <NoScrollLayout>
         <div className="2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 md:pb-0 mb-2">
-          <div className="md:flex items-center gap-3">
-            <div className="flex items-center gap-4">
+          <div className="md:flex flex-wrap items-center items-center gap-3">
+            <div className="flex flex-wrap items-center items-center gap-4">
               <h2 className="2xl:text-2xl lg:text-xl text-lg text-blue-900 font-semibold dark:text-gray-300">
                 Deposit
               </h2>
-              <div className="flex justify-end">
+              <AllFilter
+                isCalendarFilter={true}
+                range={range}
+                setRange={setRange}
+              />
+              <div className="flex flex-wrap items-center justify-end">
                 {hasPermission(permissionList, "account_deposit_create") && (
                   <Button
                     className="flex items-center bg-green-200 !text-green-500 !px-4 !py-1.5"
@@ -169,17 +175,6 @@ const Page: React.FC = () => {
                   </Button>
                 )}
               </div>
-              <div>
-                <Button
-                  className="flex items-center !px-2 !bg-indigo-500 !py-1.5"
-                  onClick={() => setIsFilterOpen((prev) => !prev)}
-                >
-                  <Icon
-                    name={isFilterOpen ? "close" : "filter_alt"}
-                    size={20}
-                  />
-                </Button>
-              </div>
             </div>
             <div className="md:w-80 w-full md:mt-0 mt-2">
               <PageSearch
@@ -189,16 +184,7 @@ const Page: React.FC = () => {
               />
             </div>
           </div>
-          {isFilterOpen && (
-            <div className="md:mt-0 -mt-2">
-              <AllFilter
-                isFilterOpen={isFilterOpen}
-                isCalendarFilter={true}
-                range={range}
-                setRange={setRange}
-              />
-            </div>
-          )}
+          
         </div>
       </NoScrollLayout>
 

@@ -17,7 +17,7 @@ export const TableCheckbox: React.FC<CheckboxProps> = ({
       checked={checked}
       onChange={(e) => onChange(e.target.checked)}
       onClick={onClick}
-      className="form-checkbox h-4 w-4 text-primary-500 bg-blue-900 border-gray-300 rounded focus:ring-blue-500 cursor-pointer"
+      className="h-4 w-4 cursor-pointer rounded border-gray-300 text-green-600 focus:ring-green-500/30 dark:border-gray-600 dark:bg-gray-800"
     />
   );
 };

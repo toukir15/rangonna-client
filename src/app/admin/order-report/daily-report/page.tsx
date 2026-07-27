@@ -1,4 +1,5 @@
 "use client";
+import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import {
   IWebsiteOption,
   IWebsiteResponse,
@@ -40,8 +41,6 @@ const Page: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalOrders, setTotalOrders] = useState<number>(0);
   const totalPages = Math.ceil(totalOrders / ordersPerPage);
-  const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
-
   const handleLogsPerPageChange = (newLogsPerPage: number) => {
     setOrdersPerPage(newLogsPerPage);
     localStorage.setItem("ordersLogsPerPage", newLogsPerPage.toString());
@@ -99,24 +98,26 @@ const Page: React.FC = () => {
         setTableLoading(false);
       });
   };
+  useTableRefreshRegister(fetchDailyReport);
+
 
   return (
     <AuthLayout>
       <NoScrollLayout>
         <div className="2xl:pt-4 pt-2 2xl:px-4 px-3 w-full">
           <div className="lg:flex lg:flex-wrap  items-center md:justify-between pb-2">
-            <div className="sm:flex items-center w-full gap-3">
-              <div className="flex items-center gap-3">
+            <div className="sm:flex flex-wrap items-center items-center w-full gap-3">
+              <div className="flex flex-wrap items-center items-center gap-3">
                 <h1 className="2xl:text-2xl lg:text-xl text-lg font-semibold dark:text-gray-300 text-gray-800 text-nowrap">
                   Daily Report
                 </h1>
+              <AllFilter
+                isWebsiteFilter={true}
+                websiteOptions={websiteOptions}
+                selectedWebsite={selectedWebsite}
+                setSelectedWebsite={setSelectedWebsite}
 
-                <Button
-                  className="flex items-center !px-2 !bg-indigo-500 !py-1.5"
-                  onClick={() => setIsFilterOpen((prev) => !prev)}
-                >
-                  <Icon name={isFilterOpen ? "close" : "filter_alt"} size={20} />
-                </Button>
+              />
               </div>
               <div className="sm:w-80 w-full sm:mt-0 mt-4">
                 <PageSearch
@@ -127,18 +128,7 @@ const Page: React.FC = () => {
               </div>
             </div>
           </div>
-          {
-            isFilterOpen && <div className="md:mt-0 -mt-4">
-              <AllFilter
-                isWebsiteFilter={true}
-                isFilterOpen={isFilterOpen}
-                websiteOptions={websiteOptions}
-                selectedWebsite={selectedWebsite}
-                setSelectedWebsite={setSelectedWebsite}
-
-              />
-            </div>
-          }
+          
         </div>
       </NoScrollLayout>
 

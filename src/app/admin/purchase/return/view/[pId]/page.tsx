@@ -1,4 +1,5 @@
 "use client";
+import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import Icon from "@admin/components/core/Icon/Icon";
 import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
 import React, { useState, useEffect, useRef } from "react";
@@ -64,6 +65,8 @@ const Page: React.FC = () => {
   const handlePrint = () => {
     console.log("print a click korci");
   };
+  useTableRefreshRegister(getPurchases);
+
 
   return (
     <AuthLayout>
@@ -80,7 +83,7 @@ const Page: React.FC = () => {
                 className="flex items-center bg-green-500 !px-4 !py-1"
                 onClick={() =>
                   router.push(
-                    `/purchase/return/edit-purchases/${singleData?._id}`
+                    `/admin/purchase/return/edit-purchases/${singleData?._id}`
                   )
                 }
                 disabled={isLoading}

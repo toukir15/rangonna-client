@@ -1,4 +1,5 @@
 "use client";
+import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 
 import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
 import { ToastService } from "@admin/utils/toastr.service";
@@ -181,6 +182,8 @@ const Page: React.FC = () => {
       percentage: getPercent(cardData?.return_count, total),
     },
   ];
+  useTableRefreshRegister(fetchCampaignData);
+
 
   return (
     <AuthLayout>

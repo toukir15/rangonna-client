@@ -1,4 +1,5 @@
 "use client";
+import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import { Tbody, Td, Th, Thead, Tr } from "@admin/components/Table/Table";
 import TableWrapper from "@admin/components/Table/TableWrapper";
 import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
@@ -31,9 +32,7 @@ const Page: React.FC = () => {
   const [tableLoading, setTableLoading] = useState<boolean>(true);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalOrders, setTotalOrders] = useState<number>(0);
-  const totalPages = Math.ceil(totalOrders / ordersPerPage);
-  const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
-  const [selectedType, setSelectedType] = useState<SelectOption>({
+  const totalPages = Math.ceil(totalOrders / ordersPerPage);  const [selectedType, setSelectedType] = useState<SelectOption>({
     value: "all",
     label: "All Types",
   });
@@ -106,6 +105,8 @@ const Page: React.FC = () => {
       value: "premium",
     },
   ];
+  useTableRefreshRegister(fetchCustomerLists);
+
 
   return (
     <AuthLayout>
@@ -113,31 +114,19 @@ const Page: React.FC = () => {
       <NoScrollLayout>
         <div className="2xl:pt-4 pt-2 2xl:px-4 px-3 w-full">
 
-          <div className="flex items-center gap-3 mb-3">
+          <div className="flex flex-wrap items-center items-center gap-3 mb-3">
             <h1 className="2xl:text-2xl lg:text-xl text-lg font-semibold dark:text-gray-300 text-gray-800 text-nowrap">
               Repeat Customers
             </h1>
-            <div>
-              <Button
-                className="flex items-center !px-2 !bg-indigo-500 !py-1.5"
-                onClick={() => setIsFilterOpen((prev) => !prev)}
-              >
-                <Icon name={isFilterOpen ? "close" : "filter_alt"} size={20} />
-              </Button>
-            </div>
-          </div>
-
-          {
-            isFilterOpen && <div >
               <AllFilter
-                isFilterOpen={isFilterOpen}
                 isWebsiteFilter={true}
                 websiteOptions={customerOptions}
                 selectedWebsite={selectedType}
                 setSelectedWebsite={setSelectedType}
               />
-            </div>
-          }
+          </div>
+
+          
         </div>
       </NoScrollLayout>
 
@@ -178,7 +167,7 @@ const Page: React.FC = () => {
                 </div>
               </Th>
               <Th className="2xl:min-w-40 lg:min-w-32 min-w-40  text-blue-900 dark:text-gray-200">
-                <div className="flex items-center cursor-pointer">
+                <div className="flex flex-wrap items-center items-center cursor-pointer">
                   <p>Delivery Total</p>
                 </div>
               </Th>

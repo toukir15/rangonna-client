@@ -1,4 +1,5 @@
 "use client";
+import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 
 import Icon from "@admin/components/core/Icon/Icon";
 import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
@@ -115,6 +116,8 @@ const Page: React.FC = () => {
             setTableLoading(false);
         }
     };
+  useTableRefreshRegister(fetchBanner);
+
 
     return (
         <AuthLayout>

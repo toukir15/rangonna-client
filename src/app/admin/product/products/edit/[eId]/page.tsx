@@ -568,7 +568,7 @@ const Page: React.FC = () => {
           {isEdit ? "Edit Product" : "Add Product"}
         </h2>
         <Link
-          href={`/product/products/duplicate/${productDetails?._id}`}
+          href={`/admin/product/products/duplicate/${productDetails?._id}`}
           className="bg-teal-500 hover:bg-teal-600 px-2 py-0.5 rounded-lg text-white text-center  cursor-pointer "
         >
           Duplicate Product

@@ -4,49 +4,21 @@ import React from "react";
 
 const DarkModeToggle: React.FC = () => {
   const { toggleDarkMode, isDarkMode } = useGlobalContext();
+
   return (
-    <>
-      <button
-        onClick={toggleDarkMode}
-        className="p-2  rounded text-black dark:text-white md:block hidden text-3xl"
-      >
-        {isDarkMode ? (
-          <Icon
-            name={"light_mode"}
-            className="md:mt-2 text-yellow-500"
-            variant="outlined"
-            size={35}
-          />
-        ) : (
-          <Icon
-            name={"dark_mode"}
-            className="md:mt-2 text-gray-700"
-            variant="outlined"
-            size={35}
-          />
-        )}
-      </button>
-      <button
-        onClick={toggleDarkMode}
-        className=" text-black dark:text-white md:hidden block"
-      >
-        {isDarkMode ? (
-          <Icon
-            name={"light_mode"}
-            className="md:mt-3 mt-1.5 text-yellow-500"
-            variant="outlined"
-            size={32}
-          />
-        ) : (
-          <Icon
-            name={"dark_mode"}
-            className="md:mt-3 mt-1.5 text-gray-700"
-            variant="outlined"
-            size={32}
-          />
-        )}
-      </button>
-    </>
+    <button
+      type="button"
+      onClick={toggleDarkMode}
+      aria-label={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
+      className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-black/5 bg-gray-50 text-gray-600 transition-colors hover:bg-gray-100 dark:border-white/10 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-800"
+    >
+      <Icon
+        name={isDarkMode ? "light_mode" : "dark_mode"}
+        variant="outlined"
+        size={20}
+        className={isDarkMode ? "text-amber-400" : "text-gray-600 dark:text-gray-300"}
+      />
+    </button>
   );
 };
 

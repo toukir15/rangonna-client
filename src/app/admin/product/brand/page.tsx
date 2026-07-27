@@ -1,5 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
+import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Icon from "@admin/components/core/Icon/Icon";
 import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
 import React, { useState, useEffect, createContext } from "react";
@@ -120,6 +121,8 @@ const Page: React.FC = () => {
     setIsAlertOpen(false);
     setRemove(null);
   };
+  useTableRefreshRegister(fetchProductBrand);
+
 
   return (
     <AuthLayout>
