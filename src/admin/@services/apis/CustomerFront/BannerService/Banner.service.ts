@@ -23,7 +23,7 @@ export const BannerService = {
   createImageUrl: async (payload: any): Promise<any> =>
     await apiIns.post("/upload/upload-url", payload),
 
-  /** Server-side upload — avoids browser CORS preflight to DigitalOcean Spaces. */
+  /** Server-side upload — avoids browser CORS; uses Cloudinary via API. */
   uploadFileDirect: async (file: File, folder: string): Promise<any> => {
     const formData = new FormData();
     formData.append("file", file);

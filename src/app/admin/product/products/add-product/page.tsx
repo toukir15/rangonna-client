@@ -44,10 +44,7 @@ const defaultValue: any = {
   sale_price: "",
   regular_price: "",
   purchase_price: "",
-  wholesale_price: "",
-  wholesale_vip_price: "",
   resaler_price: "",
-  tv_sale_price: "",
   offer_text: "",
   stock_status: "",
   warranty: "",
@@ -74,10 +71,7 @@ export const ProductSchema = yup.object({
   sale_price: yup.string().required("Sale price is required"),
   regular_price: yup.string().required("Regular price is required"),
   purchase_price: yup.string().required("Purchase price is required"),
-  wholesale_price: yup.string(),
-  wholesale_vip_price: yup.string(),
   resaler_price: yup.string(),
-  tv_sale_price: yup.string(),
   offer_text: yup.string(),
   stock_status: yup.mixed().required("Stock status is required"),
   warranty: yup.mixed().required("Warranty is required"),
@@ -212,11 +206,7 @@ const Page: React.FC = () => {
         purchase_price: parseFloat(fromData.purchase_price) || 0,
       },
       wholesale_pricing: {
-        wholesale_price: parseFloat(fromData.wholesale_price) || 0,
-        wholesale_vip_price: parseFloat(fromData.wholesale_vip_price) || 0,
         resale_price: parseFloat(fromData.resaler_price) || 0,
-        tv_sale_price: parseFloat(fromData.tv_sale_price) || 0,
-        offer_text: parseFloat(fromData.offer_text) || 0,
       },
       inventory: { stock_status: "out-of-stock" },
       warranty: fromData.warranty?.value || "",
@@ -542,13 +532,6 @@ const Page: React.FC = () => {
                     isRequired
                   />
                   <Input
-                    label={"TimeVerse Price"}
-                    placeholder="Enter TimeVerse price "
-                    registerProperty={register("tv_sale_price")}
-                    errorText={errors?.tv_sale_price?.message}
-                    type="number"
-                  />
-                  <Input
                     label={"Offer Text"}
                     placeholder="Enter Text"
                     registerProperty={register("offer_text")}
@@ -565,21 +548,6 @@ const Page: React.FC = () => {
                   />
                   {priceInfo && (
                     <>
-                      <Input
-                        label={"Wholesale Vip Price"}
-                        placeholder="Enter wholesale vip price "
-                        registerProperty={register("wholesale_vip_price")}
-                        errorText={errors?.wholesale_vip_price?.message}
-                        type="number"
-                      />
-                      <Input
-                        label={"Wholesale Price"}
-                        placeholder="Enter wholesale price "
-                        registerProperty={register("wholesale_price")}
-                        errorText={errors?.wholesale_price?.message}
-                        type="number"
-                      />
-
                       <Input
                         label={"Resaler Price"}
                         placeholder="Enter Resaler price "

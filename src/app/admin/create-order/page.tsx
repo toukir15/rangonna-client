@@ -468,10 +468,7 @@ const page: React.FC = () => {
                             key={i}
                             className="px-3 py-2.5 hover:bg-gray-50 dark:hover:bg-gray-700 flex justify-between items-center cursor-pointer transition-colors"
                             onClick={() => {
-                              const salePrice =
-                                url === "https://timeverse.com.bd"
-                                  ? p.pricing?.tv_sale_price
-                                  : p.pricing?.sale_price;
+                              const salePrice = p.pricing?.sale_price;
 
                               setOrderDetails((prev: any) => {
                                 const already = prev.line_items.find(
@@ -526,9 +523,7 @@ const page: React.FC = () => {
                             </div>
                             <span className="font-semibold text-[#bc1115] ml-3 whitespace-nowrap">
                               ৳
-                              {url === "https://timeverse.com.bd"
-                                ? p.pricing?.tv_sale_price
-                                : p.pricing?.sale_price}
+                              {p.pricing?.sale_price}
                             </span>
                           </div>
                         ))

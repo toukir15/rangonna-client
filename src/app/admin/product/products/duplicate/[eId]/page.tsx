@@ -90,10 +90,7 @@ const defaultValue: any = {
   sale_price: "",
   regular_price: "",
   purchase_price: "",
-  wholesale_price: "",
-  wholesale_vip_price: "",
   resaler_price: "",
-  tv_sale_price: "",
   stock_status: "",
   warranty: "",
   short_description: "",
@@ -135,10 +132,7 @@ export const ProductSchema = yup.object({
   sale_price: yup.string().required("Sale price is required"),
   regular_price: yup.string().required("Regular price is required"),
   purchase_price: yup.string(),
-  wholesale_price: yup.string(),
-  wholesale_vip_price: yup.string(),
   resaler_price: yup.string(),
-  tv_sale_price: yup.string(),
   stock_status: yup.mixed().required("Stock status is required"),
   stock_quantity: yup.string(),
   warranty: yup.mixed().required("Warranty is required"),
@@ -384,16 +378,9 @@ const Page: React.FC = () => {
       sale_price: String(productDetails?.pricing?.sale_price ?? ""),
       regular_price: String(productDetails?.pricing?.regular_price ?? ""),
       purchase_price: String(productDetails?.pricing?.purchase_price ?? ""),
-      wholesale_price: String(
-        productDetails?.wholesale_pricing?.wholesale_price ?? "",
-      ),
-      wholesale_vip_price: String(
-        productDetails?.wholesale_pricing?.wholesale_vip_price ?? "",
-      ),
       resaler_price: String(
         productDetails?.wholesale_pricing?.resale_price ?? "",
       ),
-      tv_sale_price: String(productDetails?.pricing?.tv_sale_price ?? ""),
       offer_text: productDetails.offer_text || "",
       stock_status: selectedStock,
       warranty: selectedWarranty,
@@ -442,15 +429,12 @@ const Page: React.FC = () => {
       pricing: {
         sale_price: parseFloat(fromData.sale_price) || 0,
         regular_price: parseFloat(fromData.regular_price) || 0,
-        tv_sale_price: parseFloat(fromData.tv_sale_price) || 0,
         ...(hasPermission(permissionList, "product_pricing_view") && {
           purchase_price: parseFloat(fromData.purchase_price) || 0,
         }),
       },
       ...(hasPermission(permissionList, "product_pricing_view") && {
         wholesale_pricing: {
-          wholesale_price: parseFloat(fromData.wholesale_price) || 0,
-          wholesale_vip_price: parseFloat(fromData.wholesale_vip_price) || 0,
           resale_price: parseFloat(fromData.resaler_price) || 0,
         },
       }),
@@ -752,14 +736,6 @@ const Page: React.FC = () => {
                       />
 
                       <Input
-                        label={"TimeVerse Price"}
-                        placeholder="Enter TimeVerse price "
-                        registerProperty={register("tv_sale_price")}
-                        errorText={errors?.tv_sale_price?.message}
-                        type="number"
-                      />
-
-                      <Input
                         label={"Offer Text"}
                         placeholder="Enter Text"
                         registerProperty={register("offer_text")}
@@ -778,23 +754,6 @@ const Page: React.FC = () => {
                           />
                           {priceInfo && (
                             <>
-                              <Input
-                                label={"Wholesale Vip Price"}
-                                placeholder="Enter wholesale vip price "
-                                registerProperty={register(
-                                  "wholesale_vip_price",
-                                )}
-                                errorText={errors?.wholesale_vip_price?.message}
-                                type="number"
-                              />
-                              <Input
-                                label={"Wholesale Price"}
-                                placeholder="Enter wholesale price "
-                                registerProperty={register("wholesale_price")}
-                                errorText={errors?.wholesale_price?.message}
-                                type="number"
-                              />
-
                               <Input
                                 label={"Resaler Price"}
                                 placeholder="Enter Resaler price "
