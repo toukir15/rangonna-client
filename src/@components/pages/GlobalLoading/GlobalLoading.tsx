@@ -1,13 +1,10 @@
-import Image from "next/image";
-import rongonaaLogo from "@/@assets/rongonaLogo/rongonaa.png";
-
 const GlobalLoading = () => {
   return (
     <div
       className="rongonaa-global-loading"
       role="status"
       aria-live="polite"
-      aria-label="Loading Rongonaa"
+      aria-label="Loading"
     >
       <div className="rongonaa-global-loading__glow" aria-hidden="true" />
 
@@ -15,14 +12,7 @@ const GlobalLoading = () => {
         <div className="rongonaa-global-loading__shimmer" aria-hidden="true" />
 
         <div className="rongonaa-global-loading__logo-wrap">
-          <Image
-            src={rongonaaLogo}
-            alt="Rongonaa"
-            width={120}
-            height={36}
-            priority
-            className="h-auto w-[96px] sm:w-[108px]"
-          />
+          <span className="rongonaa-global-loading__logo-letter">R</span>
         </div>
 
         <div className="rongonaa-global-loading__rings" aria-hidden="true">
@@ -31,8 +21,6 @@ const GlobalLoading = () => {
           <span className="rongonaa-global-loading__ring rongonaa-global-loading__ring--inner" />
           <span className="rongonaa-global-loading__core" />
         </div>
-
-        <p className="rongonaa-global-loading__brand">Rongonaa</p>
         <p className="rongonaa-global-loading__message">
           লোড হচ্ছে
           <span className="rongonaa-global-loading__dots">

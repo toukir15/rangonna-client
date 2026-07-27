@@ -1,4 +1,5 @@
 "use client";
+import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
 import { ToastService } from "@admin/utils/toastr.service";
 import React, { useEffect, useRef, useState } from "react";
@@ -124,6 +125,9 @@ const Page: React.FC = () => {
       setShowSuggestions(false);
     }
   };
+
+  useTableRefreshRegister(getWareHouseReport);
+
 
   return (
     <AuthLayout>

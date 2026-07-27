@@ -49,7 +49,7 @@ const OrderHistory: React.FC<OrderHistoryProps> = ({
                 >
                   <td className="px-4 py-2 border-b border-gray-200 text-sm text-gray-700 border-r dark:text-gray-300 dark:border-gray-600">
                     <Link
-                      href={`/orders/view/${order?._id}`}
+                      href={`/admin/orders/view/${order?._id}`}
                       className="hover:underline"
                     >
                       {order.sysid}

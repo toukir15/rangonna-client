@@ -1,4 +1,5 @@
 "use client";
+import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import { Tbody, Td, Th, Thead, Tr } from "@admin/components/Table/Table";
 import TableWrapper from "@admin/components/Table/TableWrapper";
 import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
@@ -54,6 +55,8 @@ const Page: React.FC = () => {
         setTableLoading(false);
       });
   };
+  useTableRefreshRegister(fetchCampaignReportGoogle);
+
 
   return (
     <AuthLayout>

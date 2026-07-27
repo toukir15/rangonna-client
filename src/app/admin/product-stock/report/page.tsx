@@ -1,4 +1,5 @@
 "use client";
+import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import { Tbody, Td, Th, Thead, Tr } from "@admin/components/Table/Table";
 import TableWrapper from "@admin/components/Table/TableWrapper";
 import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
@@ -142,6 +143,8 @@ const Page: React.FC = () => {
       color: "text-red-500",
     },
   ];
+  useTableRefreshRegister(getProductReport);
+
 
   return (
     <AuthLayout>
@@ -287,7 +290,7 @@ const Page: React.FC = () => {
 
                   <Td className="ps-10">
                     <Link
-                      href={`/product-stock/details-report/${report?.product}`}
+                      href={`/admin/product-stock/details-report/${report?.product}`}
                     >
                       <Button className="bg-blue-500 !text-sm !py-1 !px-4">
                         Report

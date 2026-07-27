@@ -54,7 +54,7 @@ const SaleReturnModal = ({
         if (res?.success) {
           if (modalMode === "Edit" && items?.id) {
             router.push(
-              `/return/sale/edit/${items.order.order_id}/${items.order.order_id}`
+              `/admin/return/sale/edit/${items.order.order_id}/${items.order.order_id}`
             );
           } else {
             router.push(`/admin/return/sale/create/${formData.sale_reference}`);

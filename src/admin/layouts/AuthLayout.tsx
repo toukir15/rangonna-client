@@ -2,7 +2,6 @@
 import React, { useEffect, useState, ReactNode, useMemo, useCallback } from "react";
 import { usePathname } from "next/navigation";
 import { useGlobalContext } from "@admin/context/GlobalContext";
-import AuthFooter from "./AuthFooter";
 import Sidebar from "./Sidebar";
 import { sideBarItems } from "@admin/components/pages/Utilities/data";
 import {
@@ -141,18 +140,18 @@ export default function AuthLayout({ children, className }: AuthLayoutProps) {
         aria-hidden={!isSidebarOpen}
       >
         <aside
-          className={`fixed top-[60px] left-0 bottom-0 z-[60] w-64 bg-white dark:bg-black text-black dark:text-white shadow-xl transition-transform duration-300 ease-in-out [-webkit-overflow-scrolling:touch] touch-manipulation pointer-events-auto ${
+          className={`fixed top-[60px] left-0 bottom-0 z-[60] w-[min(18rem,88vw)] bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 border-r border-black/10 dark:border-white/10 shadow-2xl transition-transform duration-300 ease-in-out [-webkit-overflow-scrolling:touch] touch-manipulation pointer-events-auto ${
             isSidebarOpen ? "translate-x-0" : "-translate-x-full pointer-events-none"
           }`}
         >
-          <div className="relative z-10 h-full overflow-y-auto overscroll-contain px-2 py-3 scrollbar-hide [-webkit-overflow-scrolling:touch]">
+          <div className="relative z-10 h-full overflow-y-auto overscroll-contain px-2 py-2 scrollbar-hide [-webkit-overflow-scrolling:touch]">
             {sidebarContent}
           </div>
         </aside>
         <button
           type="button"
           aria-label="Close menu"
-          className={`fixed top-[60px] bottom-0 left-64 right-0 z-50 bg-black/40 touch-manipulation transition-opacity duration-300 ease-in-out [-webkit-tap-highlight-color:transparent] ${
+          className={`fixed top-[60px] bottom-0 left-[min(18rem,88vw)] right-0 z-50 bg-black/40 backdrop-blur-[1px] touch-manipulation transition-opacity duration-300 ease-in-out [-webkit-tap-highlight-color:transparent] ${
             isSidebarOpen
               ? "opacity-100 pointer-events-auto"
               : "opacity-0 pointer-events-none"
@@ -163,35 +162,26 @@ export default function AuthLayout({ children, className }: AuthLayoutProps) {
       </div>
 
       {/* Desktop Sidebar */}
-      <div
-        className={`relative xl:block hidden ${
-          isSidebarOpen ? "w-[65px] overflow-x-hidden" : "w-64"
-        } bg-white dark:bg-black border-r dark:border-r-gray-700 text-black dark:text-gray-300 flex flex-col p-2 transition-all duration-200`}
+      <aside
+        className={`relative hidden xl:flex shrink-0 flex-col border-r border-black/10 bg-white transition-[width] duration-200 dark:border-white/10 dark:bg-gray-950 ${
+          isSidebarOpen ? "w-[68px]" : "w-64"
+        }`}
       >
-        <div className="overflow-y-scroll h-full scrollbar-hide">
-          {sidebarContent}
+        <div className="flex-1 overflow-y-auto overflow-x-hidden px-2 py-2 scrollbar-hide">
+          <div className="space-y-0.5">{sidebarContent}</div>
         </div>
-      </div>
+      </aside>
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col w-full overflow-hidden">
         {isRouteAllowed && noScrollContent && (
-          <div className="sticky top-0 z-20 bg-gray-100 dark:bg-black">
+          <div className="sticky top-0 z-20 bg-gray-50/80 backdrop-blur-sm dark:bg-gray-950/80">
             {noScrollContent}
           </div>
         )}
 
         <div className="flex-1 overflow-y-auto">
-          <div
-            className={`min-h-full flex flex-col justify-between ${
-              className ?? ""
-            }`}
-          >
-            <div className="flex-1">{mainContent}</div>
-            <div className="mt-4">
-              <AuthFooter />
-            </div>
-          </div>
+          <div className={`min-h-full ${className ?? ""}`}>{mainContent}</div>
         </div>
       </div>
     </div>

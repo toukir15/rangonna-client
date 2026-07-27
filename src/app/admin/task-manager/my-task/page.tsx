@@ -1,4 +1,5 @@
 "use client";
+import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import Icon from "@admin/components/core/Icon/Icon";
 import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
 import React, { useState, useEffect, createContext } from "react";
@@ -163,6 +164,8 @@ const Page: React.FC = () => {
     setCurrentPage(1);
     localStorage.setItem("myTask_filter", newFilter);
   };
+  useTableRefreshRegister(fetchTask);
+
 
   return (
     <AuthLayout>

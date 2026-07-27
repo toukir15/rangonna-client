@@ -261,7 +261,7 @@ const ProductTable: React.FC = () => {
                             className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg"
                             onClick={() => {
                               router.push(
-                                `/product/products/edit/${item?._id}`,
+                                `/admin/product/products/edit/${item?._id}`,
                               );
                             }}
                           >
@@ -281,7 +281,7 @@ const ProductTable: React.FC = () => {
                           className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg"
                           onClick={() => {
                             router.push(
-                              `/product/products/duplicate/${item?._id}`,
+                              `/admin/product/products/duplicate/${item?._id}`,
                             );
                           }}
                         >

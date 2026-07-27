@@ -1,4 +1,5 @@
 "use client";
+import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 
 import Icon from "@admin/components/core/Icon/Icon";
 import { Tbody, Td, Th, Thead, Tr } from "@admin/components/Table/Table";
@@ -63,6 +64,8 @@ const Page: React.FC = () => {
   useEffect(() => {
     getProductReport();
   }, [debouncedSearchTerm, currentPage, ordersPerPage]);
+  useTableRefreshRegister(getProductReport);
+
 
   return (
     <AuthLayout>

@@ -277,7 +277,7 @@ const AdminOrderTable: React.FC = () => {
                 </Td>
                 <Td>
                   <Link
-                    href={`/admin-orders/view/${order?._id}`}
+                    href={`/admin/admin-orders/view/${order?._id}`}
                     onClick={() => {
                       if (order?.status) {
                         localStorage.setItem("viewOrderStatus", order.status);
@@ -316,7 +316,7 @@ const AdminOrderTable: React.FC = () => {
                         <button
                           onClick={() =>
                             router.push(
-                              `/admin-orders/edit/${String(order?._id)}`
+                              `/admin/admin-orders/edit/${String(order?._id)}`
                             )
                           }
                           className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg rounded-lg "

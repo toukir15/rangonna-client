@@ -167,6 +167,43 @@ input[type="number"] {
   border-radius: 50%;
 }
 
+/* Admin data table polish */
+.admin-data-table tbody tr {
+  transition: background-color 0.15s ease;
+}
+
+.admin-data-table tbody tr:hover {
+  background-color: rgb(249 250 251 / 0.85);
+}
+
+.dark .admin-data-table tbody tr:hover {
+  background-color: rgb(31 41 55 / 0.45);
+}
+
+.admin-data-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.admin-table-shell {
+  isolation: isolate;
+}
+
+.admin-pagination {
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.04);
+}
+
+.dark .admin-pagination {
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.2);
+}
+
+.admin-pagination-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.5rem center;
+  padding-right: 1.75rem;
+}
+
 .submenu-transition {
   max-height: 0;
   overflow: hidden;

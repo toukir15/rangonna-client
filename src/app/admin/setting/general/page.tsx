@@ -1,4 +1,5 @@
 "use client";
+import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import { shopService } from "@admin/@services/apis/SettingsService/Shop.service";
 import Button from "@admin/components/core/Button/Button";
 import Icon from "@admin/components/core/Icon/Icon";
@@ -167,6 +168,8 @@ const Page: React.FC = () => {
       setTableLoading(true);
     }
   };
+
+  useTableRefreshRegister(handleGetPermission);
 
   return (
     <AuthLayout>

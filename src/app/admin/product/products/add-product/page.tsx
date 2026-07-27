@@ -272,7 +272,7 @@ const Page: React.FC = () => {
     try {
       const res = await productService.createProduct(formData);
       if (res?.success) {
-        router.push(`/product/products/edit/${res?.data?._id}`);
+        router.push(`/admin/product/products/edit/${res?.data?._id}`);
         ToastService.success(res?.message);
       } else {
         ToastService.error(res?.message);

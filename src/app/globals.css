@@ -2275,6 +2275,16 @@ input[type=number] {
   box-shadow: 0 6px 18px rgba(122, 51, 86, 0.08);
 }
 
+.rongonaa-global-loading__logo-letter {
+  display: block;
+  min-width: 2.5rem;
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1;
+  text-align: center;
+  color: var(--brand-primary-dark);
+}
+
 .rongonaa-global-loading__rings {
   position: relative;
   width: 4.5rem;

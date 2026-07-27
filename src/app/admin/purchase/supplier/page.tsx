@@ -1,4 +1,5 @@
 "use client";
+import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 
 import Icon from "@admin/components/core/Icon/Icon";
 import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
@@ -69,7 +70,6 @@ const Page: React.FC = () => {
     } else {
       document.removeEventListener("mousedown", handleClickOutside);
     }
-
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
@@ -282,6 +282,9 @@ const Page: React.FC = () => {
       setPriorityUpdateLoading(false);
     }
   };
+
+  useTableRefreshRegister(getAllSupplier);
+
 
   return (
     <AuthLayout>

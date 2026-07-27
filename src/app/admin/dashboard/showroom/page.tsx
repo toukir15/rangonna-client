@@ -1,5 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
+import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
 import React, { useState, useEffect, createContext } from "react";
 import { ToastService } from "@admin/utils/toastr.service";
@@ -53,8 +54,6 @@ const Page: React.FC = () => {
   const [range, setRange] = useState<any>(DEFAULT_DATE_RANGE);
 
   const [cardData, setCardData] = useState<any>();
-  const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
-
   // Expense pagination state
   const [expenseOrdersPerPage, setExpenseOrdersPerPage] = useState<number>(20);
   const [expenseTotalOrders, setExpenseTotalOrders] = useState<number>(0);
@@ -117,9 +116,7 @@ const Page: React.FC = () => {
       .then((res: any) => {
         if (res?.success) {
           setExpenseListData(res?.data?.data || []);
-          setExpenseTotalOrders(res?.data?.meta?.total_record || 0);
-          setIsFilterOpen(false)
-        } else {
+          setExpenseTotalOrders(res?.data?.meta?.total_record || 0);        } else {
           ToastService.error(res?.message);
         }
       })
@@ -331,15 +328,22 @@ const Page: React.FC = () => {
     setModalMode("Edit");
     setIsExModalOpen(true);
   };
+  useTableRefreshRegister(fetchReturnList);
+
 
   return (
     <AuthLayout>
       <NoScrollLayout>
-        <div className="md:flex items-center justify-between 2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2">
-          <div className="flex items-center gap-4">
+        <div className="md:flex flex-wrap items-center items-center justify-between 2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2">
+          <div className="flex flex-wrap items-center items-center gap-4">
             <h2 className="2xl:text-2xl lg:text-xl text-lg text-blue-900 font-semibold dark:text-gray-300 text-nowrap">
               Sales Report
             </h2>
+              <AllFilter
+              isCalendarFilter={true}
+              range={range}
+              setRange={setRange}
+            />
 
             <div className="">
               {hasPermission(
@@ -355,29 +359,12 @@ const Page: React.FC = () => {
                   </Button>
                 )}
             </div>
-            <div>
-              <Button
-                className="flex items-center !px-2 !bg-indigo-500 !py-1.5"
-                onClick={() => setIsFilterOpen((prev) => !prev)}
-              >
-                <Icon name={isFilterOpen ? "close" : "filter_alt"} size={20} />
-              </Button>
-            </div>
 
           </div>
 
 
         </div>
-        {
-          isFilterOpen && <div className="md: mx-4">
-            <AllFilter
-              isFilterOpen={isFilterOpen}
-              isCalendarFilter={true}
-              range={range}
-              setRange={setRange}
-            />
-          </div>
-        }
+        
       </NoScrollLayout>
 
       <div>

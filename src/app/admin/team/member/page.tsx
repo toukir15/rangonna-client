@@ -1,4 +1,5 @@
 "use client";
+import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import React, { useState, useEffect, createContext } from "react";
 import Icon from "@admin/components/core/Icon/Icon";
 import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
@@ -51,8 +52,6 @@ const Page: React.FC = () => {
   const [activeToggleLoading, setActiveToggleLoading] = useState<
     Record<string, boolean>
   >({});
-  const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
-
   const handleTeamPerPageChange = (newProductPerPage: number) => {
     setTeamPerPage(newProductPerPage);
     localStorage.setItem("teamListPerPage", newProductPerPage.toString());
@@ -211,17 +210,25 @@ const Page: React.FC = () => {
         setActiveToggleLoading((prev) => ({ ...prev, [item._id]: false }));
       });
   };
+  useTableRefreshRegister(fetchTeamList);
+
 
   return (
     <AuthLayout>
       <NoScrollLayout>
         {" "}
         <div className="2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 md:pb-0 mb-1">
-          <div className="sm:flex items-center gap-3">
-            <div className="flex items-center gap-3">
+          <div className="sm:flex flex-wrap items-center items-center gap-3">
+            <div className="flex flex-wrap items-center items-center gap-3">
               <h2 className="2xl:text-2xl lg:text-xl text-lg text-blue-900 font-semibold dark:text-gray-300 text-nowrap">
                 All Member
               </h2>
+              <AllFilter
+                isWebsiteFilter={true}
+                websiteOptions={userStatusOptions}
+                selectedWebsite={selectedStatus}
+                setSelectedWebsite={setSelectedStatus}
+              />
               {permissionList.includes("team_user_create") && (
                 <Button
                   className="flex items-center !bg-green-200 !text-green-600 !py-1.5 !px-4 text-nowrap"
@@ -230,15 +237,6 @@ const Page: React.FC = () => {
                   Add Member
                 </Button>
               )}
-              <Button
-                className="flex items-center !px-2 !bg-indigo-500 !py-1.5"
-                onClick={() => setIsFilterOpen((prev) => !prev)}
-              >
-                <Icon
-                  name={isFilterOpen ? "close" : "filter_alt"}
-                  size={20}
-                />
-              </Button>
             </div>
             <div className="sm:w-80 w-full md:my-0 my-2">
               <PageSearch
@@ -250,17 +248,7 @@ const Page: React.FC = () => {
 
           </div>
 
-          {isFilterOpen && (
-            <div className=" -mt-4 md:mt-0">
-              <AllFilter
-                isFilterOpen={isFilterOpen}
-                isWebsiteFilter={true}
-                websiteOptions={userStatusOptions}
-                selectedWebsite={selectedStatus}
-                setSelectedWebsite={setSelectedStatus}
-              />
-            </div>
-          )}
+          
         </div>
       </NoScrollLayout>
 

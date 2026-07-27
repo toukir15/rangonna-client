@@ -1,4 +1,5 @@
 "use client";
+import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import Icon from "@admin/components/core/Icon/Icon";
 import { Tbody, Td, Th, Thead, Tr } from "@admin/components/Table/Table";
 import TableWrapper from "@admin/components/Table/TableWrapper";
@@ -76,6 +77,8 @@ const Page: React.FC = () => {
         setTableLoading(false);
       });
   };
+  useTableRefreshRegister(fetchCategoryReport);
+
 
   return (
     <AuthLayout>

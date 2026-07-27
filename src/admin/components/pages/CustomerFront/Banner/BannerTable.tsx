@@ -225,7 +225,7 @@ const BannerTable = () => {
                                                 <button
                                                     className="block w-full text-left px-4 py-2.5 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg"
                                                     onClick={() => {
-                                                        router.push(`/customer-front/banner/edit-banner/${item?._id}`)
+                                                        router.push(`/admin/customer-front/banner/edit-banner/${item?._id}`)
                                                     }}
                                                 >
                                                     Edit

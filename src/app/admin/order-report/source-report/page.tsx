@@ -1,4 +1,5 @@
 "use client";
+import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import { IWebsiteOption, SelectOption } from "@admin/@interfaces/common.interface";
 import { GlobalService } from "@admin/@services/apis/GlobalService/Global.service";
 import { Tbody, Td, Th, Thead, Tr } from "@admin/components/Table/Table";
@@ -28,8 +29,6 @@ const Page: React.FC = () => {
     value: "all",
     label: "All Website",
   });
-  const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
-
   const [ordersPerPage, setOrdersPerPage] = useState<number>(20);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const debouncedSearchTerm = useDebounce<string>(searchTerm, 300);
@@ -106,22 +105,27 @@ const Page: React.FC = () => {
         setTableLoading(false);
       });
   };
+  useTableRefreshRegister(fetchMonthlyProfit);
+
 
   return (
     <AuthLayout>
       <NoScrollLayout>
         <div className="2xl:pt-4 pt-2 2xl:px-4 px-3 w-full">
-          <div className="sm:flex items-center gap-3 w-full pb-2">
-            <div className="flex items-center gap-3">
+          <div className="sm:flex flex-wrap items-center items-center gap-3 w-full pb-2">
+            <div className="flex flex-wrap items-center items-center gap-3">
               <h1 className="2xl:text-2xl lg:text-xl text-lg font-semibold dark:text-gray-300 text-gray-800  flex text-nowrap">
                 Source Report
               </h1>
-              <Button
-                className="flex items-center !px-2 !bg-indigo-500 !py-1.5"
-                onClick={() => setIsFilterOpen((prev) => !prev)}
-              >
-                <Icon name={isFilterOpen ? "close" : "filter_alt"} size={20} />
-              </Button>
+              <AllFilter
+                isWebsiteFilter={true}
+                websiteOptions={websiteOptions}
+                selectedWebsite={selectedWebsite}
+                setSelectedWebsite={setSelectedWebsite}
+                isCalendarFilter={true}
+                range={range}
+                setRange={setRange}
+              />
             </div>
             <div className="sm:w-80 w-full sm:mt-0 mt-2">
               <PageSearch
@@ -131,20 +135,7 @@ const Page: React.FC = () => {
               />
             </div>
           </div>
-          {
-            isFilterOpen && <div className="md:mt-0 -mt-4">
-              <AllFilter
-                isWebsiteFilter={true}
-                isFilterOpen={isFilterOpen}
-                websiteOptions={websiteOptions}
-                selectedWebsite={selectedWebsite}
-                setSelectedWebsite={setSelectedWebsite}
-                isCalendarFilter={true}
-                range={range}
-                setRange={setRange}
-              />
-            </div>
-          }
+          
         </div>
       </NoScrollLayout>
 

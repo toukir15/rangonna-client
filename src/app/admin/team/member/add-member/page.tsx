@@ -134,7 +134,7 @@ const Page: React.FC = () => {
       .then((res: any) => {
         if (res?.success) {
           ToastService.success(res?.message);
-          router.push(`/team/member/edit/${res?.data?._id}`)
+          router.push(`/admin/team/member/edit/${res?.data?._id}`)
         } else {
           ToastService.error(res?.message);
         }

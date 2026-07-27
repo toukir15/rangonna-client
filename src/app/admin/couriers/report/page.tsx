@@ -1,4 +1,5 @@
 "use client";
+import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import { useState, useEffect, createContext } from "react";
 import React from "react";
 import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
@@ -63,9 +64,7 @@ const page: React.FC = () => {
   const [pathaoList, setPathaoList] = useState<PathaoBooking[]>([]);
   const [totalPathaoOrders, setTotalPathaoOrders] = useState<number>(0);
   const pathaoTotalPages = Math.ceil(totalPathaoOrders / pathaoOrdersPerPage);
-  const [websiteOptions, setWebsiteOptions] = useState<IWebsiteOption[]>([]);
-  const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
-  const [selectedWebsite, setSelectedWebsite] = useState<SelectOption>({
+  const [websiteOptions, setWebsiteOptions] = useState<IWebsiteOption[]>([]);  const [selectedWebsite, setSelectedWebsite] = useState<SelectOption>({
     value: "all",
     label: "All Website",
   });
@@ -161,9 +160,7 @@ const page: React.FC = () => {
       .then((res: PathaoBookingsResponse) => {
         if (res?.success) {
           setPathaoList(res?.data?.data || []);
-          setTotalPathaoOrders(res?.data?.meta?.total_record || 0);
-          setIsFilterOpen(false)
-        } else {
+          setTotalPathaoOrders(res?.data?.meta?.total_record || 0);        } else {
           ToastService.error(res?.message);
         }
       })
@@ -274,40 +271,19 @@ const page: React.FC = () => {
     setSelectedOrders([]);
     setPathaoCurrentPage(1);
   };
+  useTableRefreshRegister(fetchPathaoList);
+
 
   return (
     <AuthLayout>
       <NoScrollLayout>
         <div className="2xl:pt-4 pt-2 2xl:px-4 px-3 ">
-          <div className="md:flex items-center  w-full gap-3">
-            <div className="flex items-center  gap-3">
+          <div className="md:flex flex-wrap items-center items-center  w-full gap-3">
+            <div className="flex flex-wrap items-center items-center  gap-3">
               <h1 className="2xl:text-2xl lg:text-xl text-lg font-semibold dark:text-gray-300 text-gray-800  text-nowrap">
                 Courier Report
               </h1>
-              <div>
-                <Button
-                  className="flex items-center !px-2 !bg-indigo-500 !py-1.5"
-                  onClick={() => setIsFilterOpen((prev) => !prev)}
-                >
-                  <Icon name={isFilterOpen ? "close" : "filter_alt"} size={20} />
-                </Button>
-              </div>
-            </div>
-            <div className="md:w-80 w-full md:my-0 my-2">
-              <PageSearch
-                value={searchTerm}
-                onChange={handleSearchChange}
-                wrapperClass="w-full"
-              />
-            </div>
-          </div>
-        </div>
-
-        <div className="px-3 mb-2">
-          {
-            isFilterOpen && <div >
               <AllFilter
-                isFilterOpen={isFilterOpen}
                 isWebsiteFilter={true}
                 websiteOptions={websiteOptions}
                 selectedWebsite={selectedWebsite}
@@ -327,7 +303,18 @@ const page: React.FC = () => {
 
               />
             </div>
-          }
+            <div className="md:w-80 w-full md:my-0 my-2">
+              <PageSearch
+                value={searchTerm}
+                onChange={handleSearchChange}
+                wrapperClass="w-full"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="px-3 mb-2">
+          
           <CourierOrderTab
             filter={filter}
             handleFilterChange={handleFilterChange}

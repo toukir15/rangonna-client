@@ -190,7 +190,7 @@ const MenuTable = () => {
                                                 <button
                                                     className="block w-full text-left px-4 py-2.5 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg"
                                                     onClick={() => {
-                                                        router.push(`/customer-front/menu/edit-menu/${item?._id}`)
+                                                        router.push(`/admin/customer-front/menu/edit-menu/${item?._id}`)
                                                     }}
                                                 >
                                                     Edit

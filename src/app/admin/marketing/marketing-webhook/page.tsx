@@ -1,4 +1,5 @@
 "use client";
+import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import Icon from "@admin/components/core/Icon/Icon";
 import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
 import React, { useState, useEffect, JSX, createContext } from "react";
@@ -153,6 +154,8 @@ const Page = (): JSX.Element => {
         setActiveToggleLoading((prev) => ({ ...prev, [item._id]: false }));
       });
   };
+  useTableRefreshRegister(getMarketingWebhookList);
+
 
   return (
     <AuthLayout>

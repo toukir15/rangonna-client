@@ -1,4 +1,5 @@
 "use client";
+import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
 import { ToastService } from "@admin/utils/toastr.service";
 import React, { useEffect, useMemo, useState } from "react";
@@ -107,6 +108,8 @@ const Page: React.FC = () => {
   );
 
   const total = useMemo(() => {
+  useTableRefreshRegister(getWareHouseReport);
+
     return (
       toNumber(currenValue?.total_deposit_amount) -
       toNumber(currenValue?.total_expense_amount)

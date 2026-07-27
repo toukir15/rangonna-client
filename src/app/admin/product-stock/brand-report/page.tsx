@@ -1,4 +1,5 @@
 "use client";
+import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import { Tbody, Td, Th, Thead, Tr } from "@admin/components/Table/Table";
 import TableWrapper from "@admin/components/Table/TableWrapper";
 import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
@@ -61,6 +62,8 @@ const Page: React.FC = () => {
   useEffect(() => {
     getProductReport();
   }, [debouncedSearchTerm, currentPage, ordersPerPage]);
+  useTableRefreshRegister(getProductReport);
+
 
   return (
     <AuthLayout>

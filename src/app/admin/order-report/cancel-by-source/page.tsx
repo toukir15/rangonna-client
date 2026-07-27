@@ -1,4 +1,5 @@
 "use client";
+import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import { IWebsiteOption, SelectOption } from "@admin/@interfaces/common.interface";
 import { GlobalService } from "@admin/@services/apis/GlobalService/Global.service";
 import { Tbody, Td, Th, Thead, Tr } from "@admin/components/Table/Table";
@@ -41,9 +42,7 @@ const Page: React.FC = () => {
   const [selectedWebsite, setSelectedWebsite] = useState<SelectOption>({
     value: "all",
     label: "All Website",
-  });
-  const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
-  const [tableLoading, setTableLoading] = useState<boolean>(true);
+  });  const [tableLoading, setTableLoading] = useState<boolean>(true);
 
   const [range, setRange] = useLocalStorageDateRange(
     "supplierReportDateRange",
@@ -125,32 +124,21 @@ const Page: React.FC = () => {
       color: "text-red-600",
     },
   ];
+  useTableRefreshRegister(fetchMonthlyProfit);
+
 
   return (
     <AuthLayout>
       <NoScrollLayout>
         <div className="2xl:pt-4 pt-2 2xl:px-4 px-3 w-full">
           <div className="lg:flex lg:flex-wrap  items-center md:justify-between pb-2">
-            <div className="md:flex items-center gap-3 w-full">
-              <div className="flex items-center gap-3">
+            <div className="md:flex flex-wrap items-center items-center gap-3 w-full">
+              <div className="flex flex-wrap items-center items-center gap-3">
                 <h1 className="2xl:text-2xl lg:text-xl text-lg font-semibold dark:text-gray-300 text-gray-800 text-nowrap">
                   Cancel By Source
                 </h1>
-                <Button
-                  className="flex items-center !px-2 !bg-indigo-500 !py-1.5"
-                  onClick={() => setIsFilterOpen((prev) => !prev)}
-                >
-                  <Icon name={isFilterOpen ? "close" : "filter_alt"} size={20} />
-                </Button>
-              </div>
-            </div>
-
-          </div>
-          {
-            isFilterOpen && <div className="md:mt-0 -mt-4">
               <AllFilter
                 isWebsiteFilter={true}
-                isFilterOpen={isFilterOpen}
                 websiteOptions={websiteOptions}
                 selectedWebsite={selectedWebsite}
                 setSelectedWebsite={setSelectedWebsite}
@@ -158,8 +146,10 @@ const Page: React.FC = () => {
                 range={range}
                 setRange={setRange}
               />
+              </div>
             </div>
-          }
+          </div>
+          
           <div className="pb-4 w-full">
             {tableLoading ? (
               <EmployeeReport />

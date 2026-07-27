@@ -42,7 +42,7 @@ const PurchasesReturnModal = ({
 
   const formSubmit = async (formData: any) => {
     if (formData?.purchases_reference)
-      router.push(`/return/purchases/create/${formData?.purchases_reference}`);
+      router.push(`/admin/purchase/return/create-purchases/${formData?.purchases_reference}`);
 
     return;
     setIsSubmit(true);

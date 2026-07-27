@@ -531,7 +531,7 @@ const Page: React.FC = () => {
       const res = await productService.createProduct(formData);
       if (res?.success) {
         ToastService.success(res?.message || "Product saved!");
-        router.push(`/product/products/edit/${res?.data?._id}`);
+        router.push(`/admin/product/products/edit/${res?.data?._id}`);
       } else ToastService.error(res?.message || "Something went wrong");
     } catch (err: any) {
       ToastService.error(err?.message || "Request failed");

@@ -1,4 +1,5 @@
 "use client";
+import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import Icon from "@admin/components/core/Icon/Icon";
 import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
 import React, { useState, useEffect, JSX } from "react";
@@ -233,6 +234,8 @@ const Page = (): JSX.Element => {
       setPriorityUpdateLoading(false);
     }
   };
+  useTableRefreshRegister(getAccountList);
+
 
   return (
     <AuthLayout>

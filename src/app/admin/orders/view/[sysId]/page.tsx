@@ -1,4 +1,5 @@
 "use client";
+import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import React, { Suspense, useEffect, useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { ToastService } from "@admin/utils/toastr.service";
@@ -626,6 +627,9 @@ const OrderViewPageContent: React.FC = () => {
         setLevelLoading(false);
       });
   };
+
+  useTableRefreshRegister(fetchOrdersDetails);
+
 
   return (
     <AuthLayout>

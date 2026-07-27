@@ -74,7 +74,7 @@ const ReceivedOrder: React.FC = () => {
 
 
   const handleBack = () => {
-    router.push(`/orders/view/${orderedItems?._id}`);
+    router.push(`/admin/orders/view/${orderedItems?._id}`);
   };
 
   return (

@@ -234,7 +234,7 @@ const FulfillmentTable: React.FC = () => {
 
                                 <Td>
                                     <Link
-                                        href={`/orders/view/${order?._id}`}
+                                        href={`/admin/orders/view/${order?._id}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         onClick={() => {

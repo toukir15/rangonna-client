@@ -240,7 +240,7 @@ const Page: React.FC = () => {
                                     <button
                                       onClick={() =>
                                         router.push(
-                                          `/team/permission/edit-permission/${permission?._id}`
+                                          `/admin/team/permission/edit-permission/${permission?._id}`
                                         )
                                       }
 

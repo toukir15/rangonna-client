@@ -1,4 +1,5 @@
 "use client";
+import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import Icon from "@admin/components/core/Icon/Icon";
 import React, { useState, useEffect, createContext } from "react";
 import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
@@ -118,6 +119,8 @@ const Page: React.FC = () => {
       setTableLoading(false);
     }
   };
+  useTableRefreshRegister(getMimSms);
+
 
 
 

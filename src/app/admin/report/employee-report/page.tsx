@@ -1,4 +1,5 @@
 "use client";
+import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import CalendarRange from "@admin/components/core/Calendar/CalendarRange";
 import SelectComponent from "@admin/components/core/Select/Select";
 import ShopCart from "@admin/components/pages/ShopCart/ShopCart";
@@ -177,6 +178,8 @@ const Page: React.FC = () => {
       color: "text-blue-500",
     },
   ];
+  useTableRefreshRegister(fetchEmployeeReport);
+
 
   return (
     <AuthLayout>

@@ -260,7 +260,7 @@ export const ProductsInfoTable = ({
       <div className="flex items-end justify-end gap-4 mt-4">
         <button
           type="button"
-          onClick={() => router.push(`/orders/view/${orderDetails?._id}`)}
+          onClick={() => router.push(`/admin/orders/view/${orderDetails?._id}`)}
           className="bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-200 px-6 py-2 rounded-md hover:bg-gray-400 dark:hover:bg-gray-500 transition"
         >
           Cancel

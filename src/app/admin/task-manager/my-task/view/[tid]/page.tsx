@@ -1,4 +1,5 @@
 "use client";
+import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
 import { ToastService } from "@admin/utils/toastr.service";
 import React, { useEffect, useState } from "react";
@@ -172,6 +173,8 @@ const Page: React.FC = () => {
     }
   };
   const styles = priorityStyles(taskDetails?.priority);
+  useTableRefreshRegister(getSingleTask);
+
 
   return (
     <AuthLayout>

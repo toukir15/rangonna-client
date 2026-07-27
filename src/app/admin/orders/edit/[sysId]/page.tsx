@@ -1,4 +1,5 @@
 "use client";
+import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import { useState, useEffect, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import AuthLayout from "@admin/layouts/AuthLayout";
@@ -326,6 +327,9 @@ const Page: React.FC = () => {
   const hasFlashSale = (orderDetails?.line_items || []).some((item: any) =>
     item?.product_id?.categories?.includes("flash-sale"),
   );
+
+  useTableRefreshRegister(fetchOrdersDetails);
+
 
   return (
     <AuthLayout>

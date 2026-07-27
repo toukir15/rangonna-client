@@ -8,7 +8,6 @@ import CustomDatePicker from "@admin/components/core/Calendar/DatePicker";
 
 type Props = {
   isWebsiteFilter?: boolean;
-  isFilterOpen: boolean;
   websiteOptions?: IWebsiteOption[];
   selectedWebsite?: SelectOption;
   setSelectedWebsite?: (_val: SelectOption) => void;
@@ -82,7 +81,6 @@ type Props = {
 };
 
 const AllFilter: React.FC<Props> = ({
-  isFilterOpen,
   websiteOptions,
   selectedWebsite,
   setSelectedWebsite,
@@ -153,11 +151,8 @@ const AllFilter: React.FC<Props> = ({
   setSelectedCourierType,
 
 }) => {
-  if (!isFilterOpen) return null;
-
   return (
-    <div className="lg:bg-white dark:bg-gray-800 2xl:px-4 lg:px-3 py-2 rounded-lg lg:mb-2 mt-1.5">
-      <div className="md:flex items-end justify-center gap-3 ">
+    <div className="flex flex-wrap items-center gap-3">
         {isWebsiteFilter && (
           <div className="">
             <SelectComponent
@@ -170,13 +165,13 @@ const AllFilter: React.FC<Props> = ({
           </div>
         )}
         {isCalendarFilter && (
-          <div className="md:pt-0 pt-2">
+          <div className="">
             <CalendarRange range={range} setRange={setRange} />
           </div>
         )}
 
         {isSourceFilter && (
-          <div className="md:pt-0 pt-2">
+          <div className="">
             <SelectComponent
               options={allSourceOptions}
               value={selectedSource}
@@ -188,7 +183,7 @@ const AllFilter: React.FC<Props> = ({
         )}
 
         {isStatusFilter && (
-          <div className="pt-2 md:pt-0">
+          <div className="">
             <SelectComponent
               options={statusOption}
               value={selectedStatus}
@@ -199,7 +194,7 @@ const AllFilter: React.FC<Props> = ({
           </div>
         )}
         {isWarehouseFilter && (
-          <div className="pt-2 md:pt-0">
+          <div className="">
             <SelectComponent
               options={warehouseDataOption}
               value={selectedWarehouse}
@@ -210,7 +205,7 @@ const AllFilter: React.FC<Props> = ({
           </div>
         )}
         {isCategoryFilter && (
-          <div className="pt-2 md:pt-0">
+          <div className="">
             <SelectComponent
               options={reportCategories}
               value={selectedIssueTitle}
@@ -224,7 +219,7 @@ const AllFilter: React.FC<Props> = ({
           </div>
         )}
         {isErrorFilter && (
-          <div className="pt-2 md:pt-0">
+          <div className="">
             <SelectComponent
               options={errorOption}
               value={selectedError}
@@ -235,7 +230,7 @@ const AllFilter: React.FC<Props> = ({
           </div>
         )}
         {isOrderStatusFilter && (
-          <div className="pt-2 md:pt-0">
+          <div className="">
             <SelectComponent
               options={orderStatusOptions}
               value={selectedOrderStatus}
@@ -246,7 +241,7 @@ const AllFilter: React.FC<Props> = ({
           </div>
         )}
         {isAccountFilter && (
-          <div className="pt-2 md:pt-0">
+          <div className="">
             <SelectComponent
               options={accountOptions}
               value={selectedAccount}
@@ -260,7 +255,7 @@ const AllFilter: React.FC<Props> = ({
           </div>
         )}
         {isExpenseFilter && (
-          <div className="pt-2 md:pt-0">
+          <div className="">
             <SelectComponent
               options={expenseOption}
               value={selectedExpenses}
@@ -275,7 +270,7 @@ const AllFilter: React.FC<Props> = ({
           </div>
         )}
         {isExpenseSubFilter && (
-          <div className="pt-2 md:pt-0">
+          <div className="">
             <SelectComponent
               options={expenseSubOption}
               value={selectedSubExpenses}
@@ -290,7 +285,7 @@ const AllFilter: React.FC<Props> = ({
           </div>
         )}
         {isDateFilter && (
-          <div className="pt-2 md:pt-0">
+          <div className="">
             <CustomDatePicker
               selectedDate={selectedMonth ?? null}
               onChange={(date) => setSelectedMonth?.(date)}
@@ -304,7 +299,7 @@ const AllFilter: React.FC<Props> = ({
           </div>
         )}
         {isCategoryOptionFilter && (
-          <div className="pt-2 md:pt-0">
+          <div className="">
             <SelectComponent
               options={categoryOptions}
               value={selectedCategory}
@@ -318,7 +313,7 @@ const AllFilter: React.FC<Props> = ({
           </div>
         )}
         {isBrandOptionFilter && (
-          <div className="pt-2 md:pt-0">
+          <div className="">
             <SelectComponent
               options={brandOptions}
               value={selectedBrand}
@@ -332,7 +327,7 @@ const AllFilter: React.FC<Props> = ({
           </div>
         )}
         {isStatusOptionFilter && (
-          <div className="pt-2 md:pt-0">
+          <div className="">
             <SelectComponent
               options={stockStatusOptions}
               value={selectedStatus}
@@ -347,7 +342,7 @@ const AllFilter: React.FC<Props> = ({
           </div>
         )}
         {isSeoFilter && (
-          <div className="pt-2 md:pt-0">
+          <div className="">
             <SelectComponent
               options={seoOptions}
               value={selectedSeo}
@@ -361,7 +356,7 @@ const AllFilter: React.FC<Props> = ({
           </div>
         )}
         {isCourierTypeFilter && (
-          <div className="pt-2 md:pt-0">
+          <div className="">
             <SelectComponent
               options={courierTypeOptions}
               value={selectedCourierType}
@@ -374,7 +369,6 @@ const AllFilter: React.FC<Props> = ({
             />
           </div>
         )}
-      </div>
     </div>
   );
 };

@@ -1,4 +1,5 @@
 "use client";
+import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import { useState, useEffect, createContext } from "react";
 import React from "react";
 import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
@@ -87,9 +88,7 @@ const Page: React.FC = () => {
   const [selectedSource, setSelectedSource] = useState<any | null>({
     value: "all",
     label: "All Source",
-  });
-  const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
-  const [isRdPrintModalOpen, setIsRdPrintModalOpen] = useState<boolean>(false);
+  });  const [isRdPrintModalOpen, setIsRdPrintModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
     const savedWebsite = localStorage.getItem("selectedWebsite");
@@ -384,9 +383,7 @@ const Page: React.FC = () => {
 
       if (res?.success) {
         setOrderList(res?.data?.data);
-        setTotalOrders(res?.data?.meta?.total_record);
-        setIsFilterOpen(false);
-      } else {
+        setTotalOrders(res?.data?.meta?.total_record);      } else {
         ToastService.error(res?.message);
       }
     } catch (err: any) {
@@ -519,6 +516,8 @@ const Page: React.FC = () => {
     if (!canFetchPageData) return;
     fetchLastSixtyDay();
   }, [canFetchPageData, selectedWebsite]);
+  useTableRefreshRegister(fetchOrdersList);
+
 
   return (
     <AuthLayout className={` ${selectedOrder.value === "all" ? "" : ""}`}>
@@ -534,7 +533,7 @@ const Page: React.FC = () => {
         <h6 className="text-md my-4">
           Are you sure you want to change this bulk status?
         </h6>
-        <div className="flex items-center justify-center my-8">
+        <div className="flex flex-wrap items-center items-center justify-center my-8">
           <Icon
             name="change_circle"
             variant="outlined"
@@ -545,11 +544,17 @@ const Page: React.FC = () => {
       </Alert>
       <NoScrollLayout>
         <div className="2xl:pt-4 pt-2 2xl:px-4 px-3 mb-3">
-          <div className="md:flex gap-3">
-            <div className="flex items-center gap-3">
+          <div className="md:flex flex-wrap items-center gap-3">
+            <div className="flex flex-wrap items-center items-center gap-3">
               <h1 className="2xl:text-2xl lg:text-xl text-lg font-semibold dark:text-gray-300 text-gray-800 ">
                 All Orders
               </h1>
+              <AllFilter
+                isSourceFilter={true}
+                allSourceOptions={allSourceOptions}
+                selectedSource={selectedSource}
+                setSelectedSource={setSelectedSource}
+              />
               {permissionList.includes("print_rd_list") &&
                 selectedWebsite.value !== "all" && (
                   <Button
@@ -559,17 +564,6 @@ const Page: React.FC = () => {
                     Print R-D
                   </Button>
                 )}
-              <div>
-                <Button
-                  className="flex items-center !px-2 !bg-indigo-500 !py-1.5"
-                  onClick={() => setIsFilterOpen((prev) => !prev)}
-                >
-                  <Icon
-                    name={isFilterOpen ? "close" : "filter_alt"}
-                    size={20}
-                  />
-                </Button>
-              </div>
               <div className="">
                 <SelectComponent
                   options={websiteOptions}
@@ -591,17 +585,7 @@ const Page: React.FC = () => {
             </div>
           </div>
 
-          {isFilterOpen && (
-            <div className="">
-              <AllFilter
-                isFilterOpen={isFilterOpen}
-                isSourceFilter={true}
-                allSourceOptions={allSourceOptions}
-                selectedSource={selectedSource}
-                setSelectedSource={setSelectedSource}
-              />
-            </div>
-          )}
+          
 
           {selectedOrder.value === "all" && (
             <OrdersTab

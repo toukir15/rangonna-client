@@ -1,4 +1,5 @@
 "use client";
+import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import Icon from "@admin/components/core/Icon/Icon";
 import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
 import React, { Suspense, useRef, useState, useEffect, createContext } from "react";
@@ -91,7 +92,6 @@ const BlogPageContent: React.FC = () => {
     } else {
       document.removeEventListener("mousedown", handleClickOutside);
     }
-
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
@@ -181,6 +181,9 @@ const BlogPageContent: React.FC = () => {
     setIsAlertOpen(false);
     setRemove(null);
   };
+
+  useTableRefreshRegister(fetchBlog);
+
 
   return (
     <AuthLayout>

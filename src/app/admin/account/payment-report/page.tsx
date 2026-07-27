@@ -1,4 +1,5 @@
 "use client";
+import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import CalendarRange from "@admin/components/core/Calendar/CalendarRange";
 import { Tbody, Td, Th, Thead, Tr } from "@admin/components/Table/Table";
 import TableWrapper from "@admin/components/Table/TableWrapper";
@@ -74,6 +75,8 @@ const Page: React.FC = () => {
   useEffect(() => {
     fetchPurchasePaymentReport();
   }, [debouncedSearchTerm, currentPage, ordersPerPage]);
+  useTableRefreshRegister(fetchPurchasePaymentReport);
+
 
   return (
     <AuthLayout>

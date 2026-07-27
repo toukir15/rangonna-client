@@ -1,4 +1,5 @@
 "use client";
+import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import profile from "@admin/assets/images/profile.png";
@@ -179,6 +180,8 @@ const Page: React.FC = () => {
       year: "numeric",
     });
   };
+  useTableRefreshRegister(getSalaryReport);
+
 
   return (
     <AuthLayout>
