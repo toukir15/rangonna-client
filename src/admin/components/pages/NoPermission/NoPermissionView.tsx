@@ -18,7 +18,7 @@ const NoPermissionView = () => {
           You don&apos;t have the required access to view this page. Please
           contact your administrator if this is a mistake.
         </p>
-        <Link href="/admin/holiday-shift" className="w-full">
+        <Link href="/admin/dashboard/all" className="w-full">
           <Button className="w-full rounded-xl px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 transition text-white font-medium shadow-lg">
             Return to Dashboard
           </Button>

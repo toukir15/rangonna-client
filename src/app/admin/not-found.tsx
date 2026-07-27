@@ -12,7 +12,7 @@ const NotFound = () => {
         Sorry, the page you are looking for doesn’t exist or has been moved.
       </p>
       {/* Return Home Button */}
-      <Link href="/admin/holiday-shift?cache_bust=1760961466261">
+      <Link href="/admin/dashboard/all">
         <Button
           className={
             "disabled:bg-gray-400 rounded-md px-6 pt-3  bg-blue-400 flex justify-center font-medium text-white w-full mt-4"

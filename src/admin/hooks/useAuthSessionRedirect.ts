@@ -16,7 +16,7 @@ const STORAGE_SYNC_KEYS = new Set([
 export { notifyAuthSessionChanged } from "@admin/utils/authSessionSync";
 
 export const useAuthSessionRedirect = (
-  redirectTo = "/admin/holiday-shift",
+  redirectTo = "/admin/dashboard/all",
   enabled = true,
 ) => {
   const router = useRouter();

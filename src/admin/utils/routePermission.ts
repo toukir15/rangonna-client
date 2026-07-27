@@ -10,19 +10,74 @@ const norm = (value?: string) =>
     .replace(/-/g, "")
     .replace(/\s+/g, "");
 
-const getRoute = (item: { href?: string; path?: string }) =>
-  item?.href || item?.path || "";
+const getRoute = (item: { href?: string; path?: string }) => {
+  const route = item?.href || item?.path || "";
+  return route.split("?")[0].split("#")[0];
+};
 
-const getMainKey = (item: { href?: string; path?: string; label?: string }) => {
+export const getSidebarMainKey = (item: {
+  href?: string;
+  path?: string;
+  label?: string;
+}) => {
   const seg = getRoute(item).split("/").filter(Boolean);
   const offset = seg[0] === "admin" ? 1 : 0;
   return norm(seg[offset]) || norm(item?.label);
 };
 
-const getSubKey = (item: { href?: string; path?: string; label?: string }) => {
+export const getSidebarSubKey = (item: {
+  href?: string;
+  path?: string;
+  label?: string;
+}) => {
   const seg = getRoute(item).split("/").filter(Boolean);
   const offset = seg[0] === "admin" ? 1 : 0;
   return norm(seg[offset + 1]) || norm(item?.label);
+};
+
+const getMainKey = getSidebarMainKey;
+const getSubKey = getSidebarSubKey;
+
+export const hasSidebarPermission = (
+  permissions: string[],
+  mainKey: string,
+  subKey?: string,
+) => {
+  const key = subKey ? `${mainKey}/${subKey}` : mainKey;
+  const required = labelPermissionMap[key];
+
+  if (!required?.length) return false;
+
+  return required.some((permission) => permissions.includes(permission));
+};
+
+export const filterSidebarByPermissions = <T extends {
+  href?: string;
+  path?: string;
+  label?: string;
+  submenu?: T[];
+}>(
+  permissions: string[],
+  items: T[],
+): T[] => {
+  if (!permissions.length) return [];
+
+  return items
+    .map((item) => {
+      const mainKey = getSidebarMainKey(item);
+      const filteredSubmenu = (item.submenu ?? []).filter((sub) =>
+        hasSidebarPermission(permissions, mainKey, getSidebarSubKey(sub)),
+      );
+
+      const mainVisible =
+        hasSidebarPermission(permissions, mainKey) ||
+        filteredSubmenu.length > 0;
+
+      if (!mainVisible) return null;
+
+      return { ...item, submenu: filteredSubmenu };
+    })
+    .filter(Boolean) as T[];
 };
 
 export const normalizeRoutePath = (pathname: string) => {
@@ -39,10 +94,7 @@ export const AUTHENTICATED_OPEN_ROUTES = new Set([
   "/create-order/order-received",
 ]);
 
-const AUTHENTICATED_OPEN_PREFIXES = [
-  "/assign-orders/view/",
-  "/assign-orders/edit/",
-];
+const AUTHENTICATED_OPEN_PREFIXES: string[] = [];
 
 export const isAuthenticatedOpenRoute = (pathname: string): boolean => {
   const path = normalizeRoutePath(pathname);
@@ -55,11 +107,6 @@ export const isAuthenticatedOpenRoute = (pathname: string): boolean => {
 const DYNAMIC_ROUTE_PATTERNS: { pattern: RegExp; permissions: string[] }[] = [
   { pattern: /^\/orders\/view\//, permissions: ["order_view"] },
   { pattern: /^\/orders\/edit\//, permissions: ["order_edit"] },
-  { pattern: /^\/assign-orders\/view\//, permissions: ["order_assignment_view"] },
-  { pattern: /^\/assign-orders\/edit\//, permissions: ["order_assignment_view"] },
-  { pattern: /^\/report-issue\/view\//, permissions: ["report_issue_view"] },
-  { pattern: /^\/orders\/wholesale-orders\/view\//, permissions: ["order_wholesale_view"] },
-  { pattern: /^\/orders\/wholesale-orders\/edit\//, permissions: ["order_wholesale_edit"] },
   { pattern: /^\/product\/products\/edit\//, permissions: ["product_edit"] },
   { pattern: /^\/product\/products\/view\//, permissions: ["product_view"] },
   { pattern: /^\/pages\/edit\//, permissions: ["campaign_page_edit"] },

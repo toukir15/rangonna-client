@@ -270,7 +270,7 @@ const Page: React.FC = () => {
                 <div className="flex justify-center">
                   <Button
                     onClick={() =>
-                      router.push("/admin/holiday-shift")
+                      router.push("/admin/dashboard/all")
                     }
                     type="submit"
                     className=" bg-blue-600 mt-3"

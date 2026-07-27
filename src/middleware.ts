@@ -12,9 +12,7 @@ const alwaysAllowedRoutes = [
 ];
 
 const isAlwaysAllowed = (pathname: string) =>
-  alwaysAllowedRoutes.includes(pathname) ||
-  pathname.startsWith(`${ADMIN_BASE}/assign-orders/view/`) ||
-  pathname.startsWith(`${ADMIN_BASE}/assign-orders/edit/`);
+  alwaysAllowedRoutes.includes(pathname);
 
 const isStaticFile = (pathname: string) =>
   /\.(ico|svg|png|jpg|jpeg|gif|webp|css|js|map|woff|woff2|ttf)$/.test(pathname);

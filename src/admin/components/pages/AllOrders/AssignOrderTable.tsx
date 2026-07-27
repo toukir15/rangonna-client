@@ -286,7 +286,7 @@ const AssignOrderTable: React.FC = () => {
 
                       const idStr = String(order?._id);
                       if (idStr) {
-                        router.push(`/admin/assign-orders/view/${idStr}`);
+                        router.push(`/admin/orders/view/${idStr}`);
                       }
                     }}
                   >
@@ -309,7 +309,7 @@ const AssignOrderTable: React.FC = () => {
                         <button
                           onClick={() =>
                             router.push(
-                              `/assign-orders/edit/${String(order?._id)}`
+                              `/admin/orders/edit/${String(order?._id)}`
                             )
                           }
                           className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg"

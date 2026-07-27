@@ -4,9 +4,7 @@ import {
   ACCOUNTS,
   COURIERS,
   DASHBOARD,
-  FRAUD_CHECK,
   PRODUCTS,
-  REPORT_ISSUE,
   TEAM,
 } from "@admin/utils/path-name";
 
@@ -29,12 +27,6 @@ export const CourierOptions = [
 ];
 
 export const sideBarItems: ISideBarItems[] = [
-  {
-    href: "/admin/holiday-shift",
-    label: "Holiday & Shift",
-    icon: "campaign",
-    mainSubLink: false,
-  },
   {
     href: DASHBOARD,
     label: "Dashboard",
@@ -60,19 +52,8 @@ export const sideBarItems: ISideBarItems[] = [
         icon: "list_alt",
       },
       {
-        href: "/admin/dashboard/showroom-report",
-        label: "Showroom",
-        icon: "low_priority",
-      },
-      {
         href: "/admin/dashboard/showroom",
         label: "Sales Report",
-        icon: "low_priority",
-      },
-
-      {
-        href: "/admin/dashboard/wholesale",
-        label: "Wholesale",
         icon: "low_priority",
       },
       {
@@ -89,39 +70,9 @@ export const sideBarItems: ISideBarItems[] = [
     mainSubLink: true,
     submenu: [
       {
-        href: "/admin/assign-orders",
-        label: "Assign Order",
-        icon: "assignment_ind",
-      },
-      {
         href: "/admin/orders/all-order",
         label: "All Order",
         icon: "list_alt",
-      },
-      {
-        href: "/admin/orders/naviforce",
-        label: "Naviforce",
-        icon: "low_priority",
-      },
-      {
-        href: "/admin/orders/timeverse",
-        label: "TimeVerse",
-        icon: "low_priority",
-      },
-      {
-        href: "/admin/orders/olevs",
-        label: "Olevs",
-        icon: "low_priority",
-      },
-      {
-        href: "/admin/orders/bikreta",
-        label: "Bikreta",
-        icon: "low_priority",
-      },
-      {
-        href: "/admin/orders/showroom",
-        label: "Sales",
-        icon: "low_priority",
       },
       {
         href: "/admin/orders/incompleate",
@@ -139,29 +90,14 @@ export const sideBarItems: ISideBarItems[] = [
         icon: "assignment_return",
       },
       {
-        href: "/admin/orders/wholesale-orders",
-        label: "Wholesale",
-        icon: "playlist_add_check_circle",
-      },
-      {
         href: "/admin/orders/wholesale-return",
         label: "Wholesale Return",
         icon: "low_priority",
       },
       {
-        href: "/admin/orders/delay-delivery",
-        label: "Delay Delivery",
-        icon: "history_toggle_off",
-      },
-      {
         href: "/admin/orders/sms",
         label: "SMS",
         icon: "sms",
-      },
-      {
-        href: "/admin/orders/sslcommerz",
-        label: "Sslcommerz",
-        icon: "credit_card",
       },
     ],
   },
@@ -176,18 +112,6 @@ export const sideBarItems: ISideBarItems[] = [
     href: "/admin/fulfillment",
     label: "Fulfillment",
     icon: "inventory_2",
-    mainSubLink: false,
-  },
-  {
-    href: REPORT_ISSUE,
-    label: "Report Issue",
-    icon: "sd_card_alert",
-    mainSubLink: false,
-  },
-  {
-    href: FRAUD_CHECK,
-    label: "Fraud Check",
-    icon: "admin_panel_settings",
     mainSubLink: false,
   },
 
@@ -336,31 +260,6 @@ export const sideBarItems: ISideBarItems[] = [
   },
 
   {
-    href: "/admin/fraud-detection",
-    label: "Fraud Detection",
-    icon: "shield",
-    mainSubLink: false,
-  },
-  {
-    href: "wholesale",
-    label: "Wholesale",
-    icon: "real_estate_agent",
-    submenu: [
-      {
-        href: "/admin/wholesale/user",
-        label: "Wholesale User",
-        icon: "contact_emergency",
-      },
-      {
-        href: "/admin/wholesale/due-report",
-        label: "Due Report",
-        icon: "list_alt",
-      },
-    ],
-    mainSubLink: true,
-  },
-
-  {
     href: PRODUCTS,
     label: "Product",
     icon: "library_books",
@@ -370,11 +269,6 @@ export const sideBarItems: ISideBarItems[] = [
         href: "/admin/product/products",
         label: "Products",
         icon: "dataset",
-      },
-      {
-        href: "/admin/product/wholesale",
-        label: "Wholesale",
-        icon: "shopping_bag",
       },
       {
         href: "/admin/product/pricing",
@@ -460,16 +354,6 @@ export const sideBarItems: ISideBarItems[] = [
         icon: "date_range",
       },
       {
-        href: "/admin/product-stock/transfer",
-        label: "Transfer",
-        icon: "swap_horiz",
-      },
-      {
-        href: "/admin/product-stock/my-warehouse",
-        label: "My Warehouse",
-        icon: "warehouse",
-      },
-      {
         href: "/admin/product-stock/brand-report",
         label: "Brand Report",
         icon: "branding_watermark",
@@ -480,11 +364,6 @@ export const sideBarItems: ISideBarItems[] = [
         icon: "category",
       },
     ],
-  },
-  {
-    href: "/admin/landing-page",
-    label: "Landing Page",
-    icon: "web",
   },
 
   {
@@ -535,36 +414,6 @@ export const sideBarItems: ISideBarItems[] = [
         href: "/admin/team/report",
         label: "Report",
         icon: "assessment",
-      },
-      {
-        href: "/admin/team/holiday-payment",
-        label: "Holiday Payment",
-        icon: "beach_access",
-      },
-      {
-        href: "/admin/team/advance-salary",
-        label: "Advance Salary",
-        icon: "request_quote",
-      },
-      {
-        href: "/admin/team/salary",
-        label: "Salary",
-        icon: "payments",
-      },
-      {
-        href: "/admin/team/salary-report",
-        label: "Salary Report",
-        icon: "receipt_long",
-      },
-      {
-        href: "/admin/team/leave-application",
-        label: "Leave Application",
-        icon: "assignment_turned_in",
-      },
-      {
-        href: "/admin/team/leave-policy",
-        label: "Leave Policy",
-        icon: "policy",
       },
     ],
   },
@@ -730,39 +579,6 @@ export const sideBarItems: ISideBarItems[] = [
         href: "/admin/order-report/return-by-source",
         label: "Return Source",
         icon: "roundabout_left",
-      },
-    ],
-    mainSubLink: true,
-  },
-  {
-    href: "duty-plan",
-    label: "Duty Plan",
-    icon: "event_available", // ✅ good (schedule/availability)
-    submenu: [
-      {
-        href: "/admin/duty-plan/notice",
-        label: "Notice",
-        icon: "campaign", // 📢 announcements (perfect)
-      },
-      {
-        href: "/admin/duty-plan/duty",
-        label: "Duty",
-        icon: "badge", // 🪪 role / employee duty (good choice)
-      },
-      {
-        href: "/admin/duty-plan/holiday-notice",
-        label: "Holiday",
-        icon: "event_note", // 🗒️ event + notice (good)
-      },
-      {
-        href: "/admin/duty-plan/weekly-holiday",
-        label: "Weekly Holiday",
-        icon: "calendar_month", // 📅 schedule based (correct)
-      },
-      {
-        href: "/admin/duty-plan/company-policy",
-        label: "Company Policy",
-        icon: "policy", // 📜 BEST for rules/policies ✅
       },
     ],
     mainSubLink: true,
@@ -1434,39 +1250,15 @@ export const inferShippingFromAddress = (addr?: string) =>
 export const publicRoutes = ["/admin", "/admin/signup", "/admin/verify"];
 
 export const routePermissionMap: { [key: string]: string | string[] } = {
-  // dashboard route
   "/dashboard/all": ["dashboard_all_view"],
-  "/dashboard/naviforce": ["dashboard_naviforce_view"],
-  "/dashboard/timeverse": ["dashboard_timeverse_view"],
-  "/dashboard/bikreta": ["dashboard_bikreta_view"],
-  "/dashboard/olevs": ["dashboard_olevs_view"],
-  "/dashboard/wholesale": ["dashboard_wholesale_view"],
   "/dashboard/summary": ["dashboard_summary_view"],
-  "/dashboard/showroom-report": ["showroom_view_admin"],
   "/dashboard/showroom": ["showroom_view"],
-  "/report-issue": ["report_issue_view"],
   "/fulfillment": ["order_fulfillment_view"],
-  "/holiday-shift": ["team_user_dashboard_view"],
   "/orders/return": ["order_return_view"],
   "/orders/refund": ["order_refund_view"],
   "/orders/wholesale-return": ["order_wholesale_return_view"],
-  "/orders/delay-delivery": ["order_delay_delivery_view"],
   "/orders/incompleate": ["order_incomplete_view"],
-  "/orders/showroom": ["order_showroom_view"],
-  "/orders/wholesale-orders": ["order_wholesale_view"],
-  "/orders/sslcommerz": ["sslcommerz_transaction_view"],
-  "/couriers/booking": ["courier_booking_view"],
-  "/assign-orders": ["order_assignment_view"],
-  "/assign-orders/view": ["order_assignment_view"],
-  "/assign-orders/edit": ["order_assignment_view"],
   "/orders/all-order": ["order_all_view"],
-  "/orders/naviforce": ["order_naviforce_view"],
-  "/orders/timeverse": ["order_timeverse_view"],
-  "/orders/bikreta": ["order_bikreta_view"],
-  "/orders/olevs": ["order_olevs_view"],
-  "/orders/wholesale": ["order_wholesale_view"],
-  "/orders/incompleate": ["order_incomplete_view"],
-  "/orders/sslcommerz": ["sslcommerz_transaction_view"],
 };
 
 export const shiftTimeOptions = [

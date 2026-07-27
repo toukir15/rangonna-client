@@ -5,7 +5,10 @@ import { useGlobalContext } from "@admin/context/GlobalContext";
 import AuthFooter from "./AuthFooter";
 import Sidebar from "./Sidebar";
 import { sideBarItems } from "@admin/components/pages/Utilities/data";
-import { labelPermissionMap } from "@admin/@acl/Acl";
+import {
+  filterSidebarByPermissions,
+  getSidebarMainKey,
+} from "@admin/utils/routePermission";
 import GlobalLoading from "@admin/components/pages/GlobalLoading/GlobalLoading";
 import NoPermissionView from "@admin/components/pages/NoPermission/NoPermissionView";
 import SidebarSkeleton from "@admin/components/Skeleton/SidebarSkeleton";
@@ -23,7 +26,6 @@ export function NoScrollLayout({ children }: NoScrollLayoutProps) {
   return <div>{children}</div>;
 }
 
-// ✅ normalize helper
 const norm = (v?: string) =>
   (v ?? "")
     .toLowerCase()
@@ -31,35 +33,6 @@ const norm = (v?: string) =>
     .replace(/^\//, "")
     .replace(/-/g, "")
     .replace(/\s+/g, "");
-
-// ✅ get route from item (supports href OR path)
-const getRoute = (obj: any) => obj?.href || obj?.path || "";
-
-// ✅ mainKey = first segment (orders/dashboard)
-const getMainKey = (item: any) => {
-  const seg = getRoute(item).split("/").filter(Boolean);
-  return norm(seg[0]) || norm(item?.label);
-};
-
-// ✅ subKey = second segment (incompleate/allorder etc)
-const getSubKey = (sub: any) => {
-  const seg = getRoute(sub).split("/").filter(Boolean);
-  return norm(seg[1]) || norm(sub?.label);
-};
-
-const hasPermission = (
-  permissions: string[],
-  mainKey: string,
-  subKey?: string,
-) => {
-  const key = subKey ? `${mainKey}/${subKey}` : mainKey; // ex: "orders/incompleate"
-  const required = labelPermissionMap[key];
-
-  // strict mode: map এ key না থাকলে hide
-  if (!required || required.length === 0) return false;
-
-  return required.some((p) => permissions.includes(p));
-};
 
 export default function AuthLayout({ children, className }: AuthLayoutProps) {
   const pathname = usePathname();
@@ -105,38 +78,20 @@ export default function AuthLayout({ children, className }: AuthLayoutProps) {
     (child) => !React.isValidElement(child) || child.type !== NoScrollLayout,
   );
 
-  // ✅ Filter sidebar by permissions (works for /orders/incompleate)
-  const filteredSideBarItems = useMemo(() => {
-    const perms = permissionList || [];
-    if (perms.length === 0) return [];
-
-    return sideBarItems
-      .map((item: any) => {
-        const mainKey = getMainKey(item);
-
-        const filteredSubmenu = (item?.submenu ?? []).filter((sub: any) => {
-          const subKey = getSubKey(sub);
-          return hasPermission(perms, mainKey, subKey);
-        });
-
-        // main visible if main key allowed OR any submenu allowed
-        const mainVisible =
-          hasPermission(perms, mainKey) || filteredSubmenu.length > 0;
-        if (!mainVisible) return null;
-
-        return { ...item, submenu: filteredSubmenu };
-      })
-      .filter(Boolean);
-  }, [permissionList]);
+  const filteredSideBarItems = useMemo(
+    () => filterSidebarByPermissions(permissionList || [], sideBarItems),
+    [permissionList],
+  );
 
   useEffect(() => {
     if (!filteredSideBarItems.length) return;
 
-    const seg = (pathname ?? "").split("/").filter(Boolean);
-    const currentMain = norm(seg[0]);
+    const seg = (pathname ?? "").split("?")[0].split("/").filter(Boolean);
+    const offset = seg[0] === "admin" ? 1 : 0;
+    const currentMain = norm(seg[offset]);
 
     const matchingItem = filteredSideBarItems.find((item: any) => {
-      const itemKey = getMainKey(item);
+      const itemKey = getSidebarMainKey(item);
       return itemKey === currentMain && (item?.submenu?.length ?? 0) > 0;
     });
 

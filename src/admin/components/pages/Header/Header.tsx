@@ -565,7 +565,7 @@ export default function Header() {
           )}
 
           <Link
-            href={isAuthenticated ? "/admin/holiday-shift" : "/admin"}
+            href={isAuthenticated ? "/admin/dashboard/all" : "/admin"}
             className="flex items-center ml-12"
           >
             {isDarkMode ? (

@@ -105,7 +105,7 @@ const LoginPageContent = () => {
 
       localStorage.setItem("authInfo", JSON.stringify(res.data));
       notifyAuthSessionChanged();
-      router.replace("/admin/holiday-shift");
+      router.replace("/admin/dashboard/all");
     } catch (err: any) {
       ToastService.error(err?.message || "Login failed");
     } finally {

@@ -13,7 +13,6 @@ import * as yup from "yup";
 import { ToastService } from "@admin/utils/toastr.service";
 import { getStatusStyle } from "@admin/utils/system.utils";
 import { ReportIssueCategoryService } from "@admin/@services/apis/ReportIssueService/ReportIssue.service";
-import Link from "next/link";
 
 type LineItem = {
   _id?: string;
@@ -398,9 +397,6 @@ const ReportIssueModal = ({
                           <th className="text-left px-4 py-3 dark:text-gray-300">
                             Created At
                           </th>
-                          <th className="text-left px-4 py-3 dark:text-gray-300">
-                            Action
-                          </th>
                         </tr>
                       </thead>
 
@@ -446,10 +442,6 @@ const ReportIssueModal = ({
                               <td className="px-4 py-3 align-top dark:text-gray-300 whitespace-nowrap">
                                 <p>Last Update: {formatDateTime(item?.updatedAt)}</p>
                                 <p>Create: {formatDateTime(item?.createdAt)}</p>
-                              </td>
-                              <td className="px-4 py-3 align-top dark:text-gray-300 whitespace-nowrap">
-                                <Link href={`/report-issue/view/${item?._id}`} target="_" className="bg-blue-500 text-white rounded-lg px-4 py-1">
-                                  View</Link>
                               </td>
                             </tr>
                           ))
