@@ -10,9 +10,7 @@ export default function AdminShell({ children }: { children: ReactNode }) {
   const isAuthPage = isAdminPublicRoute(pathname);
 
   if (isAuthPage) {
-    return (
-      <div className="min-h-screen dark:bg-black bg-gray-100">{children}</div>
-    );
+    return <div className="min-h-screen">{children}</div>;
   }
 
   return (

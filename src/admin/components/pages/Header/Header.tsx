@@ -595,7 +595,7 @@ export default function Header() {
                   type="text"
                   ref={searchInputRef}
                   placeholder="Search Orders"
-                  className="px-2 py-1.5 min-w-96 pr-10  border dark:text-white dark:bg-black dark:border-gray-700 border-gray-300 rounded-lg shadow-sm focus:ring-1 focus:ring-blue-400 focus:dark:ring-gray-700 focus:outline-none"
+                  className="px-2 py-1.5 min-w-96 pr-10  border dark:text-white dark:bg-black dark:border-gray-700 border-gray-300 rounded-lg shadow-sm focus:ring-1 focus:ring-green-400 focus:dark:ring-gray-700 focus:outline-none"
                   value={searchId ?? ""}
                   onChange={handleInputChange}
                   onKeyDown={handleKeyPress}
@@ -677,7 +677,7 @@ export default function Header() {
 
               <Button
                 onClick={handleCashClean}
-                className="bg-blue-500 px-4 lg:block hidden py-1.5 rounded-md text-white shadow "
+                className="bg-green-600 hover:bg-green-700 px-4 lg:block hidden py-1.5 rounded-md text-white shadow "
               >
                 Clear Cash
               </Button>
@@ -729,7 +729,7 @@ export default function Header() {
                             <button
                               type="button"
                               onClick={markAllNotificationsRead}
-                              className="text-[11px] font-medium text-blue-600 dark:text-blue-300 hover:underline whitespace-nowrap"
+                              className="text-[11px] font-medium text-green-600 dark:text-green-300 hover:underline whitespace-nowrap"
                             >
                               Mark all read
                             </button>
@@ -745,7 +745,7 @@ export default function Header() {
                               key={alert.id}
                               className={`flex items-stretch border-b border-gray-100 dark:border-gray-600 last:border-b-0 ${
                                 !isRead
-                                  ? "bg-blue-50/80 dark:bg-blue-900/20"
+                                  ? "bg-green-50/80 dark:bg-green-900/20"
                                   : claimedByOther
                                     ? "bg-gray-50 dark:bg-gray-800/50"
                                     : ""
@@ -800,7 +800,7 @@ export default function Header() {
                               >
                                 <div className="flex items-start gap-2">
                                   {!isRead && (
-                                    <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-blue-500" />
+                                    <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-green-500" />
                                   )}
                                   <div className="min-w-0 flex-1">
                                     <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">
@@ -820,7 +820,7 @@ export default function Header() {
                                         {alert.claimed_by_name || "another admin"}
                                       </p>
                                     ) : (
-                                      <p className="text-xs text-blue-600 dark:text-blue-300 mt-1">
+                                      <p className="text-xs text-green-600 dark:text-green-300 mt-1">
                                         Click to transfer
                                       </p>
                                     )}
@@ -833,7 +833,7 @@ export default function Header() {
                                   title="Mark as read"
                                   aria-label="Mark as read"
                                   onClick={() => markNotificationRead(alert.id)}
-                                  className="shrink-0 px-2.5 flex items-center border-l border-gray-100 dark:border-gray-600 text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-gray-600 dark:hover:text-blue-300 transition-colors"
+                                  className="shrink-0 px-2.5 flex items-center border-l border-gray-100 dark:border-gray-600 text-gray-400 hover:text-green-600 hover:bg-green-50 dark:hover:bg-gray-600 dark:hover:text-green-300 transition-colors"
                                 >
                                   <Icon
                                     name="mark_email_read"
@@ -871,7 +871,7 @@ export default function Header() {
               {pathname === "/admin" && (
                 <Link
                   href="/admin/signup"
-                  className="bg-red-600 lg:mr-12 px-4 py-1.5 rounded-md text-white shadow hover:bg-blue-800 transition duration-300"
+                  className="bg-red-600 lg:mr-12 px-4 py-1.5 rounded-md text-white shadow hover:bg-red-700 transition duration-300"
                 >
                   Sign Up
                 </Link>
@@ -880,7 +880,7 @@ export default function Header() {
               {pathname === "/admin/signup" && (
                 <Link
                   href="/admin"
-                  className="bg-blue-600 lg:mr-12 px-4 py-1.5 rounded-lg text-white shadow hover:bg-blue-700 transition duration-300"
+                  className="bg-green-600 lg:mr-12 px-4 py-1.5 rounded-lg text-white shadow hover:bg-green-700 transition duration-300"
                 >
                   Login
                 </Link>

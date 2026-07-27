@@ -63,14 +63,14 @@ const Sidebar = ({
       "relative z-10 flex items-center justify-between space-x-2 py-1.5 px-3 rounded-lg transition-all duration-150 ease-in-out cursor-pointer w-full min-h-[44px] text-left select-none";
 
     if (isMainActive) {
-      return `${base} bg-blue-500 text-white shadow-sm`;
+      return `${base} bg-green-600 text-white shadow-sm`;
     }
 
     if (hasSubmenu && isSubMenuOpen) {
-      return `${base} border border-blue-400 bg-white text-gray-800 dark:bg-gray-900 dark:text-gray-200 dark:border-blue-500`;
+      return `${base} border border-green-400 bg-white text-gray-800 dark:bg-gray-900 dark:text-gray-200 dark:border-green-500`;
     }
 
-    return `${base} text-gray-700 dark:text-gray-300 hover:bg-blue-100 hover:text-gray-800 dark:hover:bg-blue-900/30`;
+    return `${base} text-gray-700 dark:text-gray-300 hover:bg-green-100 hover:text-gray-800 dark:hover:bg-green-900/30`;
   })();
 
   const itemContent = (
@@ -142,8 +142,8 @@ const Sidebar = ({
                     <div
                       className={`flex items-center space-x-1.5 rounded-md px-2 py-1.5 text-sm transition-colors duration-150 touch-manipulation min-h-[36px] [-webkit-tap-highlight-color:transparent] ${
                         isActive
-                          ? "bg-blue-100 text-blue-600 font-medium dark:bg-blue-900/40 dark:text-blue-400"
-                          : "text-gray-500 hover:bg-blue-50 hover:text-gray-800 dark:text-gray-400 dark:hover:bg-blue-900/20 dark:hover:text-gray-200"
+                          ? "bg-green-100 text-green-600 font-medium dark:bg-green-900/40 dark:text-green-400"
+                          : "text-gray-500 hover:bg-green-50 hover:text-gray-800 dark:text-gray-400 dark:hover:bg-green-900/20 dark:hover:text-gray-200"
                       }`}
                     >
                       <Icon name={subLink?.icon} variant="outlined" />

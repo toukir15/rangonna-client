@@ -17,6 +17,7 @@ import { AuthService } from "@admin/@services/apis/AuthService/Auth.service";
 import { GlobalService } from "@admin/@services/apis/GlobalService/Global.service";
 import Cookies from "js-cookie";
 import { notifyAuthSessionChanged } from "@admin/utils/authSessionSync";
+import AuthSplitLayout from "@admin/layouts/AuthSplitLayout";
 
 const defaultValue: ILogin = {
   email_phone: "",
@@ -47,7 +48,6 @@ const LoginPageContent = () => {
     setValue("email_phone", searchValue);
   }, [searchValue, setValue]);
 
-  // logout marker thakle auth clear kore url clean kore dibe
   useEffect(() => {
     if (logoutValue !== "1") return;
 
@@ -55,7 +55,6 @@ const LoginPageContent = () => {
     router.replace("/admin");
   }, [logoutValue, clearAuthData, router]);
 
-  
   const formSubmit = async (data: ILogin) => {
     try {
       setIsSubmit(true);
@@ -115,15 +114,11 @@ const LoginPageContent = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
-      <form
-        onSubmit={handleSubmit(formSubmit)}
-        className="max-w-md mx-auto dark:bg-gray-800 bg-white p-5 rounded-lg w-96 shadow-xl"
-      >
-        <h1 className="text-2xl font-semibold text-gray-600 dark:text-gray-300">
-          Log In
-        </h1>
-
+    <AuthSplitLayout
+      title="Welcome back"
+      subtitle="Sign in to your admin account to continue"
+    >
+      <form onSubmit={handleSubmit(formSubmit)} className="space-y-1">
         <Input
           label="Email or Phone"
           placeholder="Enter your email or phone"
@@ -143,38 +138,40 @@ const LoginPageContent = () => {
           isRequired
         />
 
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between pt-1">
           <TermsCheckbox
             name="terms"
             label="Remember me"
             registerProperty={""}
             errorText={""}
           />
-          <h6>
-            <small className="text-sm text-gray-600 dark:text-gray-300 font-normal cursor-pointer">
-              Forgot Password?
-            </small>
-          </h6>
+          <button
+            type="button"
+            className="text-sm font-medium text-green-600 transition-colors hover:text-green-700 dark:text-green-400 dark:hover:text-green-300"
+          >
+            Forgot Password?
+          </button>
         </div>
 
         <Button
           disabled={isSubmit}
-          className="disabled:bg-gray-400 rounded-md px-6 bg-blue-400 flex justify-center font-medium text-white w-full mt-4"
+          className="mt-5 flex w-full justify-center rounded-lg bg-green-600 px-6 py-2.5 font-medium text-white transition-colors hover:bg-green-700 disabled:bg-gray-400"
           type="submit"
         >
-          {isSubmit ? <ButtonLoader /> : "Log In"}
+          {isSubmit ? <ButtonLoader /> : "Sign In"}
         </Button>
 
-        <div className="text-center mt-2">
+        <p className="pt-4 text-center text-sm text-gray-500 dark:text-gray-400">
+          Don&apos;t have an account?{" "}
           <Link
             href="/admin/signup"
-            className="text-blue-400 dark:text-gray-300 hover:underline text-xs font-medium text-center"
+            className="font-medium text-green-600 hover:underline dark:text-green-400"
           >
-            {`Don't have an account? Sign Up`}
+            Sign Up
           </Link>
-        </div>
+        </p>
       </form>
-    </div>
+    </AuthSplitLayout>
   );
 };
 
@@ -182,8 +179,8 @@ const Page = () => {
   return (
     <Suspense
       fallback={
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-blue-400 border-t-transparent" />
+        <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-zinc-950">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-green-600 border-t-transparent" />
         </div>
       }
     >
