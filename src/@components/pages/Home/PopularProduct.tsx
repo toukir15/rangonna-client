@@ -30,7 +30,7 @@ async function getPopularProducts() {
       "inventory.stock_status": "in-stock",
     });
 
-    const rawUrl = `${ENV.ApiEndpoint?.trim()}/naviforce-product?${qs.toString()}`;
+    const rawUrl = `${ENV.ApiEndpoint?.trim()}/product?${qs.toString()}`;
     const safeUrl = encodeURI(rawUrl);
 
     const res = await fetch(safeUrl, {

@@ -643,7 +643,7 @@ body {
   display: flex;
   align-items: center;
   gap: 0.35rem;
-  overflow-x: auto;
+  overflow: visible;
   scrollbar-width: none;
 }
 

@@ -21,7 +21,7 @@ export default async function Navbar() {
   const navItems = await getMenuData();
 
   return (
-    <nav className="rongonaa-nav-bar hidden lg:flex lg:min-h-[40px] lg:items-center">
+    <nav className="rongonaa-nav-bar relative z-40 hidden overflow-visible lg:flex lg:min-h-[40px] lg:items-center">
       <DesktopNavbar navItems={navItems} />
     </nav>
   );

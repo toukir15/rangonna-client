@@ -140,7 +140,7 @@ async function getInitialProducts(): Promise<IProduct[]> {
       "inventory.stock_status": "in-stock",
     });
 
-    const rawUrl = `${ENV.ApiEndpoint?.trim()}/naviforce-product?${qs}`;
+    const rawUrl = `${ENV.ApiEndpoint?.trim()}/product?${qs}`;
     const safeUrl = encodeURI(rawUrl);
 
     const res = await fetch(safeUrl, {

@@ -13,17 +13,17 @@ export const ProductService = {
     };
 
     return await apiIns.get(
-      "/naviforce-product" + queryStringMapper(updatedParams),
+      "/product" + queryStringMapper(updatedParams),
     );
   },
 
   getSingleProduct: async (slug: string): Promise<any> => {
-    return await apiIns.get("/naviforce-product/" + encodeURIComponent(slug));
+    return await apiIns.get("/product/" + encodeURIComponent(slug));
   },
 
   getMoreWatches: async (queryParams?: any): Promise<any> => {
     return await apiIns.get(
-      "/naviforce-product/related-products/" + encodeURIComponent(queryParams),
+      "/product/related-products/" + encodeURIComponent(queryParams),
     );
   },
 
@@ -32,7 +32,7 @@ export const ProductService = {
       ...queryParams,
     };
     return await apiIns.get(
-      "/naviforce-product" + queryStringMapper(updatedParams),
+      "/product" + queryStringMapper(updatedParams),
     );
   },
 
@@ -50,7 +50,7 @@ export const ProductService = {
 
   getSearchGlobal: async (queryParams?: any): Promise<any> => {
     return await apiIns.get(
-      "/naviforce-product/global-search" + queryStringMapper(queryParams),
+      "/product/global-search" + queryStringMapper(queryParams),
     );
   },
 
@@ -87,7 +87,7 @@ export const ProductService = {
 
   getPriceRange: async (queryParams?: any): Promise<any> => {
     return await apiIns.get(
-      "/naviforce-product/price-range" + queryStringMapper(queryParams),
+      "/product/price-range" + queryStringMapper(queryParams),
     );
   },
 
@@ -134,7 +134,7 @@ export const ProductService = {
 
   getUpdatePrice: async (queryParams?: any): Promise<any> => {
     return await apiIns.get(
-      "/naviforce-product/cart-product-sale-price" +
+      "/product/cart-product-sale-price" +
         queryStringMapper(queryParams),
     );
   },

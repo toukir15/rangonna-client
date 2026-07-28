@@ -74,10 +74,10 @@ export default function DesktopNavbar({ navItems }: DesktopNavbarProps) {
                   </button>
 
                   <ul
-                    className={`absolute left-0 top-[calc(100%+0.35rem)] z-50 min-w-[240px] transition-all duration-200 ${
+                    className={`absolute left-0 top-full z-[60] min-w-[240px] pt-2 transition-all duration-200 ${
                       isSubmenuOpen
-                        ? "visible translate-y-0 opacity-100"
-                        : "invisible translate-y-2 opacity-0"
+                        ? "visible translate-y-0 opacity-100 pointer-events-auto"
+                        : "invisible translate-y-2 opacity-0 pointer-events-none"
                     }`}
                   >
                     <div className="rongonaa-nav-dropdown">

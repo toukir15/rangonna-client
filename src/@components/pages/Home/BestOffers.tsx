@@ -49,7 +49,7 @@ async function getProducts() {
     "inventory.stock_status": "in-stock",
   });
 
-  const rawUrl = `${ENV.ApiEndpoint?.trim()}/naviforce-product?${qs}`;
+  const rawUrl = `${ENV.ApiEndpoint?.trim()}/product?${qs}`;
   const url = encodeURI(rawUrl);
 
   try {
