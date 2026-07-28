@@ -1,3 +1,8 @@
+export interface ProductAttribute {
+  title?: string;
+  value?: string;
+}
+
 export interface Product {
   warranty: any;
   _id: string;
@@ -12,6 +17,8 @@ export interface Product {
   };
   images: Array<{ src: string; title?: string; text?: string }>;
   description: string;
+  short_description?: string;
+  attributes?: ProductAttribute[];
   product_id?: string;
   sku?: string;
   featured_image?: { src: string };

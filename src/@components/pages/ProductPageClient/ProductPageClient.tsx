@@ -4,9 +4,8 @@ import Image, { StaticImageData } from "next/image";
 import noImageFound from "@/@assets/noImageFound.png";
 import Icon from "@/@components/core/Icon/Icon";
 import ProductDetails from "@/@components/pages/Product/ProductDetails";
-import { PremiumBenefits } from "@/@components/pages/ProductDetails/PremiumBenifit";
 import { EmiFacilities } from "@/@components/pages/ProductDetails/EmiFacilities";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { setCookie, getCookie } from "cookies-next";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -16,7 +15,6 @@ import { pushToDataLayer } from "@/utils/gtm";
 import { ProductService } from "@/@services/apis/Product/Product.service";
 import { ModalState } from "../Checkout/Checkout";
 import Modal from "@/@components/core/Modal/Modal";
-import DescriptionSection from "../ProductDetails/DescriptionSection";
 import ProductActions from "../ProductDetails/ProductActions";
 import { ToastService } from "@/utils/toaster.service";
 import ProductReview from "@/@components/core/Carousal/ProductReview";
@@ -28,14 +26,9 @@ import {
   ProductPageClientProps,
 } from "@/@interfaces/ProductDetails/productDetails.interface";
 import CustomHTMLParser from "@/@components/core/HtmlParser/HtmlParser";
-import OfferBanner from "@/@assets/offer/bkashofferbanner.webp";
-import OtherProduct from "../Product/OtherProduct";
-import Link from "next/link";
 import ImagePreviewModal from "@/@components/core/ImagePreview/ImagePrevieModal";
-import { IRandomPickReviewData } from "@/@interfaces/Reviews/reviews.interface";
 
 const defaultValue = { phone: "" };
-const CATEGORY_PRODUCT_LIMIT = 6;
 
 const ProductSchema = yup.object({
   phone: yup.string().trim().required("Mobile number is required"),
@@ -46,7 +39,6 @@ export default function ProductPageClient({
   initialMoreWatchData,
 }: ProductPageClientProps) {
   const router = useRouter();
-  const [showMore, setShowMore] = useState(false);
   const [notifyLoading, setNotifyLoading] = useState(false);
   const [productQuantity, setProductQuantity] = useState(1);
   const singleWatch = useMemo(() => initialSingleWatch, [initialSingleWatch]);
@@ -55,28 +47,17 @@ export default function ProductPageClient({
   const [isDragging, setIsDragging] = useState(false);
   const containerRef = React.useRef<HTMLDivElement>(null);
   const [inCart, setInCart] = useState<boolean>(false);
-  const searchParams = useSearchParams();
   const [showForm, setShowForm] = useState(false);
   const [buyNowLoading, setBuyNowLoading] = useState(false);
   const moreWatchData = useMemo(
     () => initialMoreWatchData,
     [initialMoreWatchData],
   );
-  const [perfumeProducts, setPerfumeProducts] = useState<any[]>([]);
-  const [sunglassProducts, setSunglassProducts] = useState<any[]>([]);
-  const hasFetchedCategoryProductsRef = React.useRef(false);
   /** One `view_item` dataLayer push per product per mount (GTM should map this to Meta ViewContent; do not also call fbq here or Pixel fires twice). */
   const productViewAnalyticsSentRef = useRef<string | null>(null);
 
-  const {
-    setRealTimeCartItems,
-    setIsCartDrawer,
-    isCartDrawer,
-    setCampaignPath,
-    userInfo,
-    campaignPath,
-    setIsSignUpDrawer,
-  } = useContext(GlobalContext);
+  const { setRealTimeCartItems, setIsCartDrawer, isCartDrawer, userInfo } =
+    useContext(GlobalContext);
 
   const {
     register,
@@ -177,74 +158,6 @@ export default function ProductPageClient({
     setCurrentIndex(idx >= 0 ? idx : 0);
   };
 
-  const getHighlightedDescription = (description: string, expand: boolean) => {
-    if (!description) return "";
-
-    // ✅ যদি ব্রাউজার না হয় (SSR সময়), তাহলে শুধু plain return দেবে
-    if (typeof document === "undefined") {
-      return expand
-        ? `<div class="editor-preview">${description}</div>`
-        : `<div class="editor-preview">${description
-            .split("\n")
-            .slice(0, 4)
-            .join("<br/>")}</div>`;
-    }
-
-    // ✅ Normalize and trim
-    const clean = description.trim();
-
-    // ✅ Extract <style> blocks
-    const styleMatch = clean.match(/<style[^>]*>([\s\S]*?)<\/style>/gi);
-    const styleHTML = styleMatch ? styleMatch.join("") : "";
-
-    // ✅ Remove <style> tags
-    const withoutStyle = clean.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, "");
-
-    // ✅ Expanded version → full HTML
-    if (expand) {
-      return `${styleHTML}<div class="editor-preview">${withoutStyle}</div>`;
-    }
-
-    // ✅ Client-only parsing (safe)
-    const tempDiv = document.createElement("div");
-    tempDiv.innerHTML = withoutStyle;
-
-    const childNodes = Array.from(tempDiv.childNodes);
-    const previewBlocks: string[] = [];
-    let count = 0;
-
-    for (const node of childNodes) {
-      if (count >= 4) break;
-
-      if (node.nodeType === Node.ELEMENT_NODE) {
-        const html = (node as HTMLElement).outerHTML;
-        previewBlocks.push(html);
-        count++;
-      } else if (node.nodeType === Node.TEXT_NODE) {
-        const text = node.textContent?.trim();
-        if (text) {
-          previewBlocks.push(`<p>${text}</p>`);
-          count++;
-        }
-      }
-    }
-
-    const formattedPreview =
-      `${styleHTML}<div class="editor-preview">` +
-      previewBlocks.join("\n") +
-      `<div style="margin-top:2.75rem;color:#94a3b8;font-size:1.875rem;font-style:italic">...click on button see more</div>` +
-      `</div>`;
-
-    return formattedPreview;
-  };
-
-  const discountPct = useMemo(() => {
-    const reg = Number(singleWatch?.pricing?.regular_price || 0);
-    const sale = Number(singleWatch?.pricing?.sale_price || 0);
-    if (!reg || reg <= 0 || sale <= 0 || sale >= reg) return null;
-    return Math.round(((reg - sale) / reg) * 100);
-  }, [singleWatch]);
-
   useEffect(() => {
     if (!singleWatch) return;
 
@@ -288,56 +201,6 @@ export default function ProductPageClient({
     });
   }, [singleWatch]);
 
-  useEffect(() => {
-    let cancelled = false;
-
-    const fetchCategoryProducts = async () => {
-      const [perfumeRes, sunglassRes] = await Promise.allSettled([
-        ProductService.getProduct({
-          category: "perfume",
-          limit: CATEGORY_PRODUCT_LIMIT,
-        }),
-        ProductService.getProduct({
-          category: "sunglass",
-          limit: CATEGORY_PRODUCT_LIMIT,
-        }),
-      ]);
-
-      if (cancelled) return;
-
-      setPerfumeProducts(
-        perfumeRes.status === "fulfilled"
-          ? (perfumeRes.value?.data?.data || []).slice(
-              0,
-              CATEGORY_PRODUCT_LIMIT,
-            )
-          : [],
-      );
-      setSunglassProducts(
-        sunglassRes.status === "fulfilled"
-          ? (sunglassRes.value?.data?.data || []).slice(
-              0,
-              CATEGORY_PRODUCT_LIMIT,
-            )
-          : [],
-      );
-    };
-    const handleFirstScroll = () => {
-      if (hasFetchedCategoryProductsRef.current) return;
-
-      hasFetchedCategoryProductsRef.current = true;
-      window.removeEventListener("scroll", handleFirstScroll);
-      fetchCategoryProducts();
-    };
-
-    window.addEventListener("scroll", handleFirstScroll, { passive: true });
-
-    return () => {
-      cancelled = true;
-      window.removeEventListener("scroll", handleFirstScroll);
-    };
-  }, []);
-
   const handleAddToCart = async (products: Product[]) => {
     if (inCart) {
       setIsCartDrawer(true);
@@ -360,17 +223,21 @@ export default function ProductPageClient({
 
     for (const p of products) {
       if (!p?._id) continue;
-      totalValue += Number(p?.pricing?.sale_price || 0);
+      const lineQty = Math.max(1, productQuantity);
+      totalValue += Number(p?.pricing?.sale_price || 0) * lineQty;
 
       const i = cartItems.findIndex((item: any) => item.id === p._id);
       if (i >= 0) {
-        cartItems[i].quantity += 1;
+        cartItems[i].quantity = Math.min(
+          Number(p.inventory?.stock_quantity || 99),
+          Number(cartItems[i].quantity || 0) + lineQty,
+        );
       } else {
         cartItems.push({
           id: p._id,
           title: p.title,
           price: p.pricing?.sale_price || 0,
-          quantity: productQuantity,
+          quantity: lineQty,
           image: p.featured_image?.src || p.images?.[0]?.src,
           sku: p?.sku,
           categories: Array.isArray(p.categories)
@@ -403,7 +270,7 @@ export default function ProductPageClient({
             ? p.categories.join(", ")
             : (p.categories ?? ""),
           price: p.pricing?.sale_price || 0,
-          quantity: 1,
+          quantity: productQuantity,
           max_quantity: p.inventory.stock_quantity,
         })),
       },
@@ -553,24 +420,12 @@ export default function ProductPageClient({
   const [reviewData, setReviewData] = useState<any>();
 
   const [reviewDataLength, setReviewDataLength] = useState<number>(0);
-  const [randomPickReviews, setRandomPickReviews] =
-    useState<IRandomPickReviewData | null>(null);
 
   useEffect(() => {
     if (singleWatch?._id) {
       fetchReviewData();
     }
   }, [singleWatch?._id]);
-
-  useEffect(() => {
-    ProductService.getRandomPickReviews()
-      .then((res: any) => {
-        if (res?.success && res?.data) {
-          setRandomPickReviews(res.data);
-        }
-      })
-      .catch(() => {});
-  }, []);
 
   const fetchReviewData = () => {
     ProductService.getReview(singleWatch?._id)
@@ -614,26 +469,87 @@ export default function ProductPageClient({
     return { average: avg, distribution: dist };
   }, [reviewData]);
 
-  const isFlashSale: boolean = singleWatch!?.categories!.includes("flash-sale");
-
-  const saveAmount = useMemo(
-    () =>
-      (singleWatch?.pricing?.regular_price ?? 0) -
-      (singleWatch?.pricing?.sale_price ?? 0),
-    [singleWatch],
-  );
+  const isFlashSale: boolean = Array.isArray(singleWatch?.categories)
+    ? singleWatch.categories.includes("flash-sale")
+    : String(singleWatch?.categories || "").includes("flash-sale");
 
   const categoryLabel = useMemo(() => {
-    const cat = singleWatch?.categories?.[0];
-    if (!cat) return null;
-    return cat
+    const raw = Array.isArray(singleWatch?.categories)
+      ? singleWatch.categories[0]
+      : typeof singleWatch?.categories === "string"
+        ? singleWatch.categories.split(",")[0]
+        : "";
+    if (!raw) return null;
+    return String(raw)
+      .trim()
       .split("-")
       .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(" ");
   }, [singleWatch]);
 
+  const shortText = useMemo(() => {
+    const short = (singleWatch as any)?.short_description;
+    if (typeof short === "string" && short.trim()) {
+      return short
+        .replace(/<[^>]+>/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+    const html = singleWatch?.description || "";
+    const plain = html
+      .replace(/<[^>]+>/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+    if (!plain) return "";
+    return plain.length > 180 ? `${plain.slice(0, 180).trim()}…` : plain;
+  }, [singleWatch]);
+
+  const sizeOptions = useMemo(() => {
+    const attrs = Array.isArray((singleWatch as any)?.attributes)
+      ? (singleWatch as any).attributes
+      : [];
+    const sizeAttr = attrs.find((a: any) =>
+      /size|diameter|band width|case diameter/i.test(String(a?.title || "")),
+    );
+    if (!sizeAttr?.value) return [] as string[];
+    return String(sizeAttr.value)
+      .split(/[,|/]/)
+      .map((s) => s.trim())
+      .filter(Boolean);
+  }, [singleWatch]);
+
+  const colorOptions = useMemo(() => {
+    const attrs = Array.isArray((singleWatch as any)?.attributes)
+      ? (singleWatch as any).attributes
+      : [];
+    const colorAttr = attrs.find((a: any) =>
+      /color|colour|band material|case material/i.test(String(a?.title || "")),
+    );
+    if (!colorAttr?.value) return [] as string[];
+    return String(colorAttr.value)
+      .split(/[,|/]/)
+      .map((s) => s.trim())
+      .filter(Boolean);
+  }, [singleWatch]);
+
+  const [selectedSize, setSelectedSize] = useState<string>("");
+  const [selectedColor, setSelectedColor] = useState<string>("");
+
+  useEffect(() => {
+    if (sizeOptions.length) setSelectedSize(sizeOptions[0]);
+  }, [sizeOptions]);
+
+  useEffect(() => {
+    if (colorOptions.length) setSelectedColor(colorOptions[0]);
+  }, [colorOptions]);
+
+  const mainSrc =
+    typeof mainImage?.src === "string"
+      ? mainImage.src
+      : (mainImage?.src as StaticImageData | undefined)?.src;
+
   return (
-    <div className="rongonaa-product-page max-w-layout mx-auto py-3 md:py-8 2xl:px-0 px-3 sm:px-4">
+    <div className="rongonaa-pdp max-w-layout mx-auto py-4 md:py-8 2xl:px-0 px-3 sm:px-4">
       <Modal
         isOpen={modal.open}
         type={modal.type}
@@ -647,103 +563,47 @@ export default function ProductPageClient({
         secondaryActionText={modal.type === "warning" ? "Cancel" : undefined}
         onSecondaryAction={() => setModal((s) => ({ ...s, open: false }))}
       />
-      <div className="rongonaa-product-showcase">
-        <div className="rongonaa-product-vault">
-          {images.length > 1 && (
-            <span className="rongonaa-product-frame-count">
-              {String(currentIndex + 1).padStart(2, "0")} /{" "}
-              {String(images.length).padStart(2, "0")}
-            </span>
-          )}
+
+      <div className="rongonaa-pdp__hero">
+        {/* Gallery */}
+        <div className="rongonaa-pdp__gallery">
           <div
             ref={containerRef}
-            className="relative overflow-hidden group select-none"
+            className="rongonaa-pdp__main select-none"
             onTouchStart={onTouchStart}
             onTouchMove={onTouchMove}
             onTouchEnd={onTouchEnd}
           >
-            {/* Track */}
-            <div
-              className={`flex w-full h-full ${
-                isDragging
-                  ? ""
-                  : "transition-transform duration-500 ease-in-out"
-              }`}
-              style={{
-                transform: ((): string => {
-                  const width = containerRef.current?.offsetWidth || 1;
-                  const dragPct =
-                    touchStartX !== null ? (touchDeltaX / width) * 100 : 0;
-                  const base = -currentIndex * 100;
-                  return `translateX(calc(${base}% + ${dragPct}%))`;
-                })(),
-              }}
-            >
-              {images.map((img, idx) => (
-                <div key={idx} className="flex-none w-full">
-                  <div className="rongonaa-product-stage-image relative w-full aspect-square overflow-hidden rounded-xl">
-                    <Image
-                      src={
-                        (img?.src as string | StaticImageData) ||
-                        (noImageFound as StaticImageData)
-                      }
-                      alt={img?.title || `Product image ${idx + 1}`}
-                      fill
-                      className="cursor-grab active:cursor-grabbing object-cover"
-                      sizes="(max-width: 640px) 100vw,
-               (max-width: 1024px) 50vw,
-               25vw"
-                      loading="lazy"
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
+            <Image
+              src={
+                (mainImage?.src as string | StaticImageData) ||
+                (noImageFound as StaticImageData)
+              }
+              alt={mainImage?.title || singleWatch?.title || "Product"}
+              fill
+              className="object-cover"
+              sizes="(max-width: 886px) 100vw, 50vw"
+              priority
+            />
 
             {singleWatch?.inventory?.stock_status === "out-of-stock" && (
-              <div className="w-full absolute top-0.5 -right-49 ">
-                <p className="text-base font-semibold premium-badge rounded-lg w-44 text-center px-3 py-1.5 text-white mx-auto">
-                  Out Of Stock
-                </p>
-              </div>
+              <span className="rongonaa-pdp__oos-badge">Out Of Stock</span>
             )}
 
-            {images.length > 1 && (
-              <>
-                <button
-                  type="button"
-                  className="rongonaa-product-stage-nav hidden xl:flex absolute top-1/2 -translate-y-1/2 left-3 cursor-pointer focus:outline-none"
-                  onClick={goPrev}
-                  aria-label="Previous image"
-                >
-                  <Icon name="chevron_left" size={22} />
-                </button>
-                <button
-                  type="button"
-                  className="rongonaa-product-stage-nav hidden xl:flex absolute top-1/2 -translate-y-1/2 right-3 cursor-pointer focus:outline-none"
-                  onClick={goNext}
-                  aria-label="Next image"
-                >
-                  <Icon name="chevron_right" size={22} />
-                </button>
-              </>
-            )}
-            {images.length > 1 && (
-              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 xl:hidden">
-                {images.map((_, i) => (
-                  <span
-                    key={i}
-                    className={`rongonaa-product-dot ${
-                      i === currentIndex ? "rongonaa-product-dot--active" : ""
-                    }`}
-                  />
-                ))}
-              </div>
-            )}
+            <button
+              type="button"
+              className="rongonaa-pdp__zoom"
+              onClick={() => {
+                if (mainSrc) handleImageClick(mainSrc);
+              }}
+            >
+              <Icon name="zoom_in" size={16} />
+              Zoom
+            </button>
           </div>
 
           {images.length > 1 && (
-            <div className="rongonaa-product-filmstrip">
+            <div className="rongonaa-pdp__thumbs">
               {images.map((img, idx) => (
                 <button
                   key={idx}
@@ -751,18 +611,15 @@ export default function ProductPageClient({
                   aria-label={`Select image ${idx + 1}`}
                   aria-pressed={idx === currentIndex}
                   onClick={() => handleSubImageClick(img)}
-                  className={`rongonaa-product-filmstrip-item ${
-                    idx === currentIndex
-                      ? "rongonaa-product-filmstrip-item--active"
-                      : ""
+                  className={`rongonaa-pdp__thumb ${
+                    idx === currentIndex ? "is-active" : ""
                   }`}
                 >
                   <Image
                     src={(img.src as string | StaticImageData) || noImageFound}
                     alt={img.title || `Product image ${idx + 1}`}
                     fill
-                    sizes="80px"
-                    loading="lazy"
+                    sizes="72px"
                     className="object-cover"
                   />
                 </button>
@@ -771,401 +628,127 @@ export default function ProductPageClient({
           )}
         </div>
 
-        <div className="rongonaa-product-showcase-seam" aria-hidden="true" />
+        {/* Info */}
+        <div className="rongonaa-pdp__info">
+          {categoryLabel ? (
+            <p className="rongonaa-pdp__eyebrow">{categoryLabel}</p>
+          ) : null}
 
-        <div className="rongonaa-product-story">
-          <div className="rongonaa-product-meta">
-            {singleWatch?.brand ? (
-              <span className="rongonaa-product-meta-chip">{singleWatch.brand}</span>
-            ) : null}
-            {categoryLabel ? (
-              <span className="rongonaa-product-meta-chip rongonaa-product-meta-chip--ghost">
-                {categoryLabel}
+          <h1 className="rongonaa-pdp__title">{singleWatch?.title}</h1>
+
+          {reviewDataLength > 0 ? (
+            <div className="rongonaa-pdp__rating">
+              <Icon name="star" size={16} className="text-primary" />
+              <span>
+                {avgRating.toFixed(1).replace(/\.0$/, "")} · {reviewDataLength}{" "}
+                reviews
               </span>
-            ) : null}
-            {singleWatch?.inventory?.stock_status === "in-stock" ? (
-              <span className="rongonaa-product-meta-chip rongonaa-product-meta-chip--live">
-                In Stock
-              </span>
-            ) : null}
-          </div>
-
-          <h1 className="rongonaa-product-headline">{singleWatch?.title}</h1>
-
-          {saveAmount > 0 ? (
-            <div className="rongonaa-product-save-ribbon">
-              <span>আপনি সাশ্রয় করছেন</span>
-              <strong>৳{saveAmount}</strong>
             </div>
           ) : null}
 
-          {reviewData?.length ? (
-            <div className="rongonaa-product-rating">
-              <div className="flex">
-                {[...Array(5)].map((_, i) => (
-                  <Icon
-                    key={i}
-                    name="star"
-                    className={
-                      i < Math.round(avgRating)
-                        ? "text-yellow-500"
-                        : "text-gray-300"
-                    }
-                    size={18}
-                  />
-                ))}
-              </div>
-              <p className="font-bold text-secondary">{avgRating.toFixed(1)}</p>
-              <p className="text-sm text-secondary/55">
-                ({reviewDataLength}) Reviews
-              </p>
-            </div>
-          ) : null}
-
-          <div className="rongonaa-product-price-ticket">
-            <div className="rongonaa-product-price-ticket__top">
-              <span className="rongonaa-product-price-ticket__label">
-                আজকের বিশেষ মূল্য
+          <div className="rongonaa-pdp__price">
+            <span className="rongonaa-pdp__price-sale">
+              ৳{Number(singleWatch?.pricing?.sale_price || 0).toLocaleString()}
+            </span>
+            {Number(singleWatch?.pricing?.regular_price || 0) >
+              Number(singleWatch?.pricing?.sale_price || 0) && (
+              <span className="rongonaa-pdp__price-compare">
+                ৳
+                {Number(
+                  singleWatch?.pricing?.regular_price || 0,
+                ).toLocaleString()}
               </span>
-              <span className="rongonaa-product-price-ticket__tag">
-                {singleWatch?.offer_text || "Limited Offer"}
-              </span>
-            </div>
-            <div className="rongonaa-product-price-ticket__body">
-              <div className="rongonaa-product-price-ticket__compare">
-                <span>MRP ৳{singleWatch?.pricing?.regular_price}</span>
-                <span>Market ৳{singleWatch?.pricing?.sale_price + 200}</span>
-              </div>
-              <p className="rongonaa-product-price-ticket__final">
-                ৳{singleWatch?.pricing?.sale_price}
-              </p>
-            </div>
-          </div>
-
-          <div className="rongonaa-product-assurance">
-            <span>ক্যাশ অন ডেলিভারি</span>
-            <span>১০০% অরিজিনাল</span>
-            <span>দ্রুত ডেলিভারি</span>
-          </div>
-
-          <div className="rongonaa-product-actions-dock">
-            <ProductActions
-              singleWatch={singleWatch}
-              productQuantity={productQuantity}
-              setProductQuantity={setProductQuantity}
-              handleOrderNow={handleOrderNow}
-              handleAddToCart={handleAddToCart}
-              handleSubmit={handleSubmit}
-              formSubmit={formSubmit}
-              register={register}
-              errors={errors}
-              watch={watch}
-              notifyLoading={notifyLoading}
-              setIsCartDrawer={setIsCartDrawer}
-              inCart={inCart}
-              buyNowLoading={buyNowLoading}
-            />
-          </div>
-
-          <section aria-label="bKash payment offer" className="rongonaa-product-offer-frame">
-            <div className="overflow-hidden rounded-lg">
-              <Image
-                src={OfferBanner}
-                alt="bKash payment offer - Get up to ৳300 cashback on secure and fast transactions"
-                width={OfferBanner.width}
-                height={OfferBanner.height}
-                className="h-auto w-full object-contain"
-                sizes="(max-width: 768px) 100vw, 50vw"
-                loading="lazy"
-                decoding="async"
-              />
-            </div>
-          </section>
-
-          {randomPickReviews && randomPickReviews.reviews.length > 0 ? (
-            <div className="rongonaa-product-social-proof">
-              <div className="flex items-center">
-                {randomPickReviews.reviews.map((review, index) => (
-                  <div
-                    key={`${review.reviewer_name}-${index}`}
-                    className={`group relative cursor-pointer transition-all duration-300 ease-out ${
-                      index > 0 ? "-ml-3" : ""
-                    } hover:z-50 hover:-translate-y-2 hover:scale-110`}
-                    style={{
-                      zIndex: randomPickReviews.reviews.length - index,
-                    }}
-                  >
-                    {/* Avatar */}
-                    <div className="relative h-10 w-10 overflow-hidden rounded-full border-2 border-white bg-white shadow-md transition-all duration-300 group-hover:shadow-xl">
-                      {review.profile_url ? (
-                        <Image
-                          src={review.profile_url}
-                          alt={review.reviewer_name}
-                          fill
-                          className="object-cover"
-                          sizes="40px"
-                        />
-                      ) : (
-                        <div className="flex h-full w-full items-center premium-badge text-sm font-semibold text-white">
-                          {review.reviewer_name
-                            ?.trim()
-                            ?.charAt(0)
-                            ?.toUpperCase() || "U"}
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Tooltip */}
-                    <div className="pointer-events-none absolute bottom-full left-1/2 z-[999] mb-2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-gray-900 px-3 py-1.5 text-xs font-medium text-white opacity-0 shadow-xl transition-all duration-300 group-hover:mb-4 group-hover:opacity-100">
-                      {review.reviewer_name}
-
-                      {/* Arrow */}
-                      <div className="absolute left-1/2 top-full h-2 w-2 -translate-x-1/2 rotate-45 bg-gray-900" />
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <p className="text-sm font-medium text-gray-800">
-                {randomPickReviews.total_reviews * 500} + সন্তুষ্ট কাস্টমার
-              </p>
-            </div>
-          ) : null}
-          <div className="mt-4">
-            {isFlashSale && <ProductFlashDeal product={singleWatch} />}
-          </div>
-          <EmiFacilities
-            salePrice={Number(singleWatch?.pricing?.sale_price || 0)}
-          />
-        </div>
-      </div>
-
-      <div className="mt-4">
-        <PremiumBenefits singleWatch={singleWatch} />
-      </div>
-
-      <div
-        id="build-quality-details"
-        className="rongonaa-product-section scroll-mt-24"
-      >
-        <div className="rongonaa-product-section-head">
-          <h3>
-            কেন <span className="text-primary">{singleWatch?.title}</span> কিনবেন?
-          </h3>
-        </div>
-
-        <div className="p-3 sm:p-4">
-          {singleWatch?.images.length > 1 && (
-            <div className="mt-2 grid md:grid-cols-3 grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
-              {singleWatch?.images.slice(0, 5).map((image, idx) => {
-                const imageSrc =
-                  typeof image?.src === "string"
-                    ? image.src
-                    : (image?.src as StaticImageData).src;
-
-                const activeImageSrc =
-                  typeof mainImage?.src === "string"
-                    ? mainImage.src
-                    : (mainImage?.src as StaticImageData | undefined)?.src;
-
-                const isActive = imageSrc === activeImageSrc;
-
-                return (
-                  <button
-                    key={idx}
-                    type="button"
-                    aria-label={`Select image ${idx + 1}`}
-                    aria-pressed={isActive}
-                    className={`group relative aspect-square overflow-hidden rounded-xl border bg-white p-1 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${"border-gray-200 hover:-translate-y-1 hover:border-primary-border hover:shadow-lg"}`}
-                  >
-                    <Image
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        if (typeof image?.src === "string")
-                          handleImageClick(image?.src);
-                      }}
-                      src={image?.src as string | StaticImageData}
-                      alt={image?.title || `Product image ${idx + 1}`}
-                      fill
-                      sizes="(max-width: 640px) 18vw, (max-width: 1024px) 12vw, 96px"
-                      loading="lazy"
-                      className={`rounded-lg object-cover transition-all duration-300 cursor-pointer ${
-                        isActive
-                          ? "scale-100"
-                          : "scale-[0.98] group-hover:scale-105"
-                      }`}
-                    />
-                    <div className="absolute left-1 right-1 bottom-1 rounded-lg bg-black/80 px-2 py-3 text-white backdrop-blur-sm">
-                      <p className="text-sm font-semibold truncate">
-                        {image?.text || `Product image ${idx + 1}`}
-                      </p>
-                    </div>
-
-                    <div
-                      className={`pointer-events-none absolute inset-1 rounded-lg transition-colors duration-300 ${
-                        isActive
-                          ? "bg-primary/5"
-                          : "bg-black/0 group-hover:bg-black/5"
-                      }`}
-                    />
-
-                    {isActive && (
-                      <div className="absolute bottom-1.5 left-1/2 h-1 w-8 -translate-x-1/2 premium-badge shadow-sm" />
-                    )}
-
-                    <span className="absolute right-1.5 top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-black/55 text-[10px] font-semibold text-white backdrop-blur-sm">
-                      {idx + 1}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* review section  */}
-
-      <div className="rongonaa-product-reviews md:p-6 p-3">
-        {reviewData?.length ? (
-          <div className="mb-6">
-            <h3 className="premium-section-title mb-4 rounded-xl px-4 py-3 text-center text-lg font-bold">
-              Customer Reviews ({reviewDataLength})
-            </h3>
-
-            <div className="mb-4 md:flex gap-8">
-              <div className="md:w-48 w-full">
-                <h3 className="font-bold text-4xl text-center">
-                  {average.toFixed(1)}
-                </h3>
-                <div className="flex text-center justify-center pt-1">
-                  {[...Array(5)].map((_, i) => (
-                    <Icon
-                      key={i}
-                      name="star"
-                      size={23}
-                      className={
-                        i < Math.round(average)
-                          ? "text-yellow-500"
-                          : "text-gray-300"
-                      }
-                    />
-                  ))}
-                </div>
-                <p className="text-center pt-2">
-                  Based on {reviewDataLength} reviews
-                </p>
-              </div>
-
-              <div className="w-full space-y-0.5 md:mt-0 mt-6">
-                {[5, 4, 3, 2, 1].map((stars, idx) => {
-                  const count = distribution[stars - 1];
-
-                  const totalCount = reviewDataLength;
-
-                  const paddings = [10, 10, 10, 10, 10];
-                  const paddingLeft = `${paddings[idx] || 0}px`;
-
-                  return (
-                    <div
-                      key={stars}
-                      className="flex items-center text-gray-700"
-                    >
-                      <div className="flex items-center space-x-0.5">
-                        {[...Array(stars)].map((_, i) => (
-                          <Icon
-                            key={i}
-                            name="star"
-                            size={20}
-                            className="text-yellow-500"
-                          />
-                        ))}
-                      </div>
-
-                      <div className="w-full" style={{ paddingLeft }}>
-                        <ProgressBar
-                          totalCount={totalCount}
-                          value={count}
-                          stars={stars}
-                        />
-                      </div>
-                      <span className="text-sm w-10 text-right">{count}</span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div className="relative">
-              <ProductReview reviews={reviewData} />
-            </div>
-          </div>
-        ) : null}
-
-        {userInfo?.phone ? (
-          <div className="px-4 rounded-xl ">
-            {!showForm ? (
-              <div className="flex items-center justify-center">
-                <button
-                  className="premium-cta rounded-lg hover:bg-primary/90 transition font-bold cursor-pointer"
-                  onClick={() => setShowForm(true)}
-                >
-                  Write a review
-                </button>
-              </div>
-            ) : (
-              <CreateProductReview
-                productId={singleWatch?._id}
-                onCancel={() => setShowForm(false)}
-                fetchReviewData={fetchReviewData}
-              />
             )}
           </div>
-        ) : (
-          <div className="  rounded-xl text-center flex items-center justify-center gap-3">
-            <button
-              className="premium-cta rounded-lg hover:bg-primary/90 transition font-bold cursor-pointer"
-              onClick={() => setIsSignUpDrawer(true)}
-            >
-              Sign In
-            </button>
-            <p className="text-gray-700">to share your feedback.</p>
+
+          {shortText ? (
+            <p className="rongonaa-pdp__short">{shortText}</p>
+          ) : null}
+
+          {sizeOptions.length > 0 && (
+            <div className="rongonaa-pdp__field">
+              <p className="rongonaa-pdp__field-label">Size</p>
+              <div className="rongonaa-pdp__chips">
+                {sizeOptions.map((opt) => (
+                  <button
+                    key={opt}
+                    type="button"
+                    className={`rongonaa-pdp__chip ${
+                      selectedSize === opt ? "is-active" : ""
+                    }`}
+                    onClick={() => setSelectedSize(opt)}
+                  >
+                    {opt}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {colorOptions.length > 0 && (
+            <div className="rongonaa-pdp__field">
+              <p className="rongonaa-pdp__field-label">Color</p>
+              <div className="rongonaa-pdp__chips">
+                {colorOptions.map((opt) => (
+                  <button
+                    key={opt}
+                    type="button"
+                    className={`rongonaa-pdp__chip ${
+                      selectedColor === opt ? "is-active" : ""
+                    }`}
+                    onClick={() => setSelectedColor(opt)}
+                  >
+                    {opt}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {isFlashSale && (
+            <div className="mb-3">
+              <ProductFlashDeal product={singleWatch} />
+            </div>
+          )}
+
+          <ProductActions
+            singleWatch={singleWatch}
+            productQuantity={productQuantity}
+            setProductQuantity={setProductQuantity}
+            handleOrderNow={handleOrderNow}
+            handleAddToCart={handleAddToCart}
+            handleSubmit={handleSubmit}
+            formSubmit={formSubmit}
+            register={register}
+            errors={errors}
+            watch={watch}
+            notifyLoading={notifyLoading}
+            setIsCartDrawer={setIsCartDrawer}
+            inCart={inCart}
+            buyNowLoading={buyNowLoading}
+          />
+
+          <div className="mt-4">
+            <EmiFacilities
+              salePrice={Number(singleWatch?.pricing?.sale_price || 0)}
+            />
           </div>
-        )}
-      </div>
-
-      {/* description section  */}
-
-      <div className="rongonaa-product-description">
-        <div className={`rongonaa-product-description-inner ${showMore ? "h-full" : "min-h-[500px]"}`}>
-          <CustomHTMLParser htmlContent={singleWatch?.description} />
         </div>
       </div>
 
-      {/* Related Products */}
+      <section className="rongonaa-pdp__desc" aria-labelledby="pdp-description">
+        <h2 id="pdp-description" className="rongonaa-pdp__desc-title">
+          Description
+        </h2>
+        <div className="rongonaa-pdp__desc-body">
+          <CustomHTMLParser htmlContent={singleWatch?.description} />
+        </div>
+      </section>
+
       <div className="rongonaa-product-related md:py-6 py-4">
         <ProductDetails moreWatchData={moreWatchData} />
       </div>
-      {/* {perfumeProducts.length > 0 && (
-        <div className="md:mt-6 mt-4 px-4 md:py-6 py-4 rounded-lg bg-white border border-primary-border">
-          <OtherProduct
-            moreWatchData={perfumeProducts}
-            title="Perfume"
-            viewAllLink="/watches/perfume"
-          />
-        </div>
-      )} */}
-      {/* {sunglassProducts.length > 0 && (
-        <div className="md:mt-6 mt-4 px-4 md:py-6 py-4 rounded-lg bg-white border border-primary-border">
-          <OtherProduct
-            moreWatchData={sunglassProducts}
-            title="Sunglass"
-            viewAllLink="/watches/sunglass"
-          />
-        </div>
-      )} */}
 
-      {/* Price Information */}
       <div className="rongonaa-product-seo">
         <h3 className="md:text-xl text-lg font-bold text-secondary">
           What is the best price of {singleWatch?.title} in Bangladesh?

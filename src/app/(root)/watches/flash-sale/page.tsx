@@ -2,9 +2,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { ProductService } from "@/@services/apis/Product/Product.service";
-import WatchCard from "@/@components/pages/Watches/WatchCard";
 import ButtonLoader from "@/@components/core/Button/ButtonLoader";
 import DayDealCount from "@/@components/pages/DayDealCount/DayDealCount";
+import FlashSaleCard from "@/@components/pages/Home/FlashSaleCard";
 import FlashSaleWatch from "@/@skeleton/FlashSaleWatch.skeleton";
 import NoDataFound from "@/@components/pages/NoDataFount/NoDataFount";
 import {
@@ -55,7 +55,6 @@ export default function WomenWatches() {
   const queryParams = useMemo(() => {
     const params: Record<string, any> = {
       ...{ category: "flash-sale", sort: "-updatedAt" },
-
       limit,
     };
     return params;
@@ -80,7 +79,7 @@ export default function WomenWatches() {
               0;
 
             setHasMore(
-              total ? limit < total : res.data.data.length >= PAGE_SIZE
+              total ? limit < total : res.data.data.length >= PAGE_SIZE,
             );
 
             setWatchData((prev) => {
@@ -113,60 +112,64 @@ export default function WomenWatches() {
   }, [JSON.stringify(queryParams)]);
 
   return (
-    <div className="py-5 2xl:px-0 px-3">
-      <div className="max-w-layout mx-auto p-3 bg-primary-light py-5 border-primary-border border rounded-lg">
-        <div className="flex gap-2 items-center ">
-          <h2 className="text-2xl font-bold pb-3">Flash Sale </h2>{" "}
+    <section
+      className="rongonaa-flash-sale min-h-[60vh]"
+      aria-labelledby="flash-sale-page-heading"
+    >
+      <div className="rongonaa-flash-sale__inner">
+        <div className="rongonaa-flash-sale__header">
           <div>
+            <p className="rongonaa-flash-sale__eyebrow">Limited Time</p>
+            <h2
+              id="flash-sale-page-heading"
+              className="rongonaa-flash-sale__title"
+            >
+              Flash Sale
+            </h2>
+          </div>
+
+          <div className="rongonaa-flash-sale__aside">
             <DayDealCount />
           </div>
         </div>
-        <div className="flex gap-4">
-          <div className=" w-full">
-            {loading ? (
-              <div className="flex justify-center items-center">
-                <FlashSaleWatch />
-              </div>
-            ) : error ? (
-              <div className="flex justify-center items-center h-64">
-                <p className="text-danger">{error}</p>
-              </div>
-            ) : watchData?.data?.data?.length ? (
-              <>
-                <div className="grid md:grid-cols-3 grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 md:gap-4 gap-2 ">
-                  {watchData.data.data
-                    .filter(
-                      (w: IProduct) =>
-                        w?.inventory?.stock_status !== "out-of-stock"
-                    )
-                    .map((w: IProduct, idx) => (
-                      <WatchCard
-                        key={`${w._id}-${idx}`}
-                        data={w}
-                        isByNowButton={true}
-                        isAddToCartButton={false}
-                      />
-                    ))}
-                </div>
 
-                {loadingMore && (
-                  <div className="flex justify-center items-center py-4">
-                    <ButtonLoader />
-                  </div>
-                )}
-
-                {!hasMore && !loadingMore && (
-                  <div className="flex justify-center items-center py-4">
-                    <p className="text-gray-500">No more watches to load</p>
-                  </div>
-                )}
-              </>
-            ) : (
-              <NoDataFound />
-            )}
+        {loading ? (
+          <div className="flex items-center justify-center py-10">
+            <FlashSaleWatch />
           </div>
-        </div>
+        ) : error ? (
+          <div className="flex h-64 items-center justify-center">
+            <p className="text-danger">{error}</p>
+          </div>
+        ) : watchData?.data?.data?.length ? (
+          <>
+            <div className="rongonaa-flash-sale__grid">
+              {watchData.data.data
+                .filter(
+                  (w: IProduct) =>
+                    w?.inventory?.stock_status !== "out-of-stock",
+                )
+                .map((w: IProduct, idx) => (
+                  <FlashSaleCard key={`${w._id}-${idx}`} data={w} />
+                ))}
+            </div>
+
+            {loadingMore && (
+              <div className="flex items-center justify-center py-6">
+                <ButtonLoader />
+              </div>
+            )}
+
+            {!hasMore && !loadingMore && (
+              <div className="flex items-center justify-center py-6">
+                <p className="text-sm text-black/40">No more products to load</p>
+              </div>
+            )}
+          </>
+        ) : (
+          <NoDataFound />
+        )}
       </div>
-    </div>
+    </section>
   );
 }

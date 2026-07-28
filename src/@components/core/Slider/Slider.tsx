@@ -119,9 +119,7 @@
 
 // export default HeroSlider;
 
-
 "use client";
-
 
 import Image from "next/image";
 import Link from "next/link";
@@ -139,7 +137,6 @@ export interface HeroSliderProps {
   slides: ISlide[];
   mobileSlides?: ISlide[]; // 👈 এটা add করো
 }
-
 
 const HeroSlider = ({ slides, mobileSlides = [] }: HeroSliderProps) => {
   const [currentSlide, setCurrentSlide] = useState<number>(0);
@@ -214,7 +211,7 @@ const HeroSlider = ({ slides, mobileSlides = [] }: HeroSliderProps) => {
 
     const diff = clientX - startX;
     setCurrentTranslate(
-      prevTranslate + (diff / sliderRef.current.offsetWidth) * 100
+      prevTranslate + (diff / sliderRef.current.offsetWidth) * 100,
     );
   };
 
@@ -274,8 +271,9 @@ const HeroSlider = ({ slides, mobileSlides = [] }: HeroSliderProps) => {
           <button
             key={i}
             aria-label={`Go to slide ${i + 1}`}
-            className={`w-2 h-2 rounded-full border border-white/70 ${i === currentSlide ? "bg-white" : "bg-white/40"
-              }`}
+            className={`w-2 h-2 rounded-full border border-white/70 ${
+              i === currentSlide ? "bg-white" : "bg-white/40"
+            }`}
             onClick={() => goToIndex(i)}
           />
         ))}

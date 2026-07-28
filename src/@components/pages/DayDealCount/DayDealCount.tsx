@@ -1,5 +1,5 @@
 "use client";
-import Icon from "@/@components/core/Icon/Icon";
+
 import { useEffect, useState } from "react";
 
 const formatTime = (ms: number) => {
@@ -8,7 +8,7 @@ const formatTime = (ms: number) => {
   const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, "0");
   const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(
     2,
-    "0"
+    "0",
   );
   const seconds = String(totalSeconds % 60).padStart(2, "0");
   return { hours, minutes, seconds };
@@ -26,13 +26,24 @@ const getNextBoundaryMs = (now: Date) => {
 };
 
 const DayDealCount = () => {
-  const [timeLeft, setTimeLeft] = useState<number>(0);
+  const [timeLeft, setTimeLeft] = useState(0);
+  const [endsTonight, setEndsTonight] = useState(true);
 
   useEffect(() => {
     const compute = () => {
       const now = new Date();
       const next = getNextBoundaryMs(now);
       setTimeLeft(Math.max(next - now.getTime(), 0));
+      const midnightNext = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate() + 1,
+        0,
+        0,
+        0,
+        0,
+      ).getTime();
+      setEndsTonight(next === midnightNext);
     };
 
     compute();
@@ -40,38 +51,34 @@ const DayDealCount = () => {
     return () => clearInterval(id);
   }, []);
 
-  useEffect(() => {
-    if (timeLeft <= 0) {
-      const now = new Date();
-      const next = getNextBoundaryMs(now);
-      setTimeLeft(Math.max(next - now.getTime(), 0));
-    }
-  }, [timeLeft]);
-
   const { hours, minutes, seconds } = formatTime(timeLeft);
 
+  const units = [
+    { value: hours, label: "Hours" },
+    { value: minutes, label: "Mins" },
+    { value: seconds, label: "Secs" },
+  ];
+
   return (
-    <div className="flex items-center justify-between rounded-md px-1 pb-3">
-      <div className="flex items-center gap-2">
-        <div className="flex items-center gap-2">
-          <p className="text-base ms-3 text-primary font-bold md:block hidden">
-            Ending Offer
-          </p>
-          <Icon name="alarm" className="text-primary" size={22} />
-        </div>
-        <div className="flex gap-1 items-center">
-          <h3 className="text-base font-bold premium-badge rounded-md text-center px-1.5">
-            {hours}
-          </h3>
-          <span className="text-gold text-base font-bold">:</span>
-          <h3 className="text-base font-bold premium-badge rounded-md text-center px-1.5">
-            {minutes}
-          </h3>
-          <span className="text-gold text-base font-bold">:</span>
-          <h3 className="text-base font-bold premium-badge rounded-md text-center px-1.5">
-            {seconds}
-          </h3>
-        </div>
+    <div className="rongonaa-flash-timer" aria-live="polite">
+      <p className="rongonaa-flash-timer__label">
+        <span className="rongonaa-flash-timer__dot" aria-hidden />
+        {endsTonight ? "Ends Tonight" : "Ends At Noon"}
+      </p>
+      <div className="rongonaa-flash-timer__units">
+        {units.map((unit, i) => (
+          <div key={unit.label} className="flex items-stretch">
+            {i > 0 && (
+              <div className="rongonaa-flash-timer__sep" aria-hidden />
+            )}
+            <div className="rongonaa-flash-timer__unit">
+              <span className="rongonaa-flash-timer__value">{unit.value}</span>
+              <span className="rongonaa-flash-timer__unit-label">
+                {unit.label}
+              </span>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

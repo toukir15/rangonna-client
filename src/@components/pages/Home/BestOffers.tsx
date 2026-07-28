@@ -1,49 +1,14 @@
+import Link from "next/link";
 import { IProduct } from "@/@interfaces/common.interface";
 import DayDealCount from "../DayDealCount/DayDealCount";
-import WatchCard from "../Watches/WatchCard";
+import FlashSaleCard from "./FlashSaleCard";
 import { ENV } from "@/@config/env.config";
 
 export const revalidate = 10;
 
-// async function getProducts() {
-//   const qs = new URLSearchParams({
-//     limit: "18",
-//     category: "flash-sale",
-//     "inventory.stock_status": "in-stock",
-//   });
-//   const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/product?${qs}`, {
-//     next: { revalidate: 10, tags: ["products", "flash-sale"] },
-//   });
-//   if (!res.ok) {
-//     return { data: { data: [] } };
-//   }
-//   return res.json();
-// }
-
-// async function getProducts() {
-//   const qs = new URLSearchParams({
-//     limit: "18",
-//     category: "flash-sale",
-//     "inventory.stock_status": "in-stock",
-//   });
-
-//   const rawUrl = `${process.env.NEXT_PUBLIC_BASE_URL?.trim()}/product?${qs}`;
-//   const url = encodeURI(rawUrl);
-
-//   const res = await fetch(url, {
-//     next: { revalidate: 10, tags: ["products", "flash-sale"] },
-//   });
-
-//   if (!res.ok) {
-//     return { data: { data: [] } };
-//   }
-
-//   return res.json();
-// }
-
 async function getProducts() {
   const qs = new URLSearchParams({
-    limit: "18",
+    limit: "10",
     category: "flash-sale",
     sort: "-updatedAt",
     "inventory.stock_status": "in-stock",
@@ -71,36 +36,44 @@ async function getProducts() {
 
 export default async function BestOffersPage() {
   const response = await getProducts();
-  const products: IProduct[] = response?.data?.data ?? [];
+  const products: IProduct[] = (response?.data?.data ?? []).filter(
+    (w: IProduct) => w?.inventory?.stock_status !== "out-of-stock",
+  );
+
+  if (products.length === 0) return null;
 
   return (
-    <div>
-      {products.length > 0 && (
-        <div className="max-w-layout mx-auto p-3 bg-primary-light mt-5 border-primary-border border rounded-lg">
-          <div className="flex gap-2 items-center ">
-            <h2 className="text-2xl font-bold pb-3">Flash Sale</h2>
-            <div>
-              <DayDealCount />
-            </div>
+    <section
+      className="rongonaa-flash-sale mt-3"
+      aria-labelledby="flash-sale-heading"
+    >
+      <div className="rongonaa-flash-sale__inner">
+        <div className="rongonaa-flash-sale__header">
+          <div>
+            <p className="rongonaa-flash-sale__eyebrow">Limited Time</p>
+            <h2 id="flash-sale-heading" className="rongonaa-flash-sale__title">
+              Flash Sale
+            </h2>
           </div>
 
-          <div className="grid xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 xl:gap-2">
-            {products
-              .filter(
-                (w: IProduct) => w?.inventory?.stock_status !== "out-of-stock",
-              )
-              .map((data: IProduct) => (
-                <WatchCard
-                  key={data._id}
-                  data={data}
-                  imgClassName="h-32 rounded-lg"
-                  isAddToCartButton={false}
-                  isByNowButton={true}
-                />
-              ))}
+          <div className="rongonaa-flash-sale__aside">
+            <DayDealCount />
+            <Link
+              href="/watches/flash-sale"
+              className="rongonaa-flash-sale__view-all"
+            >
+              View All
+              <span aria-hidden>→</span>
+            </Link>
           </div>
         </div>
-      )}
-    </div>
+
+        <div className="rongonaa-flash-sale__grid">
+          {products.slice(0, 5).map((data) => (
+            <FlashSaleCard key={data._id} data={data} />
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }

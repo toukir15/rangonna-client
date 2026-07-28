@@ -4,15 +4,15 @@ import BestOffers from "@/@components/pages/Home/BestOffers";
 import HomeDescription from "@/@components/pages/Home/HomeDescription";
 import NewProduct from "@/@components/pages/Home/NewProduct";
 import PopularProduct from "@/@components/pages/Home/PopularProduct";
-import SubBanner from "@/@components/pages/Home/SubBanner";
+import StoreCategories from "@/@components/pages/Home/StoreCategories";
 
 export default function Home() {
   return (
     <>
       <Banner />
+      <BestOffers />
+      <StoreCategories />
       <div className="px-3">
-        <BestOffers />
-        <SubBanner />
         <PopularProduct />
         {/* <CustomerReview /> */}
         <NewProduct />

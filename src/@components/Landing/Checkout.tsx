@@ -174,18 +174,8 @@ const Checkout = ({ landingData }: any) => {
         value: "cash on delivery",
         label: "Cash On Delivery",
       },
-      {
-        value: "pay on bkash",
-        label: "Pay On bKash",
-        showCashbackBadge: true,
-      },
-      {
-        value: "pay with sslcommerz",
-        label: "Pay With SSLCommerz",
-        showEmiBadge: calculateTotal() > EMI_THRESHOLD,
-      },
     ],
-    [selectedProducts, shippingPrice, couponData],
+    [],
   );
 
   useEffect(() => {

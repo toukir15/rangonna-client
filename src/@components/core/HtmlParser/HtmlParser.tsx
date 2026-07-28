@@ -31,10 +31,7 @@ function stripGoogleLinkerParams(href: string, baseOrigin: string): string {
     let changed = false;
     for (const key of [...url.searchParams.keys()]) {
       const lower = key.toLowerCase();
-      if (
-        TRACKING_QUERY_KEYS.has(lower) ||
-        lower.startsWith("_gcl")
-      ) {
+      if (TRACKING_QUERY_KEYS.has(lower) || lower.startsWith("_gcl")) {
         url.searchParams.delete(key);
         changed = true;
       }
@@ -53,7 +50,9 @@ function shouldSanitizeHostname(hostname: string): boolean {
   const h = hostname.replace(/^www\./i, "").toLowerCase();
   if (h === "naviforce.com.bd") return true;
   if (typeof window !== "undefined") {
-    const current = window.location.hostname.replace(/^www\./i, "").toLowerCase();
+    const current = window.location.hostname
+      .replace(/^www\./i, "")
+      .toLowerCase();
     if (h === current) return true;
   }
   return false;
@@ -65,7 +64,7 @@ const DEFAULT_CSS = `
     Helvetica, Arial, Noto Sans, sans-serif;
   line-height: 1.6;
   color: #0f172a;
-  background: #fff;
+  background: transparent;
   padding: 0;
   margin: 0;
 }
@@ -170,20 +169,21 @@ const DEFAULT_CSS = `
   border-collapse: collapse;
   font-size: 0.875rem;
   line-height: 1.5;
-  background: #fff;
+  background: transparent;
 }
 
 .editor-preview th,
 .editor-preview td {
-  border: 1px solid #e2e8f0;
+  border: 1px solid rgba(145, 27, 48, 0.12);
   padding: 0.5rem 0.75rem;
   text-align: left;
   vertical-align: top;
   word-break: break-word;
+  background: transparent;
 }
 
 .editor-preview th {
-  background: #f1f5f9;
+  background: rgba(145, 27, 48, 0.06);
   font-weight: 600;
   color: #0f172a;
 }
@@ -196,9 +196,7 @@ const DEFAULT_CSS = `
 }
 `;
 
-const CustomHTMLParser: React.FC<HTMLContentProps> = ({
-  htmlContent,
-}) => {
+const CustomHTMLParser: React.FC<HTMLContentProps> = ({ htmlContent }) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   /**
@@ -218,7 +216,9 @@ const CustomHTMLParser: React.FC<HTMLContentProps> = ({
     if (!root) return;
 
     const baseOrigin =
-      typeof window !== "undefined" ? window.location.origin : "https://naviforce.com.bd";
+      typeof window !== "undefined"
+        ? window.location.origin
+        : "https://naviforce.com.bd";
 
     /**
      * Strip GTM / Ads linker junk from same-site URLs (href + click).
@@ -266,7 +266,10 @@ const CustomHTMLParser: React.FC<HTMLContentProps> = ({
 
       try {
         const url = new URL(raw, baseOrigin);
-        if (/^https?:$/i.test(url.protocol) && shouldSanitizeHostname(url.hostname)) {
+        if (
+          /^https?:$/i.test(url.protocol) &&
+          shouldSanitizeHostname(url.hostname)
+        ) {
           const cleaned = stripGoogleLinkerParams(url.href, baseOrigin);
           a.setAttribute("href", cleaned);
         }
@@ -293,6 +296,32 @@ const CustomHTMLParser: React.FC<HTMLContentProps> = ({
       wrap.appendChild(table);
     });
 
+    /**
+     * Drop solid white backgrounds from CMS HTML so PDP description matches page tone.
+     */
+    root.querySelectorAll<HTMLElement>("[style]").forEach((el) => {
+      const bg = (el.style.backgroundColor || el.style.background || "")
+        .replace(/\s/g, "")
+        .toLowerCase();
+      if (
+        !bg ||
+        bg === "transparent" ||
+        bg === "rgba(0,0,0,0)" ||
+        bg === "inherit"
+      ) {
+        return;
+      }
+      if (
+        bg === "#fff" ||
+        bg === "#ffffff" ||
+        bg === "white" ||
+        bg === "rgb(255,255,255)" ||
+        bg === "rgba(255,255,255,1)"
+      ) {
+        el.style.background = "transparent";
+        el.style.backgroundColor = "transparent";
+      }
+    });
     /**
      * Responsive images
      */
@@ -326,10 +355,7 @@ const CustomHTMLParser: React.FC<HTMLContentProps> = ({
   }, [cleanedHTML]);
 
   return (
-    <div
-      ref={containerRef}
-      className="editor-preview"
-    >
+    <div ref={containerRef} className="editor-preview">
       <div
         dangerouslySetInnerHTML={{
           __html: cleanedHTML,

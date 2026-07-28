@@ -20,7 +20,7 @@ import Modal, { ModalType } from "@/@components/core/Modal/Modal";
 import { inferShippingFromAddress } from "@/utils/data";
 // import OtpModal from "../SignUp/OtpModal";
 import CheckOutSignUp from "../SignUp/CheckOutSignUp";
-import { Gift, ShieldCheck, RefreshCw, Wallet } from "lucide-react";
+import { ShieldCheck, Truck, Banknote, PackageCheck } from "lucide-react";
 import { ToastService } from "@/utils/toaster.service";
 import { EMI_THRESHOLD } from "@/@components/pages/ProductDetails/emiData";
 
@@ -84,12 +84,6 @@ const Checkout: React.FC = () => {
   const [orderedItems, setOrderedItems] = useState<any>();
   const [checkOutSignup, setCheckOutSingUp] = useState<boolean>(false);
   const [duplicateData, setDuplicateData] = useState<any>();
-
-  const specialCategories = ["sunglass", "wallet", "perfume"];
-
-  const hasSpecialCategory = cartItems?.some((item: any) =>
-    item?.categories?.some((cat: string) => specialCategories.includes(cat)),
-  );
 
   const [modal, setModal] = useState<ModalState>({
     open: false,
@@ -165,18 +159,8 @@ const Checkout: React.FC = () => {
         value: "cash on delivery",
         label: "Cash On Delivery",
       },
-      {
-        value: "pay on bkash",
-        label: "Pay On bKash",
-        showCashbackBadge: true,
-      },
-      {
-        value: "pay with sslcommerz",
-        label: "Pay With SSLCommerz",
-        showEmiBadge: calculateDue() > EMI_THRESHOLD,
-      },
     ],
-    [cartItems, shippingPrice, couponData],
+    [],
   );
 
   useEffect(() => {
@@ -739,26 +723,22 @@ const Checkout: React.FC = () => {
 
   const renderTrustBenefits = (gridClass = "") => (
     <div className={`rongonaa-checkout-trust-grid ${gridClass}`}>
-      {!hasSpecialCategory && (
-        <div className="rongonaa-checkout-trust-item">
-          <Wallet />
-          <span>১ বছরের ওয়ারেন্টি</span>
-        </div>
-      )}
-      <div className="rongonaa-checkout-trust-item">
-        <Gift />
-        <span>ব্যাগ এন্ড বক্স ফ্রি</span>
-      </div>
       <div className="rongonaa-checkout-trust-item">
         <ShieldCheck />
         <span>১০০% অরিজিনাল</span>
       </div>
-      {!hasSpecialCategory && (
-        <div className="rongonaa-checkout-trust-item">
-          <RefreshCw />
-          <span>৭ দিনের রিপ্লেসমেন্ট</span>
-        </div>
-      )}
+      <div className="rongonaa-checkout-trust-item">
+        <Banknote />
+        <span>ক্যাশ অন ডেলিভারি</span>
+      </div>
+      <div className="rongonaa-checkout-trust-item">
+        <Truck />
+        <span>দ্রুত ডেলিভারি</span>
+      </div>
+      <div className="rongonaa-checkout-trust-item">
+        <PackageCheck />
+        <span>হাতে চেক করে নেওয়া</span>
+      </div>
     </div>
   );
 
@@ -926,7 +906,7 @@ const Checkout: React.FC = () => {
                   Payment Method
                 </h2>
                 <p className="rongonaa-checkout-card-desc">
-                  COD, bKash বা SSLCommerz — আপনার সুবিধামত
+                  ডেলিভারির সময় ক্যাশ দিয়ে পেমেন্ট করুন
                 </p>
               </div>
             </div>
