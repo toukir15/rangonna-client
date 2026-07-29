@@ -8,6 +8,8 @@ import { UseFormRegister, FieldErrors, UseFormWatch } from "react-hook-form";
 
 interface ProductActionsProps {
   singleWatch: any;
+  isInStock?: boolean;
+  maxQuantity?: number;
   productQuantity: number;
   setProductQuantity: React.Dispatch<React.SetStateAction<number>>;
   handleOrderNow: (products: any[]) => void;
@@ -28,6 +30,8 @@ const WISHLIST_KEY = "rongonaa_wishlist";
 
 const ProductActions: React.FC<ProductActionsProps> = ({
   singleWatch,
+  isInStock,
+  maxQuantity,
   productQuantity,
   setProductQuantity,
   handleOrderNow,
@@ -47,7 +51,11 @@ const ProductActions: React.FC<ProductActionsProps> = ({
   const [wishlisted, setWishlisted] = useState(false);
   const maxQty = Math.max(
     1,
-    Number(singleWatch?.inventory?.stock_quantity || 99),
+    Number(
+      maxQuantity ||
+        singleWatch?.inventory?.stock_quantity ||
+        99,
+    ),
   );
 
   useEffect(() => {
@@ -86,7 +94,13 @@ const ProductActions: React.FC<ProductActionsProps> = ({
   const incQty = () =>
     setProductQuantity((q) => Math.min(maxQty, q + 1));
 
-  if (singleWatch?.inventory?.stock_status === "in-stock") {
+  const inStock =
+    typeof isInStock === "boolean"
+      ? isInStock
+      : singleWatch?.inventory?.stock_status === "in-stock" ||
+        singleWatch?.inventory?.stock_status === "in_stock";
+
+  if (inStock) {
     return (
       <div className="rongonaa-pdp__actions">
         <div className="rongonaa-pdp__field">

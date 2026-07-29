@@ -11,6 +11,31 @@ import { IProduct } from "@admin/@interfaces/productReport/allProduct.interface"
 import { useGlobalContext } from "@admin/context/GlobalContext";
 import Link from "next/link";
 
+const getTotalStock = (item: IProduct) => {
+  if (Array.isArray(item?.variants) && item.variants.length > 0) {
+    return item.variants.reduce(
+      (sum, v) => sum + (Number(v?.inventory?.stock_quantity) || 0),
+      0,
+    );
+  }
+  return Number(item?.inventory?.stock_quantity) || 0;
+};
+
+const isOutOfStock = (item: IProduct) => {
+  if (Array.isArray(item?.variants) && item.variants.length > 0) {
+    return item.variants.every((v) => {
+      const status = v?.inventory?.stock_status;
+      return (
+        status === "out_of_stock" ||
+        status === "out-of-stock" ||
+        (Number(v?.inventory?.stock_quantity) || 0) <= 0
+      );
+    });
+  }
+  const status = item?.inventory?.stock_status;
+  return status === "out_of_stock" || status === "out-of-stock";
+};
+
 const ProductTable: React.FC = () => {
   const { permissionList } = useGlobalContext();
   const router = useRouter();
@@ -162,9 +187,10 @@ const ProductTable: React.FC = () => {
         <Tbody className="dark:bg-gray-800 bg-white">
           {productData?.map((item: IProduct, index: number) => {
             const isSelected = selectedProductIds?.includes(item?._id);
+            const outOfStock = isOutOfStock(item);
 
             return (
-              <Tr key={index} className="h-14">
+              <Tr key={item?._id || index} className="h-14">
                 <Td>
                   <input
                     type="checkbox"
@@ -189,24 +215,28 @@ const ProductTable: React.FC = () => {
                   </div>
                 </Td>
                 <Td>
-                  <Image
-                    key={index}
-                    src={item?.featured_image?.src}
-                    alt={item?.featured_image?.title || "Product Image"}
-                    width="70"
-                    height="70"
-                    className="bg-gray-300 rounded cursor-pointer"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleImageClick(item?.featured_image?.src);
-                    }}
-                  />
+                  {item?.featured_image?.src ? (
+                    <Image
+                      key={index}
+                      src={item.featured_image.src}
+                      alt={item?.featured_image?.title || "Product Image"}
+                      width="70"
+                      height="70"
+                      className="bg-gray-300 rounded cursor-pointer"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleImageClick(item.featured_image.src);
+                      }}
+                    />
+                  ) : (
+                    <div className="h-[70px] w-[70px] bg-gray-200 rounded" />
+                  )}
                 </Td>
                 <Td className="text-base font-bold">{item?.title}</Td>
                 <Td className="">{item?.categories?.join(", ")}</Td>
                 <Td>{item.sku}</Td>
                 <Td>{item?.pricing?.sale_price}</Td>
-                <Td>{item?.inventory.stock_quantity}</Td>
+                <Td>{getTotalStock(item)}</Td>
                 <Td>
                   <Link
                     href={`https://naviforce.com.bd/product/${item?.slug}`}
@@ -220,20 +250,16 @@ const ProductTable: React.FC = () => {
                 <Td className="text-base font-semibold">
                   <div
                     className={` w-28 text-center text-white  rounded-lg py-0.5 ${
-                      item?.inventory?.stock_status === "out-of-stock"
-                        ? "bg-red-600"
-                        : "bg-green-600"
+                      outOfStock ? "bg-red-600" : "bg-green-600"
                     } 
                    `}
                   >
-                    {item?.inventory?.stock_status === "out-of-stock"
-                      ? "Out Of Stock"
-                      : "In Stock"}
+                    {outOfStock ? "Out Of Stock" : "In Stock"}
                   </div>
                 </Td>
 
                 <Td>
-                  {item?.is_seo && (
+                  {(item?.featured_product || item?.is_seo) && (
                     <div className="rounded-full ">
                       <Icon
                         name="check_circle"

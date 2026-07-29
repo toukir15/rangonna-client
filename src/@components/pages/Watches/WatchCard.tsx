@@ -8,6 +8,11 @@ import ButtonLoader from "@/@components/core/Button/ButtonLoader";
 import Link from "next/link";
 import { pushToDataLayer } from "@/utils/gtm";
 import { IProduct } from "@/@interfaces/common.interface";
+import {
+  getDefaultVariant,
+  getTotalStockQuantity,
+  isProductInStock,
+} from "@/utils/productStock";
 
 interface ProductCardProps {
   data: IProduct;
@@ -42,6 +47,11 @@ const WatchCard: React.FC<ProductCardProps> = ({
   const [adLoading, setAddLoading] = useState(false);
   const [orderLoading, setOrderLoading] = useState(false);
   const [inCart, setInCart] = useState(false);
+  const inStock = isProductInStock(data as any);
+  const defaultVariant = getDefaultVariant(data as any);
+  const maxQty = defaultVariant
+    ? Number(defaultVariant?.inventory?.stock_quantity) || 0
+    : getTotalStockQuantity(data as any);
 
   const productId = data?._id;
   const { rating, reviews } = metaFromProduct(data);
@@ -107,10 +117,11 @@ const WatchCard: React.FC<ProductCardProps> = ({
             price: product.pricing?.sale_price,
             quantity: 1,
             image: product.featured_image?.src,
-            sku: product?.sku,
+            sku: defaultVariant?.sku || product?.sku,
+            size: defaultVariant?.size || "",
             categories: product.categories,
             brand: product.brand,
-            max_quantity: product?.inventory?.stock_quantity,
+            max_quantity: maxQty || undefined,
           });
         }
       }
@@ -152,10 +163,11 @@ const WatchCard: React.FC<ProductCardProps> = ({
             price: product.pricing?.sale_price,
             quantity: 1,
             image: product.featured_image?.src,
-            sku: product?.sku,
+            sku: defaultVariant?.sku || product?.sku,
+            size: defaultVariant?.size || "",
             categories: product.categories,
             brand: product.brand,
-            max_quantity: product?.inventory?.stock_quantity,
+            max_quantity: maxQty || undefined,
           });
         }
       }
@@ -206,7 +218,7 @@ const WatchCard: React.FC<ProductCardProps> = ({
         {isFlash && (
           <span className="rongonaa-flash-card__badge">Flash</span>
         )}
-        {data?.inventory?.stock_status === "out-of-stock" && (
+        {!inStock && (
           <div className="rongonaa-flash-card__oos">Out Of Stock</div>
         )}
       </Link>
@@ -234,7 +246,7 @@ const WatchCard: React.FC<ProductCardProps> = ({
           )}
         </div>
 
-        {data?.inventory?.stock_status === "in-stock" && (
+        {inStock && (
           <>
             {isAddToCartButton && (
               <button

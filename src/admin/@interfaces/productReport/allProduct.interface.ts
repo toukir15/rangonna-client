@@ -27,9 +27,16 @@ export interface IWholesalePricing {
 
 export interface IInventory {
   stock_quantity: number;
-  low_stock_notify: number;
+  low_stock_notify?: number;
+  reserved_quantity?: number;
   stock_status: string;
   sold_quantity: number;
+}
+
+export interface IProductVariant {
+  sku: string;
+  size: string;
+  inventory: IInventory;
 }
 
 export interface IProductImage {
@@ -50,11 +57,12 @@ export interface IProduct {
   categories: string[];
   brand: string;
   pricing: IProductPricing;
-  wholesale_pricing: IWholesalePricing;
-  inventory: IInventory;
-  min_sold_quantity: number;
-  max_sold_quantity: number;
-  warranty: string;
+  wholesale_pricing?: IWholesalePricing;
+  inventory?: IInventory;
+  variants?: IProductVariant[];
+  min_sold_quantity?: number;
+  max_sold_quantity?: number;
+  warranty?: string;
   description: string;
   short_description: string;
   images: IProductImage[];
@@ -62,11 +70,12 @@ export interface IProduct {
   sku: string;
   status: string;
   tags: string[];
-  attributes: IProductAttribute[];
-  barcode: string;
+  attributes?: IProductAttribute[];
+  barcode?: string;
   createdAt: string;
   updatedAt: string;
-  is_seo: boolean;
+  is_seo?: boolean;
+  featured_product?: boolean;
 }
 
 export interface IProductMeta {

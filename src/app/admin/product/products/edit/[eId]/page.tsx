@@ -5,6 +5,7 @@ import { productService } from "@admin/@services/apis/ProductService/Product.ser
 import { ProductBrandService } from "@admin/@services/apis/ProductService/ProductBrand.service";
 import { ProductCategoryService } from "@admin/@services/apis/ProductService/ProductCategory.service";
 import Button from "@admin/components/core/Button/Button";
+import ElementorLikeEditor from "@admin/components/core/Editor/CustomEditor";
 import MultipleImageUpload, {
   ExistingItem,
   GalleryItem,
@@ -14,38 +15,24 @@ import Input from "@admin/components/core/Input/Input";
 import SingleImageUpload from "@admin/components/core/Input/SingleImageUpload";
 import SelectComponent from "@admin/components/core/Select/Select";
 import Switch from "@admin/components/core/SwitchButton/SingleSwitch";
-import AttributesSkeleton from "@admin/components/Skeleton/Product/EditProduct/Attributes.skeleton";
-import BasicInfoSkeleton from "@admin/components/Skeleton/Product/EditProduct/BasicInfo.skeleton";
-import InfosSkeleton from "@admin/components/Skeleton/Product/EditProduct/Infos.skeleton";
-import PriceStockSkeleton from "@admin/components/Skeleton/Product/EditProduct/PriceStock.skeleton";
-import StockSkeleton from "@admin/components/Skeleton/Product/EditProduct/Stock.skeleton";
-import UploadImageSkeleton from "@admin/components/Skeleton/Product/EditProduct/UploadImage.skeleton";
 import { useGlobalContext } from "@admin/context/GlobalContext";
 import AuthLayout from "@admin/layouts/AuthLayout";
-import {
-  getArrayFieldErrorMessage,
-  hasPermission,
-  registerWithLiveValidation,
-} from "@admin/utils";
-import {
-  buildGroupedWebsiteOptions,
-  expandWebsiteSelections,
-  mapUrlsToWebsiteSelections,
-} from "@admin/utils/websiteGroups";
+import { hasPermission } from "@admin/utils";
 import { processDescriptionDesImages } from "@admin/utils/processDescriptionImage";
 import { stripTrailingEmptyQuillParagraphs } from "@admin/utils/stripTrailingEmptyQuillParagraphs";
 import { ToastService } from "@admin/utils/toastr.service";
 import { yupResolver } from "@hookform/resolvers/yup";
-// import dynamic from "next/dynamic";
-import ElementorLikeEditor from "@admin/components/core/Editor/CustomEditor";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import React, { useEffect, useMemo, useState } from "react";
-import { useForm, Controller, useWatch } from "react-hook-form";
+import {
+  Controller,
+  useFieldArray,
+  useForm,
+  useWatch,
+} from "react-hook-form";
 import * as yup from "yup";
-import { GlobalService } from "@admin/@services/apis/GlobalService/Global.service";
-import Skeleton from "@admin/components/Skeleton/Skeleton";
-import dynamic from "next/dynamic";
 
 const RichTextEditor = dynamic(
   () => import("@admin/components/core/Editor/RichTextEditor"),
@@ -68,49 +55,59 @@ export const toAbsolute = (url?: string) => {
   return `${base}${url}`;
 };
 
-const titles = [
-  "Model No.",
-  "Movement",
-  "Case Diameter",
-  "Case Thickness",
-  "Band Width",
-  "Case Material",
-  "Band Material",
-  "Window Material",
-  "Water Resistance Depth",
-  "Weight",
-  "Feature",
+const stockStatusOptions = [
+  { label: "In Stock", value: "in_stock" },
+  { label: "Out of Stock", value: "out_of_stock" },
+  { label: "Pre Order", value: "pre_order" },
 ];
+
+const statusOptions = [
+  { label: "Active", value: "active" },
+  { label: "Draft", value: "draft" },
+  { label: "Archived", value: "archived" },
+];
+
+const splitCommaList = (value: string) =>
+  String(value || "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
 
 const defaultValue: any = {
   main_title: "",
   slug: "",
+  sku: "",
   category: [] as any[],
-  websites: [] as any[],
-  brand: "",
+  brand: null,
+  status: statusOptions[0],
   sale_price: "",
   regular_price: "",
   purchase_price: "",
-  resaler_price: "",
   offer_text: "",
-  stock_status: "",
-  warranty: "",
-  short_description: "",
+  tags: "",
+  keywords: "",
+  meta_title: "",
+  meta_description: "",
+  featured_product: false,
   featuredImage: null,
   featured_image_title: "",
   productImages: [] as any[],
   product_image_title: [] as string[],
-  product_image_text: [] as string[],
-  attributes: Array(11).fill({ value: "" }),
-  seo_title: "",
-  seo_description: "",
-  is_seo: false,
-  focus_keyword: "",
+  variants: [
+    {
+      size: "",
+      stock_quantity: "0",
+      reserved_quantity: "0",
+      sold_quantity: "0",
+      stock_status: stockStatusOptions[0],
+    },
+  ],
 };
 
 export const ProductSchema = yup.object({
   main_title: yup.string().required("Title is required"),
   slug: yup.string().required("Slug is required"),
+  sku: yup.string(),
   category: yup
     .array()
     .of(
@@ -120,36 +117,33 @@ export const ProductSchema = yup.object({
       }),
     )
     .min(1, "At least one category is required"),
-  websites: yup
-    .array()
-    .of(
-      yup.object({
-        label: yup.string().required(),
-        value: yup.string().required(),
-      }),
-    )
-    .min(1, "At least one Website is required"),
   brand: yup.mixed().required("Brand is required"),
+  status: yup.mixed().required("Status is required"),
   sale_price: yup.string().required("Sale price is required"),
   regular_price: yup.string().required("Regular price is required"),
   purchase_price: yup.string(),
-  resaler_price: yup.string(),
   offer_text: yup.string(),
-  stock_status: yup.mixed().required("Stock status is required"),
-  stock_quantity: yup.string(),
-  warranty: yup.mixed().required("Warranty is required"),
-  short_description: yup.string(),
+  tags: yup.string(),
+  keywords: yup.string(),
+  meta_title: yup.string(),
+  meta_description: yup.string(),
+  featured_product: yup.boolean(),
   featuredImage: yup.mixed(),
   featured_image_title: yup.string(),
   productImages: yup.array(),
   product_image_title: yup.array().of(yup.string()),
-  product_image_text: yup
+  variants: yup
     .array()
-    .of(yup.string().max(26, "Maximum 26 characters allowed")),
-  is_seo: yup.boolean(),
-  seo_title: yup.string(),
-  seo_description: yup.string(),
-  focus_keyword: yup.string(),
+    .of(
+      yup.object({
+        size: yup.string().required("Size is required"),
+        stock_quantity: yup.string().required("Stock quantity is required"),
+        reserved_quantity: yup.string(),
+        sold_quantity: yup.string(),
+        stock_status: yup.mixed().required("Stock status is required"),
+      }),
+    )
+    .min(1, "At least one variant is required"),
 });
 
 const Page: React.FC = () => {
@@ -157,23 +151,17 @@ const Page: React.FC = () => {
   const isEdit = Boolean(eId);
   const { permissionList } = useGlobalContext();
   const [htmlData, setHtmlData] = useState("");
-
-  // const [content, setContent] = useState<string>("");
-  const [priceInfo, setPriceInfo] = useState<boolean>(true);
-  const [attributesInfo, setAttributesInfo] = useState<boolean>(false);
-  const [attributesDefaultOn, setAttributesDefaultOn] =
-    useState<boolean>(false);
   const [productCategoryData, setProductCategoryData] = useState<
     IProductCategoryData[]
   >([]);
-  const [websiteOption, setWebsiteOption] = useState<any[]>([]);
   const [productBrandData, setProductBrandData] = useState<IProductBrandData[]>(
     [],
   );
   const [productDetails, setProductDetails] = useState<any | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [content, setContent] = useState("");
-  const [seoInfo, setSEOInfo] = useState<boolean>(false);
+  const [featuredProduct, setFeaturedProduct] = useState(false);
+  const [editorKey, setEditorKey] = useState(0);
 
   const categoryOptions = useMemo(
     () =>
@@ -183,10 +171,6 @@ const Page: React.FC = () => {
       })),
     [productCategoryData],
   );
-  const webOptionsData = useMemo(
-    () => buildGroupedWebsiteOptions(websiteOption),
-    [websiteOption],
-  );
   const brandOptions = useMemo(
     () =>
       (productBrandData ?? []).map((item) => ({
@@ -195,26 +179,6 @@ const Page: React.FC = () => {
       })),
     [productBrandData],
   );
-  const stockStatusOptions = [
-    { label: "In Stock", value: "in-stock" },
-    { label: "Out of Stock", value: "out-of-stock" },
-  ];
-  const warrantyOptions = [
-    {
-      label: "৭ দিনের রিপ্লেসমেন্ট গ্যারান্টি",
-      value: "৭ দিনের রিপ্লেসমেন্ট গ্যারান্টি",
-    },
-    { label: "১ বছরের ওয়ারেন্টি", value: "১ বছরের ওয়ারেন্টি" },
-    { label: "২ বছরের ওয়ারেন্টি", value: "২ বছরের ওয়ারেন্টি" },
-    { label: "৩ বছরের ওয়ারেন্টি", value: "৩ বছরের ওয়ারেন্টি" },
-    { label: "১ মাসের ওয়ারেন্টি", value: "১ মাসের ওয়ারেন্টি" },
-    { label: "৩ মাসের ওয়ারেন্টি", value: "৩ মাসের ওয়ারেন্টি" },
-    { label: "৬ মাসের ওয়ারেন্টি", value: "৬ মাসের ওয়ারেন্টি" },
-    {
-      label: "এই পণ্যে কোনো ওয়ারেন্টি নেই",
-      value: "এই পণ্যে কোনো ওয়ারেন্টি নেই",
-    },
-  ];
 
   useEffect(() => {
     (async () => {
@@ -229,24 +193,6 @@ const Page: React.FC = () => {
         ToastService.error("Failed to load categories/brands");
       }
     })();
-  }, []);
-
-  const fetchWebsite = () => {
-    GlobalService.getWebsiteList()
-      .then((res: any) => {
-        if (res?.success) {
-          setWebsiteOption(res?.data);
-        } else {
-          ToastService.error(res?.message);
-        }
-      })
-      .catch((err: { message: string }) => {
-        ToastService.error(err.message);
-      });
-  };
-
-  useEffect(() => {
-    fetchWebsite();
   }, []);
 
   useEffect(() => {
@@ -271,74 +217,67 @@ const Page: React.FC = () => {
     reset,
     setValue,
     getValues,
-    trigger,
     formState: { errors, isSubmitting },
   } = useForm<any>({
     resolver: yupResolver(ProductSchema),
     defaultValues: defaultValue,
   });
 
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "variants",
+  });
+
   const productImagesWatch = useWatch({ control, name: "productImages" });
   const productImagesLen = productImagesWatch?.length ?? 0;
 
   useEffect(() => {
-    const syncArrayField = (
-      field: "product_image_title" | "product_image_text",
-    ) => {
-      const current = getValues(field);
-      const arr = Array.isArray(current) ? [...current] : [];
-      if (arr.length === productImagesLen) return;
-      const next = arr.slice(0, productImagesLen);
-      while (next.length < productImagesLen) next.push("");
-      setValue(field, next, { shouldDirty: false });
-    };
-    syncArrayField("product_image_title");
-    syncArrayField("product_image_text");
+    const current = getValues("product_image_title");
+    const arr = Array.isArray(current) ? [...current] : [];
+    if (arr.length === productImagesLen) return;
+    const next = arr.slice(0, productImagesLen);
+    while (next.length < productImagesLen) next.push("");
+    setValue("product_image_title", next, { shouldDirty: false });
   }, [productImagesLen, getValues, setValue]);
-
-  const keyRegister = register("main_title");
-
-  // const handleEditorChange = (value: any) => setContent(value ?? "");
 
   useEffect(() => {
     if (!productDetails) return;
 
-    const catValue =
-      Array.isArray(productDetails.categories) &&
-      productDetails.categories.length
-        ? productDetails.categories
-        : [];
-    const catWebValue =
-      Array.isArray(productDetails.websites) && productDetails.websites.length
-        ? productDetails.websites
-        : [];
-
+    const catValue = Array.isArray(productDetails.categories)
+      ? productDetails.categories
+      : [];
     const selectedCategories = categoryOptions.filter((c) =>
       catValue.includes(c.value),
     );
-    const selectedWebsites = mapUrlsToWebsiteSelections(
-      catWebValue,
-      webOptionsData,
-    );
+    const selectedBrand =
+      brandOptions.find((b) => b.value === productDetails.brand) ?? null;
+    const selectedStatus =
+      statusOptions.find((s) => s.value === productDetails.status) ??
+      statusOptions[0];
 
-    const selectedBrand = brandOptions.find(
-      (b) => b.value === productDetails.brand,
-    );
-
-    const selectedWarranty =
-      warrantyOptions.find((w) => w.value === productDetails.warranty) ?? null;
-
-    const stockStatus = productDetails?.inventory?.stock_status ?? "in-stock";
-
-    const selectedStock =
-      stockStatusOptions.find((s) => s.value === stockStatus) ??
-      stockStatusOptions[0];
-
-    const attrByTitle: Record<string, string> = {};
-    (productDetails.attributes ?? []).forEach((a: any) => {
-      if (a?.title) attrByTitle[a.title] = a.value ?? "";
-    });
-    const attributes = titles.map((t) => ({ value: attrByTitle[t] ?? "" }));
+    const variants = (productDetails.variants?.length
+      ? productDetails.variants
+      : [
+          {
+            size: "",
+            inventory: {
+              stock_quantity: 0,
+              reserved_quantity: 0,
+              sold_quantity: 0,
+              stock_status: "in_stock",
+            },
+          },
+        ]
+    ).map((v: any) => ({
+      size: v.size ?? "",
+      stock_quantity: String(v.inventory?.stock_quantity ?? 0),
+      reserved_quantity: String(v.inventory?.reserved_quantity ?? 0),
+      sold_quantity: String(v.inventory?.sold_quantity ?? 0),
+      stock_status:
+        stockStatusOptions.find(
+          (s) => s.value === (v.inventory?.stock_status ?? "in_stock"),
+        ) ?? stockStatusOptions[0],
+    }));
 
     const existingFeaturedUrl =
       toAbsolute(productDetails?.featured_image?.src) || null;
@@ -356,57 +295,39 @@ const Page: React.FC = () => {
     reset({
       main_title: productDetails.title ?? "",
       slug: productDetails.slug ?? "",
+      sku: productDetails.sku ?? "",
       category: selectedCategories,
-      websites: selectedWebsites,
       brand: selectedBrand,
+      status: selectedStatus,
       sale_price: String(productDetails?.pricing?.sale_price ?? ""),
       regular_price: String(productDetails?.pricing?.regular_price ?? ""),
       purchase_price: String(productDetails?.pricing?.purchase_price ?? ""),
-      resaler_price: String(
-        productDetails?.wholesale_pricing?.resale_price ?? "",
-      ),
       offer_text: productDetails.offer_text || "",
-      stock_status: selectedStock,
-      warranty: selectedWarranty,
-      // short_description: productDetails?.short_description ?? "",
+      tags: (productDetails.tags || []).join(", "),
+      keywords: (productDetails.keywords || []).join(", "),
+      meta_title: productDetails?.meta_title ?? "",
+      meta_description: productDetails?.meta_description ?? "",
+      featured_product: !!productDetails?.featured_product,
       featuredImage: existingFeaturedUrl,
       featured_image_title: productDetails?.featured_image?.title ?? "",
       productImages: initialGallery as any[],
       product_image_title: (productDetails?.images || []).map(
         (im: any) => im?.title ?? "",
       ),
-      product_image_text: (productDetails?.images || []).map(
-        (im: any) => im?.text ?? "",
-      ),
-      attributes,
-      stock_quantity: productDetails?.inventory?.stock_quantity,
-      seo_title: productDetails?.seo_title ?? "",
-      seo_description: productDetails?.seo_description ?? "",
-      focus_keyword: productDetails?.focus_keyword ?? "",
+      variants,
     });
     setContent(productDetails?.short_description || "");
-    setSEOInfo(!!productDetails?.is_seo);
-    const shouldShowAttrs = attributes.some(
-      (a: any) => String(a?.value ?? "").trim().length > 0,
-    );
-    setAttributesInfo(shouldShowAttrs);
-    setAttributesDefaultOn(shouldShowAttrs);
-
-    // setContent(productDetails?.description ?? "");
-  }, [productDetails, categoryOptions, brandOptions, webOptionsData]);
+    setFeaturedProduct(!!productDetails?.featured_product);
+    setHtmlData(productDetails?.description || "");
+    setEditorKey((k) => k + 1);
+  }, [productDetails, categoryOptions, brandOptions, reset]);
 
   const formSubmit = async (fromData: any) => {
-    const attributes = fromData.attributes.map((attr: any, index: number) => ({
-      title: titles[index],
-      value: attr?.value || "",
-    }));
-
-    //  Basic JSON data prepare
     const data: any = {
       title: fromData.main_title || "",
       slug: fromData.slug,
+      status: fromData.status?.value || "active",
       categories: (fromData.category || []).map((c: any) => c.value),
-      websites: expandWebsiteSelections(fromData.websites ?? []),
       brand: fromData.brand?.value || "",
       short_description: stripTrailingEmptyQuillParagraphs(content || ""),
       offer_text: fromData.offer_text || "",
@@ -417,86 +338,62 @@ const Page: React.FC = () => {
           purchase_price: parseFloat(fromData.purchase_price) || 0,
         }),
       },
-      ...(hasPermission(permissionList, "product_pricing_view") && {
-        wholesale_pricing: {
-          resale_price: parseFloat(fromData.resaler_price) || 0,
+      variants: (fromData.variants || []).map((v: any) => ({
+        size: String(v.size || "").trim(),
+        inventory: {
+          stock_quantity: parseInt(v.stock_quantity, 10) || 0,
+          reserved_quantity: parseInt(v.reserved_quantity, 10) || 0,
+          sold_quantity: parseInt(v.sold_quantity, 10) || 0,
+          stock_status: v.stock_status?.value || "in_stock",
         },
-      }),
-      inventory: {
-        stock_status: fromData?.stock_status?.value || "in-stock",
-        stock_quantity: fromData?.stock_quantity || 0,
-      },
-      warranty: fromData.warranty?.value || "",
-      description: "",
-      attributes,
+      })),
+      tags: splitCommaList(fromData.tags),
+      keywords: splitCommaList(fromData.keywords),
+      featured_product: featuredProduct,
+      meta_title: fromData.meta_title || "",
+      meta_description: fromData.meta_description || "",
+      videos: [],
       featured_image_title: fromData.featured_image_title?.trim() || "",
       remove_featured_image: false,
       remove_product_images: [] as string[],
-      update_product_images: [] as Array<{
-        src: string;
-        title: string;
-        text: string;
-      }>,
+      update_product_images: [] as Array<{ src: string; title: string }>,
       product_image_titles: [] as string[],
-      product_image_texts: [] as string[],
-      seo_title: fromData.seo_title || "",
-      seo_description: fromData.seo_description || "",
-      is_seo: seoInfo,
-      focus_keyword: fromData.focus_keyword || "",
+      description: "",
     };
 
     const formData = new FormData();
-
     data.description = await processDescriptionDesImages(
       htmlData || "",
       formData,
     );
 
-    //  Product gallery handle
     const items: GalleryItem[] = fromData.productImages || [];
     const titleInputs: string[] = Array.isArray(fromData.product_image_title)
       ? fromData.product_image_title.map((t: any) => String(t ?? "").trim())
       : [];
-    const textInputs: string[] = Array.isArray(fromData.product_image_text)
-      ? fromData.product_image_text.map((t: any) => String(t ?? "").trim())
-      : [];
 
-    // IMPORTANT:
-    // Remove detection must be robust across CDN/base differences.
-    // We normalize only for *comparison*, but we send absolute `src` values to API.
     const normalizeForCompare = (src: string) => {
       if (!src) return src;
       try {
-        // If absolute URL, compare by pathname only.
         const u = new URL(src);
         return u.pathname || src;
       } catch {
-        // If relative path, keep as-is.
         return src;
       }
     };
 
-    // new upload image
     items.forEach((it, idx: number) => {
       const imgTitle = titleInputs[idx] || "";
-      const imgText = textInputs[idx] || "";
       if (!("isExisting" in it) || it.isExisting === false) {
         const f = (it as NewUploadItem).file;
         formData.append("productImages", f);
         data.product_image_titles.push(imgTitle);
-        data.product_image_texts.push(imgText);
       } else {
         const src = (it as ExistingItem).src;
-        // send absolute src (UI already holds absolute)
-        data.update_product_images.push({
-          src,
-          title: imgTitle,
-          text: imgText,
-        });
+        data.update_product_images.push({ src, title: imgTitle });
       }
     });
 
-    // old images
     const remainingExisting = items
       .filter((it) => "isExisting" in it && it.isExisting)
       .map((it) => it as ExistingItem);
@@ -508,25 +405,19 @@ const Page: React.FC = () => {
       remainingExisting.map((it) => String(it.id || "")).filter(Boolean),
     );
 
-    // send delete images
     const allPrev = (productDetails?.images || []).map((im: any) => ({
       id: String(im?._id || ""),
-      // keep absolute for API, but also keep comparable key
       absSrc: toAbsolute(im?.src),
       cmpSrc: normalizeForCompare(toAbsolute(im?.src)),
     }));
 
     data.remove_product_images = allPrev
       .filter((im: { id: string; absSrc: string; cmpSrc: string }) => {
-        // Prefer id-based diff (most reliable)
         if (im.id) return !remainingIdSet.has(im.id);
-        // Fallback to src diff
         return !remainingSrcSet.has(im.cmpSrc);
       })
       .map((im: { id: string; absSrc: string; cmpSrc: string }) => im.absSrc);
 
-    // Safety: if something lands in both lists, treat it as removed.
-    // (Prevents backend from re-updating an image that user removed.)
     const removedSet = new Set<string>(data.remove_product_images || []);
     data.update_product_images = (data.update_product_images || []).filter(
       (it: { src: string; title: string }) => !removedSet.has(it.src),
@@ -552,214 +443,164 @@ const Page: React.FC = () => {
     }
   };
 
-  const handleToggle = (isChecked: boolean) => setPriceInfo(isChecked);
-  const handleToggleSEO = (isChecked: boolean) => setSEOInfo(isChecked);
-  const handleToggleAttributes = (isChecked: boolean) =>
-    setAttributesInfo(isChecked);
-
-  const handleEditorChange = (value: any) => {
-    setContent(value);
-  };
-
   return (
     <AuthLayout>
       <div className="px-4 py-3 flex items-center gap-4">
         <h2 className="text-2xl font-bold">
           {isEdit ? "Edit Product" : "Add Product"}
         </h2>
-        <Link
-          href={`/admin/product/products/duplicate/${productDetails?._id}`}
-          className="bg-teal-500 hover:bg-teal-600 px-2 py-0.5 rounded-lg text-white text-center  cursor-pointer "
-        >
-          Duplicate Product
-        </Link>
+        {productDetails?._id && (
+          <Link
+            href={`/admin/product/products/duplicate/${productDetails._id}`}
+            className="bg-teal-500 hover:bg-teal-600 px-2 py-0.5 rounded-lg text-white text-center cursor-pointer"
+          >
+            Duplicate Product
+          </Link>
+        )}
       </div>
 
       <div className="px-4">
-        <div className="min-h-[70vh] ">
-          <form
-            encType="multipart/form-data"
-            onSubmit={handleSubmit(formSubmit)}
-          >
-            <div className="lg:flex lg:items-start gap-4 lg:h-[calc(100vh-140px)] lg:overflow-hidden">
-              <div className="lg:w-3/4 w-full lg:h-full lg:overflow-y-auto">
-                <div className="bg-white dark:bg-gray-700  p-8 rounded-lg ">
-                  <div className="flex items-center gap-4 mb-4">
-                    <h3 className="text-xl font-semibold text-nowrap">
-                      Product Type
+        <div className="min-h-[70vh]">
+          {loading ? (
+            <div className="p-8 text-gray-500">Loading product...</div>
+          ) : (
+            <form
+              encType="multipart/form-data"
+              onSubmit={handleSubmit(formSubmit)}
+            >
+              <div className="lg:flex lg:items-start gap-4 lg:h-[calc(100vh-140px)] lg:overflow-hidden">
+                <div className="lg:w-3/4 w-full lg:h-full lg:overflow-y-auto">
+                  <div className="bg-white dark:bg-gray-800 p-8 rounded-lg dark:text-gray-300">
+                    <h3 className="text-xl font-semibold mb-4">
+                      Product Basic Information
                     </h3>
-                    {loading ? (
-                      <div className="w-full bg-white dark:bg-gray-700 rounded-lg ">
-                        <div className="bg-[#dfdfe0] h-11 mt-2 opacity-70 dark:opacity-50 rounded-xl p-2 ">
-                          <Skeleton type="text" count={1} height={22} />
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="grid md:grid-cols-1 grid-cols-1 gap-x-5 items-center w-full">
-                        <div className="w-full">
-                          <Controller
-                            name="websites"
-                            control={control}
-                            defaultValue={null}
-                            render={({ field }) => (
-                              <SelectComponent
-                                options={webOptionsData}
-                                value={field.value}
-                                onChange={(val: any) =>
-                                  field.onChange(val || [])
-                                }
-                                placeholder="Select product type"
-                                isMulti
-                                isRequired
-                                className="w-full"
-                              />
-                            )}
-                          />
-                          {errors.category && (
-                            <p className="text-red-500 text-sm">
-                              {errors.category.message as string}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {loading ? (
-                    <BasicInfoSkeleton />
-                  ) : (
-                    <>
-                      <div>
-                        <Input
-                          label={"Title"}
-                          placeholder="Enter title"
-                          registerProperty={keyRegister}
-                          errorText={errors?.main_title?.message}
-                          isRequired
-                        />
-                        <Input
-                          label={"Slug"}
-                          placeholder="Enter Slug"
-                          registerProperty={register("slug")}
-                          errorText={errors?.slug?.message}
-                          isRequired
-                        />
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-x-5 items-center">
-                        <div>
-                          <p className="font-inter text-sm font-semibold text-neutral-600 dark:text-gray-300 mb-1">
-                            Category{" "}
-                            <span className="text-red-400 text-[12px]">*</span>
-                          </p>
-                          <Controller
-                            name="category"
-                            control={control}
-                            defaultValue={[]}
-                            render={({ field }) => (
-                              <SelectComponent
-                                options={categoryOptions}
-                                value={field.value}
-                                onChange={field.onChange}
-                                placeholder="Select Categories"
-                                isMulti
-                                isRequired
-                              />
-                            )}
-                          />
-                          {errors.category && (
-                            <p className="text-red-500 text-sm">
-                              {String(errors.category.message)}
-                            </p>
-                          )}
-                        </div>
-
-                        <div>
-                          <p className="font-inter text-sm font-semibold text-neutral-600 dark:text-gray-300">
-                            Brand{" "}
-                            <span className="text-red-400 text-[12px]">*</span>
-                          </p>
-                          <Controller
-                            name="brand"
-                            control={control}
-                            render={({ field }) => (
-                              <SelectComponent
-                                options={brandOptions}
-                                value={field.value}
-                                onChange={field.onChange}
-                                placeholder="Select Brand"
-                                isRequired
-                              />
-                            )}
-                          />
-                          {errors.brand && (
-                            <p className="text-red-500 text-sm">
-                              {String(errors.brand.message)}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                    </>
-                  )}
-                </div>
-
-                <div className="bg-white dark:bg-gray-700 rounded-lg p-8 mt-4">
-                  <h3 className="text-xl font-semibold dark:text-gray-300">
-                    Seo Information
-                  </h3>
-                  <div className="flex items-center gap-2 py-4">
-                    <h4 className="dark:text-gray-300">Is SEO Enabled</h4>
-                    <Switch
-                      key={`seo-${productDetails?._id ?? "loading"}`}
-                      onToggle={handleToggleSEO}
-                      default={!!productDetails?.is_seo}
-                    />
-                  </div>
-                  <div className="grid md:grid-cols-2 grid-cols-1 gap-x-5">
-                    <div>
-                      <Input
-                        label={"Meta Title"}
-                        placeholder="Enter meta title"
-                        registerProperty={register("seo_title")}
-                        errorText={errors?.seo_title?.message as string}
-                      />
-                    </div>
-                    <div>
-                      <Input
-                        label={"Keyword"}
-                        placeholder="Enter keyword"
-                        registerProperty={register("focus_keyword")}
-                        errorText={errors?.focus_keyword?.message}
-                        type="text"
-                      />
-                    </div>
-                  </div>
-                  <div>
                     <Input
-                      label={"Meta Description"}
+                      label="Title"
+                      placeholder="Enter title"
+                      registerProperty={register("main_title")}
+                      errorText={errors?.main_title?.message}
+                      isRequired
+                    />
+                    <div className="grid md:grid-cols-2 grid-cols-1 gap-x-5">
+                      <Input
+                        label="Slug"
+                        placeholder="Enter Slug"
+                        registerProperty={register("slug")}
+                        errorText={errors?.slug?.message}
+                        isRequired
+                      />
+                      <Input
+                        label="SKU"
+                        placeholder="Auto generated"
+                        registerProperty={register("sku")}
+                        errorText={errors?.sku?.message}
+                        isDisabled
+                      />
+                    </div>
+                    <div className="grid md:grid-cols-3 grid-cols-1 gap-x-5 items-start">
+                      <div>
+                        <p className="font-inter text-sm font-semibold text-neutral-600 dark:text-gray-300 mb-1">
+                          Category <span className="text-red-400">*</span>
+                        </p>
+                        <Controller
+                          name="category"
+                          control={control}
+                          render={({ field }) => (
+                            <SelectComponent
+                              options={categoryOptions}
+                              value={field.value}
+                              onChange={(val: any) => field.onChange(val || [])}
+                              placeholder="Select Category"
+                              isMulti
+                            />
+                          )}
+                        />
+                        {errors.category && (
+                          <p className="text-red-500 text-sm">
+                            {errors.category.message as string}
+                          </p>
+                        )}
+                      </div>
+                      <div>
+                        <p className="font-inter text-sm font-semibold text-neutral-600 dark:text-gray-300 mb-1">
+                          Brand <span className="text-red-400">*</span>
+                        </p>
+                        <Controller
+                          name="brand"
+                          control={control}
+                          render={({ field }) => (
+                            <SelectComponent
+                              options={brandOptions}
+                              value={field.value}
+                              onChange={field.onChange}
+                              placeholder="Select Brand"
+                            />
+                          )}
+                        />
+                      </div>
+                      <div>
+                        <p className="font-inter text-sm font-semibold text-neutral-600 dark:text-gray-300 mb-1">
+                          Status <span className="text-red-400">*</span>
+                        </p>
+                        <Controller
+                          name="status"
+                          control={control}
+                          render={({ field }) => (
+                            <SelectComponent
+                              options={statusOptions}
+                              value={field.value}
+                              onChange={field.onChange}
+                              placeholder="Select Status"
+                            />
+                          )}
+                        />
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 mt-4">
+                      <h4 className="text-sm font-semibold">Featured Product</h4>
+                      <Switch
+                        key={featuredProduct ? "fp-on" : "fp-off"}
+                        onToggle={(checked: boolean) => {
+                          setFeaturedProduct(checked);
+                          setValue("featured_product", checked);
+                        }}
+                        default={featuredProduct}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="bg-white dark:bg-gray-800 rounded-lg p-4 mt-4">
+                    <h3 className="text-xl font-semibold">SEO Information</h3>
+                    <div className="grid md:grid-cols-2 grid-cols-1 gap-x-5 mt-2">
+                      <Input
+                        label="Meta Title"
+                        placeholder="Enter meta title"
+                        registerProperty={register("meta_title")}
+                      />
+                      <Input
+                        label="Keywords"
+                        placeholder="comma separated"
+                        registerProperty={register("keywords")}
+                      />
+                    </div>
+                    <Input
+                      label="Meta Description"
                       placeholder="Enter meta description"
-                      registerProperty={register("seo_description")}
-                      errorText={errors?.seo_description?.message as string}
+                      registerProperty={register("meta_description")}
                       type="textarea"
                     />
+                    <Input
+                      label="Tags"
+                      placeholder="comma separated"
+                      registerProperty={register("tags")}
+                    />
                   </div>
-                </div>
 
-                {/* Pricing */}
-                <div className="bg-white dark:bg-gray-700 p-8 rounded-lg mt-4 ">
-                  <h3 className="text-xl font-semibold dark:text-gray-300">
-                    Pricing and Stock
-                  </h3>
-                  <div className="mt-2 flex items-center gap-4">
-                    <p className="dark:text-gray-300">Add More Info</p>
-                    <Switch onToggle={handleToggle} default={true} />
-                  </div>
-                  {loading ? (
-                    <PriceStockSkeleton />
-                  ) : (
-                    <div className="grid grid-cols-2 gap-x-5">
+                  <div className="bg-white dark:bg-gray-800 dark:text-gray-300 p-8 rounded-lg mt-4">
+                    <h3 className="text-xl font-semibold">Pricing</h3>
+                    <div className="grid md:grid-cols-2 grid-cols-1 gap-x-5 mt-2">
                       <Input
-                        label={"Regular Price"}
+                        label="Regular Price"
                         placeholder="Enter regular price"
                         registerProperty={register("regular_price")}
                         errorText={errors?.regular_price?.message}
@@ -767,207 +608,148 @@ const Page: React.FC = () => {
                         isRequired
                       />
                       <Input
-                        label={"Sale Price"}
+                        label="Sale Price"
                         placeholder="Enter sale price"
                         registerProperty={register("sale_price")}
                         errorText={errors?.sale_price?.message}
                         type="number"
                         isRequired
                       />
-
-                      <Input
-                        label={"Offer Text"}
-                        placeholder="Enter Text"
-                        registerProperty={register("offer_text")}
-                        errorText={errors?.offer_text?.message}
-                        type="text"
-                      />
-
-                      {hasPermission(permissionList, "product_pricing_view") ? (
-                        <>
-                          <Input
-                            label={"Purchase Price"}
-                            placeholder="Enter purchase price"
-                            registerProperty={register("purchase_price")}
-                            errorText={errors?.purchase_price?.message}
-                            type="number"
-                          />
-                          {priceInfo && (
-                            <>
-                              <Input
-                                label={"Resaler Price"}
-                                placeholder="Enter Resaler price "
-                                registerProperty={register("resaler_price")}
-                                errorText={errors?.resaler_price?.message}
-                                type="number"
-                              />
-                            </>
-                          )}
-                        </>
-                      ) : (
-                        ""
-                      )}
-                    </div>
-                  )}
-                </div>
-
-                <div className="bg-white dark:bg-gray-700 p-8 rounded-lg mt-4 ">
-                  <h3 className="text-xl font-semibold dark:text-gray-300">
-                    Stock
-                  </h3>
-
-                  {loading ? (
-                    <StockSkeleton />
-                  ) : (
-                    <div className="grid grid-cols-2 gap-x-5 mt-4">
-                      <div>
+                      {hasPermission(permissionList, "product_pricing_view") && (
                         <Input
-                          label={"Stock Quantity"}
-                          placeholder="Enter stock quantity"
-                          registerProperty={register("stock_quantity")}
-                          errorText={errors?.stock_quantity?.message}
+                          label="Purchase Price"
+                          placeholder="Enter purchase price"
+                          registerProperty={register("purchase_price")}
                           type="number"
-                          noMargin
                         />
-                      </div>
+                      )}
+                      <Input
+                        label="Offer Text"
+                        placeholder="Enter offer text"
+                        registerProperty={register("offer_text")}
+                      />
+                    </div>
+                  </div>
 
-                      <div className="w-full ">
-                        <p className="font-inter text-sm font-semibold text-neutral-600 dark:text-gray-300 ">
-                          Stock Status{" "}
-                          <span className="text-red-400 text-[12px]">*</span>
-                        </p>
-                        <Controller
-                          name="stock_status"
-                          control={control}
-                          render={({ field }) => (
-                            <SelectComponent
-                              options={stockStatusOptions}
-                              value={field.value}
-                              onChange={field.onChange}
-                              placeholder="Select Stock Status"
+                  <div className="bg-white dark:bg-gray-800 dark:text-gray-300 p-8 rounded-lg mt-4">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-xl font-semibold">
+                        Variants (Size & Stock)
+                      </h3>
+                      <Button
+                        type="button"
+                        className="bg-emerald-600"
+                        onClick={() =>
+                          append({
+                            size: "",
+                            stock_quantity: "0",
+                            reserved_quantity: "0",
+                            sold_quantity: "0",
+                            stock_status: stockStatusOptions[0],
+                          })
+                        }
+                      >
+                        Add Variant
+                      </Button>
+                    </div>
+                    <div className="space-y-4">
+                      {fields.map((field, index) => (
+                        <div
+                          key={field.id}
+                          className="border border-gray-200 dark:border-gray-600 rounded-lg p-4"
+                        >
+                          <div className="flex items-center justify-between mb-2">
+                            <h4 className="font-semibold text-sm">
+                              Variant {index + 1}
+                            </h4>
+                            {fields.length > 1 && (
+                              <button
+                                type="button"
+                                className="text-red-500 text-sm"
+                                onClick={() => remove(index)}
+                              >
+                                Remove
+                              </button>
+                            )}
+                          </div>
+                          <div className="grid md:grid-cols-3 grid-cols-1 gap-x-5">
+                            <Input
+                              label="Size"
+                              placeholder="2.4"
+                              registerProperty={register(
+                                `variants.${index}.size`,
+                              )}
                               isRequired
                             />
-                          )}
-                        />
-                        {errors.stock_status && (
-                          <p className="text-red-500 text-sm">
-                            {String(errors.stock_status.message)}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                <div className="bg-white dark:bg-gray-700 p-8 rounded-lg mt-4 ">
-                  <h3 className="text-xl font-semibold dark:text-gray-300">
-                    Infos
-                  </h3>
-
-                  {loading ? (
-                    <InfosSkeleton />
-                  ) : (
-                    <div className="grid grid-cols-2 gap-x-5">
-                      <div className="w-full mt-4">
-                        <p className="font-inter text-sm font-semibold text-neutral-600 dark:text-gray-300 ">
-                          Warranty{" "}
-                          <span className="text-red-400 text-[12px]">*</span>
-                        </p>
-                        <Controller
-                          name="warranty"
-                          control={control}
-                          render={({ field }) => (
-                            <SelectComponent
-                              options={warrantyOptions}
-                              value={field.value}
-                              onChange={field.onChange}
-                              placeholder="Select Warranty"
+                            <Input
+                              label="Stock Quantity"
+                              type="number"
+                              registerProperty={register(
+                                `variants.${index}.stock_quantity`,
+                              )}
                               isRequired
                             />
-                          )}
-                        />
-                        {errors.warranty && (
-                          <p className="text-red-500 text-sm">
-                            {String(errors.warranty.message)}
-                          </p>
-                        )}
-                      </div>
+                            <Input
+                              label="Reserved Quantity"
+                              type="number"
+                              registerProperty={register(
+                                `variants.${index}.reserved_quantity`,
+                              )}
+                            />
+                            <Input
+                              label="Sold Quantity"
+                              type="number"
+                              registerProperty={register(
+                                `variants.${index}.sold_quantity`,
+                              )}
+                            />
+                            <div>
+                              <p className="font-inter text-sm font-semibold text-neutral-600 dark:text-gray-300 mb-1">
+                                Stock Status *
+                              </p>
+                              <Controller
+                                name={`variants.${index}.stock_status`}
+                                control={control}
+                                render={({ field: f }) => (
+                                  <SelectComponent
+                                    options={stockStatusOptions}
+                                    value={f.value}
+                                    onChange={f.onChange}
+                                    placeholder="Select status"
+                                  />
+                                )}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                  )}
-                </div>
+                  </div>
 
-                {/* Attributes */}
-                <div className="bg-white dark:bg-gray-700 p-8 rounded-lg mt-4">
-                  <div className="my-2 flex items-center gap-4">
-                    <h3 className="text-xl font-semibold dark:text-gray-300">
-                      Attributes
+                  <div className="bg-white dark:bg-gray-800 rounded-lg p-4 mt-4">
+                    <h3 className="text-sm font-semibold dark:text-gray-300 pb-3">
+                      Short Description
                     </h3>
-                    <Switch
-                      key={attributesDefaultOn ? "attrs-on" : "attrs-off"}
-                      onToggle={handleToggleAttributes}
-                      default={attributesDefaultOn}
+                    <RichTextEditor
+                      key={`short-${editorKey}`}
+                      content={content}
+                      onChange={setContent}
+                      placeholder="Start writing your content here..."
                     />
                   </div>
-                  {attributesInfo &&
-                    (loading ? (
-                      <AttributesSkeleton />
-                    ) : (
-                      <div className="grid grid-cols-2 gap-x-5 gap-y-4">
-                        {titles?.map((title, index) => (
-                          <Input
-                            noMargin
-                            key={index}
-                            label={title}
-                            placeholder={`Enter ${title}`}
-                            registerProperty={register(
-                              `attributes.${index}.value`,
-                            )}
-                            type="text"
-                          />
-                        ))}
-                      </div>
-                    ))}
+                  <div>
+                    <ElementorLikeEditor
+                      key={`desc-${editorKey}`}
+                      initialHtml={productDetails?.description || ""}
+                      onChange={(finalHtml) => setHtmlData(finalHtml)}
+                    />
+                  </div>
                 </div>
 
-                <div className="bg-white dark:bg-gray-700 rounded-lg p-4 mt-4">
-                  {/* <Input
-                    type="textarea"
-                    label={"Short Description"}
-                    placeholder="Enter short description"
-                    registerProperty={register("short_description")}
-                    errorText={errors?.short_description?.message}
-                  /> */}
-
-                  <h3 className="text-sm font-semibold dark:text-gray-300 pb-3">
-                    Short Description
-                  </h3>
-
-                  <RichTextEditor
-                    content={content}
-                    onChange={handleEditorChange}
-                    placeholder="Start writing your content here..."
-                  />
-                </div>
-
-                <div>
-                  <ElementorLikeEditor
-                    initialHtml={productDetails?.description || ""}
-                    onChange={(finalHtml) => setHtmlData(finalHtml)}
-                  />
-                </div>
-              </div>
-
-              {/* Right: media + submit */}
-              <div className="lg:w-1/4 w-full lg:sticky lg:self-start lg:max-h-[calc(100vh-140px)] lg:overflow-y-auto">
-                <div className="bg-white dark:bg-gray-700 rounded-lg p-4">
-                  <h2 className="text-lg font-semibold dark:text-gray-300">
-                    {isEdit ? "Update Images" : "Upload Image"}
-                  </h2>
-                  {loading ? (
-                    <UploadImageSkeleton />
-                  ) : (
+                <div className="lg:w-1/4 w-full lg:sticky lg:self-start lg:max-h-[calc(100vh-140px)] lg:overflow-y-auto">
+                  <div className="bg-white dark:bg-gray-800 dark:text-gray-300 rounded-lg p-4">
+                    <h2 className="text-lg font-semibold">Upload Image</h2>
                     <div className="mt-2">
-                      {/* Featured */}
                       <Controller
                         control={control}
                         name="featuredImage"
@@ -976,103 +758,63 @@ const Page: React.FC = () => {
                             onChange={onChange}
                             value={value}
                             label="Featured Image"
-                            required={!isEdit}
-                            accept={["image/jpeg", "image/png", "image/webp"]}
+                            accept={["image/jpeg", "image/png"]}
                             maxSize={5 * 1024 * 1024}
                           />
                         )}
                       />
-                      {errors.featuredImage && (
-                        <p className="text-red-500 text-sm">
-                          {String(errors.featuredImage.message)}
-                        </p>
-                      )}
                       <div className="mt-3">
                         <Input
                           label="Featured image title (alt)"
                           placeholder="Title for featured image"
                           registerProperty={register("featured_image_title")}
-                          errorText={
-                            errors?.featured_image_title?.message as string
-                          }
                         />
                       </div>
-
-                      {/* Gallery */}
                       <div className="mt-4">
                         <Controller
                           control={control}
                           name="productImages"
                           render={({ field: { onChange, value } }) => (
                             <MultipleImageUpload
-                              value={(value as GalleryItem[]) || []}
                               onChange={onChange}
+                              value={value}
                               label="Product Images"
-                              maxImages={4}
                               layout="list"
                               pasteRequireClick={true}
                               renderImageFields={(i) => (
-                                <>
-                                  <Input
-                                    noMargin
-                                    label="Image (alt) Tag"
-                                    placeholder={`Enter your (alt) Tag`}
-                                    registerProperty={register(
-                                      `product_image_title.${i}`,
-                                    )}
-                                  />
-                                  <Input
-                                    noMargin
-                                    label="Features Text"
-                                    placeholder={`Enter your features text`}
-                                    registerProperty={registerWithLiveValidation(
-                                      register,
-                                      trigger,
-                                      `product_image_text.${i}`,
-                                    )}
-                                    errorText={getArrayFieldErrorMessage(
-                                      errors?.product_image_text,
-                                      i,
-                                    )}
-                                  />
-                                </>
+                                <Input
+                                  noMargin
+                                  label="Image (alt) Tag"
+                                  placeholder="Enter your (alt) Tag"
+                                  registerProperty={register(
+                                    `product_image_title.${i}`,
+                                  )}
+                                />
                               )}
                             />
                           )}
                         />
-                        {errors.productImages && (
-                          <p className="text-red-500 text-sm">
-                            {String(errors.productImages.message)}
-                          </p>
-                        )}
                       </div>
                     </div>
-                  )}
-                </div>
-                <div className="mt-4 flex items-center justify-end gap-3 bg-white dark:bg-gray-700 rounded-lg p-4">
-                  <Link href="/admin/product/products">
-                    <Button type="button" className="bg-gray-400 text-gray-800">
-                      Cancel
+                  </div>
+                  <div className="mt-4 flex items-center justify-end gap-3 bg-white dark:bg-gray-700 rounded-lg p-4">
+                    <Link href="/admin/product/products">
+                      <Button type="button" className="bg-gray-400 text-gray-800">
+                        Cancel
+                      </Button>
+                    </Link>
+                    <Button
+                      className="bg-blue-600 text-nowrap"
+                      type="submit"
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? "Saving..." : "Update Product"}
                     </Button>
-                  </Link>
-
-                  <Button
-                    className="bg-blue-600 text-nowrap"
-                    type="submit"
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting
-                      ? isEdit
-                        ? "Updating..."
-                        : "Creating..."
-                      : isEdit
-                        ? "Update Product"
-                        : "Create Product"}
-                  </Button>
+                  </div>
                 </div>
               </div>
-            </div>
-          </form>
+            </form>
+          )}
         </div>
       </div>
     </AuthLayout>

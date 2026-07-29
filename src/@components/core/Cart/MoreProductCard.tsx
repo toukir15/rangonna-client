@@ -13,6 +13,10 @@ import { setCookie, getCookie } from "cookies-next";
 import { GlobalContext } from "@/@components/pages/Context/GlobalContext";
 import Link from "next/link";
 import ButtonLoader from "../Button/ButtonLoader";
+import {
+  getDefaultVariant,
+  getTotalStockQuantity,
+} from "@/utils/productStock";
 
 interface ProductCardProps {
   data: any;
@@ -108,10 +112,14 @@ const MoreProductCard: React.FC<ProductCardProps> = ({
           price: data.pricing?.sale_price,
           quantity: 1,
           image: data.featured_image?.src,
-          sku: data?.sku,
+          sku: getDefaultVariant(data)?.sku || data?.sku,
+          size: getDefaultVariant(data)?.size || "",
           categories: data.categories,
           brand: data.brand,
-          max_quantity: data?.inventory?.stock_quantity,
+          max_quantity:
+            Number(getDefaultVariant(data)?.inventory?.stock_quantity) ||
+            getTotalStockQuantity(data) ||
+            undefined,
         });
       }
 

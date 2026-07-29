@@ -20,12 +20,7 @@ import ProductTable from "@admin/components/pages/Product/AllProducts/ProductsTa
 import Button from "@admin/components/core/Button/Button";
 import Alert from "@admin/components/core/Aleart/Aleart";
 import SelectComponent from "@admin/components/core/Select/Select";
-import {
-  IWebsiteOption,
-  IWebsiteRes,
-  IWebsiteResponse,
-  SelectOption,
-} from "@admin/@interfaces/common.interface";
+import { SelectOption } from "@admin/@interfaces/common.interface";
 import { ProductCategoryService } from "@admin/@services/apis/ProductService/ProductCategory.service";
 import { ProductBrandService } from "@admin/@services/apis/ProductService/ProductBrand.service";
 import {
@@ -38,7 +33,6 @@ import {
 import { useGlobalContext } from "@admin/context/GlobalContext";
 import PageSearch from "@admin/components/core/Search/PageSearch";
 import AllFilter from "@admin/components/pages/AllFilter/AllFilter";
-import { GlobalService } from "@admin/@services/apis/GlobalService/Global.service";
 
 export const ProductsContext = createContext({} as IProductsContext);
 
@@ -52,11 +46,7 @@ const ProductsPageContent: React.FC = () => {
   const { permissionList } = useGlobalContext();
   const [popupIndex, setPopupIndex] = useState<number | null>(null);
   const [productData, setProductData] = useState<IProduct[]>([]);
-  const popupRef = useRef<HTMLDivElement | null>(null);  const [websiteOptions, setWebsiteOptions] = useState<IWebsiteOption[]>([]);
-  const [selectedWebsite, setSelectedWebsite] = useState<SelectOption>({
-    value: "all",
-    label: "All Website",
-  });
+  const popupRef = useRef<HTMLDivElement | null>(null);
   const togglePopup = (index: number) => {
     setPopupIndex(popupIndex === index ? null : index);
   };
@@ -112,10 +102,6 @@ const ProductsPageContent: React.FC = () => {
     value: "all",
     label: "All Status - 0",
   });
-  const [selectedSeoStatus, setSelectedSeoStatus] = useState<SelectOption>({
-    value: "all",
-    label: "Seo Filter",
-  });
 
   const [sortOrder, setSortOrder] = useState<
     "" | "inventory.stock_quantity" | "-inventory.stock_quantity"
@@ -138,20 +124,6 @@ const ProductsPageContent: React.FC = () => {
     ],
     [productCardData],
   );
-  const IsSeoOptions: SelectOption[] = [
-    {
-      label: `Seo Filter`,
-      value: "all",
-    },
-    {
-      label: `True`,
-      value: "true",
-    },
-    {
-      label: `False`,
-      value: "false",
-    },
-  ];
 
   const setOrDeleteParam = (
     params: URLSearchParams,
@@ -168,7 +140,7 @@ const ProductsPageContent: React.FC = () => {
     setOrDeleteParam(params, "category", selectedCategory.value);
     setOrDeleteParam(params, "brand", selectedBrand.value);
     setOrDeleteParam(params, "status", selectedStatus.value);
-    setOrDeleteParam(params, "is_seo", selectedSeoStatus.value);
+    params.delete("is_seo");
     setOrDeleteParam(params, "page", currentPage);
     setOrDeleteParam(params, "limit", productPerPage);
 
@@ -184,42 +156,15 @@ const ProductsPageContent: React.FC = () => {
     selectedCategory.value,
     selectedBrand.value,
     selectedStatus.value,
-    selectedSeoStatus.value,
     productPerPage,
     currentPage,
     debouncedSearchTerm,
   ]);
 
-  const fetchWebList = async () => {
-    GlobalService.getWebsiteList()
-      .then((res: IWebsiteRes) => {
-        if (res?.success) {
-          const options = res.data.map((item: IWebsiteResponse) => ({
-            label: item.web_name,
-            value: item.web_url,
-          }));
-          setWebsiteOptions([
-            { value: "all", label: "All Website" },
-            ...options,
-          ]);
-        } else {
-          ToastService.error(res?.message);
-        }
-      })
-      .catch((err: { message: string }) => {
-        ToastService.error(err.message);
-      });
-  };
-
-  useEffect(() => {
-    fetchWebList();
-  }, []);
-
   useEffect(() => {
     const qCategory = searchParams.get("category");
     const qBrand = searchParams.get("brand");
     const qStatus = searchParams.get("status");
-    const qSeo = searchParams.get("is_seo");
     const qPage = searchParams.get("page");
     const qLimit = searchParams.get("limit");
     const qSearch = searchParams.get("searchTerm");
@@ -245,11 +190,6 @@ const ProductsPageContent: React.FC = () => {
       if (matchedStatus) {
         setSelectedStatus(matchedStatus);
       }
-    }
-
-    if (qSeo) {
-      const matchedSeo = IsSeoOptions.find((item) => item.value === qSeo);
-      if (matchedSeo) setSelectedSeoStatus(matchedSeo);
     }
 
     if (qPage) setCurrentPage(Number(qPage));
@@ -299,11 +239,9 @@ const ProductsPageContent: React.FC = () => {
     selectedCategory.value,
     selectedBrand.value,
     selectedStatus.value,
-    selectedSeoStatus.value,
     currentPage,
     productPerPage,
     debouncedSearchTerm,
-    selectedWebsite,
   ]);
 
   useEffect(() => {
@@ -320,9 +258,7 @@ const ProductsPageContent: React.FC = () => {
         category: selectedCategory.value,
         brand: selectedBrand.value,
         inventory_stock_status: selectedStatus.value,
-        is_seo: selectedSeoStatus.value,
         sort: sortOrder,
-        domain: selectedWebsite.value,
       })
       .then((res: IProductsResponse) => {
         if (res?.success) {
@@ -524,14 +460,7 @@ const ProductsPageContent: React.FC = () => {
       setSelectedStatus(matchedStatus || parsedStatus);
     }
 
-    const savedSeoStatus = localStorage.getItem("selectedSeoStatus");
-    if (savedSeoStatus) {
-      const parsedSeo = JSON.parse(savedSeoStatus);
-      const matchedSeo = IsSeoOptions.find(
-        (item) => item.value === parsedSeo?.value,
-      );
-      setSelectedSeoStatus(matchedSeo || parsedSeo);
-    }
+    localStorage.removeItem("selectedSeoStatus");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -548,13 +477,7 @@ const ProductsPageContent: React.FC = () => {
     if (selectedStatus) {
       localStorage.setItem("selectedStatus", JSON.stringify(selectedStatus));
     }
-    if (selectedSeoStatus) {
-      localStorage.setItem(
-        "selectedSeoStatus",
-        JSON.stringify(selectedSeoStatus),
-      );
-    }
-  }, [selectedCategory, selectedBrand, selectedStatus, selectedSeoStatus]);
+  }, [selectedCategory, selectedBrand, selectedStatus]);
 
   useTableRefreshRegister(fetchProduct);
 
@@ -590,10 +513,6 @@ const ProductsPageContent: React.FC = () => {
               All Product
             </h2>
               <AllFilter
-              isWebsiteFilter={true}
-              websiteOptions={websiteOptions}
-              selectedWebsite={selectedWebsite}
-              setSelectedWebsite={setSelectedWebsite}
               isCategoryOptionFilter={true}
               categoryOptions={categoryOptions || []}
               selectedCategory={selectedCategory}
@@ -608,10 +527,6 @@ const ProductsPageContent: React.FC = () => {
               setSelectedStatus={setSelectedStatus}
               cardLoading={cardLoading}
               setCurrentPage={setCurrentPage}
-              isSeoFilter={true}
-              seoOptions={IsSeoOptions}
-              selectedSeo={selectedSeoStatus}
-              setSelectedSeo={setSelectedSeoStatus}
             />
 
             <div className="">

@@ -24,9 +24,16 @@ import ProductFlashDeal from "../FlashDeal/FlashDealTimer";
 import {
   Product,
   ProductPageClientProps,
+  ProductVariant,
 } from "@/@interfaces/ProductDetails/productDetails.interface";
 import CustomHTMLParser from "@/@components/core/HtmlParser/HtmlParser";
 import ImagePreviewModal from "@/@components/core/ImagePreview/ImagePrevieModal";
+import {
+  getDefaultVariant,
+  getProductVariants,
+  isProductInStock,
+  isVariantInStock,
+} from "@/utils/productStock";
 
 const defaultValue = { phone: "" };
 
@@ -42,6 +49,26 @@ export default function ProductPageClient({
   const [notifyLoading, setNotifyLoading] = useState(false);
   const [productQuantity, setProductQuantity] = useState(1);
   const singleWatch = useMemo(() => initialSingleWatch, [initialSingleWatch]);
+  const variants = useMemo(
+    () => getProductVariants(singleWatch),
+    [singleWatch],
+  );
+  const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(
+    () => getDefaultVariant(initialSingleWatch),
+  );
+
+  useEffect(() => {
+    setSelectedVariant(getDefaultVariant(singleWatch));
+  }, [singleWatch]);
+
+  const productInStock = isProductInStock(singleWatch);
+  const selectedInStock = selectedVariant
+    ? isVariantInStock(selectedVariant)
+    : productInStock;
+  const selectedMaxQty = selectedVariant
+    ? Number(selectedVariant?.inventory?.stock_quantity) || 0
+    : Number(singleWatch?.inventory?.stock_quantity) || 0;
+
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
   const [touchDeltaX, setTouchDeltaX] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
@@ -226,10 +253,14 @@ export default function ProductPageClient({
       const lineQty = Math.max(1, productQuantity);
       totalValue += Number(p?.pricing?.sale_price || 0) * lineQty;
 
-      const i = cartItems.findIndex((item: any) => item.id === p._id);
+      const i = cartItems.findIndex(
+        (item: any) =>
+          item.id === p._id &&
+          (item.size || "") === (selectedVariant?.size || ""),
+      );
       if (i >= 0) {
         cartItems[i].quantity = Math.min(
-          Number(p.inventory?.stock_quantity || 99),
+          selectedMaxQty || Number(p.inventory?.stock_quantity || 99),
           Number(cartItems[i].quantity || 0) + lineQty,
         );
       } else {
@@ -239,12 +270,13 @@ export default function ProductPageClient({
           price: p.pricing?.sale_price || 0,
           quantity: lineQty,
           image: p.featured_image?.src || p.images?.[0]?.src,
-          sku: p?.sku,
+          sku: selectedVariant?.sku || p?.sku,
+          size: selectedVariant?.size || "",
           categories: Array.isArray(p.categories)
             ? p.categories
             : (p.categories ?? ""),
           brand: p.brand ?? "",
-          max_quantity: p.inventory.stock_quantity,
+          max_quantity: selectedMaxQty || undefined,
         });
       }
     }
@@ -271,7 +303,7 @@ export default function ProductPageClient({
             : (p.categories ?? ""),
           price: p.pricing?.sale_price || 0,
           quantity: productQuantity,
-          max_quantity: p.inventory.stock_quantity,
+          max_quantity: selectedMaxQty || undefined,
         })),
       },
     });
@@ -295,7 +327,11 @@ export default function ProductPageClient({
     for (const p of products) {
       if (!p?._id) continue;
 
-      const i = cartItems.findIndex((item: any) => item.id === p._id);
+      const i = cartItems.findIndex(
+        (item: any) =>
+          item.id === p._id &&
+          (item.size || "") === (selectedVariant?.size || ""),
+      );
       if (i >= 0) {
         cartItems[i].quantity += productQuantity;
       } else {
@@ -305,12 +341,13 @@ export default function ProductPageClient({
           price: p.pricing?.sale_price || 0,
           quantity: productQuantity,
           image: p.featured_image?.src || p.images?.[0]?.src,
-          sku: p?.sku,
+          sku: selectedVariant?.sku || p?.sku,
+          size: selectedVariant?.size || "",
           categories: Array.isArray(p.categories)
             ? p.categories
             : (p.categories ?? ""),
           brand: p.brand ?? "",
-          max_quantity: p.inventory.stock_quantity,
+          max_quantity: selectedMaxQty || undefined,
         });
       }
     }
@@ -505,6 +542,9 @@ export default function ProductPageClient({
   }, [singleWatch]);
 
   const sizeOptions = useMemo(() => {
+    if (variants.length) {
+      return variants.map((v) => String(v.size || "").trim()).filter(Boolean);
+    }
     const attrs = Array.isArray((singleWatch as any)?.attributes)
       ? (singleWatch as any).attributes
       : [];
@@ -516,7 +556,7 @@ export default function ProductPageClient({
       .split(/[,|/]/)
       .map((s) => s.trim())
       .filter(Boolean);
-  }, [singleWatch]);
+  }, [singleWatch, variants]);
 
   const colorOptions = useMemo(() => {
     const attrs = Array.isArray((singleWatch as any)?.attributes)
@@ -536,12 +576,22 @@ export default function ProductPageClient({
   const [selectedColor, setSelectedColor] = useState<string>("");
 
   useEffect(() => {
-    if (sizeOptions.length) setSelectedSize(sizeOptions[0]);
-  }, [sizeOptions]);
+    if (selectedVariant?.size) {
+      setSelectedSize(selectedVariant.size);
+    } else if (sizeOptions.length) {
+      setSelectedSize(sizeOptions[0]);
+    }
+  }, [sizeOptions, selectedVariant]);
 
   useEffect(() => {
     if (colorOptions.length) setSelectedColor(colorOptions[0]);
   }, [colorOptions]);
+
+  const onSelectSize = (opt: string) => {
+    setSelectedSize(opt);
+    const match = variants.find((v) => v.size === opt);
+    if (match) setSelectedVariant(match);
+  };
 
   const mainSrc =
     typeof mainImage?.src === "string"
@@ -586,7 +636,7 @@ export default function ProductPageClient({
               priority
             />
 
-            {singleWatch?.inventory?.stock_status === "out-of-stock" && (
+            {!productInStock && (
               <span className="rongonaa-pdp__oos-badge">Out Of Stock</span>
             )}
 
@@ -669,19 +719,31 @@ export default function ProductPageClient({
             <div className="rongonaa-pdp__field">
               <p className="rongonaa-pdp__field-label">Size</p>
               <div className="rongonaa-pdp__chips">
-                {sizeOptions.map((opt) => (
-                  <button
-                    key={opt}
-                    type="button"
-                    className={`rongonaa-pdp__chip ${
-                      selectedSize === opt ? "is-active" : ""
-                    }`}
-                    onClick={() => setSelectedSize(opt)}
-                  >
-                    {opt}
-                  </button>
-                ))}
+                {sizeOptions.map((opt) => {
+                  const variant = variants.find((v) => v.size === opt);
+                  const available = variant
+                    ? isVariantInStock(variant)
+                    : true;
+                  return (
+                    <button
+                      key={opt}
+                      type="button"
+                      disabled={!available}
+                      className={`rongonaa-pdp__chip ${
+                        selectedSize === opt ? "is-active" : ""
+                      } ${!available ? "opacity-40 line-through" : ""}`}
+                      onClick={() => onSelectSize(opt)}
+                    >
+                      {opt}
+                    </button>
+                  );
+                })}
               </div>
+              {selectedVariant?.sku ? (
+                <p className="mt-2 text-xs text-secondary/60">
+                  SKU: {selectedVariant.sku}
+                </p>
+              ) : null}
             </div>
           )}
 
@@ -713,6 +775,8 @@ export default function ProductPageClient({
 
           <ProductActions
             singleWatch={singleWatch}
+            isInStock={selectedInStock}
+            maxQuantity={selectedMaxQty || undefined}
             productQuantity={productQuantity}
             setProductQuantity={setProductQuantity}
             handleOrderNow={handleOrderNow}
