@@ -245,7 +245,7 @@ const OrderStatus: React.FC<OrderStatusProps> = ({
     <div>
       {currentStep && !loadingUser ? (
         <div
-          className={`rounded-lg md:px-4 md:py-4 px-2 py-4 mb-3 dark:bg-gray-800 dark:border-gray-500 ${
+          className={`ov-status-shell rounded-lg md:px-4 md:py-4 px-2 py-4 mb-3 dark:bg-gray-800 dark:border-gray-500 ${
             currentStep === "delivery"
               ? "bg-emerald-200 text-emerald-800 border border-emerald-300"
               : currentStep === "cancel"
@@ -256,7 +256,7 @@ const OrderStatus: React.FC<OrderStatusProps> = ({
                     ? "bg-red-50 text-red-500 border border-red-300"
                     : currentStep === "exchange"
                       ? "bg-zinc-50 text-zinc-600 border border-zinc-300"
-                      : "bg-white  dark:bg-gray-800 shadow-md"
+                      : "bg-white dark:bg-gray-800"
           }`}
         >
           {/* 🟢 Show message if the order is in final state */}

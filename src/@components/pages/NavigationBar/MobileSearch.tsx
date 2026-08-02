@@ -72,16 +72,16 @@ const MobileSearch = ({ embedded = false }: MobileSearchProps) => {
             if (e.key === "Enter") handleSubmit();
           }}
           type="text"
-          placeholder="মায়ের প্রয়োজনীয় পণ্য খুঁজুন..."
-          className="rongonaa-search-input !py-1.5 !pl-8 !pr-10 !text-[0.78rem]"
+          placeholder="Search bangles, bridal..."
+          className="rongonaa-search-input !h-11 !py-0 !pl-9 !pr-16 !text-[0.78rem]"
         />
         <button
           type="button"
-          className="rongonaa-search-submit !h-7 !w-7"
+          className="rongonaa-search-submit"
           onClick={handleSubmit}
           aria-label="Search"
         >
-          <Icon name="arrow_forward" size={14} className="text-white" />
+          <span className="rongonaa-search-submit__label">Go</span>
         </button>
 
         {showSuggestions && filteredSuggestions.length > 0 && (

@@ -68,55 +68,51 @@ const TopBarButtonGroup: React.FC<ButtonGroupProps> = ({
   };
 
   return (
-    <div className={`order-4 md:mt-0 mt-10 md:w-auto w-full ${className}`}>
-      <div className="flex items-center md:justify-normal justify-between md:space-x-6">
-        {buttons.map((button, index) => {
-          const isThisLoading = activeLoadingName === button.name;
+    <div
+      className={`ov-actions order-4 md:mt-0 mt-6 md:w-auto w-full flex-wrap ${className}`}
+    >
+      {buttons.map((button, index) => {
+        const isThisLoading = activeLoadingName === button.name;
 
-          return (
-            <button
-              key={index}
-              className={`rounded-md relative group disabled:opacity-60 disabled:cursor-not-allowed ${buttonClassName}`}
-              onClick={() => handleClick(button)}
-              disabled={!!isThisLoading}
-              aria-busy={isThisLoading}
-              aria-label={button.name}
-              type="button"
+        return (
+          <button
+            key={index}
+            className={`ov-action-btn relative group disabled:opacity-60 disabled:cursor-not-allowed ${buttonClassName}`}
+            onClick={() => handleClick(button)}
+            disabled={!!isThisLoading}
+            aria-busy={isThisLoading}
+            aria-label={button.name}
+            type="button"
+          >
+            {button.hasBadge && button.badgeContent}
+
+            <Icon
+              name={isThisLoading ? "autorenew" : button.icon}
+              variant={button.variant || "outlined"}
+              className={isThisLoading ? "animate-spin" : ""}
+              size={button.size || 20}
+            />
+
+            <span
+              className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 hidden group-hover:block bg-[#1a0c10] text-white font-semibold text-[10px] tracking-wide px-2.5 py-1 rounded-md whitespace-nowrap z-10 dark:bg-gray-700 ${tooltipClassName}`}
             >
-              {button.hasBadge && button.badgeContent}
-
-              <Icon
-                name={isThisLoading ? "autorenew" : button.icon}
-                variant={button.variant || "outlined"}
-                className={`text-${button.color} ${
-                  isThisLoading ? "animate-spin" : ""
-                }`}
-                size={button.size}
-              />
-
-              <span
-                className={`absolute dark:bg-gray-600 dark:text-gray-300 bottom-full left-1/2 -translate-x-1/2 mb-1 hidden group-hover:block bg-gray-200 text-black font-semibold text-xs px-4 py-1 rounded-md ${tooltipClassName}`}
-              >
-                {button.name}
-              </span>
-            </button>
-          );
-        })}
-      </div>
+              {button.name}
+            </span>
+          </button>
+        );
+      })}
 
       {showClearButton && (
-        <div className="flex items-end justify-end">
-          <Button
-            className="bg-blue-500 text-white !px-2 !py-0.5 rounded-lg !text-xs cursor-pointer"
-            onClick={onClearClick}
-          >
-            {isPrinting ? (
-              <ButtonLoader className="!w-6 !px-2 !pt-0.5" />
-            ) : (
-              "Clear"
-            )}
-          </Button>
-        </div>
+        <Button
+          className="!bg-[#1a0c10] !text-white !px-2.5 !py-1 !rounded-full !text-[10px] !font-bold !tracking-wider uppercase cursor-pointer"
+          onClick={onClearClick}
+        >
+          {isPrinting ? (
+            <ButtonLoader className="!w-6 !px-2 !pt-0.5" />
+          ) : (
+            "Clear"
+          )}
+        </Button>
       )}
     </div>
   );

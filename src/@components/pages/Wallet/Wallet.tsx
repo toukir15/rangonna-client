@@ -264,7 +264,7 @@ export default function Wallet() {
             </div>
           ) : watchData?.data?.data?.length ? (
             <>
-              <div className="grid md:grid-cols-3 grid-cols-2 lg:grid-cols-4 md:gap-4 gap-2 mt-4">
+              <div className="rongonaa-shop-grid mt-4">
                 {watchData?.data?.data
                   .filter(
                     (watch: WatchData) =>

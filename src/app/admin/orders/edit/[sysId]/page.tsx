@@ -279,6 +279,8 @@ const Page: React.FC = () => {
         orderDetails?.line_items?.map((item: any) => ({
           title: item?.title,
           product_id: item.product_id._id,
+          sku: item.sku || "",
+          size: item.size || "",
           quantity: Number(item.quantity),
           subtotal: item.price * item.quantity,
           total: item.price * item.quantity,
@@ -538,7 +540,13 @@ const Page: React.FC = () => {
                                               quantity: 1,
                                               subtotal: product.price,
                                               total: product.price,
-                                              sku: product.sku,
+                                              sku:
+                                                product.variants?.[0]?.sku ||
+                                                product.sku ||
+                                                "",
+                                              size:
+                                                product.variants?.[0]?.size ||
+                                                "",
                                               price:
                                                 product?.pricing?.sale_price,
                                               image:

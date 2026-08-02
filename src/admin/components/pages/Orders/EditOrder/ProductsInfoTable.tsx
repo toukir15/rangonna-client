@@ -100,7 +100,19 @@ export const ProductsInfoTable = ({
                         )}
                       </td>
                       <td className="border dark:border-gray-600 text-lg font-semibold px-4 py-2 dark:text-gray-400">
-                        {product?.title}
+                        <div>
+                          <p>{product?.title}</p>
+                          {(product?.sku || product?.product_id?.sku) && (
+                            <p className="text-sm font-normal text-gray-500 dark:text-gray-400">
+                              Sku: {product?.sku || product?.product_id?.sku}
+                            </p>
+                          )}
+                          {product?.size ? (
+                            <p className="text-sm font-normal text-gray-500 dark:text-gray-400">
+                              Size: {product.size}
+                            </p>
+                          ) : null}
+                        </div>
                       </td>
                       <td className="border dark:border-gray-600 px-4 py-2">
                         <div className="flex items-center justify-center">

@@ -5,6 +5,7 @@ import { GlobalProvider } from "@/@components/pages/Context/GlobalContext";
 import { ToastComponent } from "@/@components/pages/ToastComponent/ToastComponent";
 import CampaignTracker from "@/@components/pages/CampaingTracker/CampainTracker";
 import GlobalLoading from "@/@components/pages/GlobalLoading/GlobalLoading";
+import ColorThemeBootstrap from "@/@components/pages/Header/ColorThemeBootstrap";
 
 export default function StorefrontProviders({
   children,
@@ -13,6 +14,7 @@ export default function StorefrontProviders({
 }) {
   return (
     <GlobalProvider>
+      <ColorThemeBootstrap />
       <ToastComponent />
       <Suspense fallback={<GlobalLoading />}>
         <CampaignTracker />

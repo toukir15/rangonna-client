@@ -106,6 +106,7 @@ const InvoiceNew = forwardRef<HTMLDivElement, PackingSlipPrintProps>(
                     <tr key={index}>
                       <td className=" px-3 py-0.5 text-sm">
                         {item?.title || "-"}
+                        {item?.size ? ` (${item.size})` : ""}
                       </td>
                       <td className=" px-3 py-0.5 text-sm">
                         {item?.quantity || 0}

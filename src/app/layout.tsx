@@ -1,5 +1,12 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Nunito, Poppins, Inter } from "next/font/google";
+import {
+  Geist,
+  Geist_Mono,
+  Nunito,
+  Poppins,
+  Inter,
+  Playfair_Display,
+} from "next/font/google";
 import "quill/dist/quill.core.css";
 import "quill/dist/quill.snow.css";
 import "./globals.css";
@@ -11,7 +18,6 @@ const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
 });
-
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
@@ -26,8 +32,14 @@ const nunito = Nunito({
 
 const poppins = Poppins({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["300", "400", "500", "600", "700"],
   variable: "--font-poppins",
+});
+
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  variable: "--font-playfair",
+  display: "swap",
 });
 
 const inter = Inter({
@@ -36,48 +48,34 @@ const inter = Inter({
   variable: "--font-inter",
 });
 
-// Normalize a safe canonical URL so Next.js doesn't receive invalid values like "null"
 const CANONICAL_URL =
   ENV.APP_URL && typeof ENV.APP_URL === "string" && ENV.APP_URL.trim() !== ""
     ? ENV.APP_URL
     : "http://localhost:3000";
 
 export const metadata: Metadata = {
-  title: "Naviforce Watch Bangladesh",
+  title: {
+    default: "Rangonaa | Handcrafted Women's Bangles from Bangladesh",
+    template: "%s | Rangonaa",
+  },
   description:
-    "Find Best Naviforce Watch Price in Bangladesh at Naviforce Bangladesh. Buy Naviforce Watch price in BD with Official Warranty.",
+    "Discover premium handcrafted women's bangles (Churi) at Rangonaa — elegant glass, bridal, daily wear, and luxury collections with Cash on Delivery across Bangladesh.",
   alternates: { canonical: CANONICAL_URL },
   robots: { index: true, follow: true },
   openGraph: {
-    title: "Naviforce Watch Bangladesh",
+    title: "Rangonaa | Celebrate Every Moment with Elegance",
     description:
-      "Find Best Naviforce Watch Price in Bangladesh at Naviforce Bangladesh. Buy Naviforce Watch price in BD with Official Warranty.",
-    siteName: "Naviforce Bangladesh",
+      "Handcrafted women's bangles blending tradition with modern beauty.",
+    siteName: "Rangonaa",
     type: "website",
-    url: "https://Naviforce.com.bd",
-    images: [
-      {
-        url: "https://static-naviforce.sgp1.cdn.digitaloceanspaces.com/NaviforceLogo.jpg",
-        width: 200,
-        height: 200,
-        alt: "Naviforce Logo",
-      },
-    ],
-    locale: "en_US",
+    url: CANONICAL_URL,
+    locale: "en_BD",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Naviforce Watch Bangladesh",
+    title: "Rangonaa | Celebrate Every Moment with Elegance",
     description:
-      "Find Best Naviforce Watch Price in Bangladesh at Naviforce Bangladesh. Buy Naviforce Watch price in BD with Official Warranty.",
-    images: [
-      {
-        url: "https://static-naviforce.sgp1.cdn.digitaloceanspaces.com/NaviforceLogo.jpg",
-        width: 200,
-        height: 200,
-        alt: "Naviforce Logo",
-      },
-    ],
+      "Handcrafted women's bangles blending tradition with modern beauty.",
   },
 };
 
@@ -87,11 +85,10 @@ export default function RootLayout({
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    name: "Naviforce Bangladesh",
+    name: "Rangonaa",
     url: CANONICAL_URL,
-    image: `https://static-naviforce.sgp1.cdn.digitaloceanspaces.com/NaviforceLogo.jpg`,
     description:
-      "Find Best Naviforce Watch Price in Bangladesh at Naviforce Bangladesh. Buy Naviforce Watch price in BD with Official Warranty.",
+      "Handcrafted women's bangles (Churi) — bridal, glass, luxury, and festival collections.",
     address: {
       "@type": "PostalAddress",
       streetAddress: "Majumder House (5th Floor) 39, Purana Paltan.",
@@ -110,7 +107,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <meta name="theme-color" content="#911b30" media="(max-width: 768px)" />
+        <meta name="theme-color" content="#9b1b30" media="(max-width: 768px)" />
         <script
           dangerouslySetInnerHTML={{
             __html: `(function(){try{var t=localStorage.getItem("theme");if(t==="dark"){document.documentElement.classList.add("dark");}else{document.documentElement.classList.remove("dark");}}catch(e){}})();`,
@@ -125,11 +122,12 @@ export default function RootLayout({
           geistMono.variable,
           nunito.variable,
           poppins.variable,
+          playfair.variable,
           inter.variable,
           "antialiased w-full mx-auto",
         ].join(" ")}
       >
-        <div className="!w-[100%] font-nunito">
+        <div className="!w-[100%] font-poppins">
           <div className="bg-background 2xl:p-0">{children}</div>
         </div>
 

@@ -40,6 +40,8 @@ export interface IOrder {
 export interface IOrderLineItem {
   title: string;
   product_id: string;
+  sku?: string;
+  size?: string;
   quantity: number;
   price: number;
   subtotal: number;

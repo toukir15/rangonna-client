@@ -1,4 +1,3 @@
-import Icon from "@/@components/core/Icon/Icon";
 import { useState, useEffect } from "react";
 
 interface ProductFlashDealProps {
@@ -59,31 +58,29 @@ const ProductFlashDeal = ({ product }: ProductFlashDealProps) => {
   const { hours, minutes, seconds } = formatTime(timeLeft);
 
   return (
-    <div className="mb-3 flex flex-col items-center justify-center gap-2 rounded-md premium-gradient px-4 py-2 md:flex-row md:items-center md:justify-between md:gap-0">
-      <div className="flex items-center justify-center gap-1">
-        <Icon name={"bolt"} className="text-white" />
-        <h3 className="text-sm font-bold uppercase text-white sm:text-base md:text-xl">
-          অফার শেষ হতে বাকি
-        </h3>
+    <div className="rongonaa-pdp__deal" role="timer" aria-live="polite">
+      <div className="rongonaa-pdp__deal-copy">
+        <span className="rongonaa-pdp__deal-eyebrow">Limited offer</span>
+        <p className="rongonaa-pdp__deal-title">অফার শেষ হতে বাকি</p>
       </div>
-
-      <div className="flex items-center justify-center gap-3">
-        <div>
-          <Icon name={"alarm"} className="mt-1 text-white" />
+      <div className="rongonaa-pdp__deal-clock">
+        <div className="rongonaa-pdp__deal-unit">
+          <span>{hours}</span>
+          <small>Hrs</small>
         </div>
-
-        <div className="flex items-center gap-2">
-          <h3 className="rounded-md bg-[#0000004A] px-2 py-1 text-center text-lg font-bold text-white md:text-xl">
-            {hours}
-          </h3>
-          <span className="text-xl font-bold text-white md:text-2xl">:</span>
-          <h3 className="rounded-md bg-[#0000004A] px-2 py-1 text-center text-lg font-bold text-white md:text-xl">
-            {minutes}
-          </h3>
-          <span className="text-xl font-bold text-white md:text-2xl">:</span>
-          <h3 className="rounded-md bg-[#0000004A] px-2 py-1 text-center text-lg font-bold text-white md:text-xl">
-            {seconds}
-          </h3>
+        <span className="rongonaa-pdp__deal-sep" aria-hidden>
+          :
+        </span>
+        <div className="rongonaa-pdp__deal-unit">
+          <span>{minutes}</span>
+          <small>Min</small>
+        </div>
+        <span className="rongonaa-pdp__deal-sep" aria-hidden>
+          :
+        </span>
+        <div className="rongonaa-pdp__deal-unit">
+          <span>{seconds}</span>
+          <small>Sec</small>
         </div>
       </div>
     </div>

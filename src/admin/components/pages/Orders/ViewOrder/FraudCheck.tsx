@@ -15,20 +15,18 @@ interface FraudCheckProps {
 const FraudCheck: React.FC<FraudCheckProps> = ({ fraudData }) => {
   if (!fraudData || fraudData.length === 0) {
     return (
-      <div className="bg-white dark:bg-gray-800 shadow-md text-black p-6 mt-3 rounded-lg">
-        <h3 className="text-lg font-semibold mb-4 dark:text-gray-400">
-          Fraud Check
-        </h3>
-        <p className="text-lg text-center text-gray-500">Loading...</p>
+      <div className="ov-panel mt-3">
+        <h3 className="ov-panel__title mb-4">Fraud Check</h3>
+        <p className="text-sm text-center text-[var(--ov-muted)]">Loading...</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-white dark:bg-gray-800 shadow-md text-black p-4 mt-3 rounded-lg">
-      <h3 className="text-lg font-semibold mb-4 dark:text-gray-400">
-        Fraud Check
-      </h3>
+      <div className="ov-panel">
+        <h3 className="ov-panel__title mb-4">
+          Fraud Check
+        </h3>
       <div className="overflow-x-auto">
         <table className="min-w-full bg-blue-100 dark:bg-gray-700 dark:text-gray-400 h-[35px] shadow-sm border dark:border-gray-700">
           <thead>

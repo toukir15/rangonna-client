@@ -61,6 +61,29 @@ export default function ProductPageClient({
     setSelectedVariant(getDefaultVariant(singleWatch));
   }, [singleWatch]);
 
+  useEffect(() => {
+    if (!singleWatch?._id || !singleWatch?.slug) return;
+    try {
+      const raw = getCookie("recentlyViewed");
+      let list: { id: string; slug: string }[] = [];
+      if (raw) {
+        const parsed = JSON.parse(String(raw));
+        if (Array.isArray(parsed)) list = parsed;
+      }
+      list = [
+        { id: String(singleWatch._id), slug: String(singleWatch.slug) },
+        ...list.filter((x) => x.slug !== singleWatch.slug),
+      ].slice(0, 8);
+      setCookie("recentlyViewed", JSON.stringify(list), {
+        maxAge: 30 * 24 * 60 * 60,
+        path: "/",
+        sameSite: "lax",
+      });
+    } catch {
+      /* ignore */
+    }
+  }, [singleWatch]);
+
   const productInStock = isProductInStock(singleWatch);
   const selectedInStock = selectedVariant
     ? isVariantInStock(selectedVariant)
@@ -598,8 +621,16 @@ export default function ProductPageClient({
       ? mainImage.src
       : (mainImage?.src as StaticImageData | undefined)?.src;
 
+  const salePrice = Number(singleWatch?.pricing?.sale_price || 0);
+  const regularPrice = Number(singleWatch?.pricing?.regular_price || 0);
+  const showCompare = regularPrice > salePrice;
+  const discountPct =
+    showCompare && regularPrice > 0
+      ? Math.round(((regularPrice - salePrice) / regularPrice) * 100)
+      : 0;
+
   return (
-    <div className="rongonaa-pdp max-w-layout mx-auto py-4 md:py-8 2xl:px-0 px-3 sm:px-4">
+    <div className="rongonaa-pdp max-w-layout mx-auto py-5 md:py-10 2xl:px-0 px-3 sm:px-4">
       <Modal
         isOpen={modal.open}
         type={modal.type}
@@ -698,15 +729,16 @@ export default function ProductPageClient({
 
           <div className="rongonaa-pdp__price">
             <span className="rongonaa-pdp__price-sale">
-              ৳{Number(singleWatch?.pricing?.sale_price || 0).toLocaleString()}
+              ৳{salePrice.toLocaleString("en-BD")}
             </span>
-            {Number(singleWatch?.pricing?.regular_price || 0) >
-              Number(singleWatch?.pricing?.sale_price || 0) && (
+            {showCompare && (
               <span className="rongonaa-pdp__price-compare">
-                ৳
-                {Number(
-                  singleWatch?.pricing?.regular_price || 0,
-                ).toLocaleString()}
+                ৳{regularPrice.toLocaleString("en-BD")}
+              </span>
+            )}
+            {discountPct > 0 && (
+              <span className="rongonaa-pdp__price-off">
+                Save {discountPct}%
               </span>
             )}
           </div>
@@ -714,6 +746,8 @@ export default function ProductPageClient({
           {shortText ? (
             <p className="rongonaa-pdp__short">{shortText}</p>
           ) : null}
+
+          <div className="rongonaa-pdp__divider" aria-hidden />
 
           {sizeOptions.length > 0 && (
             <div className="rongonaa-pdp__field">
@@ -731,7 +765,7 @@ export default function ProductPageClient({
                       disabled={!available}
                       className={`rongonaa-pdp__chip ${
                         selectedSize === opt ? "is-active" : ""
-                      } ${!available ? "opacity-40 line-through" : ""}`}
+                      } ${!available ? "is-disabled" : ""}`}
                       onClick={() => onSelectSize(opt)}
                     >
                       {opt}
@@ -740,9 +774,7 @@ export default function ProductPageClient({
                 })}
               </div>
               {selectedVariant?.sku ? (
-                <p className="mt-2 text-xs text-secondary/60">
-                  SKU: {selectedVariant.sku}
-                </p>
+                <p className="rongonaa-pdp__sku">SKU: {selectedVariant.sku}</p>
               ) : null}
             </div>
           )}
@@ -767,11 +799,7 @@ export default function ProductPageClient({
             </div>
           )}
 
-          {isFlashSale && (
-            <div className="mb-3">
-              <ProductFlashDeal product={singleWatch} />
-            </div>
-          )}
+          {isFlashSale && <ProductFlashDeal product={singleWatch} />}
 
           <ProductActions
             singleWatch={singleWatch}
@@ -792,15 +820,18 @@ export default function ProductPageClient({
             buyNowLoading={buyNowLoading}
           />
 
-          <div className="mt-4">
-            <EmiFacilities
-              salePrice={Number(singleWatch?.pricing?.sale_price || 0)}
-            />
-          </div>
+          <ul className="rongonaa-pdp__trust">
+            <li>Cash on delivery</li>
+            <li>Easy exchange</li>
+            <li>Gift-ready packing</li>
+          </ul>
+
+          <EmiFacilities salePrice={salePrice} />
         </div>
       </div>
 
       <section className="rongonaa-pdp__desc" aria-labelledby="pdp-description">
+        <p className="rongonaa-pdp__desc-eyebrow">Craft notes</p>
         <h2 id="pdp-description" className="rongonaa-pdp__desc-title">
           Description
         </h2>
@@ -813,13 +844,13 @@ export default function ProductPageClient({
         <ProductDetails moreWatchData={moreWatchData} />
       </div>
 
-      <div className="rongonaa-product-seo">
-        <h3 className="md:text-xl text-lg font-bold text-secondary">
+      <div className="rongonaa-product-seo rongonaa-pdp__seo">
+        <h3>
           What is the best price of {singleWatch?.title} in Bangladesh?
         </h3>
-        <p className="mt-4">
-          The latest Price of {singleWatch?.title} in Bangladesh is ৳{" "}
-          {singleWatch?.pricing?.sale_price}. You can buy it online at the best
+        <p>
+          The latest price of {singleWatch?.title} in Bangladesh is ৳
+          {salePrice.toLocaleString("en-BD")}. You can buy it online at the best
           price from our website or visit our store.
         </p>
       </div>

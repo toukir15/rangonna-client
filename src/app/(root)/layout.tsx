@@ -32,7 +32,7 @@ export default async function RootLayout({
 
   return (
     <StorefrontProviders>
-      <div className="!w-full font-nunito">
+      <div className="!w-full font-poppins">
         <div className="sticky top-0 z-50">
           <Header navItems={navItems} />
         </div>
@@ -41,7 +41,7 @@ export default async function RootLayout({
           <NavBar />
         </div>
 
-        <div className="bg-[#faf0f1] 2xl:p-0">{children}</div>
+        <div className="bg-[var(--brand-header-bg)] 2xl:p-0">{children}</div>
 
         <div>
           <NavigationBar />

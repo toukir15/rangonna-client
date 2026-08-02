@@ -129,23 +129,6 @@ const ProductActions: React.FC<ProductActionsProps> = ({
         <div className="rongonaa-pdp__cta-row">
           <button
             type="button"
-            className="rongonaa-pdp__btn rongonaa-pdp__btn--cart"
-            onClick={() =>
-              inCart ? setIsCartDrawer(true) : handleAddToCart([singleWatch])
-            }
-            disabled={addLoading}
-          >
-            {addLoading ? (
-              <ButtonLoader size="sm" color="white" />
-            ) : inCart ? (
-              "View Cart"
-            ) : (
-              "Add to Cart"
-            )}
-          </button>
-
-          <button
-            type="button"
             className="rongonaa-pdp__btn rongonaa-pdp__btn--buy"
             onClick={() =>
               inCart
@@ -159,7 +142,24 @@ const ProductActions: React.FC<ProductActionsProps> = ({
             ) : inCart ? (
               "View Order"
             ) : (
-              "Buy Now"
+              "Order Now"
+            )}
+          </button>
+
+          <button
+            type="button"
+            className="rongonaa-pdp__btn rongonaa-pdp__btn--cart"
+            onClick={() =>
+              inCart ? setIsCartDrawer(true) : handleAddToCart([singleWatch])
+            }
+            disabled={addLoading}
+          >
+            {addLoading ? (
+              <ButtonLoader size="sm" color="primary" />
+            ) : inCart ? (
+              "View Cart"
+            ) : (
+              "Add to Cart"
             )}
           </button>
 

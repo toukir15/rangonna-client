@@ -75,6 +75,8 @@ export interface LineItem {
       src: string;
     };
   };
+  sku?: string;
+  size?: string;
   quantity: number;
   subtotal: number;
   total: number;

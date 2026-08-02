@@ -20,7 +20,7 @@ const FlashSaleWatch: React.FC = () => {
     { id: 15 },
   ];
   return (
-    <div className=" w-full grid md:grid-cols-3 grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 md:gap-4 gap-3 ">
+    <div className=" rongonaa-flash-sale__grid ">
       {demoData?.map((data) => (
         <div
           key={data?.id}

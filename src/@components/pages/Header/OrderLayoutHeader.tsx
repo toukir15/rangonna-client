@@ -10,10 +10,10 @@ export default function OrderLayoutHeader() {
         <Link href="/" className="rongonaa-checkout-header-logo">
           <Image
             src={rongonaaLogo}
-            alt="Rongonaa"
-            width={120}
-            height={36}
-            className="h-auto w-[96px] sm:w-[108px]"
+            alt="Rangonaa"
+            width={833}
+            height={178}
+            className="rongonaa-logo-img rongonaa-logo-img--checkout"
             priority
           />
         </Link>

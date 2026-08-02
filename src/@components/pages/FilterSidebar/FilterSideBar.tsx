@@ -6,7 +6,7 @@ import {
   FilterSideBarProps,
   ISideBarItems,
 } from "@/@interfaces/common.interface";
-import { brandData, categoryData, sortData } from "@/utils/data";
+import { categoryData, sortData } from "@/utils/data";
 import { ProductService } from "@/@services/apis/Product/Product.service";
 import { ToastService } from "@/utils/toaster.service";
 
@@ -26,7 +26,6 @@ export default function FilterSideBar({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const isBrandRoute = pathname?.startsWith("/brand");
 
   // 🔹 API থেকে আসা default range
   const [defaultMin, setDefaultMin] = useState<number | null>(null);
@@ -265,119 +264,118 @@ export default function FilterSideBar({
   });
 
   return (
-    <div className="select-none">
-      {/* 🔹 Price Filter */}
-      <div className="bg-white pe-4 pl-3 py-3 rounded-md border border-primary-border">
-        <h3 className="font-bold text-base text-gray-600">Filter by price</h3>
+    <aside className="rongonaa-filter select-none">
+      {/* Price */}
+      <section className="rongonaa-filter__panel">
+        <h3 className="rongonaa-filter__title">Filter by price</h3>
 
         {defaultMin === null || defaultMax === null ? (
-          <p className="mt-4 text-sm text-gray-400">Loading price range…</p>
+          <p className="rongonaa-filter__hint">Loading price range…</p>
         ) : (
           <>
             <div
-              className="mt-4 relative h-8"
+              className="rongonaa-filter__slider"
               ref={sliderRef}
               onClick={onTrackClick}
             >
-              <div className="absolute top-1/2 -translate-y-1/2 h-1 bg-gray-200 rounded-full w-full" />
+              <div className="rongonaa-filter__slider-track" />
               <div
-                className="absolute top-1/2 -translate-y-1/2 h-0.5 bg-primary rounded-full pointer-events-none"
+                className="rongonaa-filter__slider-range"
                 style={{
                   left: `${minPosition}%`,
                   width: `${Math.max(0, maxPosition - minPosition)}%`,
                 }}
               />
-              <div
-                className="absolute border-s-4 h-4 w-2 border-primary -translate-y-1/2 top-1/2 cursor-pointer z-10 shadow-md"
+              <button
+                type="button"
+                aria-label="Minimum price"
+                className="rongonaa-filter__slider-thumb"
                 style={{ left: `${minPosition}%` }}
-                onMouseDown={() => startDrag("min")}
+                onClick={(e) => e.stopPropagation()}
+                onMouseDown={(e) => {
+                  e.stopPropagation();
+                  startDrag("min");
+                }}
+                onTouchStart={(e) => {
+                  e.stopPropagation();
+                  startDrag("min");
+                }}
                 onMouseUp={commitPrice}
               />
-              <div
-                className="absolute border-s-4 h-4 w-2 border-primary -translate-y-1/2 top-1/2 cursor-pointer z-10 shadow-md"
+              <button
+                type="button"
+                aria-label="Maximum price"
+                className="rongonaa-filter__slider-thumb"
                 style={{ left: `${maxPosition}%` }}
-                onMouseDown={() => startDrag("max")}
+                onClick={(e) => e.stopPropagation()}
+                onMouseDown={(e) => {
+                  e.stopPropagation();
+                  startDrag("max");
+                }}
+                onTouchStart={(e) => {
+                  e.stopPropagation();
+                  startDrag("max");
+                }}
                 onMouseUp={commitPrice}
               />
             </div>
-            <p className="mt-2 text-sm">
-              {tempMin !== null && tempMax !== null
-                ? `৳${tempMin} — ৳${tempMax}`
-                : "Loading..."}
-            </p>
+
+            <div className="rongonaa-filter__price-row">
+              <span className="rongonaa-filter__price-chip">
+                ৳{tempMin?.toLocaleString("en-BD")}
+              </span>
+              <span className="rongonaa-filter__price-sep" aria-hidden>
+                —
+              </span>
+              <span className="rongonaa-filter__price-chip">
+                ৳{tempMax?.toLocaleString("en-BD")}
+              </span>
+            </div>
           </>
         )}
-      </div>
+      </section>
 
-      <div className="border-b border-primary-border my-2" />
+      {/* Sort */}
+      <section className="rongonaa-filter__panel">
+        <h3 className="rongonaa-filter__title">Sort</h3>
+        <div className="rongonaa-filter__list">
+          {sortData.map((item: ISideBarItems, index) => (
+            <TermsCheckbox
+              key={`sort-${index}`}
+              name={`sort:${item.name}`}
+              label={item.label}
+              rightLabel={item.rightLabel}
+              checked={isSortChecked(item.name)}
+              onChange={(_ignored, checked) =>
+                handleCheckboxChange("sort", item.name, checked)
+              }
+              className="rongonaa-filter__check"
+              labelClassName="rongonaa-filter__check-label"
+            />
+          ))}
+        </div>
+      </section>
 
-      {/* 🔹 Sort Filter */}
-      <div className="bg-white p-4 rounded-md border border-primary-border">
-        <h3 className="font-bold text-base text-gray-600">Sort</h3>
-        {sortData.map((item: ISideBarItems, index) => (
-          <TermsCheckbox
-            key={`sort-${index}`}
-            name={`sort:${item.name}`}
-            label={item.label}
-            rightLabel={item.rightLabel}
-            checked={isSortChecked(item.name)}
-            onChange={(_ignored, checked) =>
-              handleCheckboxChange("sort", item.name, checked)
-            }
-            className="mt-2"
-            labelClassName="flex justify-between w-full"
-          />
-        ))}
-      </div>
-
-      <div className="border-b border-primary-border my-2" />
-
-      {/* 🔹 Category Filter */}
-      <div className="bg-white p-4 rounded-md border border-primary-border">
-        <h3 className="font-bold text-base text-gray-600">
-          Filter by categories
-        </h3>
-        {filteredCategories.map((item: ISideBarItems, index) => (
-          <TermsCheckbox
-            key={`category-${index}`}
-            name={`category:${item.name}`}
-            label={item.label}
-            rightLabel={item.rightLabel}
-            checked={(categories ?? []).includes(item.name)}
-            onChange={(_ignored, checked) =>
-              handleCheckboxChange("category", item.name, checked)
-            }
-            className="mt-2"
-            labelClassName="flex justify-between w-full"
-          />
-        ))}
-      </div>
-
-      {/* 🔹 Brand Filter */}
-      {!isBrandRoute && (
-        <>
-          <div className="border-b border-primary-border my-2" />
-          <div className="bg-white p-4 rounded-md border border-primary-border">
-            <h3 className="font-bold text-base text-gray-600">
-              Filter by Brand
-            </h3>
-            {brandData.map((item: ISideBarItems, index) => (
-              <TermsCheckbox
-                key={`brand-${index}`}
-                name={`brand:${item.name}`}
-                label={item.label}
-                rightLabel={item.rightLabel}
-                checked={isBrandChecked(item.name)}
-                onChange={(_ignored, checked) =>
-                  handleCheckboxChange("brand", item.name, checked)
-                }
-                className="mt-2"
-                labelClassName="flex justify-between w-full"
-              />
-            ))}
-          </div>
-        </>
-      )}
-    </div>
+      {/* Categories */}
+      <section className="rongonaa-filter__panel">
+        <h3 className="rongonaa-filter__title">Filter by categories</h3>
+        <div className="rongonaa-filter__list">
+          {filteredCategories.map((item: ISideBarItems, index) => (
+            <TermsCheckbox
+              key={`category-${index}`}
+              name={`category:${item.name}`}
+              label={item.label}
+              rightLabel={item.rightLabel}
+              checked={(categories ?? []).includes(item.name)}
+              onChange={(_ignored, checked) =>
+                handleCheckboxChange("category", item.name, checked)
+              }
+              className="rongonaa-filter__check"
+              labelClassName="rongonaa-filter__check-label"
+            />
+          ))}
+        </div>
+      </section>
+    </aside>
   );
 }

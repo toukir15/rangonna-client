@@ -154,6 +154,8 @@ const page: React.FC = () => {
         line_items: orderDetails.line_items.map((item: any) => ({
           title: item.title,
           product_id: item.product_id._id,
+          sku: item.sku || "",
+          size: item.size || "",
           quantity: item.quantity,
           subtotal: item.subtotal,
           total: item.total,
@@ -428,16 +430,23 @@ const page: React.FC = () => {
                             className="px-3 py-2.5 hover:bg-gray-50 dark:hover:bg-gray-700 flex justify-between items-center cursor-pointer transition-colors"
                             onClick={() => {
                               const salePrice = p.pricing?.sale_price;
+                              const sku = p.variants?.[0]?.sku || p.sku || "";
+                              const size = p.variants?.[0]?.size || "";
 
                               setOrderDetails((prev: any) => {
                                 const already = prev.line_items.find(
-                                  (li: any) => li.product_id._id === p._id
+                                  (li: any) =>
+                                    li.product_id._id === p._id &&
+                                    (li.sku || "") === sku &&
+                                    (li.size || "") === size
                                 );
                                 if (already) {
                                   return {
                                     ...prev,
                                     line_items: prev.line_items.map((li: any) =>
-                                      li.product_id._id === p._id
+                                      li.product_id._id === p._id &&
+                                      (li.sku || "") === sku &&
+                                      (li.size || "") === size
                                         ? {
                                           ...li,
                                           quantity: li.quantity + 1,
@@ -454,6 +463,8 @@ const page: React.FC = () => {
                                     {
                                       title: p.title,
                                       product_id: { _id: p._id },
+                                      sku,
+                                      size,
                                       quantity: 1,
                                       subtotal: salePrice,
                                       total: salePrice,
@@ -512,7 +523,11 @@ const page: React.FC = () => {
                                 ...prev,
                                 line_items: prev.line_items.filter(
                                   (li: any) =>
-                                    li.product_id._id !== item.product_id._id
+                                    !(
+                                      li.product_id._id === item.product_id._id &&
+                                      (li.sku || "") === (item.sku || "") &&
+                                      (li.size || "") === (item.size || "")
+                                    )
                                 ),
                               }))
                             }
@@ -537,6 +552,7 @@ const page: React.FC = () => {
                           <div className="min-w-0 flex-1">
                             <p className="font-medium text-sm text-gray-800 dark:text-white line-clamp-2">
                               {item.title}
+                              {item.size ? ` (${item.size})` : ""}
                             </p>
                             <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                               ৳{item.price} × {item.quantity}

@@ -5,10 +5,17 @@ import {
   IStoreProductCategory,
   IStoreProductCategoryListResponse,
 } from "@/@interfaces/ProductCategory/productCategory.interface";
+import SectionHeader from "./SectionHeader";
 
 export const revalidate = 30;
 
-const CARD_SLOTS = ["hero", "side-a", "side-b", "bottom-a", "bottom-b"] as const;
+const COPY: Record<string, string> = {
+  bridal: "Heirloom stacks for her forever day",
+  "glass-bangles": "Translucent brilliance for every day",
+  luxury: "Couture glass & champagne gold",
+  festival: "Color for every celebration",
+  "premium-churi": "Crystal-lined statement sets",
+};
 
 async function getProductCategories(): Promise<IStoreProductCategory[]> {
   const qs = new URLSearchParams({
@@ -35,10 +42,8 @@ async function getProductCategories(): Promise<IStoreProductCategory[]> {
     } = await res.json();
 
     if (!json?.success) return [];
-
     if (Array.isArray(json?.data)) return json.data;
     if (Array.isArray(json?.data?.data)) return json.data.data;
-
     return [];
   } catch (err) {
     console.error("❌ product-category FETCH FAILED:", err);
@@ -46,109 +51,110 @@ async function getProductCategories(): Promise<IStoreProductCategory[]> {
   }
 }
 
+function CollectionTile({
+  item,
+  index,
+  large,
+}: {
+  item: IStoreProductCategory;
+  index: number;
+  large?: boolean;
+}) {
+  const slug = (item.value || "").trim();
+  const title = (item.key || slug || "Category").trim();
+  const href = slug ? `/watches/${encodeURIComponent(slug)}` : "#";
+  const imageSrc = item.image?.src?.trim();
+  const imageAlt = item.image?.alt || item.image?.title || title;
+  const copy =
+    COPY[slug] || `Explore the ${title.toLowerCase()} collection`;
+
+  return (
+    <Link
+      href={href}
+      className={`rongonaa-feat-tile${large ? " rongonaa-feat-tile--large" : ""}`}
+    >
+      <div className="rongonaa-feat-tile__media">
+        {imageSrc ? (
+          <Image
+            src={imageSrc}
+            alt={imageAlt}
+            fill
+            priority={index === 0}
+            className="rongonaa-feat-tile__img"
+            sizes={
+              large
+                ? "(max-width: 1024px) 100vw, 50vw"
+                : "(max-width: 1024px) 50vw, 25vw"
+            }
+          />
+        ) : (
+          <div className="rongonaa-feat-tile__placeholder" aria-hidden>
+            {title.charAt(0).toUpperCase()}
+          </div>
+        )}
+        <div className="rongonaa-feat-tile__shade" />
+        <div className="rongonaa-feat-tile__glow" />
+      </div>
+
+      <span className="rongonaa-feat-tile__index" aria-hidden>
+        {String(index + 1).padStart(2, "0")}
+      </span>
+
+      <div className="rongonaa-feat-tile__info">
+        <span className="rongonaa-feat-tile__accent" aria-hidden />
+        <h3 className="rongonaa-feat-tile__name">{title}</h3>
+        <p className="rongonaa-feat-tile__blurb">{copy}</p>
+        <span className="rongonaa-feat-tile__cta">
+          Explore
+          <span aria-hidden>→</span>
+        </span>
+      </div>
+    </Link>
+  );
+}
+
 export default async function StoreCategories() {
   const categories = (await getProductCategories()).slice(0, 5);
-
   if (!categories.length) return null;
 
-  const names = categories.map((c) => (c.key || c.value || "").trim()).filter(Boolean);
-  const subtitle =
-    names.length > 1
-      ? `Signature edits — ${names.join(", ").toLowerCase()}.`
-      : "Curated collections for every moment.";
+  const left = categories.slice(0, 2);
+  const right = categories.slice(2, 5);
 
   return (
     <section
-      className="rongonaa-store-categories"
-      aria-labelledby="store-categories-heading"
+      className="rongonaa-feat-collections"
+      aria-labelledby="featured-collections-heading"
     >
-      <div className="rongonaa-store-categories__inner">
-        <div className="rongonaa-store-categories__header">
-          <div>
-            <h2
-              id="store-categories-heading"
-              className="rongonaa-store-categories__title"
-            >
-              Shop by Category
-            </h2>
-            <span className="rongonaa-store-categories__rule" aria-hidden />
-            <p className="rongonaa-store-categories__desc">{subtitle}</p>
+      <div className="rongonaa-feat-collections__inner">
+        <SectionHeader
+          eyebrow="Curated for you"
+          title="Featured Collections"
+          description="Five signature edits — bridal, glass, luxury, festival, and premium churi."
+          href="/watches"
+          linkLabel="View all collections"
+        />
+
+        <div className="rongonaa-feat-collections__grid">
+          <div className="rongonaa-feat-collections__col rongonaa-feat-collections__col--left">
+            {left.map((item, i) => (
+              <CollectionTile
+                key={item._id || item.value || item.key}
+                item={item}
+                index={i}
+                large={i === 0}
+              />
+            ))}
           </div>
 
-          <Link href="/watches" className="rongonaa-store-categories__view-all">
-            View all collections
-            <span aria-hidden>→</span>
-          </Link>
-        </div>
-
-        <div
-          className={`rongonaa-store-categories__grid${
-            categories.length === 5
-              ? " rongonaa-store-categories__grid--mosaic"
-              : ""
-          }`}
-        >
-          {categories.map((item, index) => {
-            const slug = (item.value || "").trim();
-            const title = (item.key || slug || "Category").trim();
-            const href = slug ? `/watches/${encodeURIComponent(slug)}` : "#";
-            const imageSrc = item.image?.src?.trim();
-            const imageAlt = item.image?.alt || item.image?.title || title;
-            const slot = CARD_SLOTS[index] ?? "bottom-b";
-            const isAccent = slot === "side-a";
-
-            return (
-              <Link
-                key={item._id || slug || title}
-                href={href}
-                className={`rongonaa-store-categories__card rongonaa-store-categories__card--${slot}`}
-              >
-                <div className="rongonaa-store-categories__media">
-                  {imageSrc ? (
-                    <Image
-                      src={imageSrc}
-                      alt={imageAlt}
-                      fill
-                      className="rongonaa-store-categories__img"
-                      sizes={
-                        slot === "hero"
-                          ? "(max-width: 768px) 100vw, 45vw"
-                          : "(max-width: 768px) 100vw, 50vw"
-                      }
-                    />
-                  ) : (
-                    <div
-                      className="rongonaa-store-categories__placeholder"
-                      aria-hidden
-                    >
-                      {title.charAt(0).toUpperCase()}
-                    </div>
-                  )}
-                  <div className="rongonaa-store-categories__shade" />
-                </div>
-
-                <span className="rongonaa-store-categories__index" aria-hidden>
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-
-                <div className="rongonaa-store-categories__info">
-                  <span className="rongonaa-store-categories__accent" aria-hidden />
-                  <h3 className="rongonaa-store-categories__name">{title}</h3>
-                  <p className="rongonaa-store-categories__blurb">
-                    Explore the {title} collection
-                  </p>
-                  <span
-                    className={`rongonaa-store-categories__cta${
-                      isAccent ? " rongonaa-store-categories__cta--solid" : ""
-                    }`}
-                  >
-                    Explore
-                    <span aria-hidden>→</span>
-                  </span>
-                </div>
-              </Link>
-            );
-          })}
+          <div className="rongonaa-feat-collections__col rongonaa-feat-collections__col--right">
+            {right.map((item, i) => (
+              <CollectionTile
+                key={item._id || item.value || item.key}
+                item={item}
+                index={i + 2}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </section>

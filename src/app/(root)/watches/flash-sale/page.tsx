@@ -150,7 +150,11 @@ export default function WomenWatches() {
                     w?.inventory?.stock_status !== "out-of-stock",
                 )
                 .map((w: IProduct, idx) => (
-                  <FlashSaleCard key={`${w._id}-${idx}`} data={w} />
+                  <FlashSaleCard
+                    key={`${w._id}-${idx}`}
+                    data={w}
+                    cta="order"
+                  />
                 ))}
             </div>
 

@@ -31,8 +31,6 @@ const OtherProduct: React.FC<OtherProductProps> = ({
           <WatchCard
             key={index}
             data={data}
-            isAddToCartButton={true}
-            isByNowButton={false}
           />
         ))}
       </div>

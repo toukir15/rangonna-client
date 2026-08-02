@@ -1,5 +1,5 @@
 import React, { JSX, useEffect, useState } from "react";
-import Icon from "@/@components/core/Icon/Icon";
+import Link from "next/link";
 import { ProductService } from "@/@services/apis/Product/Product.service";
 import { ToastService } from "@/utils/toaster.service";
 import PapularProduct from "./ProductNotFound";
@@ -8,13 +8,13 @@ const NoDataFound = (): JSX.Element => {
   const [productData, setProductData] = useState<any>();
   useEffect(() => {
     ProductService.getProduct({
-      limit: "20",
+      limit: "5",
       category: "all",
       sort: "best-selling",
     })
       .then((res: any) => {
         if (res?.success) {
-          setProductData(res.data.data);
+          setProductData((res.data.data || []).slice(0, 5));
         } else {
           ToastService.error(res?.message);
         }
@@ -25,26 +25,24 @@ const NoDataFound = (): JSX.Element => {
   }, []);
 
   return (
-    <div className="w-full px-4 bg-white rounded-lg mt-4">
-      <div className="md:h-[50vh] h-[60vh] flex flex-col justify-center items-center  ">
-        <div className="text-center w-full">
-          <div className="flex items-center justify-center">
-            <Icon
-              name="production_quantity_limits"
-              size={200}
-              variant="outlined"
-            />
-          </div>
-
-          <p className="pt-4 text-lg font-semibold text-gray-700">
-            Sorry! We couldn’t find any products. 😔
-          </p>
-          <p className="pt-2 text-sm text-gray-500">
-            Try adjusting your filters or browse our categories to discover more
-            amazing items.
-          </p>
+    <div className="rongonaa-empty">
+      <div className="rongonaa-empty__panel">
+        <p className="rongonaa-empty__eyebrow">Nothing here yet</p>
+        <h2 className="rongonaa-empty__title">No products found</h2>
+        <p className="rongonaa-empty__desc">
+          Try adjusting your filters, or explore our collections for soft luxury
+          stacks she’ll love.
+        </p>
+        <div className="rongonaa-empty__actions">
+          <Link href="/watches" className="rongonaa-empty__btn rongonaa-empty__btn--primary">
+            Browse all
+          </Link>
+          <Link href="/watches/flash-sale" className="rongonaa-empty__btn rongonaa-empty__btn--ghost">
+            Flash sale
+          </Link>
         </div>
       </div>
+
       <PapularProduct products={productData} />
     </div>
   );

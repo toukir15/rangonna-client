@@ -2,20 +2,29 @@ import Link from "next/link";
 import { IProduct } from "@/@interfaces/common.interface";
 import DayDealCount from "../DayDealCount/DayDealCount";
 import FlashSaleCard from "./FlashSaleCard";
+import SectionHeader from "./SectionHeader";
 import { ENV } from "@/@config/env.config";
 
 export const revalidate = 10;
 
-async function getProducts() {
-  const qs = new URLSearchParams({
-    limit: "10",
-    category: "flash-sale",
-    sort: "-updatedAt",
-    "inventory.stock_status": "in-stock",
-  });
+const FLASH_LIMIT = 5;
 
-  const rawUrl = `${ENV.ApiEndpoint?.trim()}/product?${qs}`;
-  const url = encodeURI(rawUrl);
+function parseProductList(json: unknown): IProduct[] {
+  if (!json || typeof json !== "object") return [];
+  const root = json as Record<string, unknown>;
+  const data = root.data;
+
+  if (Array.isArray(data)) return data as IProduct[];
+  if (data && typeof data === "object") {
+    const nested = (data as Record<string, unknown>).data;
+    if (Array.isArray(nested)) return nested as IProduct[];
+  }
+  return [];
+}
+
+async function fetchFromApi(params: Record<string, string>): Promise<IProduct[]> {
+  const qs = new URLSearchParams(params);
+  const url = `${ENV.ApiEndpoint?.trim()}/product?${qs.toString()}`;
 
   try {
     const res = await fetch(url, {
@@ -23,39 +32,69 @@ async function getProducts() {
     });
 
     if (!res.ok) {
-      console.error("❌ API ERROR:", res.status);
-      return { data: { data: [] } };
+      console.error("❌ Flash sale API error:", res.status, url);
+      return [];
     }
 
-    return res.json();
+    return parseProductList(await res.json());
   } catch (err) {
-    console.error("❌ FETCH FAILED:", err);
-    return { data: { data: [] } };
+    console.error("❌ Flash sale API fetch failed:", err);
+    return [];
   }
 }
 
+/**
+ * Home Flash Sale — API driven, max 5 products.
+ * Primary: GET /product?category=flash-sale&limit=5
+ * If fewer than 5 tagged, fill from best-selling so the grid stays full.
+ */
+async function getFlashSaleProducts(): Promise<IProduct[]> {
+  const flash = await fetchFromApi({
+    limit: String(FLASH_LIMIT),
+    page: "1",
+    category: "flash-sale",
+    sort: "-updatedAt",
+  });
+
+  if (flash.length >= FLASH_LIMIT) {
+    return flash.slice(0, FLASH_LIMIT);
+  }
+
+  const filler = await fetchFromApi({
+    limit: String(FLASH_LIMIT * 2),
+    page: "1",
+    category: "all",
+    sort: "best-selling",
+  });
+
+  const seen = new Set(flash.map((p) => String(p._id)));
+  const merged = [...flash];
+
+  for (const product of filler) {
+    if (merged.length >= FLASH_LIMIT) break;
+    const id = String(product._id);
+    if (seen.has(id)) continue;
+    seen.add(id);
+    merged.push(product);
+  }
+
+  return merged.slice(0, FLASH_LIMIT);
+}
+
 export default async function BestOffersPage() {
-  const response = await getProducts();
-  const products: IProduct[] = (response?.data?.data ?? []).filter(
-    (w: IProduct) => w?.inventory?.stock_status !== "out-of-stock",
-  );
+  const products = await getFlashSaleProducts();
 
   if (products.length === 0) return null;
 
   return (
-    <section
-      className="rongonaa-flash-sale mt-3"
-      aria-labelledby="flash-sale-heading"
-    >
-      <div className="rongonaa-flash-sale__inner">
+    <section className="rongonaa-home-section rongonaa-home-section--border">
+      <div className="rongonaa-home-section__inner">
         <div className="rongonaa-flash-sale__header">
-          <div>
-            <p className="rongonaa-flash-sale__eyebrow">Limited Time</p>
-            <h2 id="flash-sale-heading" className="rongonaa-flash-sale__title">
-              Flash Sale
-            </h2>
-          </div>
-
+          <SectionHeader
+            eyebrow="Limited time"
+            title="Flash Sale"
+            description="Handpicked stacks at special prices — while stock lasts."
+          />
           <div className="rongonaa-flash-sale__aside">
             <DayDealCount />
             <Link
@@ -69,8 +108,8 @@ export default async function BestOffersPage() {
         </div>
 
         <div className="rongonaa-flash-sale__grid">
-          {products.slice(0, 5).map((data) => (
-            <FlashSaleCard key={data._id} data={data} />
+          {products.map((data) => (
+            <FlashSaleCard key={data._id} data={data} cta="order" />
           ))}
         </div>
       </div>

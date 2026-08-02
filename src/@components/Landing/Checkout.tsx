@@ -296,6 +296,8 @@ const Checkout = ({ landingData }: any) => {
     const lineItems = selectedProducts.map((item) => ({
       title: item.title,
       product_id: item._id || "N/A",
+      sku: item.sku || item.variants?.[0]?.sku || "",
+      size: item.size || item.variants?.[0]?.size || "",
       quantity: item.quantity,
       subtotal: item.wholesale_pricing?.resale_price * item.quantity,
       total: item.wholesale_pricing?.resale_price * item.quantity,
@@ -588,6 +590,8 @@ const Checkout = ({ landingData }: any) => {
     const lineItems = cartItems.map((item) => ({
       title: item.title,
       product_id: item.id || "N/A",
+      sku: item.sku || "",
+      size: item.size || "",
       quantity: item.quantity,
       subtotal: item.price * item.quantity,
       total: item.price * item.quantity,

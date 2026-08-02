@@ -43,6 +43,8 @@ export interface IBeforeAfter<T> {
 export interface IOrderLineItem {
   title: string;
   product_id: string;
+  sku?: string;
+  size?: string;
   quantity: number;
   subtotal: number;
   total: number;

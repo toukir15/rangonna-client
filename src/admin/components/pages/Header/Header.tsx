@@ -13,6 +13,7 @@ import LogOutLogo from "@admin/assets/images/logOut.png";
 import { useGlobalContext } from "@admin/context/GlobalContext";
 import { Suggestion } from "@admin/@interfaces/common.interface";
 import DarkModeToggle from "./DarkModeToggle";
+import ThemePicker from "./ThemePicker";
 import Alert from "@admin/components/core/Aleart/Aleart";
 import Cookies from "js-cookie";
 import { GlobalService } from "@admin/@services/apis/GlobalService/Global.service";
@@ -636,7 +637,10 @@ export default function Header() {
 
         <div className="ml-auto flex shrink-0 items-center gap-2 md:gap-2.5">
           {pathname === "/admin" || pathname === "/admin/signup" ? null : (
-            <DarkModeToggle />
+            <>
+              <ThemePicker />
+              <DarkModeToggle />
+            </>
           )}
 
           {isAuthenticated ? (

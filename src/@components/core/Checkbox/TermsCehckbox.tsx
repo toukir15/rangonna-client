@@ -24,29 +24,23 @@ const TermsCheckbox: React.FC<TermsCheckboxProps> = ({
   };
 
   return (
-    <div className={`flex flex-col ${className}`}>
-      <div className="flex items-center">
+    <div className={`rongonaa-check ${className}`}>
+      <label htmlFor={name} className="rongonaa-check__row">
         <input
           id={name}
           type="checkbox"
           checked={checked}
           onChange={handleChange}
-          className="mr-2 w-4.5 h-4.5 border-gray-300"
+          className="rongonaa-check__input"
         />
-        <div
-          className={`${labelClassName} text-sm text-gray-600 font-normal cursor-pointer `}
-        >
-          <label
-            htmlFor={name}
-            className="text-base cursor-pointer text-nowrap"
-          >
-            {label}
-          </label>
+        <span className="rongonaa-check__box" aria-hidden />
+        <span className={`rongonaa-check__label ${labelClassName ?? ""}`}>
+          {label}
           {/* {rightLabel && (
             <span className="text-gray-400 ms-2 text-base">{rightLabel}</span>
           )} */}
-        </div>
-      </div>
+        </span>
+      </label>
       {errorText && <p className="text-danger text-sm mt-1">{errorText}</p>}
     </div>
   );

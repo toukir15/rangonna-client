@@ -9,7 +9,7 @@ import { ENV } from "@/@config/env.config";
 async function getProducts() {
   try {
     const qs = new URLSearchParams({
-      limit: "20",
+      limit: "5",
       category: "all",
       sort: "best-selling",
     });

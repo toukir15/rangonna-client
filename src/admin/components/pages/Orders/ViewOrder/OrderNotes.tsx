@@ -163,13 +163,13 @@ const OrderNotes: React.FC<OrderNotesProps> = ({
       />
 
       {/* Order Notes Section */}
-      <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-4 mb-3">
-        <div className="flex justify-between items-center">
-          <h2 className="text-xl font-semibold dark:text-gray-400">Notes</h2>
+      <div className="ov-panel">
+        <div className="ov-panel__head">
+          <h2 className="ov-panel__title">Notes</h2>
           {hasPermission(permissionList, "order_edit") && (
             <button
               onClick={() => setIsViewNoteModalOpen(true)}
-              className="text-blue-500 bg-blue-100 px-2 py-0.5  rounded-lg hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium"
+              className="ov-panel__add"
             >
               + Add Note
             </button>
@@ -181,14 +181,11 @@ const OrderNotes: React.FC<OrderNotesProps> = ({
         ) : noteData?.length > 0 ? (
           <div className="mt-3 space-y-2">
             {noteData.slice(0, 3).map((note: any, index: any) => (
-              <div
-                key={index}
-                className="flex gap-2 items-center justify-between bg-green-50 dark:bg-green-900/30 px-3 py-2 rounded-lg border border-green-100 dark:border-green-900"
-              >
-                <p className="text-sm text-green-700 dark:text-green-200">
+              <div key={index} className="ov-note-chip">
+                <p className="text-sm text-[var(--ov-ink)] dark:text-gray-200">
                   {note.text} - {note?.user?.name}
                 </p>
-                <span className="text-xs text-green-600 dark:text-green-300 text-nowrap">
+                <span className="text-xs text-[var(--ov-muted)] text-nowrap">
                   {timeSince(new Date(note?.createdAt))}
                 </span>
               </div>
@@ -203,27 +200,25 @@ const OrderNotes: React.FC<OrderNotesProps> = ({
               height={56}
               className="h-14 w-auto opacity-70"
             />
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+            <p className="text-sm text-[var(--ov-muted)] mt-2">
               No notes available
             </p>
           </div>
         )}
       </div>
 
-      <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-4 mb-3">
+      <div className="ov-panel">
         <OrderHistory ordersHistory={history} isLoading={historyLoading} />
       </div>
 
       {/* Customer Note Section */}
-      <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-4 mb-3">
-        <div className="flex justify-between items-center">
-          <h2 className="text-xl font-semibold dark:text-gray-400">
-            Customer & Courier Note
-          </h2>
+      <div className="ov-panel">
+        <div className="ov-panel__head">
+          <h2 className="ov-panel__title">Customer & Courier Note</h2>
           {hasPermission(permissionList, "order_edit") && (
             <button
               onClick={() => setIsAddNoteModalOpen(true)}
-              className="text-blue-500 bg-blue-100 px-2 py-0.5 rounded-lg hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium"
+              className="ov-panel__add"
             >
               + Add Note
             </button>

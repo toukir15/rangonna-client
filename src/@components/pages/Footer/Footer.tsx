@@ -2,195 +2,193 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import methodImage from "@/@assets/visa.webp";
-import facebookIcon from "@/@assets/icon/facebook.png";
-import youtubeIcon from "@/@assets/icon/youtube.webp";
-import whatsappIcon from "@/@assets/icon/whatsapp.png";
+import { useState } from "react";
+import { Mail } from "lucide-react";
 import rongonaaLogo from "@/@assets/rongonaLogo/rongonaa.png";
-import Icon from "@/@components/core/Icon/Icon";
-import FooterAccordion from "./FooterAccordion";
 
-const productLinks = [
-  { href: "/watches/men", label: "Men's Collection" },
-  { href: "/watches/women", label: "Women's Collection" },
-  { href: "/watches/couple", label: "Couple Collection" },
-  { href: "/watches", label: "All Products" },
+const shopLinks = [
+  { href: "/watches/glass-bangles", label: "Glass Bangles" },
+  { href: "/watches/bridal", label: "Bridal Bangles" },
+  { href: "/watches/festival", label: "Festival Wear" },
+  { href: "/watches/premium-churi", label: "Party Wear" },
+  { href: "/watches/luxury", label: "Luxury Bangles" },
 ];
 
-const companyLinks = [
-  { href: "/terms-conditions", label: "Terms & Conditions" },
-  { href: "/delivery-return-policy", label: "Delivery & Return" },
-  { href: "/refund-policy", label: "Refund Policy" },
-  { href: "/replacement-warranty", label: "Replacement Warranty" },
-  { href: "/privacy-policy", label: "Privacy Policy" },
-  { href: "/voucher-terms-conditions", label: "Voucher Terms" },
-];
-
-const supportLinks = [
+const helpLinks = [
   { href: "/how-to-buy", label: "How to Buy" },
-  { href: "/contact-us", label: "Contact Us" },
-  { href: "/about-us", label: "About Rongonaa" },
-  { href: "/blog", label: "Blog" },
+  { href: "/my-account", label: "My Orders" },
+  { href: "/contact-us", label: "Contact" },
+  { href: "/about-us", label: "About Rangonaa" },
+  { href: "/delivery-return-policy", label: "Delivery & Return" },
 ];
 
-const trustItems = [
-  "১০০% অরিজিনাল",
-  "ক্যাশ অন ডেলিভারি",
-  "দ্রুত ডেলিভারি",
-];
-
-const openWhatsApp = () => {
-  const phone = "8801768509905";
-  const isMobile = /Android|iPhone|iPad|iPod|IEMobile|Opera Mini/i.test(
-    navigator.userAgent,
+function InstagramIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      aria-hidden
+    >
+      <rect x="3" y="3" width="18" height="18" rx="5" />
+      <circle cx="12" cy="12" r="4" />
+      <circle cx="17.5" cy="6.5" r="0.8" fill="currentColor" stroke="none" />
+    </svg>
   );
-  const url = isMobile
-    ? `https://wa.me/${phone}`
-    : `https://web.whatsapp.com/send?phone=${phone}`;
-  window.open(url, "_blank", "noopener,noreferrer");
-};
+}
 
-const Footer: React.FC = () => {
+function FacebookIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="currentColor" aria-hidden>
+      <path d="M14 9h3V6h-3c-1.7 0-3 1.3-3 3v2H8v3h3v7h3v-7h3l1-3h-4V9c0-.6.4-1 1-1z" />
+    </svg>
+  );
+}
+
+function FooterNewsletter() {
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState<"idle" | "ok" | "err">("idle");
+
+  const onSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email.includes("@")) {
+      setStatus("err");
+      return;
+    }
+    setStatus("ok");
+    setEmail("");
+  };
+
+  return (
+    <div className="rongonaa-footer-nl">
+      <form className="rongonaa-footer-nl__form" onSubmit={onSubmit}>
+        <input
+          type="email"
+          required
+          value={email}
+          onChange={(e) => {
+            setEmail(e.target.value);
+            if (status !== "idle") setStatus("idle");
+          }}
+          placeholder="Your email address"
+          className="rongonaa-footer-nl__input"
+          aria-label="Email address"
+        />
+        <button type="submit" className="rongonaa-footer-nl__btn">
+          Join
+        </button>
+      </form>
+      <p className="rongonaa-footer-nl__note">
+        {status === "ok"
+          ? "Welcome to the Rangonaa circle."
+          : status === "err"
+            ? "Enter a valid email."
+            : "No spam. Unsubscribe anytime."}
+      </p>
+    </div>
+  );
+}
+
+export default function Footer() {
   return (
     <footer className="rongonaa-site-footer">
-      <div className="rongonaa-footer-shimmer" aria-hidden="true" />
+      <div className="rongonaa-footer-shimmer" aria-hidden />
 
-      <div className="max-w-layout mx-auto px-3 pb-4 pt-8 sm:px-5 2xl:px-0 lg:pb-6">
-        <div className="rongonaa-footer-hero">
+      <div className="rongonaa-footer-inner">
+        <div className="rongonaa-footer-grid">
           <div className="rongonaa-footer-brand">
-            <Link href="/" className="rongonaa-footer-logo-wrap">
+            <Link href="/" className="rongonaa-footer-logo" aria-label="Rangonaa home">
               <Image
                 src={rongonaaLogo}
-                alt="Rongonaa"
-                width={140}
-                height={40}
-                className="h-auto w-[108px] sm:w-[120px]"
+                alt="Rangonaa"
+                width={833}
+                height={178}
+                className="rongonaa-logo-img rongonaa-logo-img--footer"
               />
             </Link>
-            <p className="rongonaa-footer-tagline">
-              মায়েদের জন্য নিরাপদ ও প্রিমিয়াম পণ্য
-            </p>
+            <span className="rongonaa-footer-rule" aria-hidden />
             <p className="rongonaa-footer-about">
-              Rongonaa — বাংলাদেশের মায়েদের trusted online store। quality,
-              safety ও fast delivery এক জায়গায়।
+              Bangladesh&apos;s boutique for handcrafted women&apos;s bangles —
+              elegance, tradition, and timeless beauty.
             </p>
-            <div className="rongonaa-footer-trust-row">
-              {trustItems.map((item) => (
-                <span key={item} className="rongonaa-footer-trust-pill">
-                  {item}
-                </span>
-              ))}
-            </div>
-          </div>
 
-          <div className="rongonaa-footer-contact-card">
-            <p className="rongonaa-footer-contact-title">যোগাযোগ</p>
-            <ul className="rongonaa-footer-contact-list">
-              <li>
-                <Icon name="call" size={16} className="text-gold shrink-0" />
-                <a href="tel:01805049380">01805049380</a>
-              </li>
-              <li>
-                <Icon name="mail" size={16} className="text-gold shrink-0" />
-                <a href="mailto:support@rongonaa.com">support@rongonaa.com</a>
-              </li>
-              <li>
-                <Icon name="location_on" size={16} className="text-gold shrink-0" />
-                <span>Dhaka, Bangladesh</span>
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        <div className="rongonaa-footer-grid hidden md:grid">
-          <div className="rongonaa-footer-column">
-            <p className="rongonaa-footer-column-title">Shop</p>
-            <ul className="rongonaa-footer-links">
-              {productLinks.map((link) => (
-                <li key={link.href}>
-                  <Link href={link.href}>{link.label}</Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="rongonaa-footer-column">
-            <p className="rongonaa-footer-column-title">Company</p>
-            <ul className="rongonaa-footer-links">
-              {companyLinks.map((link) => (
-                <li key={link.href}>
-                  <Link href={link.href}>{link.label}</Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="rongonaa-footer-column">
-            <p className="rongonaa-footer-column-title">Support</p>
-            <ul className="rongonaa-footer-links">
-              {supportLinks.map((link) => (
-                <li key={link.href}>
-                  <Link href={link.href}>{link.label}</Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="rongonaa-footer-column">
-            <p className="rongonaa-footer-column-title">Connect</p>
             <div className="rongonaa-footer-social">
               <a
-                href="https://www.facebook.com/Naviforce.com.bd"
+                href="https://instagram.com"
                 target="_blank"
-                rel="noopener noreferrer"
+                rel="noreferrer"
+                aria-label="Instagram"
+                className="rongonaa-footer-social-btn"
+              >
+                <InstagramIcon className="h-4 w-4" />
+              </a>
+              <a
+                href="https://facebook.com"
+                target="_blank"
+                rel="noreferrer"
                 aria-label="Facebook"
                 className="rongonaa-footer-social-btn"
               >
-                <Image src={facebookIcon} alt="" width={22} height={22} />
+                <FacebookIcon className="h-4 w-4" />
               </a>
               <a
-                href="https://www.youtube.com/@naviforceofficial"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="YouTube"
+                href="mailto:support@rangonaa.com"
+                aria-label="Email"
                 className="rongonaa-footer-social-btn"
               >
-                <Image src={youtubeIcon} alt="" width={22} height={22} />
+                <Mail className="h-4 w-4" strokeWidth={1.5} />
               </a>
-              <button
-                type="button"
-                onClick={openWhatsApp}
-                aria-label="WhatsApp"
-                className="rongonaa-footer-social-btn"
-              >
-                <Image src={whatsappIcon} alt="" width={22} height={22} />
-              </button>
             </div>
-            <p className="rongonaa-footer-social-note">
-              Messenger/WhatsApp-এ সরাসরি অর্ডার ও সাপোর্ট
+          </div>
+
+          <div className="rongonaa-footer-col">
+            <h4 className="rongonaa-footer-col-title">Shop</h4>
+            <ul className="rongonaa-footer-links">
+              {shopLinks.map((l) => (
+                <li key={l.href}>
+                  <Link href={l.href}>{l.label}</Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="rongonaa-footer-col">
+            <h4 className="rongonaa-footer-col-title">Help</h4>
+            <ul className="rongonaa-footer-links">
+              {helpLinks.map((l) => (
+                <li key={l.href}>
+                  <Link href={l.href}>{l.label}</Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="rongonaa-footer-col rongonaa-footer-col--nl">
+            <h4 className="rongonaa-footer-col-title">Newsletter</h4>
+            <p className="rongonaa-footer-nl-copy">
+              New arrivals, bridal edits & exclusive offers — delivered to your
+              inbox.
             </p>
+            <FooterNewsletter />
           </div>
         </div>
 
-        <div className="md:hidden">
-          <FooterAccordion />
-        </div>
-      </div>
-
-      <div className="rongonaa-footer-bottom">
-        <div className="max-w-layout mx-auto flex flex-col items-center justify-between gap-4 px-3 py-4 sm:px-5 lg:flex-row 2xl:px-0">
+        <div className="rongonaa-footer-bottom">
           <p className="rongonaa-footer-copy">
-            © {new Date().getFullYear()} Rongonaa. All rights reserved.
+            © {new Date().getFullYear()} Rangonaa. Crafted with care in
+            Bangladesh.
           </p>
-          <Image
-            src={methodImage}
-            alt="Payment methods"
-            className="h-auto w-auto max-h-7 opacity-90"
-          />
+          <div className="rongonaa-footer-badges">
+            <span>Cash on Delivery</span>
+            <span className="rongonaa-footer-badge-sep" aria-hidden />
+            <span>SSLCommerz Ready</span>
+            <span className="rongonaa-footer-badge-sep" aria-hidden />
+            <span>Nationwide Shipping</span>
+          </div>
         </div>
       </div>
     </footer>
   );
-};
-
-export default Footer;
+}

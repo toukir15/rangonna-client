@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 92" fill="none" role="img" aria-label="Rangonaa">
+  <defs>
+    <linearGradient id="rangonaa-grad" x1="0%" y1="15%" x2="100%" y2="85%">
+      <stop offset="0%" stop-color="#c41e6a"/>
+      <stop offset="12%" stop-color="#7b2cbf"/>
+      <stop offset="24%" stop-color="#2563eb"/>
+      <stop offset="36%" stop-color="#0891b2"/>
+      <stop offset="48%" stop-color="#16a34a"/>
+      <stop offset="58%" stop-color="#ca8a04"/>
+      <stop offset="70%" stop-color="#ea580c"/>
+      <stop offset="82%" stop-color="#db2777"/>
+      <stop offset="100%" stop-color="#e11d48"/>
+    </linearGradient>
+    <linearGradient id="rangonaa-gloss" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" stop-color="#fff" stop-opacity="0.35"/>
+      <stop offset="45%" stop-color="#fff" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#000" stop-opacity="0.12"/>
+    </linearGradient>
+  </defs>
+  <text
+    x="8"
+    y="72"
+    fill="url(#rangonaa-grad)"
+    font-family="Georgia, 'Times New Roman', serif"
+    font-weight="500"
+    letter-spacing="-0.02em"
+  >
+    <tspan font-size="78">R</tspan>
+    <tspan font-size="54" dy="-2" letter-spacing="0.01em">ANGONAA</tspan>
+  </text>
+  <path
+    d="M18 28 C8 22, 2 28, 4 40 C6 52, 2 58, 10 62"
+    stroke="url(#rangonaa-grad)"
+    stroke-width="2.2"
+    stroke-linecap="round"
+    fill="none"
+  />
+  <text
+    x="8"
+    y="72"
+    fill="url(#rangonaa-gloss)"
+    font-family="Georgia, 'Times New Roman', serif"
+    font-weight="500"
+    letter-spacing="-0.02em"
+    pointer-events="none"
+  >
+    <tspan font-size="78">R</tspan>
+    <tspan font-size="54" dy="-2" letter-spacing="0.01em">ANGONAA</tspan>
+  </text>
+</svg>

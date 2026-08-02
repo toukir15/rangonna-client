@@ -71,21 +71,25 @@ const OrderSummary: React.FC<any> = ({
   if (!sumary) return <div>No order summary data available</div>;
 
   return (
-    <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg md:p-6 p-3">
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-semibold mb-4 dark:text-gray-400">
-          Product Summary: <span>{sumary?.source}</span> <span className="text-blue-600 bg-blue-100 px-4 py-1.5 rounded-lg text-base">{`(${formatTimeAgo(date)})`}</span>
-          {hasFlashSale && <span className="text-4xl ps-4">🔥</span>}
+    <div className="ov-summary">
+      <div className="ov-summary__head">
+        <h3 className="ov-summary__title">
+          Product Summary
+          {sumary?.source ? (
+            <span className="opacity-60 font-medium"> · {sumary.source}</span>
+          ) : null}
+          <span className="ov-summary__time">{`(${formatTimeAgo(date)})`}</span>
+          {hasFlashSale && <span className="text-xl ps-2">🔥</span>}
         </h3>
         {domain === "https://naviforce.com.bd" &&
           ["pending", "approved", "waiting-payment", "follow-up"].includes(
             orderStatus
           ) ? (
           <p
-            className={`px-4 py-1 rounded-md 
+            className={`px-4 py-1 rounded-full text-sm font-semibold tracking-wide
 ${sumary?.coupon?.amount || hasFlashSale
                 ? "bg-gray-200 text-gray-400 cursor-not-allowed pointer-events-none"
-                : "bg-blue-200 text-blue-600 cursor-pointer"
+                : "bg-[#1a0c10] text-white cursor-pointer"
               }
 `}
             onClick={() => {
@@ -98,31 +102,21 @@ ${sumary?.coupon?.amount || hasFlashSale
       </div>
 
       <div className="overflow-x-auto">
-        <table className="min-w-full border-collapse border dark:border-gray-500">
-          <thead className="bg-blue-100 dark:bg-gray-700 h-[55px] shadow-sm border-b border-gray-300 dark:border-gray-700 p-20">
+        <table>
+          <thead>
             <tr>
-              <th className="dark:border-gray-600 px-4 py-2 dark:text-gray-300">
-                Image
-              </th>
-              <th className="border dark:border-gray-600 px-4 py-2 dark:text-gray-300">
-                Item
-              </th>
-              <th className="border dark:border-gray-600 px-4 py-2 whitespace-nowrap dark:text-gray-300">
-                QTY ({totalQuantity})
-              </th>
-              <th className="border dark:border-gray-600 px-4 py-2 w-28 dark:text-gray-300">
-                Price
-              </th>
-              <th className="border dark:border-gray-600 px-4 py-2 dark:text-gray-300">
-                Total
-              </th>
+              <th>Image</th>
+              <th>Item</th>
+              <th className="whitespace-nowrap">QTY ({totalQuantity})</th>
+              <th className="w-28">Price</th>
+              <th>Total</th>
             </tr>
           </thead>
           <tbody>
             {expandedItems.map((item: any, index: number) => {
               return (
                 <tr key={index}>
-                  <td className="border dark:border-gray-600 px-4 py-2 text-center">
+                  <td className="text-center">
                     <Image
                       src={item?.product_id?.featured_image?.src || NodataImage}
                       width={70}
@@ -131,16 +125,20 @@ ${sumary?.coupon?.amount || hasFlashSale
                       onClick={() =>
                         handleImageClick(item?.product_id?.featured_image?.src)
                       }
-                      className="cursor-pointer rounded-md"
+                      className="cursor-pointer rounded-lg border border-[rgba(158,120,48,0.18)]"
                       priority={index < 3}
                     />
                   </td>
-                  <td className="border dark:border-gray-600 dark:text-gray-300 px-4 py-2 font-medium">
-                    <div className="flex items-center">
-                      {/* <BanglaText unicodeString={item?.title} /> */}
+                  <td className="font-medium">
+                    <div className="flex items-center gap-2">
                       <div>
-                        <p>{item?.title}</p>
-                        <p>Sku: {item?.product_id?.sku}</p>
+                        <p className="ov-summary__item-title">{item?.title}</p>
+                        <p className="ov-summary__meta">
+                          Sku: {item?.sku || item?.product_id?.sku || "—"}
+                        </p>
+                        {item?.size ? (
+                          <p className="ov-summary__meta">Size: {item.size}</p>
+                        ) : null}
                       </div>
                       <div>
                         {(permissionList.includes("order_label_view") ||
@@ -148,7 +146,7 @@ ${sumary?.coupon?.amount || hasFlashSale
                             <div>
                               {item?.stock_status === "out-of-stock" ? (
                                 <Button
-                                  className="!bg-red-100 !text-red-600 !px-3 !py-1 ml-2 !text-xs"
+                                  className="!bg-red-100 !text-red-600 !px-3 !py-1 !text-xs !rounded-full"
                                   onClick={() =>
                                     handleStatusUpdate(item?.product_id?._id)
                                   }
@@ -158,7 +156,7 @@ ${sumary?.coupon?.amount || hasFlashSale
                               ) : (
                                 permissionList.includes("order_label_view") && (
                                   <Button
-                                    className="!bg-blue-100 !text-blue-600 !px-3 !py-1 ml-2 !text-xs"
+                                    className="!bg-[#1a0c10]/8 !text-white !px-3 !py-1 !text-xs !rounded-full"
                                     onClick={() =>
                                       handleStatusUpdate(item?.product_id?._id)
                                     }
@@ -172,63 +170,51 @@ ${sumary?.coupon?.amount || hasFlashSale
                       </div>
                       <div>
                         {item?.status && (
-                          <span className="ml-2 bg-red-600 text-white rounded-lg px-2 py-0.5 text-sm uppercase">
+                          <span className="ml-2 bg-red-600 text-white rounded-full px-2 py-0.5 text-xs uppercase">
                             {item?.status}-{item?.return_quantity}
                           </span>
                         )}
                       </div>
                     </div>
                   </td>
-                  <td className="border dark:border-gray-600 px-4 py-2 text-center dark:text-gray-400">
-                    {item?.quantity}
-                  </td>
-                  <td className="border dark:border-gray-600 px-4 py-2 text-right dark:text-gray-400">
-                    {item?.price}
-                  </td>
-                  <td className="border dark:border-gray-600 px-4 py-2 text-right dark:text-gray-400">
+                  <td className="text-center">{item?.quantity}</td>
+                  <td className="text-right tabular-nums">{item?.price}</td>
+                  <td className="text-right tabular-nums font-semibold">
                     {item?.total}
                   </td>
                 </tr>
               );
             })}
 
-            <tr>
+            <tr className="ov-summary__totals">
               <td colSpan={3}></td>
-              <td className="border dark:border-gray-600 px-4 py-2 text-right  dark:text-gray-400 bg-red-100 text-red-600 font-bold">
-                Subtotal:
-              </td>
-
-              <td className="border dark:border-gray-600 px-4 py-2 text-right dark:text-gray-400 bg-red-100 text-red-600 font-bold">
-                {totalPrice}
-              </td>
+              <td className="text-right">Subtotal:</td>
+              <td className="text-right tabular-nums">{totalPrice}</td>
             </tr>
 
             <tr>
               <td colSpan={3}></td>
-              <td className="border dark:border-gray-600 px-4 py-2 text-right font-semibold dark:text-gray-400">
+              <td className="text-right font-semibold opacity-70">
                 Shipping:(+)
               </td>
-              <td className="border dark:border-gray-600 px-4 py-2 text-right dark:text-gray-400">
+              <td className="text-right tabular-nums">
                 {sumary?.shipping_line?.total}
               </td>
             </tr>
-            <tr>
+            <tr className="ov-summary__totals">
               <td colSpan={3}></td>
-              <td className="border dark:border-gray-600 px-4 py-2 text-right  dark:text-gray-400 bg-red-100 text-red-600 font-bold">
-                Total:
-              </td>
-
-              <td className="border dark:border-gray-600 px-4 py-2 text-right dark:text-gray-400 bg-red-100 text-red-600 font-bold">
+              <td className="text-right">Total:</td>
+              <td className="text-right tabular-nums">
                 {totalPrice + sumary?.shipping_line?.total}
               </td>
             </tr>
             {sumary?.discount_total !== 0 && (
               <tr>
                 <td colSpan={3}></td>
-                <td className="border dark:border-gray-600 px-4 py-2 text-right font-semibold dark:text-gray-400 text-nowrap">
+                <td className="text-right font-semibold opacity-70 text-nowrap">
                   Discount: (-)
                 </td>
-                <td className="border dark:border-gray-600 px-4 py-2 text-right dark:text-gray-400">
+                <td className="text-right tabular-nums">
                   {sumary?.discount_total}
                 </td>
               </tr>
@@ -236,32 +222,24 @@ ${sumary?.coupon?.amount || hasFlashSale
             {sumary?.paid !== 0 && (
               <tr>
                 <td colSpan={3}></td>
-                <td className="border dark:border-gray-600 px-4 py-2 text-right font-semibold dark:text-gray-400 text-nowrap">
+                <td className="text-right font-semibold opacity-70 text-nowrap">
                   Advance: (-)
                 </td>
-                <td className="border dark:border-gray-600 px-4 py-2 text-right dark:text-gray-400">
-                  {sumary?.paid}
-                </td>
+                <td className="text-right tabular-nums">{sumary?.paid}</td>
               </tr>
             )}
-            <tr>
+            <tr className="ov-summary__due">
               <td colSpan={3}></td>
-              <td className="border dark:border-gray-600 px-4 py-2 text-right  dark:text-gray-400 bg-red-100 text-red-600 font-bold">
-                Due:
-              </td>
-              <td className="border dark:border-gray-600 px-4 py-2 text-right dark:text-gray-400 bg-red-100 text-red-600 font-bold">
-                {sumary?.due}
-              </td>
+              <td className="text-right">Due:</td>
+              <td className="text-right tabular-nums">{sumary?.due}</td>
             </tr>
             {sumary?.coupon?.amount > 0 && (
               <tr>
                 <td colSpan={3}></td>
-                <td className="border dark:border-gray-600 px-4 py-2 text-right font-semibold dark:text-gray-400 text-nowrap">
+                <td className="text-right font-semibold opacity-70 text-nowrap">
                   Coupon: (-)
                 </td>
-                <td className="border dark:border-gray-600 px-4 py-2 text-right dark:text-gray-400">
-                  Applied
-                </td>
+                <td className="text-right">Applied</td>
               </tr>
             )}
           </tbody>

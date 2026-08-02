@@ -16,32 +16,23 @@ const OrderPageNavigator: React.FC<PrevNextButtonsProps> = ({
   handleNextOrder,
 }) => {
   return (
-    <div className="flex justify-center mb-2 sm:gap-8 gap-4">
+    <div className="ov-nav">
       <Button
-        className="bg-indigo-600 dark:bg-gray-700 hover:bg-indigo-700 text-white  px-4 rounded flex  !py-1 gap-2 items-center"
+        className="ov-nav__btn"
         onClick={handlePrevOrder}
         disabled={!prevOrderId}
       >
-        <Icon
-          name="arrow_back"
-          variant="outlined"
-          className="mt-1 dark:text-gray-300"
-        />
-        <p className="font-bold dark:text-gray-300">Prev Order</p>
+        <Icon name="arrow_back" variant="outlined" size={18} />
+        <span>Prev Order</span>
       </Button>
 
       <Button
-        className="bg-blue-500 dark:bg-gray-700 hover:bg-blue-600 text-white  px-4 rounded flex  !py-1 gap-2 items-center"
+        className="ov-nav__btn"
         onClick={handleNextOrder}
         disabled={!nextOrderId}
       >
-        <p className="font-bold dark:text-gray-300">Next Order</p>
-        <Icon
-          name="arrow_forward"
-          variant="outlined"
-          className="mt-1 dark:text-gray-300"
-          size={22}
-        />
+        <span>Next Order</span>
+        <Icon name="arrow_forward" variant="outlined" size={18} />
       </Button>
     </div>
   );

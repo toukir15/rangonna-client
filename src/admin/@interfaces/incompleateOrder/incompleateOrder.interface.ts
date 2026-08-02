@@ -38,6 +38,8 @@ export interface Customer {
 export interface LineItem {
   title: string;
   product_id?: ProductRef;
+  sku?: string;
+  size?: string;
   quantity: number;
   subtotal: number;
   total: number;

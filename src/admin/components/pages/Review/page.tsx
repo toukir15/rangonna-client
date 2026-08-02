@@ -182,6 +182,8 @@ const CreateProductReview = ({ onCancel }: any) => {
                                 {
                                   title: p.title,
                                   product_id: { _id: p._id },
+                                  sku: p.variants?.[0]?.sku || p.sku || "",
+                                  size: p.variants?.[0]?.size || "",
                                   quantity: 1,
                                   subtotal: p.pricing?.sale_price,
                                   total: p.pricing?.sale_price,

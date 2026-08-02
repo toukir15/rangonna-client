@@ -21,6 +21,7 @@ import {
 import ButtonLoader from "@/@components/core/Button/ButtonLoader";
 import { IMenuItem } from "@/@interfaces/RouteInterface/route.interface";
 import MobileSearch from "../NavigationBar/MobileSearch";
+import ThemePicker from "./ThemePicker";
 
 interface HeaderProps {
   navItems: IMenuItem[];
@@ -178,31 +179,25 @@ const Header: React.FC<HeaderProps> = ({ navItems }) => {
 
       <div className="rongonaa-header-body">
         <div className="max-w-layout mx-auto px-3 sm:px-5 2xl:px-0">
-          <div className="flex items-center justify-between gap-2 lg:gap-5">
+          <div className="rongonaa-header-row">
             <div className="rongonaa-logo-block shrink-0 min-w-0">
               <button
                 type="button"
                 className="rongonaa-logo-frame shrink-0"
                 onClick={() => router.push("/")}
-                aria-label="Rongonaa home"
+                aria-label="Rangonaa home"
               >
                 <Image
                   src={rongonaaLogo}
-                  alt="Rongonaa Logo"
-                  width={150}
-                  height={40}
-                  className="h-auto w-[82px] sm:w-[92px] lg:w-[112px]"
+                  alt="Rangonaa"
+                  width={833}
+                  height={178}
+                  priority
+                  className="rongonaa-logo-img"
                 />
               </button>
-              <div className="rongonaa-brand-meta hidden min-[1100px]:flex">
-                <span className="rongonaa-brand-name">Rongonaa</span>
-                <span className="rongonaa-brand-tagline">
-                  মায়েদের জন্য নিরাপদ ও প্রিমিয়াম পণ্য
-                </span>
-              </div>
             </div>
 
-            {/* Desktop search */}
             <div
               className="rongonaa-search-shell hidden min-w-0 flex-1 lg:block"
               onBlur={handleBlur}
@@ -220,7 +215,7 @@ const Header: React.FC<HeaderProps> = ({ navItems }) => {
                 onChange={handleInputChange}
                 onKeyDown={handleKeyPress}
                 type="text"
-                placeholder="মায়ের প্রয়োজনীয় পণ্য খুঁজুন..."
+                placeholder="Search bangles, bridal, festival..."
                 className="rongonaa-search-input"
               />
               <button
@@ -232,12 +227,15 @@ const Header: React.FC<HeaderProps> = ({ navItems }) => {
                 {searchLoading ? (
                   <ButtonLoader className="!py-0" />
                 ) : (
-                  <Icon name="arrow_forward" size={16} className="text-white" />
+                  <span className="rongonaa-search-submit__label">Search</span>
                 )}
               </button>
 
               {showSuggestions && searchId.trim().length >= 3 && (
-                <div ref={suggestionBoxRef} className="absolute top-[calc(100%+0.55rem)] left-0 right-0 z-50">
+                <div
+                  ref={suggestionBoxRef}
+                  className="absolute top-[calc(100%+0.45rem)] left-0 right-0 z-50"
+                >
                   {filteredSuggestions.length > 0 ? (
                     <SuggestionList
                       suggestions={filteredSuggestions}
@@ -245,14 +243,14 @@ const Header: React.FC<HeaderProps> = ({ navItems }) => {
                     />
                   ) : !searchLoading ? (
                     <div className="rongonaa-suggestions-panel p-6 text-center">
-                      <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-primary-lighter">
+                      <div className="rongonaa-suggestions-empty-icon">
                         <Icon name="search_off" className="text-primary" />
                       </div>
-                      <h3 className="text-base font-bold text-secondary">
-                        কোনো পণ্য পাওয়া যায়নি
+                      <h3 className="mt-3 text-sm font-medium tracking-wide text-secondary">
+                        No products found
                       </h3>
-                      <p className="mt-1 text-sm text-secondary/60">
-                        অন্য keyword দিয়ে আবার চেষ্টা করুন
+                      <p className="mt-1 text-xs text-secondary/55">
+                        Try another keyword
                       </p>
                     </div>
                   ) : null}
@@ -260,34 +258,31 @@ const Header: React.FC<HeaderProps> = ({ navItems }) => {
               )}
             </div>
 
-            {/* Actions — large screen: no menu icon */}
-            <div className="flex shrink-0 items-center gap-2 sm:gap-3">
-              <div className="rongonaa-phone-chip">
-                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-white/80">
-                  <Icon name="call" size={16} className="text-primary" />
-                </div>
-                <div>
-                  <p className="rongonaa-phone-label">Helpline</p>
-                  <p className="rongonaa-phone-number">01805049380</p>
-                </div>
-              </div>
+            <div className="rongonaa-header-actions">
+              <a href="tel:01805049380" className="rongonaa-phone-chip">
+                <Icon name="call" size={15} className="rongonaa-phone-icon" />
+                <span className="rongonaa-phone-copy">
+                  <span className="rongonaa-phone-label">Helpline</span>
+                  <span className="rongonaa-phone-number">01805049380</span>
+                </span>
+              </a>
 
               <div className="rongonaa-action-rail">
-                {/* Account — desktop only (mobile uses bottom nav) */}
+                <ThemePicker />
+
                 <button
                   type="button"
                   className="rongonaa-icon-action hidden lg:inline-flex"
                   onClick={handleSignUpClick}
                 >
-                  <Icon name="person" size={18} className="text-primary" />
-                  <span className="text-xs font-bold">
+                  <Icon name="person" size={18} variant="outlined" />
+                  <span>
                     {userInfo
                       ? trimString(userInfo.first_name, 8, true)
                       : "Account"}
                   </span>
                 </button>
 
-                {/* Cart — single button for mobile + desktop */}
                 <button
                   type="button"
                   className="rongonaa-cart-pill"
@@ -301,32 +296,29 @@ const Header: React.FC<HeaderProps> = ({ navItems }) => {
                     name="shopping_bag"
                     size={18}
                     variant="outlined"
-                    className="text-white"
                   />
-                  <div className="rongonaa-cart-pill-text">
-                    <p className="text-[9px] font-semibold uppercase tracking-wider opacity-85">
-                      My Bag
-                    </p>
-                    <p className="text-xs font-extrabold">৳{totalPrice}</p>
-                  </div>
+                  <span className="rongonaa-cart-pill-text">
+                    <span className="rongonaa-cart-pill-label">Bag</span>
+                    <span className="rongonaa-cart-pill-price">
+                      ৳{totalPrice}
+                    </span>
+                  </span>
                 </button>
               </div>
 
-              {/* Menu — mobile right side, opens left drawer */}
               <button
                 type="button"
                 className="rongonaa-menu-btn shrink-0 lg:hidden"
                 onClick={handleMenuClick}
                 aria-label="Open menu"
               >
-                <Icon name="menu" size={22} className="text-primary-dark" />
+                <Icon name="menu" size={22} />
               </button>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Mobile search — inside header, not dark nav bar */}
       <div className="rongonaa-mobile-search-row">
         <MobileSearch embedded />
       </div>

@@ -698,7 +698,7 @@ const OrderViewPageContent: React.FC = () => {
         notes={orderDetails?.history}
       />
 
-      <div className="bg-gray-100 lg:px-4 px-3 p-3 no-print dark:bg-black">
+      <div className="bg-gray-100 lg:px-4 px-3 p-3 no-print dark:bg-black ov-page">
         <OrderPageNavigator
           prevOrderId={
             !isPrevDisabled && currentOrderIndex !== null
@@ -721,8 +721,8 @@ const OrderViewPageContent: React.FC = () => {
           {isLoading ? (
             <OrderDetailsHeaderSkeleton />
           ) : (
-            <div className="p-4 bg-white dark:bg-gray-800 shadow-md text-black  mb-3 rounded-lg flex flex-wrap md:items-center justify-between">
-              <div className="flex flex-col order-1">
+            <div className="ov-header text-black flex flex-wrap md:items-center justify-between">
+              <div className="ov-header__meta order-1">
                 <div className="flex items-center gap-2">
                   <div>
                     <span className="mb-1">
@@ -750,15 +750,15 @@ const OrderViewPageContent: React.FC = () => {
                       "cancel",
                     ].includes(orderDetails?.status) && (
                       <div
-                        className="bg-green-100 text-green-600 px-2 rounded-lg cursor-pointer text-sm"
+                        className="ov-change-btn"
                         onClick={() => setSelectModalOpen(true)}
                       >
-                        <button>Change</button>
+                        <button type="button">Change</button>
                       </div>
                     )}
                 </div>
 
-                <div className="font-bold cursor-pointer flex items-center dark:text-gray-400 mt-1 ">
+                <div className="ov-header__id cursor-pointer">
                   <div className="flex items-center gap-2">
                     <p>{getWebName(orderDetails?.domain)} </p>{" "}
                     <p>#{orderDetails?.sysid}</p>
@@ -768,14 +768,14 @@ const OrderViewPageContent: React.FC = () => {
                     size={16}
                     name="content_copy"
                     variant="outlined"
-                    className="ml-2 cursor-pointer"
+                    className="cursor-pointer opacity-60 hover:opacity-100"
                     onClick={() => {
                       navigator.clipboard.writeText(orderDetails?.sysid);
                       ToastService.success("Order ID copied to clipboard!");
                     }}
                   />
                 </div>
-                <p className="font-semibold dark:text-gray-400">
+                <p className="ov-header__trx">
                   Trx:{" "}
                   {orderDetails?.payment?.transaction_id
                     ? orderDetails?.payment?.transaction_id
@@ -840,7 +840,6 @@ const OrderViewPageContent: React.FC = () => {
                           icon: "route",
                           variant: "outlined",
                           color: "cyan-500",
-                          // size: 25,
                           onClick: () => setModalOpenSource(true),
                         },
                       ]
@@ -930,7 +929,7 @@ const OrderViewPageContent: React.FC = () => {
             <div className="md:flex gap-3 mb-3">
               <CustomerDetails
                 customer={{
-                  title: "Customer Details",
+                  title: "Customer",
                   first:
                     orderDetails?.customer?.first_name +
                     orderDetails?.customer?.last_name,
@@ -945,7 +944,7 @@ const OrderViewPageContent: React.FC = () => {
               />
               <CustomerDetails
                 customer={{
-                  title: "Delivery Details",
+                  title: "Shipping",
                   first: orderDetails?.customer?.address,
                   second: orderDetails?.customer?.email,
                   copy: false,
@@ -993,7 +992,7 @@ const OrderViewPageContent: React.FC = () => {
               setIsLoading={setIsLoading}
               syncedNotes={syncedOrderNotes}
             />
-            <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-4 mb-3 ">
+            <div className="ov-panel">
               <OrderLogs logsData={logs.data} />
             </div>
             <FraudCheck fraudData={fraudData} />

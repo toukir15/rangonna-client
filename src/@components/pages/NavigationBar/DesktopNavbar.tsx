@@ -60,25 +60,23 @@ export default function DesktopNavbar({ navItems }: DesktopNavbarProps) {
                       <Icon
                         name={item.icon}
                         size={16}
-                        style={{ color: item?.color || "#f5e6c8" }}
+                        style={{ color: item?.color || "var(--brand-primary)" }}
                       />
                     ) : null}
                     <span>{item.name}</span>
                     <Icon
                       name="keyboard_arrow_down"
                       size={18}
-                      className={`transition-transform duration-300 ${
-                        isSubmenuOpen ? "rotate-180" : ""
-                      }`}
+                      className={`transition-transform duration-300 ${isSubmenuOpen ? "rotate-180" : ""
+                        }`}
                     />
                   </button>
 
                   <ul
-                    className={`absolute left-0 top-full z-[60] min-w-[240px] pt-2 transition-all duration-200 ${
-                      isSubmenuOpen
-                        ? "visible translate-y-0 opacity-100 pointer-events-auto"
-                        : "invisible translate-y-2 opacity-0 pointer-events-none"
-                    }`}
+                    className={`absolute left-0 top-full z-[60] min-w-[240px] pt-2 transition-all duration-200 ${isSubmenuOpen
+                      ? "visible translate-y-0 opacity-100 pointer-events-auto"
+                      : "invisible translate-y-2 opacity-0 pointer-events-none"
+                      }`}
                   >
                     <div className="rongonaa-nav-dropdown">
                       {item.submenu?.map((subItem, subIndex) => (
@@ -113,7 +111,7 @@ export default function DesktopNavbar({ navItems }: DesktopNavbarProps) {
                       name={item.icon}
                       size={18}
                       className="fire-flicker"
-                      style={{ color: item?.color || "#f5e6c8" }}
+                      style={{ color: item?.color || "var(--brand-primary)" }}
                     />
                   ) : null}
                   <span>{item.name}</span>

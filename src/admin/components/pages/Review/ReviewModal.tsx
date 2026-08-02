@@ -97,6 +97,9 @@ const ReviewModal = () => {
             {
               title: items.product?.title,
               product_id: { _id: items.product?._id },
+              sku:
+                items.product?.variants?.[0]?.sku || items.product?.sku || "",
+              size: items.product?.variants?.[0]?.size || "",
               quantity: 1,
               subtotal: items.product?.pricing?.sale_price,
               total: items.product?.pricing?.sale_price,
@@ -270,6 +273,8 @@ const ReviewModal = () => {
                             {
                               title: p.title,
                               product_id: { _id: p._id },
+                              sku: p.variants?.[0]?.sku || p.sku || "",
+                              size: p.variants?.[0]?.size || "",
                               quantity: 1,
                               subtotal: p.pricing?.sale_price,
                               total: p.pricing?.sale_price,

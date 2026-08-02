@@ -281,6 +281,8 @@ const Checkout: React.FC = () => {
     const lineItems = cartItems.map((item) => ({
       title: item.title,
       product_id: item.id || "N/A",
+      sku: item.sku || "",
+      size: item.size || "",
       quantity: item.quantity,
       subtotal: item.price * item.quantity,
       total: item.price * item.quantity,
@@ -601,6 +603,8 @@ const Checkout: React.FC = () => {
     const lineItems = cartItems.map((item) => ({
       title: item.title,
       product_id: item.id || "N/A",
+      sku: item.sku || "",
+      size: item.size || "",
       quantity: item.quantity,
       subtotal: item.price * item.quantity,
       total: item.price * item.quantity,
@@ -976,6 +980,7 @@ const Checkout: React.FC = () => {
                   <div className="rongonaa-checkout-item-body">
                     <p className="rongonaa-checkout-item-title">
                       {trimString(item.title, 40)}
+                      {item.size ? ` (${item.size})` : ""}
                     </p>
                     <p className="rongonaa-checkout-item-price">
                       ৳{(item.price * item.quantity).toFixed(0)}

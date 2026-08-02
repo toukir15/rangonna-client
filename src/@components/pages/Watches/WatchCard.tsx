@@ -24,18 +24,6 @@ interface ProductCardProps {
 const formatPrice = (n: number) =>
   `৳${Number(n || 0).toLocaleString("en-BD")}`;
 
-const metaFromProduct = (data: IProduct) => {
-  const seed = String(data?._id || data?.sku || "0")
-    .split("")
-    .reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
-  const rating = (4.7 + (seed % 3) * 0.1).toFixed(1);
-  const sold =
-    Number(data?.total_sales || 0) ||
-    Number(data?.inventory?.sold_quantity || 0);
-  const reviews = Math.max(sold || 48 + (seed % 80), 24);
-  return { rating, reviews };
-};
-
 const WatchCard: React.FC<ProductCardProps> = ({
   data,
   isAddToCartButton = true,
@@ -54,7 +42,6 @@ const WatchCard: React.FC<ProductCardProps> = ({
     : getTotalStockQuantity(data as any);
 
   const productId = data?._id;
-  const { rating, reviews } = metaFromProduct(data);
   const sale = Number(data?.pricing?.sale_price || 0);
   const regular = Number(data?.pricing?.regular_price || 0);
   const showStrike = regular > sale;
@@ -62,9 +49,6 @@ const WatchCard: React.FC<ProductCardProps> = ({
     regular > 0 && sale < regular
       ? Math.round(((regular - sale) / regular) * 100)
       : 0;
-  const isFlash = Array.isArray(data?.categories)
-    ? data.categories.includes("flash-sale")
-    : false;
 
   const readCart = () => {
     try {
@@ -213,41 +197,34 @@ const WatchCard: React.FC<ProductCardProps> = ({
           alt={data.title}
           width={360}
           height={360}
-          sizes="(max-width: 668px) 50vw, (max-width: 1080px) 25vw, 220px"
+          sizes="(max-width: 668px) 50vw, (max-width: 1080px) 25vw, 280px"
         />
-        {isFlash && (
-          <span className="rongonaa-flash-card__badge">Flash</span>
-        )}
         {!inStock && (
           <div className="rongonaa-flash-card__oos">Out Of Stock</div>
         )}
       </Link>
 
       <div className="rongonaa-flash-card__body">
-        <p className="rongonaa-flash-card__meta">
-          {rating} · {reviews.toLocaleString()} reviews
-        </p>
-
         <Link href={`/product/${data.slug}`} prefetch>
           <h3 className="rongonaa-flash-card__title">{data?.title}</h3>
         </Link>
 
         <div className="rongonaa-flash-card__price-row">
-          <span className="rongonaa-flash-card__price">{formatPrice(sale)}</span>
-          {showStrike && (
-            <span className="rongonaa-flash-card__compare">
-              {formatPrice(regular)}
-            </span>
-          )}
+          <div className="rongonaa-flash-card__prices">
+            <span className="rongonaa-flash-card__price">{formatPrice(sale)}</span>
+            {showStrike && (
+              <span className="rongonaa-flash-card__compare">
+                {formatPrice(regular)}
+              </span>
+            )}
+          </div>
           {discount > 0 && (
-            <span className="rongonaa-flash-card__badge rongonaa-flash-card__badge--price">
-              {discount}% off
-            </span>
+            <span className="rongonaa-flash-card__off">{discount}% OFF</span>
           )}
         </div>
 
-        {inStock && (
-          <>
+        {inStock && (isAddToCartButton || isByNowButton) && (
+          <div className="rongonaa-flash-card__actions">
             {isAddToCartButton && (
               <button
                 type="button"
@@ -256,11 +233,11 @@ const WatchCard: React.FC<ProductCardProps> = ({
                 }
                 disabled={adLoading}
                 className={`rongonaa-flash-card__cta rongonaa-flash-card__cta--cart ${
-                  inCart ? "rongonaa-flash-card__cta--outline" : ""
+                  inCart ? "rongonaa-flash-card__cta--active" : ""
                 }`}
               >
                 {adLoading ? (
-                  <ButtonLoader size="sm" color={inCart ? "primary" : "white"} />
+                  <ButtonLoader size="sm" color="primary" />
                 ) : inCart ? (
                   "View Cart"
                 ) : (
@@ -278,12 +255,12 @@ const WatchCard: React.FC<ProductCardProps> = ({
                     : handleOrderNow([data])
                 }
                 disabled={orderLoading}
-                className={`rongonaa-flash-card__cta ${
-                  inCart ? "rongonaa-flash-card__cta--outline" : ""
+                className={`rongonaa-flash-card__cta rongonaa-flash-card__cta--cart ${
+                  inCart ? "rongonaa-flash-card__cta--active" : ""
                 }`}
               >
                 {orderLoading ? (
-                  <ButtonLoader size="sm" color={inCart ? "primary" : "white"} />
+                  <ButtonLoader size="sm" color="primary" />
                 ) : inCart ? (
                   "View Order"
                 ) : (
@@ -291,7 +268,7 @@ const WatchCard: React.FC<ProductCardProps> = ({
                 )}
               </button>
             )}
-          </>
+          </div>
         )}
       </div>
     </article>

@@ -213,12 +213,15 @@ const CustomerDetails: React.FC<CustomerDetailsProps> = ({
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg md:w-1/2 px-5 py-3 md:mt-0 mt-4">
+    <div className="ov-detail-card md:w-1/2 md:mt-0 mt-4">
+      {customer?.title ? (
+        <p className="ov-detail-card__label">{customer.title}</p>
+      ) : null}
       <div className="flex items-center gap-1">
-        <p className="font-bold dark:text-gray-400 ">
+        <p className="ov-detail-card__title">
           {trimString(first, 200) || noData}
           {showUpdateCourier && (zoneName || cityName) && (
-            <span className="font-semibold text-gray-600 dark:text-gray-300">
+            <span className="font-semibold text-[0.9em] opacity-70">
               {" ("}
               {[zoneName, cityName].filter(Boolean).join(", ")}
               {")"}
@@ -236,17 +239,16 @@ const CustomerDetails: React.FC<CustomerDetailsProps> = ({
           />
         )}
       </div>
-      <div className="flex items-center gap-2">
-        <p className="font-bold flex items-center mt-1.5">
+      <div className="ov-detail-card__row">
+        <p className="font-bold flex items-center">
           {copy && second ? (
-            <a
-              href={`tel:${second}`}
-              className="text-blue-500 dark:text-gray-400"
-            >
+            <a href={`tel:${second}`} className="ov-detail-card__phone">
               {isCampaign ? maskPhone(second) : second || noData}
             </a>
           ) : (
-            <span className="dark:text-gray-400">{second || noData}</span>
+            <span className="dark:text-gray-400 text-sm opacity-80">
+              {second || noData}
+            </span>
           )}
           {copy && (
             <>
@@ -254,30 +256,17 @@ const CustomerDetails: React.FC<CustomerDetailsProps> = ({
                 size={16}
                 name="content_copy"
                 variant="outlined"
-                className="ml-2 cursor-pointer dark:text-gray-400"
+                className="ml-2 cursor-pointer dark:text-gray-400 opacity-60"
                 onClick={() => copyToClipboard(second, showToast)}
               />
-              {/* <FontAwesomeIcon
-                icon={faWhatsapp}
-                className="ml-2 cursor-pointer text-green-500"
-                onClick={() =>
-                  window.open(
-                    `https://web.whatsapp.com/send?phone=88${second?.replace(
-                      /\D/g,
-                      ""
-                    )}`,
-                    "_blank"
-                  )
-                }
-              /> */}
             </>
           )}
         </p>
-        <p className="mt-2.5 ">
+        <p>
           {iSSms ? (
             <Icon
               name="sms"
-              className="text-blue-500 cursor-pointer"
+              className="text-[#b8922e] cursor-pointer"
               variant="outlined"
               onClick={() => setModalOpen(true)}
             />
@@ -286,19 +275,19 @@ const CustomerDetails: React.FC<CustomerDetailsProps> = ({
       </div>
 
       {showUpdateCourier && (
-        <div className="mt-3 flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {hasPermission(permissionList, "order_edit") && (
             <Button
               type="button"
               onClick={() => setCourierModalOpen(true)}
-              className="!bg-blue-100 hover:!bg-blue-200 !text-blue-600 dark:!bg-blue-900/30 dark:!text-blue-300 !px-3 !py-1.5 text-sm flex items-center gap-2"
+              className="ov-courier-btn"
             >
               <Icon name="local_shipping" variant="outlined" size={18} />
               Update Courier
             </Button>
           )}
           {courierType && (
-            <span className="rounded-full bg-indigo-100 px-3 py-1 text-xs font-semibold capitalize text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300">
+            <span className="ov-courier-chip">
               {formatCourierType(courierType)}
             </span>
           )}
@@ -306,12 +295,12 @@ const CustomerDetails: React.FC<CustomerDetailsProps> = ({
       )}
 
       <p
-        className={`font-bold mt-0.5 dark:text-gray-400 ${
+        className={`font-bold mt-2 text-sm dark:text-gray-400 ${
           third?.toLowerCase().includes("bkash")
             ? "text-pink-500 dark:text-gray-300"
             : third?.toLowerCase().includes("card")
               ? "text-green-600 dark:text-gray-300"
-              : ""
+              : "opacity-75"
         }`}
       >
         {third}
