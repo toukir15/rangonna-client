@@ -18,8 +18,6 @@ import Alert from "@admin/components/core/Aleart/Aleart";
 import { useLocalStorageDateRange } from "@admin/utils";
 import { last30DaysRange } from "@admin/utils/helper";
 import { formatDateRange } from "@admin/utils/hook.utils";
-import { IWebsiteOption, SelectOption } from "@admin/@interfaces/common.interface";
-import { GlobalService } from "@admin/@services/apis/GlobalService/Global.service";
 import { noPermission } from "@admin/utils/constant";
 import AllFilter from "@admin/components/pages/AllFilter/AllFilter";
 
@@ -59,11 +57,6 @@ const Page: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [modalMode, setModalMode] = useState<"Add" | "Edit">("Add");
   const [isHydrated, setIsHydrated] = useState(false);  const [filter, setFilter] = useState<string>("all");
-  const [websiteOptions, setWebsiteOptions] = useState<IWebsiteOption[]>([]);
-  const [selectedWebsite, setSelectedWebsite] = useState<SelectOption>({
-    value: "all",
-    label: "All Website",
-  });
 
   const [isAlertOpen, setIsAlertOpen] = useState<boolean>(false);
   const [updateId, setUpdateId] = useState<string | null>(null);
@@ -108,7 +101,7 @@ const Page: React.FC = () => {
         status: filter,
         startDate: formattedFrom,
         endDate: formattedTo,
-        domain: selectedWebsite?.value,
+        domain: "all",
       });
 
       if (res?.success) {
@@ -135,7 +128,7 @@ const Page: React.FC = () => {
       const res = await ReturnListService.getCartList({
         startDate: formattedFrom,
         endDate: formattedTo,
-        domain: selectedWebsite?.value,
+        domain: "all",
       });
 
       if (res?.success) {
@@ -189,11 +182,6 @@ const Page: React.FC = () => {
       setFilter(savedFilter);
     }
 
-    const savedWebsite = localStorage.getItem("selectedReturnWebsite");
-    if (savedWebsite) {
-      setSelectedWebsite(JSON.parse(savedWebsite));
-    }
-
     setIsHydrated(true);
   }, []);
 
@@ -203,7 +191,6 @@ const Page: React.FC = () => {
   }, [
     isHydrated,
     canFetchPageData,
-    selectedWebsite,
     range,
     filter,
     debouncedSearchTerm,
@@ -214,7 +201,7 @@ const Page: React.FC = () => {
   useEffect(() => {
     if (!isHydrated || !canFetchPageData) return;
     fetchCartData();
-  }, [isHydrated, canFetchPageData, range, selectedWebsite]);
+  }, [isHydrated, canFetchPageData, range]);
 
   const handleFilterChange = (newFilter: string) => {
     setFilter(newFilter);
@@ -259,44 +246,6 @@ const Page: React.FC = () => {
     }
   };
 
-  const fetchWebList = async () => {
-    GlobalService.getWebsiteList()
-      .then((res: any) => {
-        if (res?.success) {
-          const options = res?.data?.map((item: any) => ({
-            label: item.web_name,
-            value: item.web_url,
-          }));
-
-          setWebsiteOptions([
-            { value: "all", label: "All Website" },
-            ...options,
-          ]);
-        } else {
-          ToastService.error(res?.message);
-        }
-      })
-      .catch((err: { message: string }) => {
-        ToastService.error(err.message);
-      });
-  };
-
-  useEffect(() => {
-  }, []);
-
-  useEffect(() => {
-    if (!canFetchPageData) return;
-    fetchWebList();
-  }, [canFetchPageData]);
-
-  useEffect(() => {
-    if (selectedWebsite) {
-      localStorage.setItem(
-        "selectedReturnWebsite",
-        JSON.stringify(selectedWebsite)
-      );
-    }
-  }, [selectedWebsite]);
   useTableRefreshRegister(fetchReturnList);
 
 
@@ -322,11 +271,7 @@ const Page: React.FC = () => {
             <h2 className="2xl:text-2xl lg:text-xl text-lg text-blue-900 font-semibold dark:text-gray-300 text-nowrap">
               Return Lists
             </h2>
-              <AllFilter
-              isWebsiteFilter={true}
-              websiteOptions={websiteOptions}
-              selectedWebsite={selectedWebsite}
-              setSelectedWebsite={setSelectedWebsite}
+            <AllFilter
               isCalendarFilter={true}
               range={range}
               setRange={setRange}

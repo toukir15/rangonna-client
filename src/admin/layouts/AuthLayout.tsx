@@ -140,22 +140,34 @@ export default function AuthLayout({ children, className }: AuthLayoutProps) {
         aria-hidden={!isSidebarOpen}
       >
         <aside
-          className={`fixed top-[60px] left-0 bottom-0 z-[60] w-[min(18rem,88vw)] bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 border-r border-black/10 dark:border-white/10 shadow-2xl transition-transform duration-300 ease-in-out [-webkit-overflow-scrolling:touch] touch-manipulation pointer-events-auto ${
+          className={`admin-sidebar fixed top-[60px] left-0 bottom-0 z-[60] w-[min(18rem,88vw)] shadow-2xl transition-transform duration-300 ease-in-out [-webkit-overflow-scrolling:touch] touch-manipulation pointer-events-auto ${
             isSidebarOpen ? "translate-x-0" : "-translate-x-full pointer-events-none"
           }`}
         >
-          <div className="relative z-10 h-full overflow-y-auto overscroll-contain px-2 py-2 scrollbar-hide [-webkit-overflow-scrolling:touch]">
-            {sidebarContent}
+          <div className="relative z-10 flex h-full flex-col overflow-hidden">
+            <div className="admin-sidebar-brand">
+              <span className="admin-sidebar-brand-icon">
+                <span className="material-icons-outlined text-[18px]">storefront</span>
+              </span>
+              <div className="min-w-0">
+                <p className="admin-sidebar-brand-title truncate">Rangonaa</p>
+                <p className="admin-sidebar-brand-sub">Management</p>
+              </div>
+            </div>
+            <div className="flex-1 overflow-y-auto overscroll-contain px-3 py-2 scrollbar-hide [-webkit-overflow-scrolling:touch]">
+              {sidebarContent}
+            </div>
           </div>
         </aside>
         <button
           type="button"
           aria-label="Close menu"
-          className={`fixed top-[60px] bottom-0 left-[min(18rem,88vw)] right-0 z-50 bg-black/40 backdrop-blur-[1px] touch-manipulation transition-opacity duration-300 ease-in-out [-webkit-tap-highlight-color:transparent] ${
+          className={`fixed top-[60px] bottom-0 left-[min(18rem,88vw)] right-0 z-50 touch-manipulation transition-opacity duration-300 ease-in-out [-webkit-tap-highlight-color:transparent] ${
             isSidebarOpen
               ? "opacity-100 pointer-events-auto"
               : "opacity-0 pointer-events-none"
           }`}
+          style={{ background: "var(--overlay)" }}
           onClick={handleCloseSidebar}
           tabIndex={isSidebarOpen ? 0 : -1}
         />
@@ -163,19 +175,37 @@ export default function AuthLayout({ children, className }: AuthLayoutProps) {
 
       {/* Desktop Sidebar */}
       <aside
-        className={`relative hidden xl:flex shrink-0 flex-col border-r border-black/10 bg-white transition-[width] duration-200 dark:border-white/10 dark:bg-gray-950 ${
+        className={`admin-sidebar relative hidden xl:flex shrink-0 flex-col transition-[width] duration-200 ${
           isSidebarOpen ? "w-[68px]" : "w-64"
         }`}
       >
-        <div className="flex-1 overflow-y-auto overflow-x-hidden px-2 py-2 scrollbar-hide">
+        {!isSidebarOpen && (
+          <div className="admin-sidebar-brand">
+            <span className="admin-sidebar-brand-icon">
+              <span className="material-icons-outlined text-[18px]">storefront</span>
+            </span>
+            <div className="min-w-0">
+              <p className="admin-sidebar-brand-title truncate">Rangonaa</p>
+              <p className="admin-sidebar-brand-sub">Management</p>
+            </div>
+          </div>
+        )}
+        {isSidebarOpen && (
+          <div className="flex justify-center px-2 py-4">
+            <span className="admin-sidebar-brand-icon">
+              <span className="material-icons-outlined text-[18px]">storefront</span>
+            </span>
+          </div>
+        )}
+        <div className="flex-1 overflow-y-auto overflow-x-hidden px-3 py-2 scrollbar-hide">
           <div className="space-y-0.5">{sidebarContent}</div>
         </div>
       </aside>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col w-full overflow-hidden">
+      <div className="flex w-full flex-1 flex-col overflow-hidden bg-app-main">
         {isRouteAllowed && noScrollContent && (
-          <div className="sticky top-0 z-20 bg-gray-50/80 backdrop-blur-sm dark:bg-gray-950/80">
+          <div className="sticky top-0 z-20 bg-app-main/80 backdrop-blur-sm">
             {noScrollContent}
           </div>
         )}

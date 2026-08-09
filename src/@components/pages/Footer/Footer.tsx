@@ -7,11 +7,12 @@ import { Mail } from "lucide-react";
 import rongonaaLogo from "@/@assets/rongonaLogo/rongonaa.png";
 
 const shopLinks = [
-  { href: "/watches/glass-bangles", label: "Glass Bangles" },
-  { href: "/watches/bridal", label: "Bridal Bangles" },
-  { href: "/watches/festival", label: "Festival Wear" },
-  { href: "/watches/premium-churi", label: "Party Wear" },
-  { href: "/watches/luxury", label: "Luxury Bangles" },
+  { href: "/churi", label: "All Churi" },
+  { href: "/churi/bridal", label: "Bridal" },
+  { href: "/churi/glass-bangles", label: "Glass Bangles" },
+  { href: "/churi/festival", label: "Festival" },
+  { href: "/churi/premium-churi", label: "Premium Churi" },
+  { href: "/churi/luxury", label: "Luxury" },
 ];
 
 const helpLinks = [

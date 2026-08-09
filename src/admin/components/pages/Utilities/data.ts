@@ -51,16 +51,6 @@ export const sideBarItems: ISideBarItems[] = [
         label: "Summary",
         icon: "list_alt",
       },
-      {
-        href: "/admin/dashboard/showroom",
-        label: "Sales Report",
-        icon: "low_priority",
-      },
-      {
-        href: "/admin/dashboard/report",
-        label: "Report",
-        icon: "low_priority",
-      },
     ],
   },
   {
@@ -291,11 +281,6 @@ export const sideBarItems: ISideBarItems[] = [
         icon: "topic",
       },
       {
-        href: "/admin/product/brand",
-        label: "Brand",
-        icon: "branding_watermark",
-      },
-      {
         href: "/admin/product/reviews",
         label: "Reviews",
         icon: "reviews",
@@ -314,11 +299,6 @@ export const sideBarItems: ISideBarItems[] = [
         href: "/admin/product/single-report",
         label: "Single Report",
         icon: "filter_1",
-      },
-      {
-        href: "/admin/product/brand-report",
-        label: "Brand Report",
-        icon: "polymer",
       },
       {
         href: "/admin/product/category-report",
@@ -352,11 +332,6 @@ export const sideBarItems: ISideBarItems[] = [
         href: "/admin/product-stock/this-month",
         label: "This Month",
         icon: "date_range",
-      },
-      {
-        href: "/admin/product-stock/brand-report",
-        label: "Brand Report",
-        icon: "branding_watermark",
       },
       {
         href: "/admin/product-stock/categories-report",
@@ -598,6 +573,11 @@ export const sideBarItems: ISideBarItems[] = [
         href: "/admin/setting/general",
         label: "General",
         icon: "settings_applications",
+      },
+      {
+        href: "/admin/setting/dashboard-theme",
+        label: "Appearance",
+        icon: "palette",
       },
       {
         href: "/admin/setting/deposit",

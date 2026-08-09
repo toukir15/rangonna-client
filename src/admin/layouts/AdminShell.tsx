@@ -14,9 +14,11 @@ export default function AdminShell({ children }: { children: ReactNode }) {
   }
 
   return (
-    <div className="dark:bg-black bg-gray-100">
+    <div className="admin-shell">
       <Header />
-      <div className="h-[calc(100vh-60px)] flex-1 overflow-auto">{children}</div>
+      <div className="h-[calc(100vh-60px)] flex-1 overflow-auto bg-app-main">
+        {children}
+      </div>
     </div>
   );
 }

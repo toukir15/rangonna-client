@@ -2,7 +2,7 @@
 import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import { useState, useEffect, createContext } from "react";
 import React from "react";
-import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
+import AuthLayout from "@admin/layouts/AuthLayout";
 import { ToastService } from "@admin/utils/toastr.service";
 import { useGlobalContext } from "@admin/context/GlobalContext";
 import OrdersTab from "@admin/components/pages/Orders/Components/OrdersTab";
@@ -10,9 +10,8 @@ import { orderListPrit } from "@admin/components/pages/Orders/PrintScreen/OrderL
 import { OrdersService } from "@admin/@services/apis/OrdersService/Orders.service";
 import ImagePreviewModal from "@admin/components/core/ImagePreview/ImagePreviewModal";
 import PaginationComponent from "@admin/components/core/Pazination/Pazination";
-import { GlobalService } from "@admin/@services/apis/GlobalService/Global.service";
 import { SingleOrder } from "@admin/@interfaces/orders/order.interface";
-import { IWebsiteOption, SelectOption } from "@admin/@interfaces/common.interface";
+import { SelectOption } from "@admin/@interfaces/common.interface";
 import { formatDateRange } from "@admin/utils/hook.utils";
 import OrderInvoice from "@admin/components/pages/Orders/PrintScreen/OrderInvoice";
 import InvoicePrint from "@admin/components/pages/Orders/PrintScreen/InvoiceListPrint";
@@ -20,14 +19,13 @@ import AllOrderTable from "@admin/components/pages/AllOrders/AllOrderTable";
 import OrderQuickViewModal from "@admin/components/pages/AllOrders/OrderQuickViewModal";
 import { maxRange } from "@admin/utils/helper";
 import AssignOrderTable from "@admin/components/pages/AllOrders/AssignOrderTable";
-import Button from "@admin/components/core/Button/Button";
 import useDebounce from "@admin/components/core/UseDebounece/UseDebouence";
-import PageSearch from "@admin/components/core/Search/PageSearch";
 import Alert from "@admin/components/core/Aleart/Aleart";
 import Icon from "@admin/components/core/Icon/Icon";
 import { noPermission } from "@admin/utils/constant";
 import AllFilter from "@admin/components/pages/AllFilter/AllFilter";
-import SelectComponent from "@admin/components/core/Select/Select";
+import PageHeader from "@admin/components/layout/PageHeader";
+import TableRefreshButton from "@admin/components/Table/TableRefreshButton";
 import RDPrintCourierModal, {
   RDCourierType,
 } from "@admin/components/pages/AllOrders/RDPrintCourierModal";
@@ -39,6 +37,21 @@ const DEFAULT_DATE_RANGE = {
 
 const ORDER_LIST_FIELDS =
   "_id,createdAt,label,customer.first_name,customer.last_name,customer.phone,note.text,due,is_print,line_items.image,line_items.stock_status,order_id,payment.title,status,total,sysid,domain,customer_note.text,notes.text,line_items.title,line_items.quantity,line_items.total,order_created";
+
+const ALL_WEBSITE_OPTION: SelectOption = {
+  value: "all",
+  label: "All Website",
+};
+
+const ALL_SOURCE_OPTIONS = [
+  { value: "all", label: "All Source" },
+  { value: "showroom", label: "Showroom" },
+  { value: "facebook", label: "Facebook" },
+  { value: "whatsapp", label: "Whatsapp" },
+  { value: "incomplete", label: "Incomplete" },
+  { value: "website", label: "Website" },
+  { value: "phone", label: "Phone" },
+];
 
 export const AllOrderListContext = createContext({} as any);
 
@@ -59,7 +72,6 @@ const Page: React.FC = () => {
     localStorage.setItem("orderFilter", filter);
   }, [filter]);
 
-  const [websiteOptions, setWebsiteOptions] = useState<IWebsiteOption[]>([]);
   const [tableLoading, setTableLoading] = useState<boolean>(true);
   const [rdLoading, setRdLoading] = useState<boolean>(false);
   const [isImageOpen, setIsImageOpen] = useState<boolean>(false);
@@ -81,28 +93,11 @@ const Page: React.FC = () => {
   const debouncedSearchTerm = useDebounce<string>(searchTerm, 300);
   const [isCheck, setIsCheck] = useState<boolean>(false);
   const [modalOpen, setModalOpen] = useState(false);
-  const [selectedWebsite, setSelectedWebsite] = useState<SelectOption>({
-    value: "all",
-    label: "All Website",
-  });
   const [selectedSource, setSelectedSource] = useState<any | null>({
     value: "all",
     label: "All Source",
-  });  const [isRdPrintModalOpen, setIsRdPrintModalOpen] = useState<boolean>(false);
-
-  useEffect(() => {
-    const savedWebsite = localStorage.getItem("selectedWebsite");
-    if (savedWebsite) {
-      setSelectedWebsite(JSON.parse(savedWebsite));
-    }
-  }, []);
-
-  // Save to localStorage whenever it changes
-  useEffect(() => {
-    if (selectedWebsite) {
-      localStorage.setItem("selectedWebsite", JSON.stringify(selectedWebsite));
-    }
-  }, [selectedWebsite]);
+  });
+  const [isRdPrintModalOpen, setIsRdPrintModalOpen] = useState<boolean>(false);
 
   const [selectedOrder, setSelectedOrder] = useState<SelectOption>({
     value: "all",
@@ -137,11 +132,6 @@ const Page: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (!canFetchPageData) return;
-    fetchWebList();
-  }, [canFetchPageData]);
-
-  useEffect(() => {
     if (orderList.length > 0) {
       const allCurrentPageSelected = orderList.every((order) =>
         selectedOrders.includes(String(order?._id)),
@@ -158,27 +148,6 @@ const Page: React.FC = () => {
     if (typeof window !== "undefined") {
       localStorage.setItem("ordersListPerPage", newOrdersPerPage.toString());
     }
-  };
-
-  const fetchWebList = async () => {
-    GlobalService.getWebsiteList()
-      .then((res: any) => {
-        if (res?.success) {
-          const options = res.data.map((item: any) => ({
-            label: item.web_name,
-            value: item.web_url,
-          }));
-          setWebsiteOptions([
-            { value: "all", label: "All Website" },
-            ...options,
-          ]);
-        } else {
-          ToastService.error(res?.message);
-        }
-      })
-      .catch((err: { message: string }) => {
-        ToastService.error(err.message);
-      });
   };
 
   useEffect(() => {
@@ -293,7 +262,7 @@ const Page: React.FC = () => {
         page: 1,
         limit: 2000,
         status: "ready-for-box",
-        domain: selectedWebsite.value,
+        domain: "all",
         startDate: formattedFrom,
         endDate: formattedTo,
         dateFilter: "createdAt",
@@ -358,8 +327,7 @@ const Page: React.FC = () => {
     debouncedSearchTerm,
     ordersPerPage,
     currentPage,
-    selectedWebsite,
-    selectedSource,
+    selectedSource?.value,
   ]);
 
   const fetchOrdersList = async () => {
@@ -372,7 +340,7 @@ const Page: React.FC = () => {
         page: currentPage,
         limit: ordersPerPage,
         status: filter,
-        domain: selectedWebsite.value,
+        domain: "all",
         startDate: formattedFrom,
         endDate: formattedTo,
         dateFilter: "createdAt",
@@ -487,19 +455,9 @@ const Page: React.FC = () => {
     }
   };
 
-  const allSourceOptions = [
-    { value: "all", label: "All Source" },
-    { value: "showroom", label: "Showroom" },
-    { value: "facebook", label: "Facebook" },
-    { value: "whatsapp", label: "Whatsapp" },
-    { value: "incomplete", label: "Incomplete" },
-    { value: "website", label: "Website" },
-    { value: "phone", label: "Phone" },
-  ];
-
   const fetchLastSixtyDay = async () => {
     OrdersService.getLastSixtyDay({
-      domain: selectedWebsite.value,
+      domain: "all",
     })
       .then((res) => {
         if (res?.success) {
@@ -515,7 +473,7 @@ const Page: React.FC = () => {
   useEffect(() => {
     if (!canFetchPageData) return;
     fetchLastSixtyDay();
-  }, [canFetchPageData, selectedWebsite]);
+  }, [canFetchPageData]);
   useTableRefreshRegister(fetchOrdersList);
 
 
@@ -533,7 +491,7 @@ const Page: React.FC = () => {
         <h6 className="text-md my-4">
           Are you sure you want to change this bulk status?
         </h6>
-        <div className="flex flex-wrap items-center items-center justify-center my-8">
+        <div className="flex flex-wrap items-center justify-center my-8">
           <Icon
             name="change_circle"
             variant="outlined"
@@ -542,61 +500,6 @@ const Page: React.FC = () => {
           />
         </div>
       </Alert>
-      <NoScrollLayout>
-        <div className="2xl:pt-4 pt-2 2xl:px-4 px-3 mb-3">
-          <div className="md:flex flex-wrap items-center gap-3">
-            <div className="flex flex-wrap items-center items-center gap-3">
-              <h1 className="2xl:text-2xl lg:text-xl text-lg font-semibold dark:text-gray-300 text-gray-800 ">
-                All Orders
-              </h1>
-              <AllFilter
-                isSourceFilter={true}
-                allSourceOptions={allSourceOptions}
-                selectedSource={selectedSource}
-                setSelectedSource={setSelectedSource}
-              />
-              {permissionList.includes("print_rd_list") &&
-                selectedWebsite.value !== "all" && (
-                  <Button
-                    className="!bg-green-200 !text-green-600  !py-1.5"
-                    onClick={() => setIsRdPrintModalOpen(true)}
-                  >
-                    Print R-D
-                  </Button>
-                )}
-              <div className="">
-                <SelectComponent
-                  options={websiteOptions}
-                  value={selectedWebsite}
-                  onChange={setSelectedWebsite}
-                  placeholder="Select Website"
-                  className="md:w-64 w-full"
-                />
-              </div>
-            </div>
-
-            <div className="md:w-80 w-full md:my-0 my-2">
-              <PageSearch
-                value={searchTerm}
-                onChange={handleSearchChange}
-                placeholder="Search Orders"
-                wrapperClass="w-full"
-              />
-            </div>
-          </div>
-
-          
-
-          {selectedOrder.value === "all" && (
-            <OrdersTab
-              filter={filter}
-              isCount
-              allStatuses={lastSixtyDaysOrders}
-              handleFilterChange={handleFilterChange}
-            />
-          )}
-        </div>
-      </NoScrollLayout>
 
       <AllOrderListContext.Provider
         value={{
@@ -616,22 +519,90 @@ const Page: React.FC = () => {
           handleImageClick,
           setModalOpen,
           filter,
-          selectedWebsite,
+          selectedWebsite: ALL_WEBSITE_OPTION,
         }}
       >
-        <div className="2xl:px-4 px-3 relative  w-full">
+        <div className="2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 pb-4 relative w-full">
+          <PageHeader
+            title="All Orders"
+            action={
+              permissionList.includes("print_rd_list") ? (
+                <button
+                  type="button"
+                  className="btn-primary btn-primary-inline inline-flex items-center gap-2"
+                  onClick={() => setIsRdPrintModalOpen(true)}
+                >
+                  <Icon name="print" variant="outlined" size={16} />
+                  Print R-D
+                </button>
+              ) : undefined
+            }
+          />
+
           {selectedOrder.value === "all" ? (
-            <div className="md:min-h-[83%]">
+            <div className="data-table-card glass-card rounded-2xl orders-table-shell">
+              <div className="premium-table-toolbar">
+                <p className="premium-table-toolbar-title">Order records</p>
+                <p className="premium-table-toolbar-meta">
+                  {totalOrders.toLocaleString()}{" "}
+                  {totalOrders === 1 ? "order" : "orders"}
+                </p>
+              </div>
+
+              <div className="data-table-toolbar">
+                <div className="data-table-toolbar-start">
+                  <label className="data-table-search">
+                    <Icon name="search" variant="outlined" size={18} />
+                    <input
+                      type="search"
+                      value={searchTerm}
+                      onChange={handleSearchChange}
+                      placeholder="Search orders..."
+                      aria-label="Search orders"
+                    />
+                  </label>
+                  <AllFilter
+                    isSourceFilter={true}
+                    allSourceOptions={ALL_SOURCE_OPTIONS}
+                    selectedSource={selectedSource}
+                    setSelectedSource={setSelectedSource}
+                  />
+                </div>
+                <div className="data-table-toolbar-end">
+                  <TableRefreshButton
+                    onRefresh={fetchOrdersList}
+                    isLoading={tableLoading}
+                    className="!h-9"
+                  />
+                </div>
+              </div>
+
+              <div className="px-4 pb-3">
+                <OrdersTab
+                  filter={filter}
+                  isCount
+                  allStatuses={lastSixtyDaysOrders}
+                  handleFilterChange={handleFilterChange}
+                />
+              </div>
+
               <AllOrderTable />
+
               <PaginationComponent
                 ordersPerPage={ordersPerPage}
                 handleOrdersPerPageChange={handleOrdersPerPageChange}
                 currentPage={currentPage}
                 setCurrentPage={setCurrentPage}
                 totalPages={totalPages}
-                setSelectedOrders={setSelectedOrders}
+                setSelectedOrders={(orders) =>
+                  setSelectedOrders(orders as string[])
+                }
                 totalData={totalOrders}
-                isShowText={false}
+                isShowText={true}
+                onRefresh={fetchOrdersList}
+                isLoading={tableLoading}
+                showRefresh={false}
+                className="orders-table-pagination !mt-0 !rounded-none !border-x-0 !border-b-0 !shadow-none"
               />
             </div>
           ) : (

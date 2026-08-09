@@ -3,28 +3,26 @@ import Icon from "@admin/components/core/Icon/Icon";
 
 const ShopCart = ({ data }: any) => {
   return (
-    <div className="md:min-w-64">
-      <div className="flex items-center 2xl:p-4 md:p-4 p-2 dark:bg-gray-700 bg-white border dark:border dark:border-gray-700 border-gray-200 rounded-lg shadow-md  lg:space-x-8 md:space-x-4 space-x-2">
-        <div>
+    <div className="admin-metric-card h-full">
+      <div className="flex h-full items-center gap-3 p-3.5 md:p-4">
+        <div className="admin-metric-icon shrink-0">
           <Icon
             name={data?.icon}
-            className={`${data?.color}`}
-            size="40px "
+            className="dashboard-theme-accent"
+            size="22px"
             variant="outlined"
           />
         </div>
-        <div>
-          <h3 className="text-sm font-inter dark:text-gray-300">
+        <div className="min-w-0">
+          <h3 className="truncate text-[11px] font-semibold uppercase tracking-[0.08em] text-app-muted">
             {data?.label}
           </h3>
-          <div className="flex">
-            <h4 className="text-[22px] font-normal dark:text-gray-300 text-gray-800 mt-1 font-inter">
+          <div className="mt-1 flex items-baseline gap-1.5">
+            <h4 className="text-[22px] font-bold tracking-tight text-app">
               {data?.value}
             </h4>
             {data?.percentage && (
-              <h4
-                className={`text-gray-800 text-xs mt-4 ml-1 font-semibold ${data?.color}`}
-              >
+              <h4 className="dashboard-theme-accent text-xs font-semibold">
                 {data?.percentage}
               </h4>
             )}

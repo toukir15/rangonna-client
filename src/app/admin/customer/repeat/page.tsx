@@ -119,10 +119,10 @@ const Page: React.FC = () => {
               Repeat Customers
             </h1>
               <AllFilter
-                isWebsiteFilter={true}
-                websiteOptions={customerOptions}
-                selectedWebsite={selectedType}
-                setSelectedWebsite={setSelectedType}
+                isStatusFilter={true}
+                statusOption={customerOptions}
+                selectedStatus={selectedType}
+                setSelectedStatus={setSelectedType}
               />
           </div>
 

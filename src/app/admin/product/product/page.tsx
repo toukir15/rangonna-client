@@ -7,12 +7,9 @@ import { useGlobalContext } from "@admin/context/GlobalContext";
 import Icon from "@admin/components/core/Icon/Icon";
 import ProductSkeleton from "@admin/components/Skeleton/Product/Product.skeleton";
 import NoDataFoundTable from "@admin/components/pages/Orders/NoDataFoundTable";
-import SelectComponent from "@admin/components/core/Select/Select";
 import { IProduct, IWebsite } from "@admin/@interfaces/product/product.interface";
-import { getWebName } from "@admin/utils";
 
 const Page: React.FC = () => {
-  const [websites, setWebsites] = useState<IWebsite[]>([]);
   const [selectedWebsite, setSelectedWebsite] = useState<any>();
   const [products, setProducts] = useState<IProduct[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -52,7 +49,6 @@ const Page: React.FC = () => {
       const text = await response.text();
       try {
         const data = JSON.parse(text) as IWebsite[];
-        setWebsites(data.filter((website) => website.isEnabled));
         const enabledWebsites = data.filter((website) => website.isEnabled);
         if (enabledWebsites.length > 0) {
           const defaultWebsite = enabledWebsites[0].url;
@@ -69,13 +65,6 @@ const Page: React.FC = () => {
 
     fetchWebsites();
   }, [token]);
-
-  const handleWebsiteChange = (e: any) => {
-    const selectedUrl = e.value;
-    setSelectedWebsite(selectedUrl);
-    setCurrentPage(1);
-    fetchProducts(selectedUrl, 1, searchTerm);
-  };
 
   const fetchProducts = async (
     webURL: string,
@@ -127,11 +116,6 @@ const Page: React.FC = () => {
     fetchProducts(selectedWebsite, 1, searchTerm);
   };
 
-  const websiteOptions = websites.map((website) => ({
-    label: getWebName(website.url),
-    value: website.url,
-  }));
-
   const closeModal = () => {
     setIsImageOpen(false);
     setSelectedImage(null);
@@ -152,21 +136,7 @@ const Page: React.FC = () => {
               Products
             </h1>
             <div className="sm:flex w-full items-center justify-between gap-4 mb-3">
-              <div className="md:w-96 w-full">
-                <SelectComponent
-                  options={websiteOptions}
-                  value={
-                    websiteOptions.find(
-                      (option) => option.value === selectedWebsite,
-                    ) || null
-                  }
-                  onChange={handleWebsiteChange}
-                  placeholder="All Websites"
-                  className="md:w-80 w-full"
-                />
-              </div>
-
-              <div className="md:w-96 w-full md:mt-0 mt-4">
+              <div className="md:w-96 w-full md:mt-0">
                 <div className="flex items-center flex-grow">
                   <input
                     type="text"
@@ -190,12 +160,6 @@ const Page: React.FC = () => {
               </div>
             </div>
           </div>
-          <h2 className="text-lg font-bold mb-2 dark:text-gray-400 ">
-            Products for{" "}
-            <span className="text-blue-900 dark:text-gray-300">
-              {selectedWebsite && getWebName(selectedWebsite)}
-            </span>
-          </h2>
         </div>
       </NoScrollLayout>
       {isImageOpen && selectedImage && (

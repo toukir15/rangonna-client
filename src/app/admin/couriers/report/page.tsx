@@ -152,7 +152,7 @@ const page: React.FC = () => {
       searchTerm: debouncedSearchTerm,
       page: pathaoCurrentPage,
       limit: pathaoOrdersPerPage,
-      domain: selectedWebsite?.value,
+      domain: "all",
       payment_status: selectedPaid?.value,
       is_error: selectedError?.value,
       order_status: selectedOrderStatus?.value,
@@ -176,7 +176,7 @@ const page: React.FC = () => {
     setCardLoading(true);
     OrdersService.getCourierCardViewReport({
       delivery_status: "all",
-      domain: selectedWebsite?.value,
+      domain: "all",
       payment_status: selectedPaid?.value,
       is_error: selectedError?.value,
       order_status: selectedOrderStatus?.value,
@@ -284,11 +284,7 @@ const page: React.FC = () => {
                 Courier Report
               </h1>
               <AllFilter
-                isWebsiteFilter={true}
-                websiteOptions={websiteOptions}
-                selectedWebsite={selectedWebsite}
-                setSelectedWebsite={setSelectedWebsite}
-                isStatusFilter={true}
+                                isStatusFilter={true}
                 statusOption={statusPaidOption}
                 selectedStatus={selectedPaid}
                 setSelectedStatus={setSelectedPaid}

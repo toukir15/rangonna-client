@@ -13,8 +13,8 @@ import LogOutLogo from "@admin/assets/images/logOut.png";
 import { useGlobalContext } from "@admin/context/GlobalContext";
 import { Suggestion } from "@admin/@interfaces/common.interface";
 import DarkModeToggle from "./DarkModeToggle";
-import ThemePicker from "./ThemePicker";
 import Alert from "@admin/components/core/Aleart/Aleart";
+import { Palette } from "lucide-react";
 import Cookies from "js-cookie";
 import { GlobalService } from "@admin/@services/apis/GlobalService/Global.service";
 import Button from "@admin/components/core/Button/Button";
@@ -542,14 +542,14 @@ export default function Header() {
           </div>
         </div>
       </Alert>
-      <header className="sticky top-0 z-50 flex h-[60px] items-center gap-3 border-b border-black/10 bg-white/95 px-3 backdrop-blur-md no-print dark:border-white/10 dark:bg-gray-950/95 md:px-4">
+      <header className="admin-header sticky top-0 z-50 flex h-[60px] items-center gap-3 px-3 no-print md:px-4">
         <div className="flex min-w-0 shrink-0 items-center gap-2">
           {isAuthenticated && (
             <button
               type="button"
               aria-label="Toggle sidebar"
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-black/5 text-gray-700 transition-colors hover:bg-gray-100 dark:border-white/10 dark:text-gray-200 dark:hover:bg-gray-900 xl:inline-flex"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--border)] text-app-secondary transition-colors hover:bg-[var(--bg-hover)] hover:text-app xl:inline-flex"
             >
               <Icon
                 name={isSidebarOpen ? "menu" : "menu_open"}
@@ -578,18 +578,18 @@ export default function Header() {
                 type="text"
                 ref={searchInputRef}
                 placeholder="Search orders by ID, phone, name..."
-                className="h-9 w-full rounded-lg border border-black/5 bg-gray-50 pl-3 pr-10 text-sm text-gray-800 outline-none transition focus:border-green-400 focus:ring-2 focus:ring-green-100 dark:border-white/10 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-green-500 dark:focus:ring-green-500/20"
+                className="input-app !h-9 !py-0 pr-10"
                 value={searchId ?? ""}
                 onChange={handleInputChange}
                 onKeyDown={handleKeyPress}
               />
-              <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
+              <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-app-muted">
                 <Icon name="search" variant="outlined" size={18} />
               </span>
               {showSuggestions && filteredSuggestions.length > 0 && (
                 <div
                   ref={suggestionBoxRef}
-                  className="absolute top-full left-0 right-0 z-10 mt-1.5 max-h-64 overflow-y-auto rounded-xl border border-black/10 bg-white shadow-lg dark:border-white/10 dark:bg-gray-900"
+                  className="absolute top-full left-0 right-0 z-10 mt-1.5 max-h-64 overflow-y-auto rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] shadow-[var(--shadow-soft)]"
                 >
                   <ul>
                     {filteredSuggestions.map(
@@ -598,10 +598,10 @@ export default function Header() {
                           <li
                             key={index}
                             onClick={() => handleSuggestionClick(suggestion)}
-                            className="flex flex-col p-4 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-500 transition-colors border-b border-gray-200 last:border-b-0"
+                            className="flex cursor-pointer flex-col border-b border-[var(--border)] p-4 transition-colors last:border-b-0 hover:bg-[var(--bg-hover)]"
                           >
                             <div className="flex justify-between items-center">
-                              <div className="text-sm font-semibold text-gray-800 dark:text-gray-300">
+                              <div className="text-sm font-semibold text-app">
                                 Order ID: {suggestion?.sysid}
                               </div>
                               <div
@@ -638,7 +638,14 @@ export default function Header() {
         <div className="ml-auto flex shrink-0 items-center gap-2 md:gap-2.5">
           {pathname === "/admin" || pathname === "/admin/signup" ? null : (
             <>
-              <ThemePicker />
+              <Link
+                href="/admin/setting/dashboard-theme"
+                aria-label="Appearance"
+                title="Appearance"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[var(--border)] bg-[var(--bg-surface)] text-[var(--text-secondary)] transition-colors hover:bg-[var(--accent-soft)] hover:text-[var(--accent)]"
+              >
+                <Palette className="h-[1.1rem] w-[1.1rem]" strokeWidth={1.5} />
+              </Link>
               <DarkModeToggle />
             </>
           )}
@@ -648,7 +655,7 @@ export default function Header() {
               {permissionList.includes("order_create") && (
                 <Link
                   href="/admin/create-order"
-                  className="hidden md:inline-flex h-9 items-center rounded-lg bg-green-600 px-3.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-green-700"
+                  className="btn-primary btn-primary-inline hidden md:!inline-flex h-9 !items-center !rounded-lg !px-3.5 !text-sm !shadow-sm"
                 >
                   Create Order
                 </Link>
@@ -657,7 +664,7 @@ export default function Header() {
               <button
                 type="button"
                 onClick={handleCashClean}
-                className="hidden lg:inline-flex h-9 shrink-0 items-center rounded-lg border border-black/10 bg-white px-3.5 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:border-green-200 hover:bg-green-50 hover:text-green-700 dark:border-white/10 dark:bg-gray-900 dark:text-gray-200 dark:hover:border-green-500/30 dark:hover:bg-green-950/40 dark:hover:text-green-300"
+                className="hidden lg:inline-flex h-9 shrink-0 items-center rounded-lg border border-[var(--border)] bg-[var(--bg-surface)] px-3.5 text-sm font-medium text-[var(--text-secondary)] shadow-sm transition-colors hover:border-[var(--brand-border-medium)] hover:bg-[var(--accent-soft)] hover:text-[var(--accent)]"
               >
                 Clear Cash
               </button>
@@ -860,7 +867,7 @@ export default function Header() {
               {pathname === "/admin/signup" && (
                 <Link
                   href="/admin"
-                  className="rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-green-700"
+                  className="btn-primary btn-primary-inline !inline-flex !rounded-lg !px-4 !py-2 !text-sm !shadow-sm"
                 >
                   Login
                 </Link>

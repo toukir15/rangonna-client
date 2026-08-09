@@ -106,7 +106,7 @@ const Page: React.FC = () => {
       searchTerm: debouncedSearchTerm,
       page: currentPage,
       limit: ordersPerPage,
-      domain: selectedWebsite.value,
+      domain: "all",
     })
       .then((res: IProfitByOrderResponse) => {
         if (res?.success) {
@@ -183,11 +183,7 @@ const Page: React.FC = () => {
                 Order By Profit
               </h1>
               <AllFilter
-                isWebsiteFilter={true}
-                websiteOptions={websiteOptions}
-                selectedWebsite={selectedWebsite}
-                setSelectedWebsite={setSelectedWebsite}
-              />
+                              />
             </div>
             <div className="sm:w-80 w-full sm:mt-0 mt-2">
               <PageSearch

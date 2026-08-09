@@ -25,10 +25,12 @@ const FooterAccordion: React.FC = () => {
       title: "Shop",
       des: (
         <ul className="rongonaa-footer-mobile-links">
-          <li><Link className={linkClass} href="/watches/men">Men&apos;s Collection</Link></li>
-          <li><Link className={linkClass} href="/watches/women">Women&apos;s Collection</Link></li>
-          <li><Link className={linkClass} href="/watches/couple">Couple Collection</Link></li>
-          <li><Link className={linkClass} href="/watches">All Products</Link></li>
+          <li><Link className={linkClass} href="/churi">All Churi</Link></li>
+          <li><Link className={linkClass} href="/churi/bridal">Bridal</Link></li>
+          <li><Link className={linkClass} href="/churi/glass-bangles">Glass Bangles</Link></li>
+          <li><Link className={linkClass} href="/churi/luxury">Luxury</Link></li>
+          <li><Link className={linkClass} href="/churi/festival">Festival</Link></li>
+          <li><Link className={linkClass} href="/churi/premium-churi">Premium Churi</Link></li>
         </ul>
       ),
     },

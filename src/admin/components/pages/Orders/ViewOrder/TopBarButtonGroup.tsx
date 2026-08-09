@@ -94,7 +94,7 @@ const TopBarButtonGroup: React.FC<ButtonGroupProps> = ({
             />
 
             <span
-              className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 hidden group-hover:block bg-[#1a0c10] text-white font-semibold text-[10px] tracking-wide px-2.5 py-1 rounded-md whitespace-nowrap z-10 dark:bg-gray-700 ${tooltipClassName}`}
+              className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 hidden group-hover:block bg-[var(--text-primary)] text-[var(--bg-surface)] font-semibold text-[10px] tracking-wide px-2.5 py-1 rounded-md whitespace-nowrap z-10 ${tooltipClassName}`}
             >
               {button.name}
             </span>
@@ -103,10 +103,7 @@ const TopBarButtonGroup: React.FC<ButtonGroupProps> = ({
       })}
 
       {showClearButton && (
-        <Button
-          className="!bg-[#1a0c10] !text-white !px-2.5 !py-1 !rounded-full !text-[10px] !font-bold !tracking-wider uppercase cursor-pointer"
-          onClick={onClearClick}
-        >
+        <Button className="ov-clear-btn" onClick={onClearClick}>
           {isPrinting ? (
             <ButtonLoader className="!w-6 !px-2 !pt-0.5" />
           ) : (

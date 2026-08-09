@@ -35,7 +35,7 @@ export default function AuthSplitLayout({
   return (
     <div className="min-h-screen flex flex-col lg:flex-row">
       {/* Left — branding panel */}
-      <div className="relative hidden lg:flex lg:w-[48%] xl:w-[52%] flex-col justify-between overflow-hidden bg-gradient-to-br from-[#c9a227] via-[#a4841f] to-[#0a0a0a] px-12 py-14 text-white">
+      <div className="relative hidden lg:flex lg:w-[48%] xl:w-[52%] flex-col justify-between overflow-hidden bg-gradient-to-br from-[#7f1d1d] via-[#5c1515] to-[#0a0a0a] px-12 py-14 text-white">
         <div
           aria-hidden
           className="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full bg-white/10 blur-3xl"

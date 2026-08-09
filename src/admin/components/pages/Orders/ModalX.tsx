@@ -207,7 +207,7 @@ const ModalX = ({
   return (
     <>
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 md:p-0 p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-[2px] md:p-0 p-4">
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg max-w-md w-full p-6 relative">
             <Icon
               aria-label="Close modal"

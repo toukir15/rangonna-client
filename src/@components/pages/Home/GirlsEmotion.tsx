@@ -7,35 +7,35 @@ const emotions = [
     name: "Joy",
     bangla: "আনন্দ",
     copy: "Bright stacks for her happiest days",
-    href: "/watches/festival",
+    href: "/churi/festival",
     image: "/hero-festival.png",
   },
   {
     name: "Grace",
     bangla: "লাবণ্য",
     copy: "Soft glass for quiet elegance",
-    href: "/watches/glass-bangles",
+    href: "/churi/glass-bangles",
     image: "/pearl-gold-bangles.png",
   },
   {
     name: "Romance",
     bangla: "প্রেম",
     copy: "Bridal heirloom for forever vows",
-    href: "/watches/bridal",
+    href: "/churi/bridal",
     image: "/hero-bridal.png",
   },
   {
     name: "Confidence",
     bangla: "আত্মবিশ্বাস",
     copy: "Statement crystal she can’t ignore",
-    href: "/watches/premium-churi",
+    href: "/churi/premium-churi",
     image: "/crystal-multicolor-bangles.png",
   },
   {
     name: "Desire",
     bangla: "আকর্ষণ",
     copy: "Couture gold for nights that linger",
-    href: "/watches/luxury",
+    href: "/churi/luxury",
     image: "/hero-banner.png",
   },
 ] as const;
@@ -48,7 +48,7 @@ export default function GirlsEmotion() {
           eyebrow="Wear how she feels"
           title="Girls Emotion"
           description="Shop by mood — every churi set named for the feeling she carries."
-          href="/watches"
+          href="/churi"
           linkLabel="Shop all moods"
         />
 

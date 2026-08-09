@@ -1,12 +1,10 @@
 "use client";
 import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
-import { IWebsiteOption, SelectOption } from "@admin/@interfaces/common.interface";
 import {
   DeleteIncompleteOrderResponse,
   GetIncompleteOrdersResponse,
   IncompleteOrder,
 } from "@admin/@interfaces/incompleateOrder/incompleateOrder.interface";
-import { GlobalService } from "@admin/@services/apis/GlobalService/Global.service";
 import { IncompleteOrdersService } from "@admin/@services/apis/OrdersService/Incompleate.service";
 import Alert from "@admin/components/core/Aleart/Aleart";
 import Button from "@admin/components/core/Button/Button";
@@ -14,7 +12,6 @@ import Icon from "@admin/components/core/Icon/Icon";
 import PaginationComponent from "@admin/components/core/Pazination/Pazination";
 import PageSearch from "@admin/components/core/Search/PageSearch";
 import useDebounce from "@admin/components/core/UseDebounece/UseDebouence";
-import AllFilter from "@admin/components/pages/AllFilter/AllFilter";
 import IncompleteNote from "@admin/components/pages/Orders/InCompleateOrders/IncompompleateDrawer";
 import IncompleateProgress from "@admin/components/pages/Orders/ViewOrder/IncompleateProgress";
 import { Tbody, Td, Th, Thead, Tr } from "@admin/components/Table/Table";
@@ -73,13 +70,8 @@ const Page: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [itemToDelete, setItemToDelete] = useState<string | null>(null);
   const [isAlertOpen, setIsAlertOpen] = useState<boolean>(false);
-  const [websiteOptions, setWebsiteOptions] = useState<IWebsiteOption[]>([]);
   const [selectedOrders, setSelectedOrders] = useState<string[]>([]);
   const [fraudStats, setFraudStats] = useState<FraudStats>({});
-  const [selectedWebsite, setSelectedWebsite] = useState<SelectOption>({
-    value: "all",
-    label: "All Website",
-  });
   const debouncedSearchTerm = useDebounce<string>(searchTerm, 300);
   const abortRef = useRef<AbortController | null>(null);
   const baseApi = process.env.NEXT_PUBLIC_FRAUD_BASE_URL;
@@ -87,26 +79,12 @@ const Page: React.FC = () => {
   const totalPages = Math.ceil((totalProduct || 0) / (productPerPage || 1));
 
   useEffect(() => {
-    const savedWebsite = localStorage.getItem("selectedIncompleateWebsite");
     const savedPerPage = localStorage.getItem("InCompletePerPage");
-
-    if (savedWebsite) {
-      setSelectedWebsite(JSON.parse(savedWebsite));
-    }
 
     if (savedPerPage) {
       setProductPerPage(Number(savedPerPage));
     }
   }, []);
-
-  useEffect(() => {
-    if (selectedWebsite) {
-      localStorage.setItem(
-        "selectedIncompleateWebsite",
-        JSON.stringify(selectedWebsite),
-      );
-    }
-  }, [selectedWebsite]);
 
   const isCheck = useMemo(() => {
     if (!incompleteOrder?.length) return false;
@@ -137,7 +115,7 @@ const Page: React.FC = () => {
   useEffect(() => {
     if (!canFetchPageData) return;
     fetchInCompleat();
-  }, [canFetchPageData, selectedWebsite, debouncedSearchTerm, productPerPage, currentPage]);
+  }, [canFetchPageData, debouncedSearchTerm, productPerPage, currentPage]);
 
   const fetchInCompleat = async () => {
     setIsLoading(true);
@@ -148,7 +126,7 @@ const Page: React.FC = () => {
           page: currentPage,
           limit: productPerPage,
           searchTerm: encodeURIComponent(debouncedSearchTerm),
-          domain: selectedWebsite?.value,
+          domain: "all",
         });
 
       if (res?.success) {
@@ -299,36 +277,6 @@ const Page: React.FC = () => {
     }
   };
 
-  const fetchWebList = async () => {
-    GlobalService.getWebsiteList()
-      .then((res: any) => {
-        if (res?.success) {
-          const options = res?.data?.map((item: any) => ({
-            label: item.web_name,
-            value: item.web_url,
-          }));
-
-          setWebsiteOptions([
-            { value: "all", label: "All Website" },
-            ...options,
-          ]);
-        } else {
-          ToastService.error(res?.message);
-        }
-      })
-      .catch((err: { message: string }) => {
-        ToastService.error(err.message);
-      });
-  };
-
-  useEffect(() => {
-  }, []);
-
-  useEffect(() => {
-    if (!canFetchPageData) return;
-    fetchWebList();
-  }, [canFetchPageData]);
-
   useTableRefreshRegister(fetchInCompleat);
 
 
@@ -362,12 +310,6 @@ const Page: React.FC = () => {
             <h2 className="2xl:text-2xl font-poppins dark:text-gray-300 font-semibold text-nowrap">
               Incomplete Orders
             </h2>
-              <AllFilter
-              isWebsiteFilter={true}
-              websiteOptions={websiteOptions}
-              selectedWebsite={selectedWebsite}
-              setSelectedWebsite={setSelectedWebsite}
-            />
           </div>
           <div className="md:w-80  w-full md:mt-0 mt-2">
             <PageSearch

@@ -142,7 +142,7 @@ const Header: React.FC<HeaderProps> = ({ navItems }) => {
         `/product/${encodeURIComponent(filteredSuggestions[0]?.slug)}`,
       );
     } else if (filteredSuggestions.length > 1) {
-      router.push(`/watches?search=${encodeURIComponent(searchId)}`);
+      router.push(`/churi?search=${encodeURIComponent(searchId)}`);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
@@ -151,7 +151,7 @@ const Header: React.FC<HeaderProps> = ({ navItems }) => {
 
   const handleSubmit = () => {
     if (filteredSuggestions.length > 1 || searchId.trim()) {
-      router.push(`/watches?search=${encodeURIComponent(searchId)}`);
+      router.push(`/churi?search=${encodeURIComponent(searchId)}`);
       setShowSuggestions(false);
     }
   };

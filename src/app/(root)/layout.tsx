@@ -4,6 +4,7 @@ import NavBar from "@/@components/pages/Header/NavBar";
 import NavigationBar from "@/@components/pages/NavigationBar/NavigationBar";
 import StorefrontProviders from "@/@components/pages/StorefrontProviders";
 import { ENV } from "@/@config/env.config";
+import { withoutBrandNavItems } from "@/utils/nav-menu";
 
 async function getMenuData() {
   try {
@@ -17,7 +18,7 @@ async function getMenuData() {
     if (!res.ok) return [];
 
     const data = await res.json();
-    return data?.data?.navBarItems || [];
+    return withoutBrandNavItems(data?.data?.navBarItems || []);
   } catch {
     return [];
   }

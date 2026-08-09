@@ -1,37 +1,111 @@
+/** CashFlow-style status pill classes for order/table badges */
 export const getStatusStyle = (status?: string) => {
+  const base = "table-role-badge";
   switch (status?.toLowerCase()) {
-    case "all": // Neutral → Slate
-      return "bg-slate-200 text-slate-800 py-1.5 rounded-lg font-semibold uppercase";
-    case "pending": // 🟡 Yellow (hold state, neutral waiting)
-      return "bg-yellow-200 text-yellow-800 py-1.5 rounded-lg font-semibold uppercase";
-    case "waiting-payment": // 🟠 Orange (money-related, urgent)
-      return "bg-orange-200 text-orange-800 py-1.5 rounded-lg font-semibold uppercase";
-    case "recall": // 🔷 Sky (callback / restore)
-      return "bg-sky-200 text-sky-800 py-1.5 rounded-lg font-semibold uppercase";
-    case "approved": // 🟢 Green
-      return "bg-green-200 text-green-800 py-1.5 rounded-lg font-semibold uppercase";
-    case "printed": // 🟣 Violet (clearer than purple)
-      return "bg-violet-200 text-violet-800 py-1.5 rounded-lg font-semibold uppercase";
-    case "ready-for-box": // ⚫ Dark Gray
-      return "bg-gray-800 text-white py-1.5 rounded-lg font-semibold uppercase";
-    case "in-transit": // 🟦 Teal
-      return "bg-teal-200 text-teal-800 py-1.5 rounded-lg font-semibold uppercase";
-    case "follow-up": // 🔵 Indigo
-      return "bg-indigo-200 text-indigo-800 py-1.5 rounded-lg font-semibold uppercase";
-    case "delivery": // 🟤 Rose
-      return "bg-emerald-200 text-emerald-800 py-1.5 rounded-lg font-semibold uppercase";
-    case "cancel": // 🔴 Red
-      return "bg-red-200 text-red-800 py-1.5 rounded-lg font-semibold uppercase";
-    case "rejected": // 🔴 Red
-      return "bg-red-200 text-red-800 py-1.5 rounded-lg font-semibold uppercase";
-    case "refunded": // 🌸 Fuchsia
-      return "bg-fuchsia-200 text-fuchsia-800 py-1.5 rounded-lg font-semibold uppercase";
-    case "return": // 🟩 Emerald (distinct from green)
-      return "bg-rose-200 text-rose-800 py-1.5 rounded-lg font-semibold uppercase";
-    case "exchange": // ⚪ Zinc (light gray, different from slate)
-      return "bg-zinc-200 text-zinc-800 py-1.5 rounded-lg font-semibold uppercase";
+    case "all":
+      return `${base} is-neutral`;
+    case "pending":
+      return `${base} is-pending`;
+    case "waiting-payment":
+      return `${base} is-warning`;
+    case "recall":
+      return `${base} is-info`;
+    case "approved":
+    case "delivery":
+      return `${base} is-approved`;
+    case "printed":
+      return `${base} is-violet`;
+    case "ready-for-box":
+      return `${base} is-neutral`;
+    case "in-transit":
+      return `${base} is-teal`;
+    case "follow-up":
+      return `${base} is-indigo`;
+    case "partial-delivery":
+      return `${base} is-info`;
+    case "cancel":
+    case "cancelled":
+    case "canceled":
+    case "rejected":
+    case "damaged":
+      return `${base} is-rejected`;
+    case "refunded":
+      return `${base} is-fuchsia`;
+    case "return":
+      return `${base} is-rose`;
+    case "exchange":
+      return `${base} is-neutral`;
     default:
-      return "bg-slate-200 text-slate-800 py-1.5 rounded-lg font-semibold uppercase";
+      return `${base} is-neutral`;
+  }
+};
+
+/** Per-status tone class for OrdersTab filter pills */
+export const getStatusFilterTone = (status?: string) => {
+  switch (status?.toLowerCase()) {
+    case "all":
+      return "is-all";
+    case "pending":
+      return "is-pending";
+    case "waiting-payment":
+      return "is-to-pay";
+    case "recall":
+      return "is-recall";
+    case "approved":
+      return "is-approved";
+    case "printed":
+      return "is-printed";
+    case "ready-for-box":
+      return "is-rd";
+    case "in-transit":
+      return "is-transit";
+    case "follow-up":
+      return "is-follow-up";
+    case "delivery":
+      return "is-delivery";
+    case "partial-delivery":
+      return "is-pd";
+    case "cancel":
+    case "cancelled":
+    case "canceled":
+      return "is-cancel";
+    case "refunded":
+      return "is-refunded";
+    case "return":
+      return "is-return";
+    case "exchange":
+      return "is-exchange";
+    case "damaged":
+    case "rejected":
+      return "is-damaged";
+    default:
+      return "is-neutral";
+  }
+};
+
+/** Display label for order status badges (CashFlow-style capitalize) */
+export const getStatusLabel = (status?: string) => {
+  if (!status) return "—";
+  switch (status.toLowerCase()) {
+    case "ready-for-box":
+      return "R-D";
+    case "waiting-payment":
+      return "To be Paid";
+    case "partial-delivery":
+      return "PD";
+    case "in-transit":
+      return "Transit";
+    case "follow-up":
+      return "Follow Up";
+    case "cancel":
+    case "canceled":
+    case "cancelled":
+      return "Cancelled";
+    default:
+      return status
+        .split("-")
+        .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+        .join(" ");
   }
 };
 

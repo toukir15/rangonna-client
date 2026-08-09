@@ -17,7 +17,7 @@ const navLinks = [
   },
   {
     name: "Watches",
-    href: "/watches",
+    href: "/churi",
   },
 
   {

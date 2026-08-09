@@ -23,13 +23,13 @@ type PageItem = number | "ellipsis";
 const PAGE_SIZE_OPTIONS = [10, 20, 50, 100, 500];
 
 const navButtonClass =
-  "inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-black/10 bg-white text-gray-600 transition-colors hover:border-green-200 hover:bg-green-50 hover:text-green-700 disabled:pointer-events-none disabled:opacity-40 dark:border-white/10 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-green-500/30 dark:hover:bg-green-950/40 dark:hover:text-green-300";
+  "inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-[0.625rem] border border-[var(--border)] bg-[var(--bg-surface)] text-app transition-colors hover:bg-[var(--bg-hover)] disabled:pointer-events-none disabled:opacity-50";
 
 const pageButtonClass =
-  "inline-flex h-8 min-w-8 items-center justify-center rounded-lg border border-transparent px-2 text-sm font-medium text-gray-600 transition-colors hover:border-green-200 hover:bg-green-50 hover:text-green-700 dark:text-gray-300 dark:hover:border-green-500/30 dark:hover:bg-green-950/40 dark:hover:text-green-300";
+  "inline-flex h-9 min-w-9 items-center justify-center rounded-[0.625rem] border border-transparent px-2 text-sm font-semibold text-app-secondary transition-colors hover:border-[var(--border)] hover:bg-[var(--bg-hover)] hover:text-app";
 
 const activePageButtonClass =
-  "border-green-600 bg-green-600 text-white shadow-sm hover:border-green-600 hover:bg-green-600 hover:text-white dark:border-green-500 dark:bg-green-600 dark:hover:border-green-500 dark:hover:bg-green-600 dark:hover:text-white";
+  "!border-transparent !bg-[var(--color-primary)] !text-white shadow-sm hover:!bg-[var(--color-primary-hover)] hover:!text-white";
 
 function getPageItems(currentPage: number, totalPages: number): PageItem[] {
   if (totalPages <= 0) return [];
@@ -96,17 +96,17 @@ const Pagination: React.FC<PaginationProps> = ({
   if (!hasPages) {
     return (
       <div
-        className={`admin-pagination mt-4 flex flex-col gap-3 rounded-xl border border-black/10 bg-white px-4 py-3 dark:border-white/10 dark:bg-gray-900/40 sm:flex-row sm:items-center sm:justify-between ${className ?? ""}`}
+        className={`admin-pagination data-table-card glass-card data-table-footer !mt-4 !flex-col !rounded-2xl sm:!flex-row ${className ?? ""}`}
       >
         <div className="flex flex-wrap items-center gap-2">
-          <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+          <div className="flex items-center gap-2 text-[0.8125rem] text-app-muted">
             <span className="whitespace-nowrap">Rows per page</span>
             <select
               value={ordersPerPage}
               onChange={(event) =>
                 handlePageSizeChange(Number(event.target.value))
               }
-              className="admin-pagination-select h-8 cursor-pointer rounded-lg border border-black/10 bg-white px-2.5 text-sm font-medium text-gray-700 outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-800 dark:text-gray-200"
+              className="admin-pagination-select h-9 cursor-pointer rounded-[0.625rem] border border-[var(--border)] bg-[var(--bg-surface)] px-2.5 text-sm font-medium text-app outline-none focus:border-[var(--accent)] focus:shadow-[0_0_0_3px_var(--accent-soft)]"
             >
               {PAGE_SIZE_OPTIONS.map((size) => (
                 <option key={size} value={size}>
@@ -128,17 +128,17 @@ const Pagination: React.FC<PaginationProps> = ({
 
   return (
     <div
-      className={`admin-pagination mt-4 flex flex-col gap-3 rounded-xl border border-black/10 bg-white px-4 py-3 dark:border-white/10 dark:bg-gray-900/40 lg:flex-row lg:items-center lg:justify-between ${className ?? ""}`}
+      className={`admin-pagination data-table-card glass-card data-table-footer !mt-4 !flex-col !rounded-2xl lg:!flex-row ${className ?? ""}`}
     >
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-        <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+        <div className="flex items-center gap-2 text-[0.8125rem] text-app-muted">
           <span className="whitespace-nowrap">Rows per page</span>
           <select
             value={ordersPerPage}
             onChange={(event) =>
               handlePageSizeChange(Number(event.target.value))
             }
-            className="admin-pagination-select h-8 cursor-pointer rounded-lg border border-black/10 bg-white px-2.5 text-sm font-medium text-gray-700 outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-800 dark:text-gray-200"
+            className="admin-pagination-select h-9 cursor-pointer rounded-[0.625rem] border border-[var(--border)] bg-[var(--bg-surface)] px-2.5 text-sm font-medium text-app outline-none focus:border-[var(--accent)] focus:shadow-[0_0_0_3px_var(--accent-soft)]"
           >
             {PAGE_SIZE_OPTIONS.map((size) => (
               <option key={size} value={size}>
@@ -149,7 +149,7 @@ const Pagination: React.FC<PaginationProps> = ({
         </div>
 
         {isShowText && totalData ? (
-          <p className="text-sm text-gray-500 dark:text-gray-400">
+          <p className="text-[0.8125rem] text-app-muted">
             {getItemRange()}
           </p>
         ) : null}
@@ -162,7 +162,7 @@ const Pagination: React.FC<PaginationProps> = ({
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-3 sm:justify-end">
-        <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
+        <p className="text-[0.8125rem] text-app-muted whitespace-nowrap">
           Page {currentPage} of {totalPages}
         </p>
 

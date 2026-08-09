@@ -33,24 +33,23 @@ const Button: FC<ButtonProps> = ({
   };
 
   const rounds: Record<string, string> = {
-    sm: "rounded-sm",
-    base: "rounded-md",
-    md: "rounded-md",
-    lg: "rounded-lg",
+    sm: "rounded-lg",
+    base: "rounded-xl",
+    md: "rounded-xl",
+    lg: "rounded-xl",
     full: "rounded-full",
   };
 
   const variants: Record<string, string> = {
-    fill: "bg-[#184066] text-white custom-btn-shadow",
-    outline:
-      "bg-white border border-primary-500 text-primary-500 custom-btn-shadow",
-    noBorder: "bg-transparent text-primary-500 custom-btn-shadow",
+    fill: "btn-cashflow-primary !px-[24px]",
+    outline: "btn-cashflow-secondary !bg-[var(--bg-surface)]",
+    noBorder: "bg-transparent text-[var(--accent)] shadow-none",
     shadowOutline:
-      "bg-transparent text-primary-500 border-2 border-[#E6F0F6] custom-btn-shadow hover:shadow-[inset_-2px_2px_30px_0px_rgba(0,0,0,0.08)]",
+      "btn-cashflow-secondary hover:shadow-[inset_-2px_2px_30px_0px_rgba(0,0,0,0.06)]",
   };
 
   // Base styles
-  const baseStyles: string = "transition-all duration-300 ease-in-out";
+  const baseStyles: string = "inline-flex items-center justify-center transition-all duration-200 ease-in-out";
 
   // Applying styles based on props
   const sizeStyles: string = size
@@ -59,13 +58,13 @@ const Button: FC<ButtonProps> = ({
   const roundStyles: string = rounds[round];
   const variantStyles: string = variants[variant];
   const disabledStyles: string = disabled
-    ? "!bg-disable-500 !bg-opacity-60 !text-white !cursor-not-allowed"
+    ? "opacity-60 cursor-not-allowed"
     : "";
 
   // Returning the button component
   return (
     <button
-      className={`inline-block font-inter font-medium text-sm md:text-base dark:text-gray-300  px-[24px] lg:text-base ${baseStyles} ${sizeStyles} ${roundStyles} ${variantStyles} ${disabledStyles} ${className}`}
+      className={`${baseStyles} ${sizeStyles} ${roundStyles} ${variantStyles} ${disabledStyles} ${className ?? ""}`}
       type={type}
       onClick={onClick}
       disabled={disabled}

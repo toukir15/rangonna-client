@@ -241,7 +241,8 @@ export default function CategoryPageClient({
                     <div className="flex items-center justify-between">
                         <div className="text-lg flex flex-wrap items-center gap-1">
                             <Link href="/">Home</Link> /{" "}
-                            <Link href={`/${safeCategoryName}`}>{formattedCategoryName}</Link>
+                            <Link href="/churi">Churi</Link> /{" "}
+                            <span>{formattedCategoryName}</span>
 
                             <div className="ml-3 md:block hidden">
                                 <FilterChips

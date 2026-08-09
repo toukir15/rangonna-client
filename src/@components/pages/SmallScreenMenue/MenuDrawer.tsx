@@ -88,7 +88,7 @@ const MenuDrawer: React.FC<IShapingCartDrawer> = ({
       setShowSuggestions(false);
       setIsCartDrawer(false);
     } else if (filteredSuggestions.length > 1) {
-      router.push(`/watches?search=${encodeURIComponent(searchId)}`);
+      router.push(`/churi?search=${encodeURIComponent(searchId)}`);
       setShowSuggestions(false);
       setIsCartDrawer(false);
     }

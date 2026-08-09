@@ -224,10 +224,10 @@ const Page: React.FC = () => {
                 All Member
               </h2>
               <AllFilter
-                isWebsiteFilter={true}
-                websiteOptions={userStatusOptions}
-                selectedWebsite={selectedStatus}
-                setSelectedWebsite={setSelectedStatus}
+                isStatusFilter={true}
+                statusOption={userStatusOptions}
+                selectedStatus={selectedStatus}
+                setSelectedStatus={setSelectedStatus}
               />
               {permissionList.includes("team_user_create") && (
                 <Button

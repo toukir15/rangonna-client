@@ -1,4 +1,5 @@
 import { ENV } from "@/@config/env.config";
+import { withoutBrandNavItems } from "@/utils/nav-menu";
 import DesktopNavbar from "../NavigationBar/DesktopNavbar";
 
 async function getMenuData() {
@@ -11,7 +12,7 @@ async function getMenuData() {
     );
     if (!res.ok) return [];
     const data = await res.json();
-    return data?.data?.navBarItems || [];
+    return withoutBrandNavItems(data?.data?.navBarItems || []);
   } catch {
     return [];
   }

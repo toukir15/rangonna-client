@@ -1,8 +1,5 @@
 "use client";
 import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
-import { IWebsiteOption, SelectOption } from "@admin/@interfaces/common.interface";
-import { GlobalService } from "@admin/@services/apis/GlobalService/Global.service";
-import SelectComponent from "@admin/components/core/Select/Select";
 import { Tbody, Td, Th, Thead, Tr } from "@admin/components/Table/Table";
 import TableWrapper from "@admin/components/Table/TableWrapper";
 import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
@@ -21,12 +18,7 @@ const DEFAULT_DATE_RANGE = {
 };
 
 const Page: React.FC = () => {
-  const [websiteOptions, setWebsiteOptions] = useState<IWebsiteOption[]>([]);
   const [dailyProfitData, setProfitData] = useState<any[]>([]);
-  const [selectedWebsite, setSelectedWebsite] = useState<SelectOption>({
-    value: "all",
-    label: "All Website",
-  });
 
   const [ordersPerPage, setOrdersPerPage] = useState<number>(20);
   const [tableLoading, setTableLoading] = useState<boolean>(true);
@@ -44,33 +36,8 @@ const Page: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchWebList();
-  }, []);
-
-  useEffect(() => {
     fetchUserReport();
-  }, [range, currentPage, ordersPerPage, selectedWebsite]);
-
-  const fetchWebList = async () => {
-    GlobalService.getWebsiteList()
-      .then((res: any) => {
-        if (res?.success) {
-          const options = res?.data?.map((item: any) => ({
-            label: item.web_name,
-            value: item.web_url,
-          }));
-          setWebsiteOptions([
-            { value: "all", label: "All Website" },
-            ...options,
-          ]);
-        } else {
-          ToastService.error(res?.message);
-        }
-      })
-      .catch((err: { message: string }) => {
-        ToastService.error(err.message);
-      });
-  };
+  }, [range, currentPage, ordersPerPage]);
 
   const fetchUserReport = async () => {
     const formattedFrom = formatDateRange(range.startDate).trim();
@@ -79,7 +46,7 @@ const Page: React.FC = () => {
     OrderReportProfitService.userReport({
       page: currentPage,
       limit: ordersPerPage,
-      domain: selectedWebsite.value,
+      domain: "all",
       startDate: formattedFrom,
       endDate: formattedTo,
     })
@@ -112,15 +79,6 @@ const Page: React.FC = () => {
               </h1>
 
               <div className="md:flex items-center gap-4">
-                <div className="mb-2 md:mb-0">
-                  <SelectComponent
-                    options={websiteOptions}
-                    value={selectedWebsite}
-                    onChange={setSelectedWebsite}
-                    placeholder="All Websites"
-                    className="md:w-60 w-full"
-                  />
-                </div>
                 <CalendarRange range={range} setRange={setRange} />
               </div>
             </div>

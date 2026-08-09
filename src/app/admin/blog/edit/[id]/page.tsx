@@ -45,7 +45,7 @@ export const ProductSchema = yup.object({
   title: yup.string().required("Title is required"),
   slug: yup.string().required("Slug is required"),
   category: yup.mixed().nullable().required(),
-  brand: yup.mixed().required("Brand is required"),
+  brand: yup.mixed().nullable(),
   focus_keyword: yup.string(),
   featuredImage: yup.mixed(),
   featured_image_title: yup.string(),
@@ -329,32 +329,6 @@ const Page: React.FC = () => {
                     {errors.category && (
                       <p className="text-red-500 text-sm">
                         {errors.category.message as string}
-                      </p>
-                    )}
-                  </div>
-                  <div className="w-full">
-                    <p className="font-inter text-sm font-semibold text-neutral-600 dark:text-gray-300 mb-1">
-                      Brand{" "}
-                      <span className="text-red-400 font-inter text-[12px] font-semibold">
-                        *
-                      </span>
-                    </p>
-                    <Controller
-                      name="brand"
-                      control={control}
-                      render={({ field }) => (
-                        <SelectComponent
-                          options={brandOptions}
-                          value={field.value}
-                          onChange={field.onChange}
-                          placeholder="Select Brand"
-                          isRequired
-                        />
-                      )}
-                    />
-                    {errors.brand && (
-                      <p className="text-red-500 text-sm">
-                        {errors.brand.message as string}
                       </p>
                     )}
                   </div>

@@ -236,32 +236,7 @@ export default function FilterSideBar({
   const isBrandChecked = (name: string) => (brands ?? []).includes(name);
   const isSortChecked = (name: string) => (sort ?? []).includes(name);
 
-  // hidden categories
-  const hiddenCategories = [
-    "Leather Strap",
-    "Stainless Steel",
-    "Silicone Strap",
-  ];
-  const hiddenCategories1 = ["men", "women", "couple", "smart-watches", "kids"];
-
-  const filteredCategories = categoryData.filter((item) => {
-    if (
-      pathname?.startsWith("/watches/leather-strap") ||
-      pathname?.startsWith("/watches/stainless-steel") ||
-      pathname?.startsWith("/watches/silicone-strap")
-    ) {
-      return !hiddenCategories.includes(item.name);
-    } else if (
-      pathname?.startsWith("/watches/men") ||
-      pathname?.startsWith("/watches/women") ||
-      pathname?.startsWith("/watches/couple") ||
-      pathname?.startsWith("/watches/smart-watches") ||
-      pathname?.startsWith("/watches/kids")
-    ) {
-      return !hiddenCategories1.includes(item.name);
-    }
-    return true;
-  });
+  const filteredCategories = categoryData;
 
   return (
     <aside className="rongonaa-filter select-none">

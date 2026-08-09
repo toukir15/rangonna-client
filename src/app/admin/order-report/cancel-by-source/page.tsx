@@ -83,7 +83,7 @@ const Page: React.FC = () => {
     const formattedTo = formatDateRange(range.endDate).trim();
     setTableLoading(true);
     OrderReportProfitService.getCancelCardReportPerOrder({
-      domain: selectedWebsite.value,
+      domain: "all",
       startDate: formattedFrom,
       endDate: formattedTo,
     })
@@ -138,11 +138,7 @@ const Page: React.FC = () => {
                   Cancel By Source
                 </h1>
               <AllFilter
-                isWebsiteFilter={true}
-                websiteOptions={websiteOptions}
-                selectedWebsite={selectedWebsite}
-                setSelectedWebsite={setSelectedWebsite}
-                isCalendarFilter={true}
+                                isCalendarFilter={true}
                 range={range}
                 setRange={setRange}
               />

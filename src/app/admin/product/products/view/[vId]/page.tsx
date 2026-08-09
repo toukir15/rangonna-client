@@ -1,8 +1,5 @@
 "use client";
 import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
-import { IWebsiteOption, SelectOption } from "@admin/@interfaces/common.interface";
-import { GlobalService } from "@admin/@services/apis/GlobalService/Global.service";
-import SelectComponent from "@admin/components/core/Select/Select";
 import { Tbody, Td, Th, Thead, Tr } from "@admin/components/Table/Table";
 import TableWrapper from "@admin/components/Table/TableWrapper";
 import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
@@ -16,12 +13,6 @@ import OrdersTab from "@admin/components/pages/Orders/Components/OrdersTab";
 import { debounce } from "@admin/utils";
 
 const Page: React.FC = () => {
-  const [websiteOptions, setWebsiteOptions] = useState<IWebsiteOption[]>([]);
-  const [selectedWebsite, setSelectedWebsite] = useState<SelectOption>({
-    value: "all",
-    label: "All Website",
-  });
-
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [tableLoading, setTableLoading] = useState<boolean>(true);
   const [reportIssueData, setReportIssueData] = useState<any[]>([]);
@@ -33,31 +24,6 @@ const Page: React.FC = () => {
     }
     return "sales";
   });
-
-  useEffect(() => {
-    fetchWebList();
-  }, []);
-
-  const fetchWebList = async () => {
-    GlobalService.getWebsiteList()
-      .then((res: any) => {
-        if (res?.success) {
-          const options = res.data.data.map((item: any) => ({
-            label: item.web_name,
-            value: item.web_url,
-          }));
-          setWebsiteOptions([
-            { value: "all", label: "All Website" },
-            ...options,
-          ]);
-        } else {
-          ToastService.error(res?.message);
-        }
-      })
-      .catch((err: { message: string }) => {
-        ToastService.error(err.message);
-      });
-  };
 
   const getReportIssue = () => {
     setTableLoading(true);
@@ -118,17 +84,6 @@ const Page: React.FC = () => {
                 <h1 className="2xl:text-2xl lg:text-xl text-lg font-semibold dark:text-gray-300 text-gray-800 md:mb-0 mb-2 flex text-nowrap">
                   View Product
                 </h1>
-              </div>
-              <div className="flex items-center w-full justify-between">
-                <div className="flex items-center gap-5">
-                  <SelectComponent
-                    options={websiteOptions}
-                    value={selectedWebsite}
-                    onChange={setSelectedWebsite}
-                    placeholder="All Websites"
-                    className="md:w-48 w-full"
-                  />
-                </div>
               </div>
             </div>
           </div>

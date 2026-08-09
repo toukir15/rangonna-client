@@ -1,5 +1,8 @@
 /* eslint-disable react/display-name */
-import React, { ReactNode } from "react";
+"use client";
+
+import React, { ReactNode, useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 
 interface ModalProps {
   isOpen: boolean;
@@ -24,32 +27,50 @@ const Modal: React.FC<ModalProps> & {
   className = "",
   closeOnOverlayClick = true,
 }) => {
-    if (!isOpen) return null;
+  const [mounted, setMounted] = useState(false);
 
-    return (
-      <>
-        <div className="fixed inset-0 overflow-y-auto z-50">
-          <div
-            className="fixed inset-0 bg-gradient-to-br from-black/30 to-black/20 backdrop-blur-[2px] duration-700"
-            onClick={closeOnOverlayClick ? onClose : undefined}
-          ></div>
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
-          <div className="flex items-start justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div
-              className={`inline-block align-bottom bg-white dark:bg-gray-700 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-top ${width} ${maxWidth} ${className} animate-slide-down`}
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby="modal-headline"
-            >
-              {children}
-            </div>
-          </div>
-        </div>
+  useEffect(() => {
+    if (!isOpen) return;
 
-        <style jsx global>{`
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [isOpen]);
+
+  if (!isOpen || !mounted) return null;
+
+  const portalTarget =
+    document.getElementById("modal-root") ?? document.body;
+
+  return createPortal(
+    <div className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto p-4">
+      <div
+        className="fixed inset-0 bg-black/50 backdrop-blur-[2px]"
+        onClick={closeOnOverlayClick ? onClose : undefined}
+        aria-hidden="true"
+      />
+
+      <div
+        className={`relative z-[101] w-full ${width} ${maxWidth} ${className} rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] text-left shadow-[var(--shadow-soft)] animate-slide-down overflow-hidden`}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-headline"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {children}
+      </div>
+
+      <style jsx global>{`
         @keyframes slideDown {
           from {
-            transform: translateY(-60px);
+            transform: translateY(-24px);
             opacity: 0;
           }
           to {
@@ -58,12 +79,13 @@ const Modal: React.FC<ModalProps> & {
           }
         }
         .animate-slide-down {
-          animation: slideDown 0.4s ease-out forwards;
+          animation: slideDown 0.25s ease-out forwards;
         }
       `}</style>
-      </>
-    );
-  };
+    </div>,
+    portalTarget,
+  );
+};
 
 Modal.Header = ({
   children,
@@ -73,7 +95,7 @@ Modal.Header = ({
   className?: string;
 }) => (
   <div
-    className={`px-6 pt-6 pb-4 border-b border-gray-200 dark:border-gray-700 ${className}`}
+    className={`px-6 pt-6 pb-4 border-b border-[var(--border)] ${className}`}
   >
     {children}
   </div>
@@ -95,7 +117,7 @@ Modal.Footer = ({
   className?: string;
 }) => (
   <div
-    className={`px-6 py-4 border-t border-gray-200 dark:border-gray-700 ${className}`}
+    className={`px-6 py-4 border-t border-[var(--border)] ${className}`}
   >
     {children}
   </div>

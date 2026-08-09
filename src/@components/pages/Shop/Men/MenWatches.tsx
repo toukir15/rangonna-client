@@ -196,8 +196,8 @@ export default function MenWatches() {
           {/* Breadcrumb + Filters */}
           <div className="flex items-center justify-between">
             <div className="text-lg flex flex-wrap items-center gap-1">
-              <Link href="/">Home</Link> / <Link href="/watches">Watches</Link>{" "}
-              /<Link href="/watches/men">Men</Link>
+              <Link href="/">Home</Link> / <Link href="/churi">Churi</Link>{" "}
+              /<Link href="/churi/men">Men</Link>
               <div className="ml-3 md:block hidden">
                 <FilterChips
                   minPrice={minPrice ?? 0}
@@ -283,7 +283,7 @@ export default function MenWatches() {
 
               {!hasMore && !loadingMore && (
                 <div className="flex justify-center items-center py-4">
-                  <p className="text-gray-500">No more watches to load</p>
+                  <p className="text-gray-500">No more churi to load</p>
                 </div>
               )}
             </>

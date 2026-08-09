@@ -165,7 +165,7 @@ const Page: React.FC = () => {
       searchTerm: debouncedSearchTerm,
       page: currentPage,
       limit: ordersPerPage,
-      domain: selectedWebsite.value,
+      domain: "all",
       startDate: formattedFrom,
       endDate: formattedTo,
     })
@@ -205,11 +205,7 @@ const Page: React.FC = () => {
                 Return By Order
               </h1>
               <AllFilter
-                isWebsiteFilter={true}
-                websiteOptions={websiteOptions}
-                selectedWebsite={selectedWebsite}
-                setSelectedWebsite={setSelectedWebsite}
-                isCalendarFilter={true}
+                                isCalendarFilter={true}
                 range={range}
                 setRange={setRange}
               />

@@ -92,14 +92,14 @@ export default function Hero() {
 
             <div className="rongonaa-hero__actions">
               <Link
-                href="/watches"
+                href="/churi"
                 className="rongonaa-hero__cta rongonaa-hero__cta--primary"
               >
                 Shop Best Sellers
                 <span aria-hidden>→</span>
               </Link>
               <Link
-                href="/watches/bridal"
+                href="/churi/bridal"
                 className="rongonaa-hero__cta rongonaa-hero__cta--ghost"
               >
                 Bridal Collection

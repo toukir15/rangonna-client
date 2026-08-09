@@ -254,7 +254,7 @@ const SubmenuFields: React.FC<SubmenuFieldsProps> = ({
                                         {...register(
                                             `navBarItems.${navIndex}.submenu.${subIndex}.route`
                                         )}
-                                        placeholder="/watches/women"
+                                        placeholder="/churi/bridal"
                                         className="w-full border rounded-lg px-3 py-2 bg-white dark:bg-gray-900 dark:border-gray-600 dark:text-white"
                                     />
                                     {submenuErrors?.[subIndex]?.route?.message && (

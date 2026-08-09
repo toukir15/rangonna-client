@@ -4,31 +4,31 @@ import SectionHeader from "./SectionHeader";
 
 const occasions = [
   {
-    href: "/watches/bridal",
+    href: "/churi/bridal",
     name: "Bridal",
     copy: "Heirloom stacks for her day",
     image: "/hero-bridal.png",
   },
   {
-    href: "/watches/festival",
+    href: "/churi/festival",
     name: "Festival",
     copy: "Eid, Puja & celebration color",
     image: "/hero-festival.png",
   },
   {
-    href: "/watches/glass-bangles",
+    href: "/churi/glass-bangles",
     name: "Daily Wear",
     copy: "Soft luxury for every day",
     image: "/pearl-gold-bangles.png",
   },
   {
-    href: "/watches/premium-churi",
+    href: "/churi/premium-churi",
     name: "Party",
     copy: "Sparkle for nights out",
     image: "/crystal-multicolor-bangles.png",
   },
   {
-    href: "/watches/luxury",
+    href: "/churi/luxury",
     name: "Gift for Her",
     copy: "Thoughtful sets she’ll love",
     image: "/hero-banner.png",

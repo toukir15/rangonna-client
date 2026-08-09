@@ -52,7 +52,7 @@ const MobileSearch = ({ embedded = false }: MobileSearchProps) => {
 
   const handleSubmit = () => {
     if (!searchId.trim()) return;
-    router.push(`/watches?search=${encodeURIComponent(searchId)}`);
+    router.push(`/churi?search=${encodeURIComponent(searchId)}`);
     setShowSuggestions(false);
   };
 

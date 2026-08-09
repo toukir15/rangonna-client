@@ -96,7 +96,7 @@ const Sidebar = ({
 
   const itemClassName = (() => {
     const base =
-      "group relative flex w-full min-h-[40px] items-center rounded-lg text-left transition-colors duration-150 select-none";
+      "admin-sidebar-nav-item group relative flex w-full min-h-[40px] items-center text-left select-none";
 
     if (isCollapsed) {
       return `${base} justify-between gap-2 px-3 py-2 xl:justify-center xl:px-2 xl:py-2`;
@@ -106,10 +106,10 @@ const Sidebar = ({
   })();
 
   const stateClassName = isMainActive
-    ? "bg-green-600 text-white shadow-sm"
+    ? "is-active"
     : hasSubmenu && isSubMenuOpen
-      ? "bg-green-50 text-green-800 ring-1 ring-green-200 dark:bg-green-950/40 dark:text-green-300 dark:ring-green-500/30"
-      : "text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800/80 dark:hover:text-gray-100";
+      ? "is-open"
+      : "";
 
   const itemContent = (
     <>
@@ -118,12 +118,14 @@ const Sidebar = ({
           isCollapsed ? "xl:justify-center" : ""
         }`}
       >
-        <Icon
-          name={item?.icon}
-          variant="outlined"
-          size={20}
-          className={isMainActive ? "text-white" : "text-current"}
-        />
+        <span className="admin-sidebar-icon-wrap">
+          <Icon
+            name={item?.icon}
+            variant="outlined"
+            size={15}
+            className="text-current"
+          />
+        </span>
         <span
           className={`ml-2.5 truncate text-[13px] font-medium leading-none ${
             isCollapsed ? "xl:hidden" : ""
@@ -137,11 +139,13 @@ const Sidebar = ({
         <Icon
           name={isSubMenuOpen ? "expand_less" : "expand_more"}
           variant="outlined"
-          size={18}
-          className={`pointer-events-none shrink-0 opacity-70 ${
+          size={16}
+          className={`pointer-events-none shrink-0 text-app-muted ${
             isCollapsed ? "xl:hidden" : ""
           }`}
         />
+      ) : isMainActive ? (
+        <span className={`nav-link-dot shrink-0 ${isCollapsed ? "xl:hidden" : ""}`} />
       ) : null}
     </>
   );
@@ -159,15 +163,8 @@ const Sidebar = ({
             e.stopPropagation();
             handleTogglePress(item?.label);
           }}
-          className={`${itemClassName} ${stateClassName} touch-manipulation appearance-none border-0 [-webkit-tap-highlight-color:transparent]`}
+          className={`${itemClassName} ${stateClassName} touch-manipulation appearance-none border-0 bg-transparent [-webkit-tap-highlight-color:transparent]`}
         >
-          {isMainActive && (
-            <span
-              className={`absolute left-0 top-1/2 h-5 w-1 -translate-y-1/2 rounded-r-full bg-white/90 ${
-                isCollapsed ? "xl:hidden" : ""
-              }`}
-            />
-          )}
           {itemContent}
         </button>
       ) : (
@@ -177,13 +174,6 @@ const Sidebar = ({
           onClick={() => setIsSidebarOpen(false)}
         >
           <div className={`${itemClassName} ${stateClassName}`}>
-            {isMainActive && (
-              <span
-                className={`absolute left-0 top-1/2 h-5 w-1 -translate-y-1/2 rounded-r-full bg-white/90 ${
-                  isCollapsed ? "xl:hidden" : ""
-                }`}
-              />
-            )}
             {itemContent}
           </div>
         </Link>
@@ -200,7 +190,7 @@ const Sidebar = ({
           }`}
         >
           <div className="overflow-hidden">
-            <div className="relative space-y-0.5 border-l border-green-200/80 py-1 pl-2 dark:border-green-500/20">
+            <div className="relative space-y-0.5 border-l border-[var(--border)] py-1 pl-2">
               {item.submenu.map((subLink: any, index: number) => {
                 const isActive = isPathActive(pathname, subLink?.href);
 
@@ -211,14 +201,15 @@ const Sidebar = ({
                     onClick={() => setIsSidebarOpen(false)}
                   >
                     <div
-                      className={`flex min-h-[34px] items-center gap-2 rounded-md px-2.5 py-1.5 text-[13px] transition-colors duration-150 touch-manipulation [-webkit-tap-highlight-color:transparent] ${
-                        isActive
-                          ? "bg-green-100 font-medium text-green-700 dark:bg-green-900/35 dark:text-green-300"
-                          : "text-gray-500 hover:bg-gray-50 hover:text-gray-800 dark:text-gray-400 dark:hover:bg-gray-800/60 dark:hover:text-gray-200"
+                      className={`admin-sidebar-sublink flex min-h-[34px] items-center gap-2 px-2.5 py-1.5 text-[13px] touch-manipulation [-webkit-tap-highlight-color:transparent] ${
+                        isActive ? "is-active" : ""
                       }`}
                     >
-                      <Icon name={subLink?.icon} variant="outlined" size={17} />
+                      <span className="admin-sidebar-icon-wrap">
+                        <Icon name={subLink?.icon} variant="outlined" size={14} />
+                      </span>
                       <span className="truncate leading-snug">{subLink?.label}</span>
+                      {isActive ? <span className="nav-link-dot ml-auto" /> : null}
                     </div>
                   </Link>
                 );

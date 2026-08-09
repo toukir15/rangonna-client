@@ -6,32 +6,30 @@ type TableNoDataProps = {
 
 const TableNoData: React.FC<TableNoDataProps> = ({ isSwitch }) => {
   return (
-    <div className="flex w-full max-w-md flex-col items-center justify-center px-6 py-6 text-center">
+    <div className="flex w-full max-w-md flex-col items-center justify-center px-6 py-10 text-center">
       {!isSwitch ? (
         <>
-          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800">
-            <Icon name="wifi_off" size={32} className="text-gray-400" />
+          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--bg-icon)]">
+            <Icon name="wifi_off" size={28} className="text-app-muted" />
           </div>
-          <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-200">
+          <h2 className="text-base font-semibold text-app">
             Your status is offline
           </h2>
-          <p className="mt-1 max-w-sm text-sm text-gray-500 dark:text-gray-400">
+          <p className="mt-1 max-w-sm text-sm text-app-muted">
             Please check your current status to view table data.
           </p>
         </>
       ) : (
         <>
-          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-50 dark:bg-green-950/40">
+          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--color-primary-soft)]">
             <Icon
               name="inventory_2"
-              size={32}
-              className="text-green-600/70 dark:text-green-400/80"
+              size={28}
+              className="text-[var(--accent)]"
             />
           </div>
-          <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
-            No data found
-          </h2>
-          <p className="mt-1 max-w-sm text-sm text-gray-500 dark:text-gray-400">
+          <h2 className="text-base font-semibold text-app">No data found</h2>
+          <p className="mt-1 max-w-sm text-sm text-app-muted">
             There are no records to display for the current filters.
           </p>
         </>

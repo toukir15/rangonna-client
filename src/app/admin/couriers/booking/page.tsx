@@ -113,7 +113,7 @@ const page: React.FC = () => {
       searchTerm: searchQuery,
       page: bookingCurrentPage,
       limit: bookingOrdersPerPage,
-      domain: selectedWebsite?.value,
+      domain: "all",
       courierType: selectedCourierType?.value,
     })
       .then((res: PathaoBookingsResponse) => {
@@ -161,7 +161,7 @@ const page: React.FC = () => {
   const fetchStatusCount = async () => {
     setTableLoading(true);
     OrdersService.getStatusCount({
-      domain: selectedWebsite?.value,
+      domain: "all",
       courierType: selectedCourierType?.value,
     })
       .then((res: IPathaoBookingCountResponse) => {
@@ -328,11 +328,7 @@ const page: React.FC = () => {
                   Courier Booking
                 </h1>
               <AllFilter
-                isWebsiteFilter={true}
-                websiteOptions={websiteOptions}
-                selectedWebsite={selectedWebsite}
-                setSelectedWebsite={setSelectedWebsite}
-                isCourierTypeFilter={true}
+                                isCourierTypeFilter={true}
                 courierTypeOptions={courierTypeOptions}
                 selectedCourierType={selectedCourierType}
                 setSelectedCourierType={(value) => {

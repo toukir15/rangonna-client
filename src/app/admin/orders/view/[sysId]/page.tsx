@@ -698,7 +698,7 @@ const OrderViewPageContent: React.FC = () => {
         notes={orderDetails?.history}
       />
 
-      <div className="bg-gray-100 lg:px-4 px-3 p-3 no-print dark:bg-black ov-page">
+      <div className="ov-page no-print lg:px-4 px-3 py-3">
         <OrderPageNavigator
           prevOrderId={
             !isPrevDisabled && currentOrderIndex !== null
@@ -721,7 +721,7 @@ const OrderViewPageContent: React.FC = () => {
           {isLoading ? (
             <OrderDetailsHeaderSkeleton />
           ) : (
-            <div className="ov-header text-black flex flex-wrap md:items-center justify-between">
+            <div className="ov-header text-[var(--ov-ink)] flex flex-wrap md:items-center justify-between">
               <div className="ov-header__meta order-1">
                 <div className="flex items-center gap-2">
                   <div>
@@ -909,7 +909,7 @@ const OrderViewPageContent: React.FC = () => {
                       <Icon
                         name="check_circle"
                         variant="filled"
-                        className="text-green-600 absolute -top-1 -right-2"
+                        className="text-[var(--color-primary)] absolute -top-1 -right-2"
                         size={15}
                       />
                     ),
@@ -926,7 +926,7 @@ const OrderViewPageContent: React.FC = () => {
           {isLoading ? (
             <DetailsInfoSkeleton />
           ) : (
-            <div className="md:flex gap-3 mb-3">
+            <div className="ov-customer-row">
               <CustomerDetails
                 customer={{
                   title: "Customer",
@@ -959,8 +959,8 @@ const OrderViewPageContent: React.FC = () => {
             </div>
           )}
         </div>
-        <div className="md:flex items-start justify-between gap-4">
-          <div className="md:w-3/5 w-full ">
+        <div className="ov-layout">
+          <div className="ov-layout__main">
             <OrderStatus
               currentStep={currentStatus}
               updateOrderStatus={updateOrderStatus}
@@ -983,7 +983,7 @@ const OrderViewPageContent: React.FC = () => {
             />
           </div>
 
-          <div className="md:w-2/5  md:mt-0 mt-2">
+          <div className="ov-layout__aside">
             <OrderNotes
               orderId={sysId}
               showCustomerNote={orderDetails}

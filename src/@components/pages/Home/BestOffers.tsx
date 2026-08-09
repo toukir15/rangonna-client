@@ -98,7 +98,7 @@ export default async function BestOffersPage() {
           <div className="rongonaa-flash-sale__aside">
             <DayDealCount />
             <Link
-              href="/watches/flash-sale"
+              href="/churi/flash-sale"
               className="rongonaa-flash-sale__view-all"
             >
               View All

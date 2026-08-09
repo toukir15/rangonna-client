@@ -82,7 +82,7 @@ const Page: React.FC = () => {
     OrderReportProfitService.userReport({
       page: currentPage,
       limit: ordersPerPage,
-      domain: selectedWebsite.value,
+      domain: "all",
       startDate: formattedFrom,
       endDate: formattedTo,
     })
@@ -149,11 +149,7 @@ const Page: React.FC = () => {
               User Report
             </h1>
               <AllFilter
-                isWebsiteFilter={true}
-                websiteOptions={websiteOptions}
-                selectedWebsite={selectedWebsite}
-                setSelectedWebsite={setSelectedWebsite}
-                isCalendarFilter={true}
+                                isCalendarFilter={true}
                 range={range} setRange={setRange}
               />
           </div>

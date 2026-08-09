@@ -22,26 +22,26 @@ export async function generateMetadata({
     const categoryName = formatCategoryName(categoryNameParam || "category");
 
     return {
-        title: `${categoryName} Watches in Bangladesh`,
-        description: `Buy original ${categoryName} watches at best price in Bangladesh. Official products, warranty and fast delivery.`,
+        title: `${categoryName} Churi & Bangles in Bangladesh | Rangonaa`,
+        description: `Shop ${categoryName} churi and bangles at Rangonaa — handcrafted women's collections with Cash on Delivery across Bangladesh.`,
         robots: {
             index: true,
             follow: true,
         },
         openGraph: {
-            title: `${categoryName} Watches in Bangladesh`,
-            description: `Shop original ${categoryName} watches in Bangladesh at the best price.`,
-            url: `http://localhost:3000/brand/${categoryNameParam}`,
-            siteName: "Your Store Name",
+            title: `${categoryName} Churi & Bangles | Rangonaa`,
+            description: `Explore ${categoryName} churi and bangle sets at Rangonaa.`,
+            url: `https://rangonaa.com/churi/${categoryNameParam}`,
+            siteName: "Rangonaa",
             type: "website",
         },
         twitter: {
             card: "summary_large_image",
-            title: `${categoryName} Watches in Bangladesh`,
-            description: `Buy original ${categoryName} watches at the best price in Bangladesh.`,
+            title: `${categoryName} Churi & Bangles | Rangonaa`,
+            description: `Shop ${categoryName} churi and bangles at Rangonaa.`,
         },
         alternates: {
-            canonical: `http://localhost:3000/brand/${categoryNameParam}`,
+            canonical: `https://rangonaa.com/churi/${categoryNameParam}`,
         },
     };
 }

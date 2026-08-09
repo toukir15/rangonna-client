@@ -22,40 +22,36 @@ interface OrderLogsProps {
 const OrderLogs: React.FC<OrderLogsProps> = ({ logsData = [] }) => {
   return (
     <>
-      <h2 className="text-xl font-semibold dark:text-gray-400">Logs</h2>
+      <h2 className="ov-panel__title">Logs</h2>
       {logsData.length > 0 ? (
-        <div className="max-h-44 overflow-y-scroll mt-2 scrollbar-hide">
+        <div className="ov-timeline scrollbar-hide">
           {logsData.map((log, index) => (
-            <div key={log._id} className="mb-4 mt-4 my-10">
-              <div className="flex items-center">
-                <div className="flex flex-col items-center relative">
-                  <div className="w-4 h-4 bg-green-500 rounded-full"></div>
-                  {index !== logsData.length - 1 && (
-                    <div className="w-px h-11 bg-green-500 absolute top-full"></div>
-                  )}
-                </div>
-                <div className="2xl:flex items-center justify-between ml-2 w-full">
-                  <p className="text-gray-800 dark:text-gray-400 text-sm">
-                    <strong>
-                      {log.log_message}
-                      {log.reason && ` Reason: ${log.reason}`} by{" "}
-                      {trimString(log.user_name, 12)}
-                    </strong>
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    {timeSince(new Date(log.createdAt))}
-                  </p>
-                </div>
+            <div key={log._id} className="ov-timeline__item">
+              <div className="ov-timeline__rail">
+                <div className="ov-timeline__dot" />
+                {index !== logsData.length - 1 && (
+                  <div className="ov-timeline__line" />
+                )}
+              </div>
+              <div className="ov-timeline__body 2xl:flex items-start justify-between gap-2">
+                <p className="ov-timeline__text">
+                  <strong>
+                    {log.log_message}
+                    {log.reason && ` Reason: ${log.reason}`} by{" "}
+                    {trimString(log.user_name, 12)}
+                  </strong>
+                </p>
+                <p className="ov-timeline__meta text-nowrap">
+                  {timeSince(new Date(log.createdAt))}
+                </p>
               </div>
             </div>
           ))}
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center dark:bg-gray-800 text-gray-800 dark:text-gray-200">
+        <div className="ov-empty">
           <Image src={noData} alt="no data found" className="h-auto w-14" />
-          <p className="text-sm font-medium text-center text-gray-500 mt-2">
-            No Logs Available
-          </p>
+          <p>No Logs Available</p>
         </div>
       )}
     </>

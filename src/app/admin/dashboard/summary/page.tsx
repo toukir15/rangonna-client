@@ -255,7 +255,7 @@ const Page = () => {
         const formattedTo = formatDateRange(range.endDate).trim();
 
         const statusRes = await dashBoardService.getSummary({
-          domain: selectedWebsite.value,
+          domain: "all",
           startDate: formattedFrom,
           endDate: formattedTo,
         });
@@ -286,11 +286,7 @@ const Page = () => {
               Summary
             </h2>
               <AllFilter
-              isWebsiteFilter={true}
-              websiteOptions={websiteOptions}
-              selectedWebsite={selectedWebsite}
-              setSelectedWebsite={setSelectedWebsite}
-              isCalendarFilter={true}
+                            isCalendarFilter={true}
               range={range}
               setRange={setRange}
             />

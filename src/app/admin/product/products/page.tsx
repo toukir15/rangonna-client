@@ -517,7 +517,7 @@ const ProductsPageContent: React.FC = () => {
               categoryOptions={categoryOptions || []}
               selectedCategory={selectedCategory}
               setSelectedCategory={setSelectedCategory}
-              isBrandOptionFilter={true}
+              isBrandOptionFilter={false}
               brandOptions={brandOptions || []}
               selectedBrand={selectedBrand}
               setSelectedBrand={setSelectedBrand}

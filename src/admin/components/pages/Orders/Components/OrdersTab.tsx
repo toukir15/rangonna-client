@@ -1,15 +1,10 @@
 "use client";
 
-import React, {
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  useLayoutEffect,
-} from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import Icon from "@admin/components/core/Icon/Icon";
 import OrdersStatusSkeleton from "@admin/components/Skeleton/Orders/AllOrders/OrdersStatusSkeleton";
 import SelectComponent from "@admin/components/core/Select/Select";
+import { getStatusFilterTone } from "@admin/utils/system.utils";
 
 interface StatusItem {
   status: string;
@@ -55,15 +50,10 @@ const OrdersTab: React.FC<OrdersTabProps> = ({
   IsSearch = false,
   allStatuses = DEFAULT_STATUSES,
 }) => {
-  const [isMoreOpen, setIsMoreOpen] = useState(false);
-  const [visibleCount, setVisibleCount] = useState(allStatuses.length);
-
-  const wrapperRef = useRef<HTMLDivElement | null>(null);
-  const leftAreaRef = useRef<HTMLDivElement | null>(null);
+  const scrollRef = useRef<HTMLDivElement | null>(null);
   const searchAreaRef = useRef<HTMLDivElement | null>(null);
-  const moreBtnMeasureRef = useRef<HTMLSpanElement | null>(null);
-  const dropdownRef = useRef<HTMLDivElement | null>(null);
-  const itemMeasureRefs = useRef<(HTMLSpanElement | null)[]>([]);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
 
   const options = useMemo(
     () =>
@@ -77,267 +67,152 @@ const OrdersTab: React.FC<OrdersTabProps> = ({
     [allStatuses, isCount],
   );
 
-  const getLabel = (item: StatusItem) => item.name;
-
-  const calculateVisibleItems = () => {
-    if (typeof window === "undefined") return;
-    if (window.innerWidth < 768) {
-      setVisibleCount(allStatuses.length);
-      return;
-    }
-
-    const wrapperWidth = wrapperRef.current?.offsetWidth || 0;
-    const searchWidth =
-      IsSearch && searchAreaRef.current
-        ? searchAreaRef.current.offsetWidth + 16
-        : 0;
-
-    const availableWidth = wrapperWidth - searchWidth;
-    if (!availableWidth) {
-      setVisibleCount(allStatuses.length);
-      return;
-    }
-
-    const itemWidths = allStatuses.map((_, index) => {
-      return (itemMeasureRefs.current[index]?.offsetWidth || 0) + 4;
-    });
-
-    const moreBtnWidth = (moreBtnMeasureRef.current?.offsetWidth || 44) + 8;
-
-    let used = 0;
-    let countWithoutMore = 0;
-
-    for (let i = 0; i < itemWidths.length; i++) {
-      if (used + itemWidths[i] <= availableWidth) {
-        used += itemWidths[i];
-        countWithoutMore++;
-      } else {
-        break;
-      }
-    }
-
-    if (countWithoutMore >= allStatuses.length) {
-      setVisibleCount(allStatuses.length);
-      return;
-    }
-
-    used = 0;
-    let countWithMore = 0;
-
-    for (let i = 0; i < itemWidths.length; i++) {
-      if (used + itemWidths[i] + moreBtnWidth <= availableWidth) {
-        used += itemWidths[i];
-        countWithMore++;
-      } else {
-        break;
-      }
-    }
-
-    setVisibleCount(Math.max(0, countWithMore));
+  const updateScrollState = () => {
+    const el = scrollRef.current;
+    if (!el) return;
+    setCanScrollLeft(el.scrollLeft > 4);
+    setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 4);
   };
 
-  useLayoutEffect(() => {
-    calculateVisibleItems();
-  }, [allStatuses, isCount, IsSearch, filter]);
-
   useEffect(() => {
-    const handleResize = () => calculateVisibleItems();
+    updateScrollState();
+    const el = scrollRef.current;
+    if (!el) return;
 
-    window.addEventListener("resize", handleResize);
+    const onScroll = () => updateScrollState();
+    el.addEventListener("scroll", onScroll, { passive: true });
 
-    const resizeObserver = new ResizeObserver(() => {
-      calculateVisibleItems();
-    });
-
-    if (wrapperRef.current) resizeObserver.observe(wrapperRef.current);
-    if (searchAreaRef.current) resizeObserver.observe(searchAreaRef.current);
+    const resizeObserver = new ResizeObserver(() => updateScrollState());
+    resizeObserver.observe(el);
 
     return () => {
-      window.removeEventListener("resize", handleResize);
+      el.removeEventListener("scroll", onScroll);
       resizeObserver.disconnect();
     };
-  }, [allStatuses, isCount, IsSearch]);
+  }, [allStatuses, isCount]);
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (!dropdownRef.current) return;
-      if (!dropdownRef.current.contains(event.target as Node)) {
-        setIsMoreOpen(false);
-      }
-    };
+    const el = scrollRef.current;
+    if (!el) return;
+    const active = el.querySelector<HTMLElement>(
+      ".orders-status-pill.is-active",
+    );
+    active?.scrollIntoView({
+      behavior: "smooth",
+      inline: "center",
+      block: "nearest",
+    });
+  }, [filter, allStatuses]);
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+  const scrollByAmount = (dir: -1 | 1) => {
+    const el = scrollRef.current;
+    if (!el) return;
+    el.scrollBy({ left: dir * Math.max(180, el.clientWidth * 0.45), behavior: "smooth" });
+  };
 
-  useEffect(() => {
-    if (!allStatuses.find((item) => item.status === filter)) return;
+  const renderPill = (item: StatusItem) => {
+    const active = filter === item.status;
+    const tone = getStatusFilterTone(item.status);
+    const count = item.value ?? 0;
+    const hasItems = isCount && count > 0;
 
-    const activeIndex = allStatuses.findIndex((item) => item.status === filter);
-    if (activeIndex >= visibleCount) {
-      setIsMoreOpen(false);
-    }
-  }, [filter, allStatuses, visibleCount]);
-
-  const visibleStatuses = allStatuses.slice(0, visibleCount);
-  const hiddenStatuses = allStatuses.slice(visibleCount);
-
-  const renderTabItem = (
-    item: StatusItem,
-    index?: number,
-    isMeasure = false,
-  ) => (
-    <span
-      key={item.status}
-      ref={
-        isMeasure && typeof index === "number"
-          ? (el) => {
-              itemMeasureRefs.current[index] = el;
-            }
-          : undefined
-      }
-      className={`text-lg hover:bg-blue-300 dark:hover:bg-black hover:text-white mb-0.5 md:py-0.5 md:px-1.5 rounded cursor-pointer transition-colors duration-200 text-gray-600
-        ${
-          filter === item.status
-            ? "bg-white dark:bg-gray-600 dark:text-white border-b-4 dark:border-gray-400 border-blue-500 text-gray-900 md:p-2"
-            : "hover:text-black dark:text-gray-400"
-        }`}
-      onClick={!isMeasure ? () => handleFilterChange(item.status) : undefined}
-    >
-      <span
-        className={`2xl:text-base lg:text-sm text-xs text-nowrap ${
-          filter === item.status ? "text-blue-500" : ""
-        }`}
+    return (
+      <button
+        key={item.status}
+        type="button"
+        className={[
+          "orders-status-pill",
+          tone,
+          active ? "is-active" : "",
+          hasItems && !active ? "has-items" : "",
+        ]
+          .filter(Boolean)
+          .join(" ")}
+        onClick={() => handleFilterChange(item.status)}
       >
-        {getLabel(item)}
-      </span>
-      {isCount && (
-        <small className="text-green-500 ml-0.5">({item.value ?? 0})</small>
-      )}
-    </span>
-  );
+        <span className="orders-status-pill-label">{item.name}</span>
+        {isCount && (
+          <span className="orders-status-pill-count">{count}</span>
+        )}
+      </button>
+    );
+  };
 
   return (
-    <div className="md:dark:bg-gray-800 md:bg-white rounded-lg shadow-sm md:mt-2 md:mb-2">
-      <div
-        ref={wrapperRef}
-        className="md:flex justify-between items-center gap-3"
-      >
-        {/* Left Side */}
-        <div
-          ref={leftAreaRef}
-          className="flex items-center w-full md:w-auto min-w-0"
-        >
-          {/* Mobile Select */}
-          <div className="block md:hidden w-full md:px-3 md:py-2">
-            {allStatuses.length ? (
-              <SelectComponent
-                options={options}
-                value={options.find((opt) => opt.value === filter)}
-                onChange={(opt: any) => handleFilterChange(opt?.value)}
-                placeholder="Select Order Status"
-                className="w-full"
-              />
-            ) : (
-              <OrdersStatusSkeleton />
-            )}
-          </div>
-
-          {/* Desktop Tabs */}
-          <div className="hidden md:block rounded-md w-full relative">
-            {allStatuses.length ? (
-              <div className="flex items-center gap-1 w-full min-w-0">
-                <div className="flex items-center gap-0.5 min-w-0 overflow-hidden p-2.5">
-                  {visibleStatuses.map((item) => renderTabItem(item))}
-                </div>
-
-                {hiddenStatuses.length > 0 && (
-                  <div className="relative flex-shrink-0" ref={dropdownRef}>
-                    <div className="relative">
-                      <button
-                        onClick={() => setIsMoreOpen((prev) => !prev)}
-                        className="flex items-center justify-center h-7 w-14 rounded-lg 
-               bg-gray-100 dark:bg-gray-700 
-               hover:bg-blue-500 hover:text-white 
-               dark:hover:bg-blue-600
-               text-gray-600 dark:text-gray-300
-               transition-all duration-200 shadow-sm"
-                      >
-                        <Icon name="more_horiz" variant="outlined" size={28} />
-                      </button>
-                    </div>
-
-                    {isMoreOpen && (
-                      <div className="absolute right-0 mt-2 min-w-[180px] max-h-72 overflow-y-auto rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-lg z-50 p-1">
-                        {hiddenStatuses.map((item) => (
-                          <button
-                            key={item.status}
-                            type="button"
-                            onClick={() => {
-                              handleFilterChange(item.status);
-                              setIsMoreOpen(false);
-                            }}
-                            className={`w-full text-left px-3 py-2 rounded-md text-sm transition ${
-                              filter === item.status
-                                ? "bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-400"
-                                : "text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-                            }`}
-                          >
-                            <span>{item.name}</span>
-                            {isCount && (
-                              <small className="text-green-500 ml-1">
-                                ({item.value ?? 0})
-                              </small>
-                            )}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            ) : (
-              <OrdersStatusSkeleton />
-            )}
-          </div>
-        </div>
-
-        {/* Right Side Search */}
-        {IsSearch && (
-          <div
-            ref={searchAreaRef}
-            className="flex items-center space-x-2 relative md:w-auto w-full md:px-0 flex-shrink-0"
-          >
-            <div className="relative w-full md:mt-0 mt-3 md:min-w-[220px]">
-              <input
-                type="text"
-                className="px-2 py-1.5 pr-10 w-full border dark:bg-gray-800 dark:border-gray-700 dark:text-white border-gray-300 rounded-lg shadow-sm focus:ring-1 focus:ring-blue-400 focus:outline-none"
-                placeholder="Quick Search"
-                defaultValue={searchQuery}
-                onChange={(e) => debouncedSearch(e.target.value)}
-              />
-              <span className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-400 mt-1">
-                <Icon name="search" variant="outlined" />
-              </span>
-            </div>
-          </div>
+    <div className="orders-status-tabs">
+      <div className="block md:hidden w-full">
+        {allStatuses.length ? (
+          <SelectComponent
+            options={options}
+            value={options.find((opt) => opt.value === filter)}
+            onChange={(opt: any) => handleFilterChange(opt?.value)}
+            placeholder="Select Order Status"
+            className="w-full"
+          />
+        ) : (
+          <OrdersStatusSkeleton />
         )}
       </div>
 
-      {/* Hidden Measurement Area */}
-      <div className="hidden md:block absolute opacity-0 pointer-events-none -z-10">
-        <div className="flex items-center gap-0.5">
-          {allStatuses.map((item, index) => renderTabItem(item, index, true))}
-          <span
-            ref={moreBtnMeasureRef}
-            className="md:px-2 md:py-1.5 rounded-md border border-gray-200"
+      <div className="hidden md:block">
+        {allStatuses.length ? (
+          <div
+            className={[
+              "orders-status-track",
+              canScrollLeft ? "has-left-fade" : "",
+              canScrollRight ? "has-right-fade" : "",
+            ]
+              .filter(Boolean)
+              .join(" ")}
           >
-            ...
-          </span>
-        </div>
+            {canScrollLeft && (
+              <button
+                type="button"
+                className="orders-status-scroll-btn is-left"
+                aria-label="Scroll statuses left"
+                onClick={() => scrollByAmount(-1)}
+              >
+                <Icon name="chevron_left" size={18} />
+              </button>
+            )}
+
+            <div ref={scrollRef} className="orders-status-scroll">
+              {allStatuses.map((item) => renderPill(item))}
+            </div>
+
+            {canScrollRight && (
+              <button
+                type="button"
+                className="orders-status-scroll-btn is-right"
+                aria-label="Scroll statuses right"
+                onClick={() => scrollByAmount(1)}
+              >
+                <Icon name="chevron_right" size={18} />
+              </button>
+            )}
+          </div>
+        ) : (
+          <OrdersStatusSkeleton />
+        )}
       </div>
+
+      {IsSearch && (
+        <div
+          ref={searchAreaRef}
+          className="flex items-center relative md:w-auto w-full flex-shrink-0 mt-3"
+        >
+          <label className="data-table-search md:!max-w-[16rem] w-full">
+            <Icon name="search" variant="outlined" size={18} />
+            <input
+              type="search"
+              placeholder="Quick Search"
+              defaultValue={searchQuery}
+              onChange={(e) => debouncedSearch(e.target.value)}
+              aria-label="Quick Search"
+            />
+          </label>
+        </div>
+      )}
     </div>
   );
 };

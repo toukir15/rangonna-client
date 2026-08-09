@@ -1,12 +1,10 @@
 "use client";
 
-import { useEffect } from "react";
-import { initColorTheme } from "@admin/lib/color-theme-store";
-
-/** Applies persisted Soft Ivory / picked color theme on admin boot. */
+/**
+ * Soft Ivory color theme is for the storefront.
+ * Admin chrome is owned by Appearance (DashboardThemeBootstrap) —
+ * do not apply fixed burgundy Soft Ivory tokens here.
+ */
 export default function ColorThemeBootstrap() {
-  useEffect(() => {
-    initColorTheme();
-  }, []);
   return null;
 }

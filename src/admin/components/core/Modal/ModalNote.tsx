@@ -1,5 +1,8 @@
 // components/core/NoteModal/NoteModal.tsx
-import React from "react";
+"use client";
+
+import React, { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import Icon from "@admin/components/core/Icon/Icon";
 import Button from "@admin/components/core/Button/Button";
 import ButtonLoader from "@admin/components/core/Button/ButtonLoader";
@@ -25,38 +28,59 @@ const NoteModal: React.FC<NoteModalProps> = ({
   isSubmitting = false,
   submitButtonText = "Submit",
 }) => {
-  if (!isOpen) return null;
+  const [mounted, setMounted] = useState(false);
 
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 md:p-0 p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg max-w-md w-full p-6 relative">
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [isOpen]);
+
+  if (!isOpen || !mounted) return null;
+
+  return createPortal(
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-[2px] p-4">
+      <div
+        className="relative w-full max-w-md rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-6 shadow-[var(--shadow-soft)]"
+        onClick={(e) => e.stopPropagation()}
+      >
         <Icon
           aria-label="Close modal"
           name="close"
-          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 cursor-pointer"
+          className="absolute top-4 right-4 cursor-pointer text-[var(--text-muted)] hover:text-[var(--text-primary)]"
           variant="outlined"
           onClick={onClose}
         />
-        <h2 className="text-2xl font-bold mb-4 dark:text-gray-400">{title}</h2>
+        <h2 className="mb-4 text-xl font-bold text-[var(--text-primary)]">
+          {title}
+        </h2>
 
         <form onSubmit={onSubmit}>
           <textarea
             placeholder="Enter note"
             value={noteValue}
             onChange={(e) => onNoteChange(e.target.value)}
-            className="w-full p-2 border border-gray-300 dark:text-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-700 dark:border-gray-700"
+            className="w-full rounded-lg border border-[var(--border)] bg-[var(--input-bg)] p-3 text-[var(--text-primary)] outline-none focus:border-[var(--brand-border-medium)] focus:shadow-[0_0_0_3px_var(--accent-soft)]"
             required
           />
           <Button
             type="submit"
-            className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition duration-200 mt-4"
+            className="mt-4 w-full !rounded-lg !bg-[var(--color-primary)] !px-4 !py-2.5 !text-white hover:!bg-[var(--color-primary-hover)]"
             disabled={isSubmitting}
           >
             {isSubmitting ? <ButtonLoader /> : submitButtonText}
           </Button>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 };
 

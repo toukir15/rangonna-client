@@ -18,6 +18,8 @@ interface SelectComponentProps {
   isMulti?: boolean;
   isRequired?: boolean;
   showDropdownIndicator?: boolean;
+  /** Compact control height for toolbars / filter rows */
+  size?: "default" | "sm";
 }
 
 const SelectComponent: React.FC<SelectComponentProps> = ({
@@ -30,75 +32,93 @@ const SelectComponent: React.FC<SelectComponentProps> = ({
   isMulti = false,
   isRequired,
   showDropdownIndicator = true,
+  size = "default",
 }) => {
   const { isDarkMode } = useGlobalContext();
   const [mounted, setMounted] = useState(false);
+  const isSm = size === "sm";
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
+  const surface = "var(--bg-surface)";
+  const text = "var(--text-primary)";
+  const muted = "var(--text-muted)";
+  const border = "var(--border)";
+  const hover = "var(--bg-hover)";
+  const accent = "var(--color-primary)";
+  const accentSoft = "var(--accent-soft)";
+  const brandBorder = "var(--brand-border-medium)";
+
   const customStyles: StylesConfig<Option, boolean> = {
     control: (base, { isFocused }) => ({
       ...base,
-      backgroundColor: isDarkMode ? "#1F2937" : "#FFFFFF",
-      borderColor:
-        isFocused || value?.value
-          ? isDarkMode
-            ? "#10B981"
-            : "#22C55E"
-          : isDarkMode
-            ? "#374151"
-            : "#D1D5DB",
-      color: isDarkMode ? "#F9FAFB" : "#111827",
-      borderRadius: "8px",
-      padding: "1px",
+      backgroundColor: surface,
+      borderColor: isFocused ? brandBorder : border,
+      color: text,
+      borderRadius: isSm ? "0.625rem" : "0.75rem",
+      padding: isSm ? "0 2px" : "2px 4px",
       cursor: isDisabled ? "not-allowed" : "pointer",
+      minHeight: isSm ? "2.25rem" : "46px",
+      height: isSm ? "2.25rem" : undefined,
+      fontSize: isSm ? "0.875rem" : undefined,
       boxShadow: isFocused
-        ? `0 0 0 0 ${isDarkMode ? "#10B981" : "#22C55E"}`
-        : undefined,
+        ? `0 0 0 3px ${accentSoft}`
+        : isDarkMode
+          ? "none"
+          : "0 1px 2px rgba(15, 23, 42, 0.04)",
       "&:hover": {
         borderColor: isDisabled
-          ? isDarkMode
-            ? "#374151"
-            : "#D1D5DB"
+          ? border
           : isFocused
-            ? isDarkMode
-              ? "#10B981"
-              : "#22C55E"
-            : isDarkMode
-              ? "#4B5563"
-              : "#9CA3AF",
+            ? brandBorder
+            : "var(--brand-border-soft)",
       },
-      minHeight: "38px",
       opacity: isDisabled ? 0.7 : 1,
+      transition: "border-color 0.15s ease, box-shadow 0.15s ease",
+    }),
+    valueContainer: (base) => ({
+      ...base,
+      padding: isSm ? "0 8px" : base.padding,
+    }),
+    indicatorsContainer: (base) => ({
+      ...base,
+      height: isSm ? "2.25rem" : undefined,
+    }),
+    dropdownIndicator: (base) => ({
+      ...base,
+      padding: isSm ? "0 8px" : base.padding,
+      color: muted,
+      "&:hover": { color: accent },
     }),
     option: (base, { isFocused, isSelected }) => ({
       ...base,
       backgroundColor: isSelected
-        ? isDarkMode
-          ? "#10B981"
-          : "#22C55E"
+        ? accent
         : isFocused
-          ? isDarkMode
-            ? "#374151"
-            : "#F3F4F6"
-          : isDarkMode
-            ? "#4a5568"
-            : "#FFFFFF",
-      color: isSelected ? "#FFFFFF" : isDarkMode ? "#F9FAFB" : "#111827",
-      marginBottom: "-4px",
-      marginTop: "-4px",
-      // marginBottom: "-4px",
-      // marginTop: "-10px",
+          ? hover
+          : surface,
+      color: isSelected ? "#FFFFFF" : text,
+      borderRadius: "0.5rem",
+      margin: "2px 6px",
+      width: "calc(100% - 12px)",
+      cursor: "pointer",
+      fontSize: isSm ? "0.875rem" : undefined,
       "&:active": {
-        backgroundColor: isDarkMode ? "#10B981" : "#22C55E",
+        backgroundColor: accent,
       },
     }),
     menu: (base) => ({
       ...base,
       zIndex: 9999,
-      backgroundColor: isDarkMode ? "#1F2937" : "#FFFFFF",
+      backgroundColor: surface,
+      border: `1px solid ${border}`,
+      borderRadius: "0.75rem",
+      overflow: "hidden",
+      boxShadow: isDarkMode
+        ? "0 8px 32px rgba(0, 0, 0, 0.3)"
+        : "0 8px 32px rgba(15, 23, 42, 0.08)",
     }),
     menuPortal: (base) => ({
       ...base,
@@ -106,15 +126,16 @@ const SelectComponent: React.FC<SelectComponentProps> = ({
     }),
     multiValue: (base) => ({
       ...base,
-      backgroundColor: isDarkMode ? "#374151" : "#E5E7EB",
+      backgroundColor: accentSoft,
+      borderRadius: "0.5rem",
     }),
     multiValueLabel: (base) => ({
       ...base,
-      color: isDarkMode ? "#F9FAFB" : "#111827",
+      color: accent,
     }),
     multiValueRemove: (base) => ({
       ...base,
-      color: isDarkMode ? "#9CA3AF" : "#6B7280",
+      color: muted,
       ":hover": {
         backgroundColor: isDarkMode ? "#EF4444" : "#FECACA",
         color: isDarkMode ? "#F9FAFB" : "#DC2626",
@@ -122,15 +143,22 @@ const SelectComponent: React.FC<SelectComponentProps> = ({
     }),
     singleValue: (base) => ({
       ...base,
-      color: isDarkMode ? "#F9FAFB" : "#111827",
+      color: text,
+      fontSize: isSm ? "0.875rem" : undefined,
     }),
     input: (base) => ({
       ...base,
-      color: isDarkMode ? "#F9FAFB" : "#111827",
+      color: text,
+      margin: isSm ? 0 : base.margin,
+      padding: isSm ? 0 : base.padding,
     }),
     placeholder: (base) => ({
       ...base,
-      color: isDarkMode ? "#9CA3AF" : "#6B7280",
+      color: muted,
+      fontSize: isSm ? "0.875rem" : undefined,
+    }),
+    indicatorSeparator: () => ({
+      display: "none",
     }),
   };
 
@@ -147,24 +175,15 @@ const SelectComponent: React.FC<SelectComponentProps> = ({
     return (
       <div className={`${className} relative`}>
         <div
-          className={`h-[38px] rounded-lg border 
-          ${isDarkMode
-              ? "bg-gray-800 border-gray-700"
-              : "bg-white border-gray-300"
-            }
-          flex items-center px-3 py-2`}
+          className={`input-app flex items-center !py-0 ${
+            isSm ? "h-9 !rounded-[0.625rem]" : "h-[46px]"
+          }`}
         >
-          <span
-            className={`truncate ${isDarkMode ? "text-gray-400" : "text-gray-500"
-              }`}
-          >
-            {placeholder}
-          </span>
+          <span className="truncate text-app-muted">{placeholder}</span>
           {showDropdownIndicator && (
             <div className="ml-auto">
               <svg
-                className={`w-4 h-4 ${isDarkMode ? "text-gray-400" : "text-gray-500"
-                  }`}
+                className="h-4 w-4 text-app-muted"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"

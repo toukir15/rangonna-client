@@ -79,7 +79,7 @@ const Page: React.FC = () => {
       searchTerm: debouncedSearchTerm,
       page: currentPage,
       limit: ordersPerPage,
-      domain: selectedWebsite.value,
+      domain: "all",
     })
       .then((res: IDailyOrderProfitResponse) => {
         if (res?.success) {
@@ -109,11 +109,7 @@ const Page: React.FC = () => {
                 Daily Profit
               </h1>
               <AllFilter
-                isWebsiteFilter={true}
-                websiteOptions={websiteOptions}
-                selectedWebsite={selectedWebsite}
-                setSelectedWebsite={setSelectedWebsite}
-              />
+                              />
             </div>
             <div className="md:flex flex-wrap items-center items-center w-full justify-between">
               <div className="md:w-80 w-full md:mt-0 mt-2">

@@ -4,9 +4,9 @@ import AllWatches from "@/@components/pages/Shop/All/AllWatches";
 import GlobalLoading from "@/@components/pages/GlobalLoading/GlobalLoading";
 
 export const metadata: Metadata = {
-  title: "Naviforce Watches in Bangladesh – Luxury Timepieces for Men & Women",
+  title: "Rangonaa Churi & Bangles in Bangladesh | Bridal, Glass & Luxury",
   description:
-    "Discover premium Naviforce watches in Bangladesh. Explore stylish, affordable, and original Naviforce watches for men and women. Fast delivery and official warranty.",
+    "Shop handcrafted women's churi and bangles at Rangonaa — bridal, glass, festival, premium, and luxury collections with Cash on Delivery across Bangladesh.",
   robots: { index: true, follow: true },
 };
 

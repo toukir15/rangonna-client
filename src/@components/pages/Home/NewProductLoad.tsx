@@ -20,7 +20,7 @@ export default function NewProductLoad({
           eyebrow="Just in"
           title="New Arrivals"
           description="Fresh stacks for the season — soft luxury and celebration sparkle."
-          href="/watches"
+          href="/churi"
           linkLabel="View all"
         />
 

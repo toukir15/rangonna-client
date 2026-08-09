@@ -8,7 +8,7 @@ import { IMenuItem } from "@/@interfaces/RouteInterface/route.interface";
 //   {
 //     id: 2,
 //     name: "Flash Sale",
-//     route: "/watches/flash-sale",
+//     route: "/churi/flash-sale",
 //     icon: "flash",
 //   },
 //   {
@@ -21,12 +21,12 @@ import { IMenuItem } from "@/@interfaces/RouteInterface/route.interface";
 //     name: "Shop",
 //     route: "/shop",
 //     submenu: [
-//       { id: 1, name: "All Watch", route: "/watches" },
-//       { id: 2, name: "Men", route: "/watches/men" },
-//       { id: 3, name: "Women", route: "/watches/women" },
-//       { id: 4, name: "Couple", route: "/watches/couple" },
-//       { id: 5, name: "Smart Watches", route: "/watches/smart-watches" },
-//       { id: 6, name: "Kids", route: "/watches/kids" },
+//       { id: 1, name: "All Watch", route: "/churi" },
+//       { id: 2, name: "Men", route: "/churi/men" },
+//       { id: 3, name: "Women", route: "/churi/women" },
+//       { id: 4, name: "Couple", route: "/churi/couple" },
+//       { id: 5, name: "Smart Watches", route: "/churi/smart-watches" },
+//       { id: 6, name: "Kids", route: "/churi/kids" },
 //     ],
 //   },
 
@@ -35,49 +35,35 @@ import { IMenuItem } from "@/@interfaces/RouteInterface/route.interface";
 //     name: "Collection",
 //     route: "/shop",
 //     submenu: [
-//       { id: 1, name: "Leather Strap", route: "/watches/leather-strap" },
-//       { id: 2, name: "Silicone Strap", route: "/watches/silicone-strap" },
-//       { id: 3, name: "Stainless Steel", route: "/watches/stainless-steel" },
-//       { id: 4, name: "Dual Time Watch", route: "/watches/dual-time-watch" },
-//       { id: 5, name: "Digital Watch", route: "/watches/digital-watch" },
-//       { id: 6, name: "Dual Strap", route: "/watches/dual-strap" },
-//       { id: 7, name: "Quartz Standard", route: "/watches/quartz-standard" },
+//       { id: 1, name: "Leather Strap", route: "/churi/leather-strap" },
+//       { id: 2, name: "Silicone Strap", route: "/churi/silicone-strap" },
+//       { id: 3, name: "Stainless Steel", route: "/churi/stainless-steel" },
+//       { id: 4, name: "Dual Time Watch", route: "/churi/dual-time-watch" },
+//       { id: 5, name: "Digital Watch", route: "/churi/digital-watch" },
+//       { id: 6, name: "Dual Strap", route: "/churi/dual-strap" },
+//       { id: 7, name: "Quartz Standard", route: "/churi/quartz-standard" },
 //       {
 //         id: 8,
 //         name: "Quartz Chronograph",
-//         route: "/watches/quartz-chronograph",
+//         route: "/churi/quartz-chronograph",
 //       },
-//       { id: 9, name: "Quartz Calendar", route: "/watches/quartz-calendar" },
+//       { id: 9, name: "Quartz Calendar", route: "/churi/quartz-calendar" },
 //       {
 //         id: 10,
 //         name: "Multi-Function Quartz",
-//         route: "/watches/multi-function-quartz",
+//         route: "/churi/multi-function-quartz",
 //       },
 //       {
 //         id: 11,
 //         name: "Mechanical Watch",
-//         route: "/watches/mechanical-watch",
+//         route: "/churi/mechanical-watch",
 //       },
-//     ],
-//   },
-//   {
-//     id: 6,
-//     name: "Brand",
-//     route: "/shop",
-//     submenu: [
-//       { id: 1, name: "Naviforce", route: "/brand/naviforce" },
-//       { id: 2, name: "Casio", route: "/brand/casio" },
-//       { id: 3, name: "Curren", route: "/brand/curren" },
-//       { id: 4, name: "Poedagar", route: "/brand/poedagar" },
-//       { id: 5, name: "Skmei", route: "/brand/skmei" },
-//       { id: 6, name: "Colmi", route: "/brand/colmi" },
-//       { id: 7, name: "Zeblaze", route: "/brand/zeblaze" },
 //     ],
 //   },
 //   {
 //     id: 7,
 //     name: "Premium",
-//     route: "/watches/premium-segment",
+//     route: "/churi/premium-segment",
 //     icon: "premium",
 //   },
 //   {
@@ -85,8 +71,8 @@ import { IMenuItem } from "@/@interfaces/RouteInterface/route.interface";
 //     name: "Accessories",
 //     route: "/shop",
 //     submenu: [
-//       { id: 1, name: "Watch Belt", route: "/watches/belt" },
-//       { id: 2, name: "Watch Box", route: "/watches/box" },
+//       { id: 1, name: "Watch Belt", route: "/churi/belt" },
+//       { id: 2, name: "Watch Box", route: "/churi/box" },
 //     ],
 //   },
 //   {
@@ -105,16 +91,6 @@ import { IMenuItem } from "@/@interfaces/RouteInterface/route.interface";
 
 // sidebar items start
 
-export const brandData: ISideBarItems[] = [
-  { name: "naviforce", label: "Naviforce", rightLabel: "(1)" },
-  { name: "casio", label: "Casio", rightLabel: "(2)" },
-  { name: "curren", label: "Curren", rightLabel: "(3)" },
-  { name: "poedagar", label: "Poedagar", rightLabel: "(4)" },
-  { name: "skmei", label: "Skmei", rightLabel: "(6)" },
-  { name: "colmi", label: "Colmi", rightLabel: "(8)" },
-  { name: "zeblaze", label: "Zeblaze", rightLabel: "(8)" },
-];
-
 export const sortData: ISideBarItems[] = [
   { name: "best-selling", label: "Best Selling", rightLabel: "(1)" },
   { name: "new-released", label: "New Released", rightLabel: "(2)" },
@@ -123,17 +99,11 @@ export const sortData: ISideBarItems[] = [
 ];
 
 export const categoryData: ISideBarItems[] = [
-  { name: "men", label: "Men", rightLabel: "(1)" },
-  { name: "women", label: "Women", rightLabel: "(1)" },
-  { name: "couple", label: "Couple", rightLabel: "(1)" },
-  { name: "smart-watches", label: "Smart Watches", rightLabel: "(1)" },
-  { name: "kids", label: "Kids", rightLabel: "(1)" },
-  { name: "leather-strap", label: "Leather Strap", rightLabel: "(1)" },
-  { name: "stainless-steel", label: "Stainless Steel", rightLabel: "(1)" },
-  { name: "silicone-strap", label: "Silicone Strap", rightLabel: "(1)" },
-  { name: "dual-time", label: "Dual Time Watch", rightLabel: "(1)" },
-  { name: "digital-time", label: "Digital Watch", rightLabel: "(1)" },
-  { name: "dual-strap", label: "Dual Strap", rightLabel: "(1)" },
+  { name: "bridal", label: "Bridal", rightLabel: "(1)" },
+  { name: "glass-bangles", label: "Glass Bangles", rightLabel: "(1)" },
+  { name: "luxury", label: "Luxury", rightLabel: "(1)" },
+  { name: "festival", label: "Festival", rightLabel: "(1)" },
+  { name: "premium-churi", label: "Premium Churi", rightLabel: "(1)" },
 ];
 
 // sidebar items
@@ -142,94 +112,59 @@ export const categoryData: ISideBarItems[] = [
 export const reviews: Review[] = [
   {
     id: 1,
-    name: "Nayeem Uddin Rifat",
+    name: "Nusrat Jahan",
     date: "29 July 2025",
     comment:
-      "আজ হাতে পেলাম Naviforce এর ৯২০৮ মডেলের এই ঘড়িটা।লুক যাস্ট ওয়াওঘড়িটা দেখতে যেমন সুন্দর তেমন প্রিমিয়াম।এই প্রথম এত টাকা দিয়ে অনলাইন থেকে ওয়াচ কিনলাম।একদম অথেন্টিক",
+      "Bridal churi set-টা একদম স্বপ্নের মতো। রং ও finishing অসাধারণ, wedding look-এ পারফেক্ট ম্যাচ হয়েছে।",
   },
   {
     id: 2,
-    name: "Shamsun Nahar Sumi",
+    name: "Farhana Akter",
     date: "15 July 2025",
     comment:
-      "I have bought 7 watches from the page of Naviforce Bangladesh. They sell good products. In a word, their products and those who are involved in this business are extraordinary. A few days ago, a watch bought from them stopped falling from my hand, I informed them about it.They asked me to send the watch to them.I sent to them.They repaired it and sent me again. In the current online age, where online business is full of cheating it is difficult to find a service that gives the Naviforce. I'm really proud of being a member of the Naviforce.",
+      "Glass bangles-এর quality খুব ভালো। হালকা, চকচকে আর packing-ও খুব যত্নসহকারে। Definitely recommend করব।",
   },
   {
     id: 3,
-    name: "RI FA T",
+    name: "Sadia Rahman",
     date: "23 May 2025",
     comment:
-      "নেভিফোর্স ওয়াচ বাংলাদেশ পেজ থেকে একটি ওম্যান watch অর্ডার করেছিলাম। আলহামদুলিল্লাহ একদিন পর ঠিকঠাক ১০০% অরজিনাল প্রোডাক্টটি হাতে পেয়েছি। অসংখ্য ধন্যবাদ নেভি ফোর্স ওয়াচ বাংলাদেশ পেজকে সঠিক সময়ে অরজিনাল পণ্যটি দেওয়ার জন্য।",
+      "Festival-এর জন্য রঙিন চুড়ি অর্ডার করেছিলাম। আলহামদুলিল্লাহ একদম যেমন ছবিতে দেখেছি তেমনই পেয়েছি। অসংখ্য ধন্যবাদ Rangonaa।",
   },
   {
     id: 4,
-    name: "Shakib Arefin Shovon",
+    name: "Mitu Chowdhury",
     date: "15 May 2025",
     comment:
-      "গতকাল আপনাদের থেকে ১ টা ঘড়ি নিয়েছি ২৩৫০ টাকা দিয়ে।দাম হিসাবে কোয়ালিটি অসাধারণ সাথে প্যাকেজিং।যারা চিন্তায় থাকেন অনলাইন থেকে নিলে কি ভালো পাব তাদেরকে বলব এই পেজ থেকে একবার নিয়ে দেখতে পারেন।ভালো পন্য।",
+      "Premium churi set gift হিসেবে নিয়েছিলাম। Packaging সুন্দর, product premium feel দেয়। আবারও কিনব ইনশাআল্লাহ।",
   },
   {
     id: 5,
-    name: "Naeem Islam",
+    name: "Ruma Islam",
     date: "07 May 2025",
     comment:
-      "আসসালামু আলাইকুম আলহামদুলিল্লাহ Naviforce Bangladesh পেইজ থেকে Casio MTP-V005L-1BUDF প্রোডাক্টটি অর্ডার করেছিলাম! শুকরিয়া; তাদের কথার সঙ্গে কাজের/প্রোডাক্টের ১০০% মিল রয়েছে।",
+      "Luxury collection-এর চুড়িগুলো দেখতে যেমন elegant, পরতেও আরামদায়ক। Deliveryও সময়মতো পেয়েছি।",
   },
   {
     id: 6,
-    name: "Sharif Ahmed Rasel",
+    name: "Tasnim Ahmed",
     date: "06 May 2025",
     comment:
-      "আসসালামু আলাইকুম অনেক অনেক ধন্যবাদ আপনাদের আমি এই প্রথম কোন, ওয়ান লাইন থেকে কিছু কিনে ঠিক ঠাক পেয়েছি ১০০% ঠিক এ জন্যে আপনাদের কে অনেক অনেক ধন্যবাদ, দোয়া ও শুভকামনা রইলো",
+      "প্রথমবার online থেকে চুড়ি কিনে এত ভালো experience পেয়েছি। Color combination আর shine দারুণ।",
   },
   {
     id: 7,
-    name: "Parvez Ahmed",
+    name: "Jannatul Ferdous",
     date: "23 April 2025",
     comment:
-      "আমি সম্প্রতি Naviforce Watch Bangladesh থেকে একটি ঘড়ি অর্ডার করেছিলাম। প্যাকেজিং ছিল অনেক যত্নসহকারে করা, ঘড়ির কোয়ালিটি এক কথায় চমৎকার! ডিজাইন, ফিনিশিং, আর ফিল—সব কিছুতেই আমি খুবই সন্তুষ্ট। যারা ভালো মানের ঘড়ি খুঁজছেন, তাদের জন্য এটি অবশ্যই রিকমেন্ড করবো। ধন্যবাদ Naviforce Watch Bangladesh , এমন দারুন প্রোডাক্ট আর সার্ভিস দেওয়ার জন্য!",
+      "Bridal + glass mix করে নিয়েছিলাম। Look-টা খুব premium লেগেছে। যারা ভালো মানের চুড়ি খুঁজছেন, তাদের জন্য recommend।",
   },
   {
     id: 8,
-    name: "Junayed Nahim",
+    name: "Meherin Kabir",
     date: "17 April 2025",
     comment:
-      "alhamdulillah products khub valo, kalka recive korchi curren-8402 model r watch ta,, apnara sbi akhan thake watch buy korte paren.",
-  },
-  {
-    id: 9,
-    name: "Md Jahidul Islam",
-    date: "10 April 2025",
-    comment:
-      "আমি প্রথমবারের মতো Naviforce Bangladesh থেকে Naviforce 8033 - Orange মডেলটির ঘড়ি অর্ডার করেছি। আলহামদুলিল্লাহ, ঘড়ির কোয়ালিটি অসাধারণ এবং তাদের সার্ভিসও অত্যন্ত চমৎকার। ইনশাআল্লাহ, ভবিষ্যতে যদি আরও কোনো ঘড়ি কেনার প্রয়োজন হয়, তাহলে নির্দ্বিধায় এখান থেকেই নিব।",
-  },
-  {
-    id: 10,
-    name: "Raihan Ferdows",
-    date: "09 April 2025",
-    comment:
-      "Naviforce অসংখ্য ধন্যবাদ খুলনাতে একদিনে ডেলিভারি দেওয়ার জন্য। অর্ডার গ্রহণ, নিয়মিত আপডেট এবং ডেলিভারি, প্রতিটি ধাপে আপনাদের কাজে Profesionalism স্পষ্ট। ভবিষ্যতেও Naviforce এর সাথে থাকব।",
-  },
-  {
-    id: 11,
-    name: "Nusrat Sithy",
-    date: "28 March 2025",
-    comment:
-      "This watch is so beautiful ঘুড়িগুলো হাতে পাওয়ার পরে বুঝতে পারলাম কোয়ালিটি খুবই ভালো গিফটের জন্য বেস্ট আর ডেলিভারি টাইম এত ফাস্ট জাস্ট ভাষার বাহিরে।",
-  },
-  {
-    id: 12,
-    name: "Afran Islam Naim",
-    date: "13 March 2025",
-    comment:
-      "মাশাআল্লাহ ঘড়িটা অনেক সুন্দর, যে রকমটা চেয়েছি ঠিক সে রকমটা পেয়েছি, Curren 8301 - Brown, ধন্যবাদ।",
-  },
-  {
-    id: 13,
-    name: "Nobel Hasan Nion",
-    date: "27 February 2025",
-    comment:
-      "যেমন আশা করেছিলাম তার চেয়ে ভালো প্রডাক্ট দেয়ার জন্য আপনাদের ধন্যবাদ ইনশাআল্লাহ আবার লাগলে আপনাদের থেকেই ঘড়ি কিনবো",
+      "Product khub sundor, packing o neat. Festival er jonne perfect churi set. Next time aro nibo inshaAllah.",
   },
 ];
 

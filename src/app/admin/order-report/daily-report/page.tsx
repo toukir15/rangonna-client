@@ -81,7 +81,7 @@ const Page: React.FC = () => {
       searchTerm: debouncedSearchTerm,
       page: currentPage,
       limit: ordersPerPage,
-      domain: selectedWebsite.value,
+      domain: "all",
     })
       .then((res: IDailyReportResponse) => {
         if (res?.success) {
@@ -112,11 +112,7 @@ const Page: React.FC = () => {
                   Daily Report
                 </h1>
               <AllFilter
-                isWebsiteFilter={true}
-                websiteOptions={websiteOptions}
-                selectedWebsite={selectedWebsite}
-                setSelectedWebsite={setSelectedWebsite}
-
+                
               />
               </div>
               <div className="sm:w-80 w-full sm:mt-0 mt-4">

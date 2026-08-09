@@ -1,8 +1,5 @@
 "use client";
 import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
-import { IWebsiteOption, SelectOption } from "@admin/@interfaces/common.interface";
-import { GlobalService } from "@admin/@services/apis/GlobalService/Global.service";
-import SelectComponent from "@admin/components/core/Select/Select";
 import { Tbody, Td, Th, Thead, Tr } from "@admin/components/Table/Table";
 import TableWrapper from "@admin/components/Table/TableWrapper";
 import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
@@ -29,13 +26,8 @@ const DEFAULT_DATE_RANGE = {
 };
 
 const Page: React.FC = () => {
-  const [websiteOptions, setWebsiteOptions] = useState<IWebsiteOption[]>([]);
   const [cardData, setCardData] = useState<ICampaignReportSummary>();
   const [tableData, setTableData] = useState<ICampaignReportSource[]>([]);
-  const [selectedWebsite, setSelectedWebsite] = useState<SelectOption>({
-    value: "all",
-    label: "All Website",
-  });
 
   const [tableLoading, setTableLoading] = useState<boolean>(true);
 
@@ -45,41 +37,16 @@ const Page: React.FC = () => {
   );
 
   useEffect(() => {
-    fetchWebList();
-  }, []);
-
-  useEffect(() => {
     fetchCampaignReportCard();
     fetchCampaignReportTable();
-  }, [range, selectedWebsite]);
-
-  const fetchWebList = async () => {
-    GlobalService.getWebsiteList()
-      .then((res: any) => {
-        if (res?.success) {
-          const options = res?.data?.map((item: any) => ({
-            label: item.web_name,
-            value: item.web_url,
-          }));
-          setWebsiteOptions([
-            { value: "all", label: "All Website" },
-            ...options,
-          ]);
-        } else {
-          ToastService.error(res?.message);
-        }
-      })
-      .catch((err: { message: string }) => {
-        ToastService.error(err.message);
-      });
-  };
+  }, [range]);
 
   const fetchCampaignReportCard = async () => {
     const formattedFrom = formatDateRange(range.startDate).trim();
     const formattedTo = formatDateRange(range.endDate).trim();
     setTableLoading(true);
     CampaignReportService.getCampaignReportCard({
-      domain: selectedWebsite.value,
+      domain: "all",
       startDate: formattedFrom,
       endDate: formattedTo,
     })
@@ -102,7 +69,7 @@ const Page: React.FC = () => {
     const formattedTo = formatDateRange(range.endDate).trim();
     setTableLoading(true);
     CampaignReportService.getCampaignReportTable({
-      domain: selectedWebsite.value,
+      domain: "all",
       startDate: formattedFrom,
       endDate: formattedTo,
     })
@@ -171,15 +138,6 @@ const Page: React.FC = () => {
                 </h1>
               </div>
               <div className="md:flex items-center w-full  gap-4">
-                <div className="mb-2 md:mb-0">
-                  <SelectComponent
-                    options={websiteOptions}
-                    value={selectedWebsite}
-                    onChange={setSelectedWebsite}
-                    placeholder="All Websites"
-                    className="md:w-60 w-full"
-                  />
-                </div>
                 <CalendarRange range={range} setRange={setRange} />
               </div>
             </div>

@@ -5,7 +5,6 @@ import { Check, Palette } from "lucide-react";
 import { COLOR_THEMES, type ColorTheme } from "@admin/lib/color-themes";
 import {
   getColorThemeId,
-  initColorTheme,
   setColorThemeId,
   subscribeColorTheme,
 } from "@admin/lib/color-theme-store";
@@ -182,7 +181,8 @@ export default function ThemePicker({ className = "" }: ThemePickerProps) {
   const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    initColorTheme();
+    // ColorThemeBootstrap already applies the persisted Soft Ivory theme.
+    // Do not re-init here — it races DashboardThemeBootstrap on dashboard routes.
     setMounted(true);
   }, []);
 

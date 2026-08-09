@@ -19,15 +19,15 @@ const PageSearch: React.FC<SearchInputProps> = ({
   wrapperClass = "",
 }) => {
   return (
-    <div className={`flex items-center flex-grow ${wrapperClass}`}>
+    <div className={`relative flex flex-grow items-center ${wrapperClass}`}>
       <input
         type="text"
         placeholder={placeholder}
         value={value}
         onChange={onChange}
-        className={`px-2 py-1.5 pr-10 w-full border dark:bg-gray-700 dark:border-gray-500 border-gray-300 rounded-lg shadow-sm focus:ring-1 focus:ring-blue-400 focus:outline-none dark:text-gray-300 ${className}`}
+        className={`input-app !py-2 pr-10 ${className}`}
       />
-      <Icon name={iconName} className="text-gray-400 -ml-9 mt-1" />
+      <Icon name={iconName} className="pointer-events-none absolute right-3 text-app-muted" />
     </div>
   );
 };

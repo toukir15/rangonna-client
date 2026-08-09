@@ -15,7 +15,7 @@ const PapularProduct: React.FC<{ products: IProduct[] }> = ({ products }) => {
         eyebrow="Beloved picks"
         title="Best Sellers"
         description="Handpicked favorites from across Bangladesh — soft luxury, ready to gift."
-        href="/watches"
+        href="/churi"
         linkLabel="Shop all"
         align="center"
       />

@@ -82,7 +82,7 @@ const Input: React.FC<IInputProps> = ({
   noMargin = false,
   noBorder = false,
   staticText,
-  inputClass = "py-2 px-4 h-[45px]",
+  inputClass = "",
   handleIconClick,
   leftDisabledText,
 }) => {
@@ -153,11 +153,11 @@ const Input: React.FC<IInputProps> = ({
                   ? registerProperty.name
                   : generateId()
             }
-            className="block font-inter text-sm font-semibold text-neutral-600 dark:text-gray-300 mb-1"
+            className="form-label"
           >
             {label}{" "}
             {isRequired ? (
-              <span className="text-red-400 font-inter text-[12px] font-semibold">
+              <span className="form-error !mt-0 inline text-[12px] font-semibold">
                 *
               </span>
             ) : null}
@@ -167,7 +167,7 @@ const Input: React.FC<IInputProps> = ({
         {/* Container for input and left disabled text */}
         <div className="flex items-center">
           {leftDisabledText && (
-            <div className="bg-gray-100 text-gray-500 px-3 py-2 h-[45px] flex items-center border border-r-0 rounded-l-lg border-neutral-300 dark:border-gray-500">
+            <div className="flex h-[46px] items-center border border-r-0 border-[var(--border)] bg-[var(--bg-elevated)] px-3 text-[var(--text-muted)] rounded-l-xl">
               {leftDisabledText}
             </div>
           )}
@@ -189,16 +189,17 @@ const Input: React.FC<IInputProps> = ({
                     ? registerProperty.name
                     : generateId()
               }
-              className={`relative bg-white dark:bg-gray-800 dark:text-gray-300 dark:border-gray-500 ${!noBorder ? "border" : ""
-                } font-inter font-medium text-sm ${!errorText && !isFocused && inputValue
-                  ? "border-green-500 bg-white"
-                  : errorText
-                    ? "border-red-400 bg-white"
-                    : isFocused
-                      ? "border-cyan-500 bg-white"
-                      : "border-neutral-300 bg-white"
-                } outline-none bg-white rounded-lg w-full xs:placeholder:text-[14px] ${inputClass} ${leftDisabledText ? "rounded-l-none" : ""
-                }`}
+              className={`input-app ${
+                noBorder ? "!border-0 !shadow-none" : ""
+              } ${
+                errorText
+                  ? "is-error"
+                  : !errorText && !isFocused && inputValue
+                    ? "is-success"
+                    : ""
+              } ${inputClass} ${leftDisabledText ? "!rounded-l-none" : ""} ${
+                type === "password" || iconRight ? "!pr-11" : ""
+              }`}
               ref={(el) => {
                 myRef.current = el;
                 registerProperty && registerProperty.ref(el);
@@ -222,8 +223,9 @@ const Input: React.FC<IInputProps> = ({
 
         {staticText && (
           <span
-            className={`absolute inset-y-0 top-6 right-0 flex items-center pr-5 text-sm  ${isFocused ? "text-text-primary" : " text-[#B9BDC7]"
-              }   font-medium font-inter`}
+            className={`absolute inset-y-0 top-6 right-0 flex items-center pr-5 text-sm font-medium ${
+              isFocused ? "text-app" : "text-app-muted"
+            }`}
           >
             {staticText}
           </span>
@@ -238,15 +240,15 @@ const Input: React.FC<IInputProps> = ({
                   ? registerProperty.name
                   : generateId()
             }
-            className={`relative min-h-[100px] ${!noBorder ? "border" : ""
-              } font-inter font-medium text-sm ${!errorText && !isFocused && inputValue
-                ? "border-green-500 bg-white dark:bg-gray-700 dark:text-gray-300"
-                : errorText
-                  ? "border-red-400 bg-white dark:bg-gray-700 dark:text-gray-300"
-                  : isFocused
-                    ? "border-cyan-500 bg-white dark:bg-gray-700 dark:text-gray-300"
-                    : "border-neutral-300 bg-white dark:bg-gray-700 dark:border-gray-500 dark:text-gray-300"
-              } outline-none px-6 py-2 rounded-lg w-full placeholder:text-neutral-200`}
+            className={`input-app min-h-[100px] resize-y ${
+              noBorder ? "!border-0 !shadow-none" : ""
+            } ${
+              errorText
+                ? "is-error"
+                : !errorText && !isFocused && inputValue
+                  ? "is-success"
+                  : ""
+            }`}
             placeholder={placeholder}
             ref={registerProperty ? registerProperty.ref : ref}
             name={registerProperty ? registerProperty.name : name}
@@ -260,19 +262,19 @@ const Input: React.FC<IInputProps> = ({
         )}
 
         {type !== "textarea" && (iconRight || type) ? (
-          <div className="flex items-center absolute right-4 top-9 cursor-pointer">
+          <div className="absolute right-4 top-[2.15rem] flex cursor-pointer items-center">
             {type === "password" ? (
               isPasswordVisible ? (
                 <span
                   onClick={togglePasswordVisibility}
-                  className="material-icons-outlined text-neutral-400"
+                  className="material-icons-outlined text-app-muted"
                 >
                   visibility
                 </span>
               ) : (
                 <span
                   onClick={togglePasswordVisibility}
-                  className="material-icons-outlined text-neutral-400"
+                  className="material-icons-outlined text-app-muted"
                 >
                   visibility_off
                 </span>
@@ -287,7 +289,7 @@ const Input: React.FC<IInputProps> = ({
           ""
         )}
       </div>
-      {errorText && <h3 className="text-red-400 text-xs mt-1">{errorText}</h3>}
+      {errorText && <h3 className="form-error">{errorText}</h3>}
 
       {leftHelpText && helpText && (
         <div className="flex justify-between items-center mt-5">

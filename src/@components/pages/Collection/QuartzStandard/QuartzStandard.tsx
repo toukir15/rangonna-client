@@ -200,7 +200,7 @@ export default function QuartzStandard() {
           <div className="flex items-center justify-between">
             <div className="text-lg flex flex-wrap items-center gap-1">
               <Link href="/">Home</Link> /{" "}
-              <Link href="/watches/quartz-standard">Quartz</Link>
+              <Link href="/churi/quartz-standard">Quartz</Link>
               <div className="ml-3 md:block hidden">
                 <FilterChips
                   minPrice={minPrice}
@@ -284,7 +284,7 @@ export default function QuartzStandard() {
 
               {!hasMore && !loadingMore && (
                 <div className="flex justify-center items-center py-4">
-                  <p className="text-gray-500">No more watches to load</p>
+                  <p className="text-gray-500">No more churi to load</p>
                 </div>
               )}
             </>

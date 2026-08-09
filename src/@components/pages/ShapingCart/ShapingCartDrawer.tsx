@@ -156,7 +156,7 @@ const ShapingCartDrawer: React.FC<IShapingCartDrawer> = ({
             <p className="rongonaa-cart-drawer-empty-text">
               মায়ের প্রয়োজনীয় পণ্য যোগ করে checkout করুন
             </p>
-            <Link href="/watches" className="rongonaa-cart-drawer-empty-btn">
+            <Link href="/churi" className="rongonaa-cart-drawer-empty-btn">
               <Button
                 className="w-full !premium-cta !text-sm cursor-pointer"
                 onClick={() => setIsCartDrawer(false)}

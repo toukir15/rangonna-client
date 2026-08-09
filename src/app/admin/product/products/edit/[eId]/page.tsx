@@ -117,7 +117,7 @@ export const ProductSchema = yup.object({
       }),
     )
     .min(1, "At least one category is required"),
-  brand: yup.mixed().required("Brand is required"),
+  brand: yup.mixed().nullable(),
   status: yup.mixed().required("Status is required"),
   sale_price: yup.string().required("Sale price is required"),
   regular_price: yup.string().required("Regular price is required"),
@@ -520,23 +520,6 @@ const Page: React.FC = () => {
                             {errors.category.message as string}
                           </p>
                         )}
-                      </div>
-                      <div>
-                        <p className="font-inter text-sm font-semibold text-neutral-600 dark:text-gray-300 mb-1">
-                          Brand <span className="text-red-400">*</span>
-                        </p>
-                        <Controller
-                          name="brand"
-                          control={control}
-                          render={({ field }) => (
-                            <SelectComponent
-                              options={brandOptions}
-                              value={field.value}
-                              onChange={field.onChange}
-                              placeholder="Select Brand"
-                            />
-                          )}
-                        />
                       </div>
                       <div>
                         <p className="font-inter text-sm font-semibold text-neutral-600 dark:text-gray-300 mb-1">

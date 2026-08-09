@@ -196,8 +196,8 @@ export default function WatchBelt() {
         <div className="xl:w-4/5 w-full">
           <div className="flex items-center justify-between">
             <div className="text-lg flex flex-wrap items-center gap-1">
-              <Link href="/">Home</Link> / <Link href="/watches">Watches</Link>/{" "}
-              <Link href="/watches/belt">Belt</Link>
+              <Link href="/">Home</Link> / <Link href="/churi">Churi</Link>/{" "}
+              <Link href="/churi/belt">Belt</Link>
               <div className="ml-3 md:block hidden">
                 <FilterChips
                   minPrice={minPrice}
@@ -282,7 +282,7 @@ export default function WatchBelt() {
 
               {!hasMore && !loadingMore && (
                 <div className="flex justify-center items-center py-4">
-                  <p className="text-gray-500">No more watches to load</p>
+                  <p className="text-gray-500">No more churi to load</p>
                 </div>
               )}
             </>

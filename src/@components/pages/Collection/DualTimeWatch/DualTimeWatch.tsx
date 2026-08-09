@@ -285,7 +285,7 @@ export default function DualTimeWatch() {
 
               {!hasMore && !loadingMore && (
                 <div className="flex justify-center items-center py-4">
-                  <p className="text-gray-500">No more watches to load</p>
+                  <p className="text-gray-500">No more churi to load</p>
                 </div>
               )}
             </>

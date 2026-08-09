@@ -345,6 +345,7 @@ export const labelPermissionMap: Record<string, string[]> = {
     "account_expense_settings_view",
   ],
   "setting/general": ["setting_general_view"],
+  "setting/dashboardtheme": ["setting_general_view"],
   "setting/company": ["setting_company_view"],
   "setting/sms": ["setting_mim_sms_view"],
   "setting/mimsms": ["mim_sms_template_view"],

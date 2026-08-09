@@ -12,23 +12,11 @@ import {
   IMonthlyMarketingReportResponse,
 } from "@admin/@interfaces/marketing/monthlyReport.interface";
 import { formatMonthYear } from "@admin/utils/hook.utils";
-import SelectComponent from "@admin/components/core/Select/Select";
-import {
-  IWebsiteOption,
-  IWebsiteResponse,
-  SelectOption,
-} from "@admin/@interfaces/common.interface";
-import { GlobalService } from "@admin/@services/apis/GlobalService/Global.service";
 
 const Page: React.FC = () => {
   const [marketingData, setMarketingData] = useState<IMonthlyMarketingReport[]>(
     []
   );
-  const [websiteOptions, setWebsiteOptions] = useState<IWebsiteOption[]>([]);
-  const [selectedWebsite, setSelectedWebsite] = useState<SelectOption>({
-    value: "all",
-    label: "All Website",
-  });
   const [ordersPerPage, setOrdersPerPage] = useState<number>(10);
   const [tableLoading, setTableLoading] = useState<boolean>(true);
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -42,7 +30,7 @@ const Page: React.FC = () => {
 
   useEffect(() => {
     fetchMarketingReport();
-  }, [currentPage, ordersPerPage, selectedWebsite.value]);
+  }, [currentPage, ordersPerPage]);
 
   const fetchMarketingReport = async () => {
     setTableLoading(true);
@@ -50,7 +38,7 @@ const Page: React.FC = () => {
       .getMarketingReport({
         page: currentPage,
         limit: ordersPerPage,
-        domain: selectedWebsite?.value,
+        domain: "all",
       })
       .then((res: IMonthlyMarketingReportResponse) => {
         if (res?.success) {
@@ -67,31 +55,6 @@ const Page: React.FC = () => {
         setTableLoading(false);
       });
   };
-
-  useEffect(() => {
-    fetchWebList();
-  }, []);
-
-  const fetchWebList = async () => {
-    GlobalService.getWebsiteList()
-      .then((res: any) => {
-        if (res?.success) {
-          const options = res?.data?.map((item: IWebsiteResponse) => ({
-            label: item.web_name,
-            value: item.web_url,
-          }));
-          setWebsiteOptions([
-            { value: "all", label: "All Website" },
-            ...options,
-          ]);
-        } else {
-          ToastService.error(res?.message);
-        }
-      })
-      .catch((err: { message: string }) => {
-        ToastService.error(err.message);
-      });
-  };
   useTableRefreshRegister(fetchMarketingReport);
 
 
@@ -105,15 +68,6 @@ const Page: React.FC = () => {
                 <h1 className="2xl:text-2xl lg:text-xl text-lg font-semibold dark:text-gray-300 text-gray-800 md:mb-0 mb-2 flex text-nowrap">
                   Monthly Report
                 </h1>
-              </div>
-              <div>
-                <SelectComponent
-                  options={websiteOptions}
-                  value={selectedWebsite}
-                  onChange={setSelectedWebsite}
-                  placeholder="All Websites"
-                  className="md:w-64 w-full"
-                />
               </div>
             </div>
           </div>

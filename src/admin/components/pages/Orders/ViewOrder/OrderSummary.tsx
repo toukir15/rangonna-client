@@ -86,12 +86,9 @@ const OrderSummary: React.FC<any> = ({
             orderStatus
           ) ? (
           <p
-            className={`px-4 py-1 rounded-full text-sm font-semibold tracking-wide
-${sumary?.coupon?.amount || hasFlashSale
-                ? "bg-gray-200 text-gray-400 cursor-not-allowed pointer-events-none"
-                : "bg-[#1a0c10] text-white cursor-pointer"
-              }
-`}
+            className={`ov-summary__coupon ${
+              sumary?.coupon?.amount || hasFlashSale ? "is-disabled" : ""
+            }`}
             onClick={() => {
               setModalOpen(true);
             }}
@@ -125,7 +122,7 @@ ${sumary?.coupon?.amount || hasFlashSale
                       onClick={() =>
                         handleImageClick(item?.product_id?.featured_image?.src)
                       }
-                      className="cursor-pointer rounded-lg border border-[rgba(158,120,48,0.18)]"
+                      className="cursor-pointer rounded-lg border border-[var(--border)]"
                       priority={index < 3}
                     />
                   </td>
@@ -156,7 +153,7 @@ ${sumary?.coupon?.amount || hasFlashSale
                               ) : (
                                 permissionList.includes("order_label_view") && (
                                   <Button
-                                    className="!bg-[#1a0c10]/8 !text-white !px-3 !py-1 !text-xs !rounded-full"
+                                    className="ov-summary__add"
                                     onClick={() =>
                                       handleStatusUpdate(item?.product_id?._id)
                                     }

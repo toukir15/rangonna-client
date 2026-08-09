@@ -83,7 +83,7 @@ const Page: React.FC = () => {
       searchTerm: debouncedSearchTerm,
       page: currentPage,
       limit: ordersPerPage,
-      domain: selectedWebsite.value,
+      domain: "all",
     })
       .then((res: IOrderHistoryReportResponse) => {
         if (res?.success) {
@@ -114,11 +114,7 @@ const Page: React.FC = () => {
                   My Order
                 </h1>
               <AllFilter
-                isWebsiteFilter={true}
-                websiteOptions={websiteOptions}
-                selectedWebsite={selectedWebsite}
-                setSelectedWebsite={setSelectedWebsite}
-              />
+                              />
               </div>
               <div className="4xl:w-72  w-full md:mt-0 mt-2">
                 <PageSearch

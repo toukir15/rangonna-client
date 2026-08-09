@@ -213,7 +213,7 @@ const CustomerDetails: React.FC<CustomerDetailsProps> = ({
   };
 
   return (
-    <div className="ov-detail-card md:w-1/2 md:mt-0 mt-4">
+    <div className="ov-detail-card">
       {customer?.title ? (
         <p className="ov-detail-card__label">{customer.title}</p>
       ) : null}
@@ -231,9 +231,7 @@ const CustomerDetails: React.FC<CustomerDetailsProps> = ({
 
         {verifyIcon && (
           <Icon
-            className={`${
-              is_verified === true ? "text-green-600" : "text-red-600"
-            }`}
+            className={is_verified === true ? "ov-verify-ok" : "ov-verify-off"}
             size={18}
             name={is_verified === true ? "verified" : "verified_off"}
           />
@@ -246,7 +244,7 @@ const CustomerDetails: React.FC<CustomerDetailsProps> = ({
               {isCampaign ? maskPhone(second) : second || noData}
             </a>
           ) : (
-            <span className="dark:text-gray-400 text-sm opacity-80">
+            <span className="text-sm text-[var(--ov-muted)]">
               {second || noData}
             </span>
           )}
@@ -256,7 +254,7 @@ const CustomerDetails: React.FC<CustomerDetailsProps> = ({
                 size={16}
                 name="content_copy"
                 variant="outlined"
-                className="ml-2 cursor-pointer dark:text-gray-400 opacity-60"
+                className="ml-2 cursor-pointer text-[var(--ov-muted)] opacity-70 hover:opacity-100"
                 onClick={() => copyToClipboard(second, showToast)}
               />
             </>
@@ -266,7 +264,7 @@ const CustomerDetails: React.FC<CustomerDetailsProps> = ({
           {iSSms ? (
             <Icon
               name="sms"
-              className="text-[#b8922e] cursor-pointer"
+              className="ov-sms-icon"
               variant="outlined"
               onClick={() => setModalOpen(true)}
             />
@@ -295,12 +293,12 @@ const CustomerDetails: React.FC<CustomerDetailsProps> = ({
       )}
 
       <p
-        className={`font-bold mt-2 text-sm dark:text-gray-400 ${
+        className={`font-bold mt-2 text-sm ${
           third?.toLowerCase().includes("bkash")
-            ? "text-pink-500 dark:text-gray-300"
+            ? "text-pink-500"
             : third?.toLowerCase().includes("card")
-              ? "text-green-600 dark:text-gray-300"
-              : "opacity-75"
+              ? "text-[var(--color-primary)]"
+              : "text-[var(--ov-muted)]"
         }`}
       >
         {third}

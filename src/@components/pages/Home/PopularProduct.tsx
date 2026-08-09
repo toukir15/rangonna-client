@@ -44,7 +44,7 @@ const PopularProduct = async () => {
           eyebrow="Beloved"
           title="Best Sellers"
           description="The pieces our community reaches for again and again."
-          href="/watches"
+          href="/churi"
           linkLabel="Shop all"
         />
         <div className="rongonaa-flash-sale__grid">

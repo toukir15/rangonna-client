@@ -1,11 +1,10 @@
 "use client";
 import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import Icon from "@admin/components/core/Icon/Icon";
-import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
+import AuthLayout from "@admin/layouts/AuthLayout";
 import React, { useState, useEffect, createContext } from "react";
 import PaginationComponent from "@admin/components/core/Pazination/Pazination";
 import useDebounce from "@admin/components/core/UseDebounece/UseDebouence";
-import Button from "@admin/components/core/Button/Button";
 import { ToastService } from "@admin/utils/toastr.service";
 import Alert from "@admin/components/core/Aleart/Aleart";
 import { DepositService } from "@admin/@services/apis/Account/Deposit/Deposit.service";
@@ -16,8 +15,8 @@ import { hasPermission, useLocalStorageDateRange } from "@admin/utils";
 import { last30DaysRange } from "@admin/utils/helper";
 import { formatDateRange } from "@admin/utils/hook.utils";
 import CourierDeposit from "@admin/components/pages/Deposit/CourierDeposit";
-import AllFilter from "@admin/components/pages/AllFilter/AllFilter";
-import PageSearch from "@admin/components/core/Search/PageSearch";
+import PageHeader from "@admin/components/layout/PageHeader";
+import { Plus } from "lucide-react";
 
 export const DepositContext = createContext({} as DepositContextType);
 
@@ -40,7 +39,8 @@ const Page: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [modalMode, setModalMode] = useState<"Add" | "Edit">("Add");
   const [isAlertOpen, setIsAlertOpen] = useState<boolean>(false);
-  const [remove, setRemove] = useState<string | null>(null);  const [range, setRange] = useLocalStorageDateRange(
+  const [remove, setRemove] = useState<string | null>(null);
+  const [range, setRange] = useLocalStorageDateRange(
     "depositDateRange",
     DEFAULT_DATE_RANGE,
   );
@@ -63,6 +63,7 @@ const Page: React.FC = () => {
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
+    setCurrentPage(1);
   };
 
   const getDeposit = () => {
@@ -125,8 +126,8 @@ const Page: React.FC = () => {
       setTableLoading(false);
     }
   };
-  useTableRefreshRegister(getDeposit);
 
+  useTableRefreshRegister(getDeposit);
 
   return (
     <AuthLayout>
@@ -140,9 +141,9 @@ const Page: React.FC = () => {
       >
         <h3 className="text-2xl font-bold">Confirm Delete</h3>
         <h6 className="text-md my-4">
-          Are you sure you want to remove this group?
+          Are you sure you want to remove this deposit?
         </h6>
-        <div className="flex flex-wrap items-center items-center justify-center my-8">
+        <div className="flex flex-wrap items-center justify-center my-8">
           <Icon
             name="delete"
             variant="outlined"
@@ -151,44 +152,24 @@ const Page: React.FC = () => {
           />
         </div>
       </Alert>
-      <NoScrollLayout>
-        <div className="2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 md:pb-0 mb-2">
-          <div className="md:flex flex-wrap items-center items-center gap-3">
-            <div className="flex flex-wrap items-center items-center gap-4">
-              <h2 className="2xl:text-2xl lg:text-xl text-lg text-blue-900 font-semibold dark:text-gray-300">
-                Deposit
-              </h2>
-              <AllFilter
-                isCalendarFilter={true}
-                range={range}
-                setRange={setRange}
-              />
-              <div className="flex flex-wrap items-center justify-end">
-                {hasPermission(permissionList, "account_deposit_create") && (
-                  <Button
-                    className="flex items-center bg-green-200 !text-green-500 !px-4 !py-1.5"
-                    onClick={handleAddClick}
-                  >
-                    <span className="ml-1 text-nowrap">
-                      Add Courier Deposit
-                    </span>
-                  </Button>
-                )}
-              </div>
-            </div>
-            <div className="md:w-80 w-full md:mt-0 mt-2">
-              <PageSearch
-                value={searchTerm}
-                onChange={handleSearchChange}
-                wrapperClass="w-full"
-              />
-            </div>
-          </div>
-          
-        </div>
-      </NoScrollLayout>
 
-      <div className="min-h-[75vh] 2xl:px-4 px-3">
+      <div className="2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 pb-4">
+        <PageHeader
+          title="Deposits"
+          action={
+            hasPermission(permissionList, "account_deposit_create") ? (
+              <button
+                type="button"
+                onClick={handleAddClick}
+                className="btn-primary btn-primary-inline inline-flex items-center gap-2"
+              >
+                <Plus size={16} />
+                Record Deposit
+              </button>
+            ) : undefined
+          }
+        />
+
         <DepositContext.Provider
           value={{
             deposit,
@@ -202,7 +183,13 @@ const Page: React.FC = () => {
             getDeposit,
           }}
         >
-          <DepositTable />
+          <DepositTable
+            searchTerm={searchTerm}
+            onSearchChange={handleSearchChange}
+            range={range}
+            setRange={setRange}
+            onRefresh={getDeposit}
+          />
           <CourierDeposit />
         </DepositContext.Provider>
 
@@ -213,6 +200,9 @@ const Page: React.FC = () => {
           setCurrentPage={setCurrentPage}
           totalPages={totalPages}
           totalData={totalProduct}
+          onRefresh={getDeposit}
+          isLoading={tableLoading}
+          className="!mt-3"
         />
       </div>
     </AuthLayout>

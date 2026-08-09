@@ -196,7 +196,7 @@ const FlashSaleCard: React.FC<FlashSaleCardProps> = ({
               type="button"
               onClick={handleOrderNow}
               disabled={loading}
-              className={`rongonaa-flash-card__cta rongonaa-flash-card__cta--cart ${
+              className={`rongonaa-flash-card__cta rongonaa-flash-card__cta--buy ${
                 inCart ? "rongonaa-flash-card__cta--active" : ""
               }`}
             >

@@ -19,8 +19,8 @@ const LoadingSkeleton: React.FC<SkeletonProps> = ({
   height,
   width,
   circle,
-  baseColor = "#cececf",
-  highlightColor = "#e0dfdf",
+  baseColor = "#efe8e2",
+  highlightColor = "#f8f3ef",
   className,
 }) => {
   const renderSkeleton = () => {

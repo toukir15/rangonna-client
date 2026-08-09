@@ -227,14 +227,14 @@ const Page: React.FC = () => {
                 Task List
               </h2>
               <AllFilter
-                isWebsiteFilter={true}
-                websiteOptions={userOption}
-                selectedWebsite={selectedUser}
-                setSelectedWebsite={setSelectedUser}
                 isStatusFilter={true}
-                statusOption={priorityOption}
-                selectedStatus={selectedPriority}
-                setSelectedStatus={setSelectedPriority}
+                statusOption={userOption}
+                selectedStatus={selectedUser}
+                setSelectedStatus={setSelectedUser}
+                isOrderStatusFilter={true}
+                orderStatusOptions={priorityOption}
+                selectedOrderStatus={selectedPriority}
+                setSelectedOrderStatus={setSelectedPriority}
               />{permissionList.includes("task_create") && (
                 <Button
                   className="!bg-green-200 !text-green-600 !py-1.5 !px-4 text-nowrap"

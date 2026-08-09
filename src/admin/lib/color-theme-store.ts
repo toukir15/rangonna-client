@@ -38,7 +38,7 @@ function hexToRgbTriplet(hex: string): string {
         .join("")
       : h;
   const n = parseInt(full, 16);
-  if (Number.isNaN(n)) return "201, 162, 39";
+  if (Number.isNaN(n)) return "127, 29, 29";
   return `${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}`;
 }
 
@@ -83,8 +83,21 @@ function shade(hex: string, amount: number): string {
     .join("")}`;
 }
 
-export function applyThemeToDocument(id: ColorThemeId) {
+export function applyThemeToDocument(
+  id: ColorThemeId,
+  options?: { force?: boolean },
+) {
   if (typeof document === "undefined") return;
+
+  // Appearance (dashboard theme) owns admin brand tokens — don't clobber them
+  // with Soft Ivory / ThemePicker.
+  if (
+    !options?.force &&
+    document.documentElement.hasAttribute("data-dashboard-theme")
+  ) {
+    return;
+  }
+
   const theme = getColorTheme(id);
   const root = document.documentElement;
 
@@ -97,7 +110,7 @@ export function applyThemeToDocument(id: ColorThemeId) {
   root.style.setProperty("--brand-primary-lighter", theme.ivory);
   root.style.setProperty("--brand-primary-border", tint(theme.primary, 0.72));
   root.style.setProperty("--brand-primary-muted", theme.muted);
-  root.style.setProperty("--brand-primary-accent", theme.secondary);
+  root.style.setProperty("--brand-primary-accent", theme.primary);
 
   root.style.setProperty("--brand-ivory", theme.ivory);
   root.style.setProperty("--brand-pearl", theme.pearl);
@@ -106,8 +119,14 @@ export function applyThemeToDocument(id: ColorThemeId) {
   root.style.setProperty("--brand-gold-light", theme.primaryLight);
   root.style.setProperty("--brand-gold-dark", theme.primaryDark);
 
-  root.style.setProperty("--brand-rose", theme.secondary);
-  root.style.setProperty("--brand-rose-light", theme.secondaryLight);
+  root.style.setProperty("--brand-rose", theme.primary);
+  root.style.setProperty("--brand-rose-light", theme.primaryLight);
+  root.style.setProperty("--brand-rose-dark", theme.primaryDark);
+
+  /* CTA / cart — same burgundy as primary accents site-wide */
+  root.style.setProperty("--brand-cta", theme.primary);
+  root.style.setProperty("--brand-cta-light", theme.primaryLight);
+  root.style.setProperty("--brand-cta-dark", theme.primaryDark);
 
   root.style.setProperty("--brand-cart", theme.primary);
   root.style.setProperty("--brand-cart-light", theme.primaryLight);
@@ -146,11 +165,14 @@ export function applyThemeToDocument(id: ColorThemeId) {
     `0 10px 30px rgba(${glow}, 0.45)`,
   );
 
-  // Tailwind brand + admin green/emerald aliases
+  // Tailwind primary / gold / accent all follow the same burgundy
   root.style.setProperty("--color-primary", theme.primary);
   root.style.setProperty("--color-primary-dark", theme.primaryDark);
   root.style.setProperty("--color-primary-light", theme.primaryLight);
-  root.style.setProperty("--color-primary-lighter", theme.ivory);
+  root.style.setProperty(
+    "--color-primary-lighter",
+    tint(theme.primary, 0.88),
+  );
   root.style.setProperty("--color-primary-500", theme.primary);
   root.style.setProperty("--color-accent", theme.primary);
   root.style.setProperty("--color-gold", theme.primary);
@@ -161,6 +183,42 @@ export function applyThemeToDocument(id: ColorThemeId) {
   root.style.setProperty("--color-ivory", theme.ivory);
   root.style.setProperty("--color-pearl", theme.pearl);
   root.style.setProperty("--color-secondary", theme.ink);
+
+  // CashFlow-style admin design tokens (driven by active brand color)
+  root.style.setProperty("--color-primary-hover", theme.primaryDark);
+  root.style.setProperty(
+    "--color-primary-soft",
+    `rgba(${glow}, 0.15)`,
+  );
+  root.style.setProperty(
+    "--color-primary-glow",
+    `rgba(${glow}, 0.35)`,
+  );
+  root.style.setProperty(
+    "--color-secondary-soft",
+    `rgba(${glow}, 0.12)`,
+  );
+  root.style.setProperty("--brand-text", theme.primaryDark);
+  root.style.setProperty(
+    "--brand-border-soft",
+    `color-mix(in srgb, ${theme.primary} 22%, transparent)`,
+  );
+  root.style.setProperty(
+    "--brand-border-medium",
+    `color-mix(in srgb, ${theme.primary} 35%, transparent)`,
+  );
+  root.style.setProperty(
+    "--brand-bg-soft",
+    `color-mix(in srgb, ${theme.primary} 10%, transparent)`,
+  );
+  root.style.setProperty(
+    "--brand-bg-softer",
+    `color-mix(in srgb, ${theme.primary} 8%, transparent)`,
+  );
+  root.style.setProperty(
+    "--brand-bg-medium",
+    `color-mix(in srgb, ${theme.primary} 18%, transparent)`,
+  );
 
   const greenScale: Record<string, string> = {
     "50": theme.ivory,

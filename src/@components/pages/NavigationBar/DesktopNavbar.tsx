@@ -60,7 +60,7 @@ export default function DesktopNavbar({ navItems }: DesktopNavbarProps) {
                       <Icon
                         name={item.icon}
                         size={16}
-                        style={{ color: item?.color || "var(--brand-primary)" }}
+                        style={{ color: item?.color || "var(--brand-cta)" }}
                       />
                     ) : null}
                     <span>{item.name}</span>
@@ -90,10 +90,10 @@ export default function DesktopNavbar({ navItems }: DesktopNavbarProps) {
                               <Icon
                                 name={subItem.icon}
                                 size={16}
-                                className="text-primary"
+                                className="text-[var(--brand-cta)]"
                               />
                             ) : (
-                              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary-lighter text-[11px] font-bold text-primary">
+                              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[color-mix(in_oklab,var(--brand-cta)_12%,#fff)] text-[11px] font-bold text-[var(--brand-cta)]">
                                 {subItem.name.charAt(0)}
                               </span>
                             )}
@@ -111,7 +111,7 @@ export default function DesktopNavbar({ navItems }: DesktopNavbarProps) {
                       name={item.icon}
                       size={18}
                       className="fire-flicker"
-                      style={{ color: item?.color || "var(--brand-primary)" }}
+                      style={{ color: item?.color || "var(--brand-cta)" }}
                     />
                   ) : null}
                   <span>{item.name}</span>

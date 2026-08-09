@@ -3,7 +3,6 @@ import Icon from "@admin/components/core/Icon/Icon";
 import StatusSkeleton from "@admin/components/Skeleton/Orders/ViewOrder/StatusSkeleton";
 import { useGlobalContext } from "@admin/context/GlobalContext";
 import { hasPermission } from "@admin/utils";
-import { getStatusBgStyle, getStatusTextStyle } from "@admin/utils/system.utils";
 import { ToastService } from "@admin/utils/toastr.service";
 import React, { useMemo, useState } from "react";
 import ApprovedCourierModal from "./ApprovedCourierModal";
@@ -245,25 +244,25 @@ const OrderStatus: React.FC<OrderStatusProps> = ({
     <div>
       {currentStep && !loadingUser ? (
         <div
-          className={`ov-status-shell rounded-lg md:px-4 md:py-4 px-2 py-4 mb-3 dark:bg-gray-800 dark:border-gray-500 ${
+          className={`ov-status-shell md:px-4 md:py-4 px-2 py-4 ${
             currentStep === "delivery"
-              ? "bg-emerald-200 text-emerald-800 border border-emerald-300"
+              ? "ov-status-shell--delivery"
               : currentStep === "cancel"
-                ? "bg-red-50 text-red-600 border border-red-300"
+                ? "ov-status-shell--cancel"
                 : currentStep === "refunded"
-                  ? "bg-fuchsia-50 text-fuchsia-600 border border-fuchsia-300"
+                  ? "ov-status-shell--refunded"
                   : currentStep === "return"
-                    ? "bg-red-50 text-red-500 border border-red-300"
+                    ? "ov-status-shell--return"
                     : currentStep === "exchange"
-                      ? "bg-zinc-50 text-zinc-600 border border-zinc-300"
-                      : "bg-white dark:bg-gray-800"
+                      ? "ov-status-shell--exchange"
+                      : ""
           }`}
         >
           {/* 🟢 Show message if the order is in final state */}
           {["delivery", "cancel", "refunded", "return", "exchange"].includes(
             currentStep,
           ) ? (
-            <p className="2xl:text-lg md:text-base text-sm py-4 text-center font-medium dark:text-gray-200">
+            <p className="2xl:text-lg md:text-base text-sm py-4 text-center font-medium text-[var(--ov-ink)]">
               {currentStep === "delivery"
                 ? "This product has already been delivered, so no further action is required. Thank you!"
                 : currentStep === "cancel"
@@ -276,67 +275,60 @@ const OrderStatus: React.FC<OrderStatusProps> = ({
             </p>
           ) : (
             /* 🟡 Otherwise, show status buttons as before */
-            <div className="flex items-center justify-between">
+            <div className="ov-status-track">
               {visibleStatuses?.length > 0 ? (
                 visibleStatuses.map((step, index) => {
-                  const isCurrentStep = currentStep === step.key;
-                  const iconColor = isCancelled
-                    ? step.key === "cancel"
-                      ? "bg-red-600 border-red-500 text-white"
-                      : "bg-gray-300 border-gray-200 text-white"
-                    : isCurrentStep
-                      ? `${getStatusBgStyle(currentStep)} text-white`
-                      : "bg-gray-300 border-gray-200 text-white dark:bg-gray-500 dark:border-gray-400";
-
-                  const labelColor = isCancelled
-                    ? step.key === "cancel"
-                      ? "text-red-600 dark:text-red-400 font-bold"
-                      : "text-gray-600 dark:text-gray-400"
-                    : isCurrentStep
-                      ? `${getStatusTextStyle(currentStep)} font-bold`
-                      : "text-gray-600 dark:text-gray-400";
+                  const isCurrentStep =
+                    isCancelled
+                      ? step.key === "cancel"
+                      : currentStep === step.key;
+                  const currentIndex = visibleStatuses.findIndex(
+                    (s) => s.key === currentStep,
+                  );
+                  const connectorActive =
+                    !isCancelled && currentIndex > index;
 
                   return (
                     <React.Fragment key={step.key}>
-                      <div className="flex flex-col items-center relative min-w-14 ">
+                      <div
+                        className={`ov-status-step ${
+                          isCurrentStep ? "is-active" : "is-idle"
+                        }`}
+                        data-status={step.key}
+                      >
                         <div className="relative">
                           <Icon
                             name={step.icon}
-                            size={28}
+                            size={20}
                             onClick={() => {
                               if (!statusLoading && !loading) {
                                 handleClick(step.key, step.label);
                               }
                             }}
-                            className={`flex items-center justify-center size-11 p-1 rounded-full border-4 transition-all duration-300 ${iconColor} ${
+                            className={`ov-status-step__icon ${
                               !statusLoading && !loading
-                                ? "cursor-pointer hover:opacity-80"
-                                : "cursor-not-allowed"
+                                ? "cursor-pointer"
+                                : "cursor-not-allowed opacity-70"
                             }`}
                             variant="outlined"
                           />
                           {(statusLoading || loading) &&
                             loadingName === step.label && (
                               <div className="absolute inset-0 flex items-center justify-center">
-                                <div className="animate-spin rounded-full h-11 w-11 border-b-4 border-green-600"></div>
+                                <div className="animate-spin rounded-full h-11 w-11 border-b-4 border-[var(--color-primary)]"></div>
                               </div>
                             )}
                         </div>
-                        <span
-                          className={`mt-2 text-base text-nowrap ${labelColor}`}
-                        >
+                        <span className="ov-status-step__label">
                           {step.label}
                         </span>
                       </div>
 
                       {index < visibleStatuses.length - 1 && (
                         <div
-                          className="border-b border-gray-200 dark:border-gray-500 w-full"
-                          style={{
-                            marginTop: "-25px",
-                            borderStyle: "dashed",
-                            borderWidth: "2px",
-                          }}
+                          className={`ov-status-connector ${
+                            connectorActive ? "is-active" : ""
+                          }`}
                         />
                       )}
                     </React.Fragment>
@@ -364,19 +356,19 @@ const OrderStatus: React.FC<OrderStatusProps> = ({
 
           {/* Cancel Modal (unchanged) */}
           {showModal && (
-            <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
-              <div className="bg-white dark:bg-gray-700 rounded-lg p-6 w-96">
-                <h2 className="text-lg font-bold mb-4 dark:text-gray-300">
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-[2px]">
+              <div className="bg-[var(--bg-surface)] rounded-xl border border-[var(--border)] p-6 w-96 shadow-[var(--shadow-soft)]">
+                <h2 className="text-lg font-bold mb-4 text-[var(--text-primary)]">
                   Select Cancellation Reason
                 </h2>
                 <ul className="space-y-2 mb-2">
                   {cancellationReasons.map((reason, index) => (
                     <li key={index}>
                       <button
-                        className={`w-full text-left px-2 py-1 rounded-lg hover:bg-gray-300  dark:text-gray-300 ${
+                        className={`w-full text-left px-2 py-1 rounded-lg transition-colors ${
                           selectedReason === reason
-                            ? "bg-blue-500 text-white"
-                            : "bg-gray-200 dark:bg-gray-600"
+                            ? "bg-[var(--color-primary)] text-white"
+                            : "bg-[var(--bg-hover)] text-[var(--text-primary)] hover:bg-[var(--brand-bg-soft)]"
                         }`}
                         onClick={() => setSelectedReason(reason)}
                       >
@@ -390,7 +382,7 @@ const OrderStatus: React.FC<OrderStatusProps> = ({
                   <div className="mt-4">
                     <input
                       type="text"
-                      className="w-full p-2 border border-gray-300 rounded-lg dark:bg-gray-600 dark:text-white"
+                      className="w-full p-2 border border-[var(--border)] rounded-lg bg-[var(--input-bg)] text-[var(--text-primary)]"
                       placeholder="Enter custom reason"
                       value={customReason}
                       onChange={(e) => setCustomReason(e.target.value)}
@@ -400,13 +392,13 @@ const OrderStatus: React.FC<OrderStatusProps> = ({
 
                 <div className="flex justify-end space-x-2 mt-4">
                   <button
-                    className="px-4 py-2 bg-gray-300 dark:bg-gray-600 rounded-lg dark:text-gray-300"
+                    className="px-4 py-2 rounded-lg bg-[var(--bg-hover)] text-[var(--text-primary)]"
                     onClick={() => setShowModal(false)}
                   >
                     Cancel
                   </button>
                   <button
-                    className="px-4 py-2 bg-blue-500 text-white rounded-lg disabled:opacity-50"
+                    className="px-4 py-2 rounded-lg bg-[var(--color-primary)] text-white disabled:opacity-50"
                     disabled={
                       !selectedReason ||
                       (selectedReason === "Other" && !customReason)

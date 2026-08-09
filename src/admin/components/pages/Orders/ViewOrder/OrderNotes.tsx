@@ -192,7 +192,7 @@ const OrderNotes: React.FC<OrderNotesProps> = ({
             ))}
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center py-4">
+          <div className="ov-empty">
             <Image
               src={noData}
               alt="No notes found"
@@ -200,9 +200,7 @@ const OrderNotes: React.FC<OrderNotesProps> = ({
               height={56}
               className="h-14 w-auto opacity-70"
             />
-            <p className="text-sm text-[var(--ov-muted)] mt-2">
-              No notes available
-            </p>
+            <p>No notes available</p>
           </div>
         )}
       </div>
@@ -228,24 +226,24 @@ const OrderNotes: React.FC<OrderNotesProps> = ({
         {isLoading ? (
           <NoteSkeleton />
         ) : showCustomerNote?.customer_note?.text ? (
-          <div className="mt-3 flex items-start">
-            <div className="flex flex-col items-center mr-3">
-              <div className="w-3 h-3 bg-green-500 rounded-full mt-3.5" />
-            </div>
-            <div className="bg-gray-50 dark:bg-gray-700 rounded-lg px-3 py-2 flex-1 ">
-              <p className="text-gray-800 dark:text-gray-200 flex gap-2 items-center justify-between">
-                {showCustomerNote?.customer_note?.text}-
-                {showCustomerNote?.customer_note?.user?.name}
-                <span className="text-xs text-green-600 dark:text-green-300 text-nowrap">
+          <div className="mt-3 flex items-start gap-3">
+            <div className="ov-timeline__dot mt-3.5" />
+            <div className="ov-note-bubble">
+              <p className="flex gap-2 items-center justify-between text-sm">
+                <span>
+                  {showCustomerNote?.customer_note?.text}-
+                  {showCustomerNote?.customer_note?.user?.name}
+                </span>
+                <span className="ov-timeline__meta text-nowrap text-[var(--color-primary)]">
                   {timeSince(
-                    new Date(showCustomerNote?.customer_note?.createdAt)
+                    new Date(showCustomerNote?.customer_note?.createdAt),
                   )}
                 </span>
               </p>
             </div>
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center py-4">
+          <div className="ov-empty">
             <Image
               src={noData}
               alt="No customer note found"
@@ -253,9 +251,7 @@ const OrderNotes: React.FC<OrderNotesProps> = ({
               height={56}
               className="h-14 w-auto opacity-70"
             />
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
-              No customer note available
-            </p>
+            <p>No customer note available</p>
           </div>
         )}
       </div>

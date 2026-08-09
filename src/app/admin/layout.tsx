@@ -9,6 +9,7 @@ import InternetWrapper from "@admin/context/InternetWrapper";
 import GlobalNoticeOpener from "@admin/context/GlobalNoticeOpener";
 import AdminShell from "@admin/layouts/AdminShell";
 import ColorThemeBootstrap from "@admin/components/pages/Header/ColorThemeBootstrap";
+import DashboardThemeBootstrap from "@admin/components/pages/Header/DashboardThemeBootstrap";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -32,6 +33,7 @@ export default function AdminLayout({
       <InternetWrapper>
         <GlobalProvider>
           <ColorThemeBootstrap />
+          <DashboardThemeBootstrap />
           <ToastComponent />
           <AdminShell>
             <GlobalNoticeOpener />

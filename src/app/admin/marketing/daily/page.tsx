@@ -151,7 +151,7 @@ const Page: React.FC = () => {
     OrderReportProfitService.getDailyProfit({
       page: currentPage,
       limit: ordersPerPage,
-      domain: selectedWebsite.value,
+      domain: "all",
     })
       .then((res: IDailyReportResponse) => {
         if (res?.success) {

@@ -63,8 +63,8 @@ export default function NavigationBar() {
     >
       <div className="mx-auto flex max-w-layout items-center justify-around px-2 py-2.5">
         <Link
-          href="/watches"
-          className={`rongonaa-bottom-nav-item ${pathname.startsWith("/watches") ? "rongonaa-bottom-nav-item--active" : ""}`}
+          href="/churi"
+          className={`rongonaa-bottom-nav-item ${pathname.startsWith("/churi") ? "rongonaa-bottom-nav-item--active" : ""}`}
         >
           <Icon name="store" variant="outlined" size={22} />
           <span>Shop</span>

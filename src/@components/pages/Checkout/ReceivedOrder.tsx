@@ -319,7 +319,7 @@ const ReceivedOrder: React.FC<ReceivedOrderProps> = ({
                 </div>
               ))}
             </div>
-            <Link href="/watches">
+            <Link href="/churi">
               <Button className="rongonaa-received-cta !bg-primary-light !text-primary border border-primary hover:!bg-primary-lighter cursor-pointer">
                 Continue Shopping
               </Button>

@@ -143,7 +143,7 @@ const OrderStatus: React.FC<OrderStatusProps> = ({
       </div>
 
       {showModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-[2px]">
           <div className="bg-white dark:bg-gray-700 rounded-lg p-6 w-96">
             <h2 className="text-lg font-bold mb-4 dark:text-gray-300">
               Select Cancellation Reason

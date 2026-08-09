@@ -38,6 +38,7 @@ export interface IEstimateData {
   value: string;
   color?: string;
   percentage?: string;
+  status?: string;
 }
 
 export interface IDashboardChart {

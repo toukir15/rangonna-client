@@ -34,10 +34,10 @@ const NoDataFound = (): JSX.Element => {
           stacks she’ll love.
         </p>
         <div className="rongonaa-empty__actions">
-          <Link href="/watches" className="rongonaa-empty__btn rongonaa-empty__btn--primary">
+          <Link href="/churi" className="rongonaa-empty__btn rongonaa-empty__btn--primary">
             Browse all
           </Link>
-          <Link href="/watches/flash-sale" className="rongonaa-empty__btn rongonaa-empty__btn--ghost">
+          <Link href="/churi/flash-sale" className="rongonaa-empty__btn rongonaa-empty__btn--ghost">
             Flash sale
           </Link>
         </div>

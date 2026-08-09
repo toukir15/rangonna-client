@@ -225,7 +225,7 @@ const Page = (): JSX.Element => {
             {permissionList.includes("content_create") &&
               !isPriorityEditMode && (
                 <Button
-                  className="flex items-center !bg-green-200 !text-green-600 !py-1.5 !px-4"
+                  className="btn-primary flex items-center !py-1.5 !px-4"
                   onClick={handleAddClick}
                 >
                   <span className="ml-1">Add Contents</span>
@@ -234,7 +234,7 @@ const Page = (): JSX.Element => {
 
             {isPriorityEditMode && (
               <Button
-                className="flex items-center bg-green-600 !px-4"
+                className="btn-primary flex items-center !px-4"
                 onClick={handlePriorityUpdate}
                 disabled={priorityUpdateLoading}
               >

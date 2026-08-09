@@ -5,6 +5,7 @@ import SelectComponent from "@admin/components/core/Select/Select";
 import CalendarRange from "@admin/components/core/Calendar/CalendarRange";
 import { IWebsiteOption, SelectOption } from "@admin/@interfaces/common.interface";
 import CustomDatePicker from "@admin/components/core/Calendar/DatePicker";
+import Icon from "@admin/components/core/Icon/Icon";
 
 type Props = {
   isWebsiteFilter?: boolean;
@@ -81,12 +82,8 @@ type Props = {
 };
 
 const AllFilter: React.FC<Props> = ({
-  websiteOptions,
-  selectedWebsite,
-  setSelectedWebsite,
   range,
   setRange,
-  isWebsiteFilter = false,
   isCalendarFilter = false,
   isSourceFilter = false,
   allSourceOptions,
@@ -153,17 +150,6 @@ const AllFilter: React.FC<Props> = ({
 }) => {
   return (
     <div className="flex flex-wrap items-center gap-3">
-        {isWebsiteFilter && (
-          <div className="">
-            <SelectComponent
-              options={websiteOptions}
-              value={selectedWebsite}
-              onChange={setSelectedWebsite}
-              placeholder="Select Website"
-              className="md:w-64 w-full"
-            />
-          </div>
-        )}
         {isCalendarFilter && (
           <div className="">
             <CalendarRange range={range} setRange={setRange} />
@@ -171,15 +157,17 @@ const AllFilter: React.FC<Props> = ({
         )}
 
         {isSourceFilter && (
-          <div className="">
+          <label className="data-table-filter">
+            <Icon name="tune" variant="outlined" size={18} />
             <SelectComponent
               options={allSourceOptions}
               value={selectedSource}
               onChange={setSelectedSource}
-              placeholder="Select Source"
-              className="md:w-64 w-full"
+              placeholder="All Source"
+              className="data-table-filter-select"
+              size="sm"
             />
-          </div>
+          </label>
         )}
 
         {isStatusFilter && (

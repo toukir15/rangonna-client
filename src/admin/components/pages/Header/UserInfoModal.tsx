@@ -39,7 +39,7 @@ const UserInfoModal: React.FC<UserInfoModalProps> = ({
         aria-label="User menu"
         aria-expanded={showUserDropdown}
         onClick={() => setShowUserDropdown(!showUserDropdown)}
-        className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-green-200 bg-green-50 text-sm font-semibold text-green-700 transition-colors hover:bg-green-100 dark:border-green-500/30 dark:bg-green-950/40 dark:text-green-300 dark:hover:bg-green-900/50"
+        className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--brand-border-soft)] bg-[var(--accent-soft)] text-sm font-semibold text-[var(--accent)] transition-colors hover:bg-[var(--brand-bg-medium)]"
       >
         {userInitial}
       </button>

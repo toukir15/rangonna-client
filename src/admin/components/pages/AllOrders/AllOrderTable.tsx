@@ -4,7 +4,7 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import { Thead, Tbody, Tr, Th, Td } from "@admin/components/Table/Table";
 import { TableCheckbox } from "@admin/components/Table/TableCheckbox";
 import TableWrapper from "@admin/components/Table/TableWrapper";
-import { getStatusStyle } from "@admin/utils/system.utils";
+import { getStatusLabel, getStatusStyle } from "@admin/utils/system.utils";
 import Image from "next/image";
 import notFoundImage from "@admin/assets/images/Image-not-found.png";
 import { getWebName, noData, trimString } from "@admin/utils";
@@ -21,7 +21,6 @@ import PackingSlipPrint from "./PackingSlipPrint";
 
 import ButtonLoader from "@admin/components/core/Button/ButtonLoader";
 import InvoiceNew from "./InvoiceNew";
-import { dueColor } from "@admin/utils/constant";
 
 const AllOrderTable: React.FC = () => {
   const { permissionList } = useGlobalContext();
@@ -162,7 +161,7 @@ const AllOrderTable: React.FC = () => {
         isSelect={selectedOrders?.length > 0}
         handleListPrintSelected={handleListPrintSelected}
         handleOrderPrintSelected={handleOrderPrintSelected}
-        className="min-h-[700px]"
+        className="orders-table-nested !mt-0 min-h-[560px] !flex-1"
         colValue={11}
         printLabel="Label Print"
         selectedAction={selectedAction}
@@ -177,48 +176,31 @@ const AllOrderTable: React.FC = () => {
         selectedWebsite={selectedWebsite}
       >
         <Thead>
-          <Tr className="dark:bg-gray-700 bg-blue-100 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
-            <Th>
+          <Tr>
+            <Th className="is-center">
               <TableCheckbox checked={isCheck} onChange={handleSelectAll} />
             </Th>
-            <Th className="2xl:min-w-32 lg:min-w-14 min-w-32 text-blue-900 dark:text-gray-200">
-              Order ID
-            </Th>
-            <Th className="2xl:min-w-40 lg:min-w-32 min-w-40 text-blue-900 dark:text-gray-200">
-              Customer Info
-            </Th>
-            <Th className="2xl:min-w-32 lg:min-w-28 min-w-32 text-blue-900 dark:text-gray-200">
-              Products
-            </Th>
-            <Th className="2xl:min-w-36 lg:min-w-28 min-w-36 text-blue-900 dark:text-gray-200 ps-10">
-              Status
-            </Th>
-            <Th className="2xl:min-w-36 lg:min-w-28 min-w-36 text-blue-900 dark:text-gray-200">
-              Total & Due
-            </Th>
-            <Th className="2xl:min-w-32 lg:min-w-28 min-w-32 text-blue-900 dark:text-gray-200 !text-nowrap">
+            <Th className="2xl:min-w-32 lg:min-w-14 min-w-32">Order ID</Th>
+            <Th className="2xl:min-w-40 lg:min-w-32 min-w-40">Customer Info</Th>
+            <Th className="2xl:min-w-32 lg:min-w-28 min-w-32">Products</Th>
+            <Th className="2xl:min-w-36 lg:min-w-28 min-w-36">Status</Th>
+            <Th className="2xl:min-w-36 lg:min-w-28 min-w-36">Total & Due</Th>
+            <Th className="2xl:min-w-32 lg:min-w-28 min-w-32 !text-nowrap">
               Customer Note & Note
             </Th>
-            <Th className="text-blue-900 dark:text-gray-200 min-w-40 ps-8">
-              View
-            </Th>
-            <Th className="text-blue-900 dark:text-gray-200 min-w-20 !text-nowrap">
-              Is Printed
-            </Th>
-            <Th className="text-blue-900 dark:text-gray-200">Actions</Th>
+            <Th className="is-center min-w-28">View</Th>
+            <Th className="is-center min-w-20 !text-nowrap">Is Printed</Th>
+            <Th className="is-right">Actions</Th>
           </Tr>
         </Thead>
 
-        <Tbody className="dark:bg-gray-800 bg-white">
+        <Tbody>
           {orderList?.map((order: any, index: number) => {
             const orderIdStr = String(order?._id);
             const isCurrentPrinting = printingOrderId === orderIdStr;
 
             return (
-              <Tr
-                className="hover:bg-gray-100 dark:hover:bg-gray-800"
-                key={index}
-              >
+              <Tr key={index}>
                 <Td>
                   <TableCheckbox
                     checked={selectedOrders.includes(orderIdStr)}
@@ -228,55 +210,55 @@ const AllOrderTable: React.FC = () => {
                 </Td>
 
                 <Td>
-                  <div className="flex text-base font-bold items-center text-nowrap">
-                    <span>{order?.sysid || noData}</span>
-
-                    <Icon
-                      size={16}
-                      name="content_copy"
-                      variant="outlined"
-                      className="ml-2 cursor-pointer"
-                      onClick={() => {
-                        navigator.clipboard.writeText(
-                          String(order?.sysid ?? ""),
-                        );
-                        ToastService.success("Order ID copied to clipboard!");
-                      }}
-                    />
-                  </div>
-
-                  <div className="mt-0.5">
-                    <span>{getWebName(order?.domain) || noData}</span>
-                  </div>
-
-                  <div className="mt-0.5 flex items-center gap-1 text-nowrap min-w-32">
-                    <Icon name="calendar_month" size={20} variant="outlined" />
-                    <span>{formatTimeAgo(order?.createdAt) || noData}</span>
+                  <div className="table-user-info">
+                    <div className="flex items-center gap-1.5">
+                      <span className="table-id-chip">
+                        {order?.sysid || noData}
+                      </span>
+                      <Icon
+                        size={14}
+                        name="content_copy"
+                        variant="outlined"
+                        className="cursor-pointer text-[var(--text-muted)] hover:text-[var(--accent)]"
+                        onClick={() => {
+                          navigator.clipboard.writeText(
+                            String(order?.sysid ?? ""),
+                          );
+                          ToastService.success("Order ID copied to clipboard!");
+                        }}
+                      />
+                    </div>
+                    <p className="data-table-muted">
+                      {getWebName(order?.domain) || noData}
+                    </p>
+                    <span className="table-date-cell">
+                      <Icon name="calendar_today" size={14} variant="outlined" />
+                      {formatTimeAgo(order?.createdAt) || noData}
+                    </span>
                   </div>
                 </Td>
 
                 <Td>
-                  <div className="text-base font-bold">
-                    <span>
+                  <div className="table-contact-stack">
+                    <span className="data-table-primary">
                       {trimString(order?.customer?.first_name, 50)}
                       {order?.customer?.last_name}
                     </span>
-                  </div>
-
-                  <div className="mt-2 flex items-center">
-                    <a href={`tel:${order?.customer?.phone}`}>
-                      {order?.customer?.phone}
-                    </a>
-                    <Icon
-                      onClick={() => copyToClipboard(order?.customer?.phone)}
-                      name="content_copy"
-                      size={16}
-                      className="ml-2 cursor-pointer"
-                    />
-                  </div>
-
-                  <div className="mt-0.5 text-nowrap">
-                    <span>{order?.payment?.title || noData}</span>
+                    <span className="table-contact-line">
+                      <Icon name="call" size={14} variant="outlined" />
+                      <a href={`tel:${order?.customer?.phone}`}>
+                        {order?.customer?.phone}
+                      </a>
+                      <Icon
+                        onClick={() => copyToClipboard(order?.customer?.phone)}
+                        name="content_copy"
+                        size={14}
+                        className="cursor-pointer"
+                      />
+                    </span>
+                    <span className="data-table-muted">
+                      {order?.payment?.title || noData}
+                    </span>
                   </div>
                 </Td>
 
@@ -315,37 +297,22 @@ const AllOrderTable: React.FC = () => {
                 </Td>
 
                 <Td>
-                  <div
-                    className={`${getStatusStyle(
-                      order?.status,
-                    )} min-w-20 max-w-40 text-center`}
-                  >
-                    {order?.status === "ready-for-box"
-                      ? "R-D"
-                      : order?.status === "waiting-payment"
-                        ? "To be Paid"
-                        : order?.status}
-                  </div>
+                  <span className={getStatusStyle(order?.status)}>
+                    {getStatusLabel(order?.status)}
+                  </span>
                 </Td>
 
                 <Td>
-                  <div className="flex flex-wrap">
-                    <span className="min-w-10 text-md font-semibold text-gray-600 dark:text-gray-300">
-                      Total
-                    </span>
-                    <span className="text-md font-semibold text-gray-600 dark:text-gray-300">
-                      : ৳ {order?.total || 0}
-                    </span>
-                  </div>
-
-                  <div className="flex flex-wrap mt-1.5">
-                    <span className="min-w-10 text-md font-semibold text-gray-600 dark:text-gray-300">
-                      Due :
+                  <div className="table-contact-stack">
+                    <span className="table-amount">
+                      Total: ৳ {order?.total || 0}
                     </span>
                     <span
-                      className={`text-md font-semibold  dark:text-gray-300 ${dueColor}`}
+                      className={`table-role-badge ${
+                        Number(order?.due) > 0 ? "is-rejected" : "is-approved"
+                      }`}
                     >
-                      ৳ {order?.due || 0}
+                      Due: ৳ {order?.due || 0}
                     </span>
                   </div>
                 </Td>
@@ -364,7 +331,7 @@ const AllOrderTable: React.FC = () => {
                     {trimString(order?.customer_note?.text, 100) || noData}
 
                     {order?.label && (
-                      <p className="bg-red-100 text-red-600 px-2 rounded-lg ml-2">
+                      <p className="table-role-badge is-rejected ml-1">
                         {order?.label}
                       </p>
                     )}
@@ -373,7 +340,7 @@ const AllOrderTable: React.FC = () => {
                       {order?.line_items?.some(
                         (item: any) => item?.stock_status === "out-of-stock",
                       ) && (
-                        <p className="bg-red-100 text-red-600 px-2 rounded-lg ml-2">
+                        <p className="table-role-badge is-rejected">
                           out-of-stock
                         </p>
                       )}
@@ -381,7 +348,7 @@ const AllOrderTable: React.FC = () => {
                   </div>
                 </Td>
 
-                <Td>
+                <Td className="is-center">
                   <Link
                     href={`/admin/orders/view/${order?._id}`}
                     onClick={() => {
@@ -389,18 +356,19 @@ const AllOrderTable: React.FC = () => {
                         localStorage.setItem("viewOrderStatus", order.status);
                       }
                     }}
-                    className="bg-blue-500 px-4 py-1 rounded-lg text-white text-center w-20 cursor-pointer inline-block"
+                    className="data-table-view-btn"
                   >
+                    <Icon name="visibility" variant="outlined" size={14} />
                     View
                   </Link>
                 </Td>
 
-                <Td>
+                <Td className="is-center">
                   {order?.is_print ? (
                     <Icon
                       name="check_circle"
                       variant="filled"
-                      className="text-green-600"
+                      className="text-[var(--color-primary)]"
                       size={15}
                     />
                   ) : (
@@ -408,19 +376,21 @@ const AllOrderTable: React.FC = () => {
                   )}
                 </Td>
 
-                <Td>
+                <Td className="is-right">
                   <div className="relative max-w-40">
-                    <Icon
-                      name="more_horiz"
-                      variant="outlined"
+                    <button
+                      type="button"
+                      className="data-table-action-btn"
+                      aria-expanded={popupIndex === index}
                       onClick={() => togglePopup(index)}
-                      className="cursor-pointer"
-                    />
+                    >
+                        <Icon name="more_vert" variant="outlined" size={18} />
+                    </button>
 
                     {popupIndex === index && (
                       <div
                         ref={popupRef}
-                        className="absolute top-8 right-0 bg-white dark:bg-gray-700 dark:border-gray-500 border shadow-md rounded-lg p-2 z-20 min-w-40"
+                        className="absolute top-9 right-0 z-20 min-w-40 rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-1.5 shadow-[var(--shadow-soft)]"
                       >
                         {permissionList.includes("order_edit") &&
                           ![
@@ -436,7 +406,7 @@ const AllOrderTable: React.FC = () => {
                                   `/admin/orders/edit/${String(order?._id)}`,
                                 )
                               }
-                              className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg"
+                              className="block w-full rounded-lg px-3 py-2 text-left text-sm text-app hover:bg-[var(--bg-hover)]"
                             >
                               Edit
                             </button>
@@ -445,10 +415,10 @@ const AllOrderTable: React.FC = () => {
                         <button
                           onClick={() => handleInvoicePrintClick(orderIdStr)}
                           disabled={isCurrentPrinting}
-                          className={`flex items-center gap-2 w-full text-left px-4 py-2 rounded-lg mb-1 ${
+                          className={`mb-0.5 flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm ${
                             isCurrentPrinting
-                              ? "bg-gray-100 text-gray-400 cursor-not-allowed dark:bg-gray-600"
-                              : "hover:bg-gray-100 dark:hover:bg-gray-600"
+                              ? "cursor-not-allowed text-app-muted opacity-60"
+                              : "text-app hover:bg-[var(--bg-hover)]"
                           }`}
                         >
                           {isCurrentPrinting && printType === "invoice" ? (
@@ -465,10 +435,10 @@ const AllOrderTable: React.FC = () => {
                             handlePackingSlipPrintClick(orderIdStr)
                           }
                           disabled={isCurrentPrinting}
-                          className={`flex items-center gap-2 w-full text-left px-4 py-2 rounded-lg ${
+                          className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm ${
                             isCurrentPrinting
-                              ? "bg-gray-100 text-gray-400 cursor-not-allowed dark:bg-gray-600"
-                              : "hover:bg-gray-100 dark:hover:bg-gray-600"
+                              ? "cursor-not-allowed text-app-muted opacity-60"
+                              : "text-app hover:bg-[var(--bg-hover)]"
                           }`}
                         >
                           {isCurrentPrinting && printType === "packing" ? (

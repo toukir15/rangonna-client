@@ -1,50 +1,23 @@
 import React from "react";
-import Skeleton from "./Skeleton";
 
 const WatchSkeleton: React.FC = () => {
-  const demoData = [
-    { id: 1 },
-    { id: 2 },
-    { id: 3 },
-    { id: 4 },
-    { id: 5 },
-    { id: 6 },
-    { id: 7 },
-    { id: 8 },
-    { id: 9 },
-    { id: 10 },
-    { id: 11 },
-    { id: 12 },
-    { id: 13 },
-    { id: 14 },
-    { id: 15 },
-  ];
+  const cards = Array.from({ length: 10 }, (_, i) => i + 1);
+
   return (
-    <div className=" rongonaa-shop-grid mt-5">
-      {demoData?.map((data) => (
-        <div
-          key={data?.id}
-          className="bg-[#dfdfe0]  sm:h-80 opacity-70  rounded-lg p-3"
-        >
-          <div className="">
-            <div>
-              <Skeleton type="text" count={1} height={150} width={"100%"} />
-            </div>
-            <div className=" mt-4">
-              <Skeleton type="text" count={1} height={18} width={"100%"} />
-              <Skeleton type="text" count={1} height={18} width={"80%"} />
-              <Skeleton type="text" count={1} height={18} width={"60%"} />
-            </div>
-            <div className=" mt-4 sm:flex items-center w-full gap-3">
-              <div className="sm:w-1/2">
-                <Skeleton type="text" count={1} height={32} width={"100%"} />
-              </div>
-              <div className="sm:w-1/2">
-                <Skeleton type="text" count={1} height={32} width={"100%"} />
-              </div>
+    <div className="rongonaa-shop-grid rongonaa-skel-grid mt-5" aria-hidden="true">
+      {cards.map((id) => (
+        <article key={id} className="rongonaa-skel-card">
+          <div className="rongonaa-skel-card__media" />
+          <div className="rongonaa-skel-card__body">
+            <div className="rongonaa-skel-line rongonaa-skel-line--title" />
+            <div className="rongonaa-skel-line rongonaa-skel-line--sub" />
+            <div className="rongonaa-skel-line rongonaa-skel-line--price" />
+            <div className="rongonaa-skel-actions">
+              <div className="rongonaa-skel-btn" />
+              <div className="rongonaa-skel-btn rongonaa-skel-btn--cta" />
             </div>
           </div>
-        </div>
+        </article>
       ))}
     </div>
   );

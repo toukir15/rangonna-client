@@ -1,24 +1,43 @@
+"use client";
+
 import React, { useContext, useEffect, useRef, useState } from "react";
 import TableWrapper from "@admin/components/Table/TableWrapper";
 import { Tbody, Td, Th, Thead, Tr } from "@admin/components/Table/Table";
 import Icon from "@admin/components/core/Icon/Icon";
 import { formatTimeAgo } from "@admin/utils/hook.utils";
 import { DepositContext } from "@/app/admin/account/deposit/page";
-// import { IDeposit } from "@admin/@interfaces/account/deposit/deposit";
 import { useGlobalContext } from "@admin/context/GlobalContext";
 import { hasPermission } from "@admin/utils";
+import TableRefreshButton from "@admin/components/Table/TableRefreshButton";
+import AllFilter from "@admin/components/pages/AllFilter/AllFilter";
 
-const DepositTable: React.FC = () => {
+type DepositTableProps = {
+  searchTerm: string;
+  onSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  range: any;
+  setRange: any;
+  onRefresh: () => void;
+};
+
+const formatAmount = (value: unknown) => {
+  const num = Number(value);
+  if (Number.isNaN(num)) return String(value ?? "—");
+  return num.toLocaleString();
+};
+
+const DepositTable: React.FC<DepositTableProps> = ({
+  searchTerm,
+  onSearchChange,
+  range,
+  setRange,
+  onRefresh,
+}) => {
   const { permissionList } = useGlobalContext();
-  const {
-    deposit,
-    tableLoading,
-    handleEditClick,
-    // handleRemove
-  } = useContext(DepositContext);
+  const { deposit, tableLoading, handleEditClick } = useContext(DepositContext);
 
   const [popupIndex, setPopupIndex] = useState<number | null>(null);
   const popupRef = useRef<HTMLDivElement | null>(null);
+
   const togglePopup = (index: number) => {
     setPopupIndex(popupIndex === index ? null : index);
   };
@@ -35,151 +54,179 @@ const DepositTable: React.FC = () => {
 
     if (popupIndex !== null) {
       document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
     }
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [popupIndex]);
+
+  const totalCount = deposit?.length ?? 0;
+
   return (
-    <TableWrapper
-      isSwitchOn={true}
-      className="min-h-[650px]"
-      data={deposit}
-      isLoading={tableLoading}
-      noDataViewCondition={deposit?.length < 1 ? "No data available" : null}
-      colValue={7}
-    >
-      <Thead>
-        <Tr className="dark:bg-gray-700 bg-blue-100 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
-          {/* <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-14 min-w-28">
-            <div className="flex items-center ">
-              <div>
-                <p>Warehouse</p>
-              </div>
-              <div className="mt-2">
-                {" "}
-                <div className="h-1.5">
-                  <Icon name={"arrow_drop_up"} className=" cursor-pointer" />
-                </div>
-                <div className="">
-                  <Icon name={"arrow_drop_down"} className=" cursor-pointer" />{" "}
-                </div>
-              </div>
-            </div>
-          </Th> */}
-          <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-14 min-w-40">
-            Date
-          </Th>
-          <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-14 min-w-32">
-            Amount
-          </Th>
-          {/* <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-14 min-w-36">
-                     <div className="flex items-center ">
-                       <div>
-                         <p>Warehouse</p>
-                       </div>
-                       <div className="mt-2">
-                         {" "}
-                         <div className="h-1.5">
-                           <Icon name={"arrow_drop_up"} className=" cursor-pointer" />
-                         </div>
-                         <div className="">
-                           <Icon name={"arrow_drop_down"} className=" cursor-pointer" />{" "}
-                         </div>
-                       </div>
-                     </div>
-                   </Th> */}
-          <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-14 min-w-24">
-            Account
-          </Th>
-          <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-14 min-w-24">
-            Method
-          </Th>
-          <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-14 min-w-40">
-            Deposit Category
-          </Th>
-          <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-14 min-w-40">
-            Reference
-          </Th>
-          <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-14 min-w-40">
-            Note
-          </Th>
+    <div className="data-table-card glass-card rounded-2xl overflow-hidden flex flex-col">
+      <div className="premium-table-toolbar">
+        <p className="premium-table-toolbar-title">Deposit records</p>
+        <p className="premium-table-toolbar-meta">
+          {totalCount} {totalCount === 1 ? "deposit" : "deposits"}
+        </p>
+      </div>
 
-          <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-14 min-w-40">
-            User
-          </Th>
-          <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-14 min-w-40">
-            Action
-          </Th>
-        </Tr>
-      </Thead>
-      <Tbody className="dark:bg-gray-800 bg-white">
-        {deposit?.map((item: any, index: number) => {
-          return (
-            <Tr className="h-14" key={index}>
-              <Td>
-                <p>{item?.updatedAt && formatTimeAgo(item?.updatedAt)}</p>
-                <p>{formatTimeAgo(item?.createdAt)}</p>
-              </Td>
-              <Td className="">{item?.amount}</Td>
+      <div className="data-table-toolbar">
+        <div className="data-table-toolbar-start">
+          <label className="data-table-search">
+            <Icon name="search" variant="outlined" size={18} />
+            <input
+              type="search"
+              value={searchTerm}
+              onChange={onSearchChange}
+              placeholder="Search deposits..."
+              aria-label="Search deposits"
+            />
+          </label>
+          <AllFilter isCalendarFilter={true} range={range} setRange={setRange} />
+        </div>
+        <div className="data-table-toolbar-end">
+          <TableRefreshButton
+            onRefresh={onRefresh}
+            isLoading={tableLoading}
+            className="!h-9"
+          />
+        </div>
+      </div>
 
-              <Td>{item?.account?.account_name}</Td>
-              <Td>{item?.payment_method}</Td>
-              <Td>{item?.deposit_category?.title}</Td>
-              <Td>{item?.reference_no}</Td>
-              <Td>{item?.note}</Td>
-              <Td>{item?.user?.name}</Td>
+      <TableWrapper
+        isSwitchOn={true}
+        className="!mt-0 !min-h-[420px] !flex-1 !rounded-none !border-0 !shadow-none !bg-transparent [backdrop-filter:none]"
+        data={deposit}
+        isLoading={tableLoading}
+        noDataViewCondition={deposit?.length < 1 ? "No data available" : null}
+        colValue={8}
+      >
+        <Thead>
+          <Tr>
+            <Th>Date</Th>
+            <Th>Amount</Th>
+            <Th>Account</Th>
+            <Th>Method</Th>
+            <Th>Category</Th>
+            <Th>Reference</Th>
+            <Th>Created</Th>
+            <Th className="is-right">Actions</Th>
+          </Tr>
+        </Thead>
+        <Tbody>
+          {deposit?.map((item: any, index: number) => {
+            const canEdit =
+              hasPermission(permissionList, "account_deposit_edit") &&
+              item?.source === "courier-payment";
 
-              <Td className="">
-                {hasPermission(permissionList, "account_deposit_edit") &&
-                  item?.source === "courier-payment" && (
-                    <div className="relative">
-                      <Icon
-                        name={"more_horiz"}
-                        variant="outlined"
+            return (
+              <Tr key={item?._id ?? index}>
+                <Td>
+                  <span className="table-date-cell">
+                    <Icon name="calendar_today" variant="outlined" size={14} />
+                    {item?.createdAt ? formatTimeAgo(item.createdAt) : "—"}
+                  </span>
+                </Td>
+                <Td>
+                  <span className="table-amount">
+                    {formatAmount(item?.amount)}
+                  </span>
+                </Td>
+                <Td>
+                  {item?.account?.account_name ? (
+                    <span className="table-contact-line">
+                      <Icon name="account_balance_wallet" variant="outlined" size={14} />
+                      <span>{item.account.account_name}</span>
+                    </span>
+                  ) : (
+                    <span className="table-empty-value">—</span>
+                  )}
+                </Td>
+                <Td>
+                  {item?.payment_method ? (
+                    <span className="data-table-secondary">
+                      {item.payment_method}
+                    </span>
+                  ) : (
+                    <span className="table-empty-value">—</span>
+                  )}
+                </Td>
+                <Td>
+                  {item?.deposit_category?.title ? (
+                    <span className="table-company-cell">
+                      <Icon name="category" variant="outlined" size={14} />
+                      <span>{item.deposit_category.title}</span>
+                    </span>
+                  ) : (
+                    <span className="table-empty-value">—</span>
+                  )}
+                </Td>
+                <Td>
+                  <div className="table-user-info">
+                    {item?.reference_no ? (
+                      <span className="table-id-chip">{item.reference_no}</span>
+                    ) : (
+                      <span className="table-empty-value">—</span>
+                    )}
+                    {item?.note ? (
+                      <p className="data-table-muted mt-1 line-clamp-2">
+                        {item.note}
+                      </p>
+                    ) : null}
+                  </div>
+                </Td>
+                <Td>
+                  <div className="table-contact-stack">
+                    <span className="table-contact-line">
+                      <Icon name="person" variant="outlined" size={14} />
+                      <span>{item?.user?.name || "—"}</span>
+                    </span>
+                    {item?.updatedAt ? (
+                      <span className="table-date-cell">
+                        <Icon name="schedule" variant="outlined" size={14} />
+                        {formatTimeAgo(item.updatedAt)}
+                      </span>
+                    ) : null}
+                  </div>
+                </Td>
+                <Td className="is-right">
+                  {canEdit ? (
+                    <div className="table-actions-cell relative">
+                      <button
+                        type="button"
+                        className="data-table-action-btn"
+                        aria-label="Row actions"
+                        aria-expanded={popupIndex === index}
                         onClick={() => togglePopup(index)}
-                        className="cursor-pointer"
-                      />
+                      >
+                        <Icon name="more_vert" variant="outlined" size={18} />
+                      </button>
                       {popupIndex === index && (
-                        <div
-                          ref={popupRef}
-                          className="absolute top-8 right-0 bg-white border shadow-md rounded-lg p-4 z-20 min-w-40 dark:bg-gray-700 dark:border-gray-500"
-                        >
-                          {hasPermission(
-                            permissionList,
-                            "account_deposit_edit"
-                          ) && (
-                            <button
-                              className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg"
-                              onClick={() => handleEditClick(item)}
-                            >
-                              Edit
-                            </button>
-                          )}
-                          {/* {hasPermission(
-                          permissionList,
-
-                          "depo_d"
-                        ) && (
+                        <div ref={popupRef} className="data-table-row-menu">
                           <button
-                            className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg"
-                            onClick={() => handleRemove(item?._id)}
+                            type="button"
+                            onClick={() => {
+                              handleEditClick(item);
+                              setPopupIndex(null);
+                            }}
                           >
-                            Delete
+                            <Icon name="edit" variant="outlined" size={16} />
+                            Edit deposit
                           </button>
-                        )} */}
                         </div>
                       )}
                     </div>
+                  ) : (
+                    <span className="table-empty-value">—</span>
                   )}
-              </Td>
-            </Tr>
-          );
-        })}
-      </Tbody>
-    </TableWrapper>
+                </Td>
+              </Tr>
+            );
+          })}
+        </Tbody>
+      </TableWrapper>
+    </div>
   );
 };
 
