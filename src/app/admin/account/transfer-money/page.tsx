@@ -166,7 +166,7 @@ const Page: React.FC = () => {
       <NoScrollLayout>
         <div className="lg:flex items-center justify-between 2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 md:pb-0 mb-2">
           <div className="md:flex items-center gap-4">
-            <h2 className="2xl:text-2xl lg:text-xl text-lg text-blue-900 font-semibold dark:text-gray-300 text-nowrap">
+            <h2 className="2xl:text-2xl lg:text-xl text-lg font-semibold text-app text-nowrap">
               Transfers Money
             </h2>
             <div className="md:w-80 w-full md:my-0 my-2">
@@ -181,7 +181,7 @@ const Page: React.FC = () => {
           <div className="mt-2 lg:mt-0 flex justify-end">
             {hasPermission(permissionList, "account_transfer_money_create") && (
               <Button
-                className="flex items-center bg-blue-500 !px-4"
+                className="btn-primary btn-primary-inline inline-flex items-center gap-2"
                 onClick={handleAddClick}
               >
                 <Icon name={"add"} />

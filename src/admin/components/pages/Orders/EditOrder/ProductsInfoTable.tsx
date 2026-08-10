@@ -16,6 +16,11 @@ interface OrderDetailsTableProps {
   router: any;
 }
 
+const formatMoney = (value: number | string | undefined | null) => {
+  const n = Number(value ?? 0);
+  return Number.isFinite(n) ? n.toFixed(2) : "0.00";
+};
+
 export const ProductsInfoTable = ({
   isLoading,
   orderDetails,
@@ -31,261 +36,210 @@ export const ProductsInfoTable = ({
     return <EditProductInfoSkeleton />;
   }
 
-  const remainingAmount =
-    subtotal +
-    Number(
-      orderDetails?.shipping_total
-        ? orderDetails?.shipping_total
-        : orderDetails?.shipping_line?.total
-    ) -
-    orderDetails?.discount_total -
-    orderDetails?.paid;
+  const shipping = Number(
+    orderDetails?.shipping_total ?? orderDetails?.shipping_line?.total ?? 0,
+  );
+  const discount = Number(orderDetails?.discount_total ?? 0);
+  const paid = Number(orderDetails?.paid ?? 0);
+  const coupon = Number(orderDetails?.coupon?.amount ?? 0);
+  const total = subtotal + shipping - discount;
+  const due = total - paid;
+
+  const remainingAmount = subtotal + shipping - discount - paid;
+
+  type SummaryRow = {
+    label: string;
+    value: string;
+    emphasis?: boolean;
+    due?: boolean;
+    success?: boolean;
+  };
+
+  const summaryRows: SummaryRow[] = [
+    ...(coupon > 0
+      ? [{ label: "Coupon (−)", value: formatMoney(coupon) }]
+      : []),
+    { label: "Subtotal", value: formatMoney(subtotal) },
+    { label: "Shipping", value: formatMoney(shipping) },
+    { label: "Discount (−)", value: formatMoney(discount) },
+    { label: "Total", value: formatMoney(total), emphasis: true },
+    { label: "Paid (−)", value: formatMoney(paid) },
+    {
+      label: "Due",
+      value: formatMoney(due),
+      due: due > 0,
+      success: due <= 0,
+    },
+  ];
 
   return (
     <>
-      <div className="overflow-x-auto">
-        <table className="min-w-full border-collapse border dark:border-gray-500">
-          <thead className="bg-blue-100 dark:bg-gray-800  dark:text-gray-300 h-[50px] shadow-sm border-b border-gray-300 dark:border-gray-500">
-            <tr>
-              <th className="border dark:border-gray-600 px-4 py-2 min-w-40">
-                Product Image
-              </th>
-              <th className="border dark:border-gray-600 px-4 py-2 min-w-60">
-                Product Name
-              </th>
-              <th className="border dark:border-gray-600 px-4 py-2 min-w-40">
-                Quantity
-              </th>
-              <th className="border dark:border-gray-600 px-4 py-2 min-w-32">
-                Price
-              </th>
-              <th className="border dark:border-gray-600 px-4 py-2 min-w-32">
-                Subtotal
-              </th>
-              <th className="border dark:border-gray-600 px-4 py-2 min-w-20">
-                Action
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {orderDetails?.line_items?.length > 0 ? (
-              [...orderDetails.line_items]
-                .reverse()
-                .map((product: any, reversedIndex: number) => {
-                  const originalIndex =
-                    orderDetails.line_items.length - 1 - reversedIndex;
-                  return (
-                    <tr
-                      key={originalIndex}
-                      className="odd:bg-gray-100 dark:odd:bg-gray-700 dark:border-gray-600 border"
-                    >
-                      <td className="flex items-center justify-center my-2 cursor-pointer">
-                        {product?.product_id?.featured_image?.src && (
-                          <Image
-                            src={
-                              product?.product_id?.featured_image?.src
-                                ? product?.product_id?.featured_image?.src
-                                : NodataImage
-                            }
-                            width={80}
-                            height={80}
-                            className="rounded-md"
-                            alt="Product Image"
-                            onClick={() =>
-                              handleImageClick(
-                                product?.product_id?.featured_image?.src
-                              )
-                            }
-                          />
-                        )}
-                      </td>
-                      <td className="border dark:border-gray-600 text-lg font-semibold px-4 py-2 dark:text-gray-400">
-                        <div>
-                          <p>{product?.title}</p>
-                          {(product?.sku || product?.product_id?.sku) && (
-                            <p className="text-sm font-normal text-gray-500 dark:text-gray-400">
-                              Sku: {product?.sku || product?.product_id?.sku}
-                            </p>
-                          )}
-                          {product?.size ? (
-                            <p className="text-sm font-normal text-gray-500 dark:text-gray-400">
-                              Size: {product.size}
-                            </p>
-                          ) : null}
-                        </div>
-                      </td>
-                      <td className="border dark:border-gray-600 px-4 py-2">
-                        <div className="flex items-center justify-center">
-                          <button
-                            type="button"
-                            onClick={() => decrementQuantity(originalIndex)}
-                            className="bg-gray-300 dark:bg-gray-600 dark:text-gray-300 px-3 py-1 rounded-l"
-                          >
-                            -
-                          </button>
-                          <input
-                            type="number"
-                            value={product.quantity}
-                            readOnly
-                            className="w-16 text-center py-1 border-t border-b dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => incrementQuantity(originalIndex)}
-                            className="bg-gray-300 dark:bg-gray-600 px-3 py-1 rounded-r dark:text-gray-300"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </td>
-                      <td className="border dark:border-gray-600 px-4 font-semibold text-md py-2 dark:text-gray-400">
-                        BDT: {Number(product.price).toFixed(2)}
-                      </td>
-                      <td className="border dark:border-gray-600 px-4 font-semibold text-md py-2 dark:text-gray-400">
-                        BDT: {(product.price * product.quantity).toFixed(2)}
-                      </td>
-                      <td className="border px-4 py-2 text-center dark:border-gray-600">
-                        <button
-                          type="button"
-                          onClick={() =>
-                            handleRemoveProduct(product?.product_id)
-                          }
-                          className="text-red-600 hover:text-red-800 dark:hover:text-red-400"
-                        >
-                          <Icon name="delete" variant="filled" />
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })
-            ) : (
+      <div className="edit-order-products-card">
+        <div className="overflow-x-auto">
+          <table className="edit-order-products-table">
+            <thead>
               <tr>
-                <td colSpan={5} className="text-center py-4 dark:text-gray-400">
-                  No products added yet
-                </td>
+                <th>Product</th>
+                <th>Name</th>
+                <th className="is-center">Quantity</th>
+                <th className="is-right">Price</th>
+                <th className="is-right">Subtotal</th>
+                <th className="is-center">Action</th>
               </tr>
-            )}
-          </tbody>
-          <tfoot>
-            {orderDetails?.coupon?.amount > 0 && (
-              <tr>
-                <td
-                  colSpan={5}
-                  className="text-right font-semibold px-4 py-2 dark:text-gray-300"
-                >
-                  Coupon(-):
-                </td>
-                <td className="px-4 py-2 dark:text-gray-300 text-end">
-                  {orderDetails?.coupon?.amount}
-                </td>
-                <td></td>
-              </tr>
-            )}
+            </thead>
+            <tbody>
+              {orderDetails?.line_items?.length > 0 ? (
+                [...orderDetails.line_items]
+                  .reverse()
+                  .map((product: any, reversedIndex: number) => {
+                    const originalIndex =
+                      orderDetails.line_items.length - 1 - reversedIndex;
+                    const rawSrc =
+                      product?.product_id?.featured_image?.src ||
+                      product?.image ||
+                      "";
+                    const imageSrc = rawSrc || NodataImage;
+                    const canPreview = Boolean(rawSrc);
 
-            <tr>
-              <td
-                colSpan={5}
-                className="text-right font-semibold px-4 py-2 dark:text-gray-300 "
+                    return (
+                      <tr key={originalIndex}>
+                        <td>
+                          <button
+                            type="button"
+                            className="edit-order-product-thumb"
+                            title={product?.title || "Product image"}
+                            onClick={() => {
+                              if (canPreview) handleImageClick(imageSrc);
+                            }}
+                          >
+                            <Image
+                              src={imageSrc}
+                              width={140}
+                              height={140}
+                              quality={80}
+                              className="object-cover"
+                              alt={product?.title || "Product Image"}
+                            />
+                          </button>
+                        </td>
+                        <td>
+                          <div className="edit-order-product-meta">
+                            <p className="edit-order-product-title">
+                              {product?.title}
+                            </p>
+                            {(product?.sku || product?.product_id?.sku) && (
+                              <p className="edit-order-product-sub">
+                                SKU: {product?.sku || product?.product_id?.sku}
+                              </p>
+                            )}
+                            {product?.size ? (
+                              <p className="edit-order-product-sub">
+                                Size: {product.size}
+                              </p>
+                            ) : null}
+                          </div>
+                        </td>
+                        <td className="is-center">
+                          <div className="edit-order-qty">
+                            <button
+                              type="button"
+                              aria-label="Decrease quantity"
+                              onClick={() => decrementQuantity(originalIndex)}
+                            >
+                              <Icon name="remove" size={16} />
+                            </button>
+                            <input
+                              type="number"
+                              value={product.quantity}
+                              readOnly
+                              aria-label="Quantity"
+                            />
+                            <button
+                              type="button"
+                              aria-label="Increase quantity"
+                              onClick={() => incrementQuantity(originalIndex)}
+                            >
+                              <Icon name="add" size={16} />
+                            </button>
+                          </div>
+                        </td>
+                        <td className="is-right">
+                          <span className="edit-order-money">
+                            ৳ {formatMoney(product.price)}
+                          </span>
+                        </td>
+                        <td className="is-right">
+                          <span className="edit-order-money is-strong">
+                            ৳{" "}
+                            {formatMoney(
+                              Number(product.price) * Number(product.quantity),
+                            )}
+                          </span>
+                        </td>
+                        <td className="is-center">
+                          <button
+                            type="button"
+                            className="edit-order-remove-btn"
+                            aria-label="Remove product"
+                            title="Remove product"
+                            onClick={() =>
+                              handleRemoveProduct(product?.product_id)
+                            }
+                          >
+                            <Icon name="delete" variant="outlined" size={18} />
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })
+              ) : (
+                <tr>
+                  <td colSpan={6} className="edit-order-empty">
+                    No products added yet
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="edit-order-summary">
+          <div className="edit-order-summary-card">
+            {summaryRows.map((row) => (
+              <div
+                key={row.label}
+                className={[
+                  "edit-order-summary-row",
+                  row.emphasis ? "is-total" : "",
+                  row.due ? "is-due" : "",
+                  row.success ? "is-paid" : "",
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
               >
-                Subtotal:
-              </td>
-              <td className="px-4 py-2 dark:text-gray-300 text-end">
-                {subtotal}
-              </td>
-              <td></td>
-            </tr>
-            <tr>
-              <td
-                colSpan={5}
-                className="text-right font-semibold px-4 py-2 dark:text-gray-300 "
-              >
-                Shipping:
-              </td>
-              <td className="px-4 py-2 dark:text-gray-300 text-end">
-                {orderDetails?.shipping_total
-                  ? orderDetails?.shipping_total
-                  : orderDetails?.shipping_line?.total}
-              </td>
-              <td></td>
-            </tr>
-            <tr>
-              <td
-                colSpan={5}
-                className="text-right font-semibold px-4 py-2 dark:text-gray-300"
-              >
-                Discount(-):
-              </td>
-              <td className="px-4 py-2 dark:text-gray-300 text-end">
-                {orderDetails?.discount_total}
-              </td>
-              <td></td>
-            </tr>
-            <tr>
-              <td
-                colSpan={5}
-                className="text-right font-semibold px-4 py-2 dark:text-gray-300"
-              >
-                Total:
-              </td>
-              <td className="px-4 py-2 dark:text-gray-300 text-end">
-                {subtotal +
-                  orderDetails?.shipping_line?.total -
-                  orderDetails?.discount_total || 0}
-              </td>
-              <td></td>
-            </tr>
-            <tr>
-              <td
-                colSpan={5}
-                className="text-right font-semibold px-4 py-2 dark:text-gray-300"
-              >
-                Paid(-):
-              </td>
-              <td className="px-4 py-2 dark:text-gray-300 text-end">
-                {orderDetails?.paid}
-              </td>
-              <td></td>
-            </tr>
-            <tr>
-              <td
-                colSpan={5}
-                className="text-right font-semibold px-4 py-2 dark:text-gray-300"
-              >
-                Due:
-              </td>
-              <td className="px-4 py-2 dark:text-gray-300 text-end">
-                {subtotal +
-                  Number(
-                    orderDetails?.shipping_total
-                      ? orderDetails?.shipping_total
-                      : orderDetails?.shipping_line?.total
-                  ) -
-                  orderDetails?.discount_total -
-                  orderDetails?.paid}
-              </td>
-              <td></td>
-            </tr>
-          </tfoot>
-        </table>
+                <span>{row.label}</span>
+                <strong>৳ {row.value}</strong>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
-      <div className="flex items-end justify-end gap-4 mt-4">
+      <div className="edit-order-actions">
         <button
           type="button"
-          onClick={() => router.push(`/admin/orders/view/${orderDetails?._id}`)}
-          className="bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-200 px-6 py-2 rounded-md hover:bg-gray-400 dark:hover:bg-gray-500 transition"
+          onClick={() =>
+            router.push(`/admin/orders/view/${orderDetails?._id}`)
+          }
+          className="btn-secondary"
         >
           Cancel
         </button>
         <button
           type="submit"
-          className={`px-6 py-2 rounded-md transition text-white
-            ${
-              remainingAmount < 0
-                ? "bg-red-400 cursor-not-allowed"
-                : "bg-blue-500 hover:bg-blue-600"
-            }
-          `}
+          className={`btn-primary ${
+            remainingAmount < 0 ? "!bg-red-500 hover:!opacity-90" : ""
+          }`}
           disabled={isSubmitting || remainingAmount < 0}
         >
           {isSubmitting ? (

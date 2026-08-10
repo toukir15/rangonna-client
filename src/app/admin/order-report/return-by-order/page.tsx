@@ -1,7 +1,5 @@
 "use client";
 import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
-import { IWebsiteOption, SelectOption } from "@admin/@interfaces/common.interface";
-import { GlobalService } from "@admin/@services/apis/GlobalService/Global.service";
 import Icon from "@admin/components/core/Icon/Icon";
 import { Tbody, Td, Th, Thead, Tr } from "@admin/components/Table/Table";
 import TableWrapper from "@admin/components/Table/TableWrapper";
@@ -16,7 +14,6 @@ import ProgressBar from "@admin/components/pages/Orders/ViewOrder/ProgressBar";
 import { useLocalStorageDateRange } from "@admin/utils";
 import PageSearch from "@admin/components/core/Search/PageSearch";
 import AllFilter from "@admin/components/pages/AllFilter/AllFilter";
-import Button from "@admin/components/core/Button/Button";
 
 const DEFAULT_DATE_RANGE = {
   ...last30DaysRange(),
@@ -36,14 +33,9 @@ export interface IReturnOrder {
 }
 
 const Page: React.FC = () => {
-  const [websiteOptions, setWebsiteOptions] = useState<IWebsiteOption[]>([]);
   const [returnByOrderData, setReturnByOrderData] = useState<IReturnOrder[]>(
     []
   );
-  const [selectedWebsite, setSelectedWebsite] = useState<SelectOption>({
-    value: "all",
-    label: "All Website",
-  });
   const abortRef = useRef<AbortController | null>(null);
   const [ordersPerPage, setOrdersPerPage] = useState<number>(20);
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -129,33 +121,8 @@ const Page: React.FC = () => {
   }, [baseApi, returnByOrderData]);
 
   useEffect(() => {
-    fetchWebList();
-  }, []);
-
-  useEffect(() => {
     fetchMonthlyProfit();
-  }, [range, debouncedSearchTerm, currentPage, ordersPerPage, selectedWebsite]);
-
-  const fetchWebList = async () => {
-    GlobalService.getWebsiteList()
-      .then((res: any) => {
-        if (res?.success) {
-          const options = res?.data?.map((item: any) => ({
-            label: item.web_name,
-            value: item.web_url,
-          }));
-          setWebsiteOptions([
-            { value: "all", label: "All Website" },
-            ...options,
-          ]);
-        } else {
-          ToastService.error(res?.message);
-        }
-      })
-      .catch((err: { message: string }) => {
-        ToastService.error(err.message);
-      });
-  };
+  }, [range, debouncedSearchTerm, currentPage, ordersPerPage]);
 
   const fetchMonthlyProfit = async () => {
     const formattedFrom = formatDateRange(range.startDate).trim();
@@ -194,13 +161,12 @@ const Page: React.FC = () => {
 
   useTableRefreshRegister(fetchMonthlyProfit);
 
-
   return (
     <AuthLayout>
       <NoScrollLayout>
         <div className="2xl:pt-4 pt-2 2xl:px-4 px-3 w-full">
           <div className="sm:flex flex-wrap items-center items-center gap-3 pb-2">
-            <div className="flex flex-wrap items-center items-center gap-3  ">
+            <div className="flex flex-wrap items-center items-center gap-3">
               <h1 className="2xl:text-2xl lg:text-xl text-lg font-semibold dark:text-gray-300 text-gray-800 text-nowrap">
                 Return By Order
               </h1>
@@ -222,7 +188,7 @@ const Page: React.FC = () => {
         </div>
       </NoScrollLayout>
 
-      <div className="2xl:px-4 px-3 relative md:min-h-[84%] w-full ">
+      <div className="2xl:px-4 px-3 relative md:min-h-[84%] w-full">
         <TableWrapper
           showCheckbox={true}
           data={returnByOrderData}
@@ -235,24 +201,24 @@ const Page: React.FC = () => {
           colValue={7}
         >
           <Thead>
-            <Tr className="dark:bg-gray-700 bg-blue-100 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
-              <Th className="2xl:min-w-32 lg:min-w-14 min-w-32 text-blue-900 dark:text-gray-200">
+            <Tr className="dark:bg-gray-700 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
+              <Th className="2xl:min-w-32 lg:min-w-14 min-w-32 dark:text-gray-200">
                 Order Id
               </Th>
-              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40  text-blue-900 dark:text-gray-200">
+              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40 dark:text-gray-200">
                 Reason
               </Th>
-              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40  text-blue-900 dark:text-gray-200">
+              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40 dark:text-gray-200">
                 Phone
               </Th>
-              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40  text-blue-900 dark:text-gray-200 text-center">
+              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40 dark:text-gray-200 text-center">
                 Success Ratio
               </Th>
 
-              <Th className="2xl:min-w-32 lg:min-w-28 min-w-32 text-blue-900 dark:text-gray-200">
+              <Th className="2xl:min-w-32 lg:min-w-28 min-w-32 dark:text-gray-200">
                 Source
               </Th>
-              <Th className="2xl:min-w-32 lg:min-w-28 min-w-32 text-blue-900 dark:text-gray-200">
+              <Th className="2xl:min-w-32 lg:min-w-28 min-w-32 dark:text-gray-200">
                 Verified
               </Th>
             </Tr>

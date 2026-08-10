@@ -8,10 +8,8 @@ import { useRouter } from "next/navigation";
 import { useContext, useEffect, useRef, useState } from "react";
 
 const MenuTable = () => {
-
-    const router = useRouter()
-    const { menuData, tableLoading, handleRemove } =
-        useContext(MenuContext);
+    const router = useRouter();
+    const { menuData, tableLoading, handleRemove } = useContext(MenuContext);
 
     const [popupIndex, setPopupIndex] = useState<number | null>(null);
     const popupRef = useRef<HTMLDivElement | null>(null);
@@ -50,10 +48,8 @@ const MenuTable = () => {
                 colValue={4}
             >
                 <Thead>
-                    <Tr className="dark:bg-gray-700 bg-blue-100 h-[52px] shadow-sm border-b dark:border-gray-700 border-gray-300">
-                        <Th className="dark:text-gray-300 min-w-[220px]">Website</Th>
+                    <Tr className="dark:bg-gray-700 h-[52px] shadow-sm border-b dark:border-gray-700 border-gray-300">
                         <Th className="dark:text-gray-300 min-w-[520px]">Menu Structure</Th>
-
                         <Th className="dark:text-gray-300 min-w-[90px]">Action</Th>
                     </Tr>
                 </Thead>
@@ -61,45 +57,12 @@ const MenuTable = () => {
                 <Tbody className="dark:bg-gray-800 bg-white">
                     {menuData?.map((item: any, index: number) => {
                         const navItems = item?.navBarItems || [];
-                        const totalSubmenu = navItems.reduce(
-                            (acc: number, nav: any) => acc + (nav?.submenu?.length || 0),
-                            0
-                        );
 
                         return (
                             <Tr
                                 className="align-top border-b border-gray-200 dark:border-gray-700"
                                 key={item?._id || index}
                             >
-                                <Td className="py-4">
-                                    <div className="rounded-xl border border-gray-200 dark:border-gray-600 p-4 bg-gray-50 dark:bg-gray-900/40">
-                                        <div className="flex items-start gap-3">
-                                            <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center shrink-0">
-                                                <Icon name="language" className="text-blue-600" />
-                                            </div>
-
-                                            <div className="min-w-0">
-                                                <p className="font-semibold text-base text-gray-800 dark:text-white">
-                                                    {item?.website?.web_name || "N/A"}
-                                                </p>
-                                                <p className="text-sm text-blue-500 dark:text-gray-400 truncate py-1">
-                                                    {item?.website?.web_url || "No URL"}
-                                                </p>
-
-
-                                                <div className="flex flex-wrap gap-2 mt-1">
-                                                    <span className="text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
-                                                        {navItems.length} Main Menu
-                                                    </span>
-                                                    <span className="text-xs px-2 py-1 rounded-full bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300">
-                                                        {totalSubmenu} Submenu
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </Td>
-
                                 <Td className="py-4">
                                     <div className="space-y-3">
                                         {navItems.length > 0 ? (
@@ -110,13 +73,6 @@ const MenuTable = () => {
                                                 >
                                                     <div className="flex items-start justify-between gap-4">
                                                         <div className="flex items-start gap-3 min-w-0">
-                                                            {/* <div className="w-9 h-9 rounded-lg bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center shrink-0">
-                                                                <Icon
-                                                                    name={nav?.icon || "menu"}
-                                                                    className="text-blue-500"
-                                                                />
-                                                            </div> */}
-
                                                             <div className="min-w-0">
                                                                 <p className="font-semibold text-gray-800 dark:text-white">
                                                                     {nav?.name}
@@ -165,8 +121,6 @@ const MenuTable = () => {
                                     </div>
                                 </Td>
 
-
-
                                 <Td className="py-4">
                                     <div className="relative flex justify-center">
                                         <button
@@ -186,16 +140,14 @@ const MenuTable = () => {
                                                 ref={popupRef}
                                                 className="absolute top-11 right-0 bg-white border shadow-lg rounded-xl p-2 z-20 min-w-40 dark:bg-gray-700 dark:border-gray-500"
                                             >
-
                                                 <button
                                                     className="block w-full text-left px-4 py-2.5 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg"
                                                     onClick={() => {
-                                                        router.push(`/admin/customer-front/menu/edit-menu/${item?._id}`)
+                                                        router.push(`/admin/customer-front/menu/edit-menu/${item?._id}`);
                                                     }}
                                                 >
                                                     Edit
                                                 </button>
-
 
                                                 <button
                                                     className="block w-full text-left px-4 py-2.5 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg text-red-500"

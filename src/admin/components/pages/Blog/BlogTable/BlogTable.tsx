@@ -43,7 +43,7 @@ const BlogTable: React.FC = () => {
         colValue={6}
       >
         <Thead>
-          <Tr className="dark:bg-gray-700 bg-blue-100 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300">
+          <Tr className="dark:bg-gray-700 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300">
             <Th className="dark:text-gray-300 min-w-24">Image</Th>
             <Th className="dark:text-gray-300 min-w-56">Title</Th>
             <Th className="dark:text-gray-300 min-w-40">Category</Th>
@@ -97,7 +97,7 @@ const BlogTable: React.FC = () => {
                 <Link
                   href={`/blog/${item?._id}`}
                   target="_blank"
-                  className="bg-blue-500 px-5 py-1 rounded-lg text-white text-center cursor-pointer"
+                  className="data-table-view-btn"
                 >
                   View
                 </Link>

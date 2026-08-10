@@ -212,7 +212,7 @@ const BlogPageContent: React.FC = () => {
       <NoScrollLayout>
         <div className="md:flex  gap-3 items-center 2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 md:pb-0 mb-2">
           <div className="flex items-center 4xl:gap-4 gap-2">
-            <h2 className="2xl:text-2xl lg:text-xl text-lg text-blue-900 font-semibold dark:text-gray-300 text-nowrap">
+            <h2 className="2xl:text-2xl lg:text-xl text-lg font-semibold text-app text-nowrap">
               All Blogs
             </h2>
 

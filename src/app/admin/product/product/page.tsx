@@ -7,10 +7,12 @@ import { useGlobalContext } from "@admin/context/GlobalContext";
 import Icon from "@admin/components/core/Icon/Icon";
 import ProductSkeleton from "@admin/components/Skeleton/Product/Product.skeleton";
 import NoDataFoundTable from "@admin/components/pages/Orders/NoDataFoundTable";
-import { IProduct, IWebsite } from "@admin/@interfaces/product/product.interface";
+import { IProduct } from "@admin/@interfaces/product/product.interface";
+
+const DEFAULT_WEB_URL =
+  process.env.NEXT_PUBLIC_DEFAULT_ORDER_DOMAIN?.trim() || "";
 
 const Page: React.FC = () => {
-  const [selectedWebsite, setSelectedWebsite] = useState<any>();
   const [products, setProducts] = useState<IProduct[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -28,49 +30,8 @@ const Page: React.FC = () => {
     setToken(storedToken);
   }, []);
 
-  useEffect(() => {
+  const fetchProducts = async (page: number, search: string = "") => {
     if (!token) return;
-
-    setLoading(true);
-    const fetchWebsites = async () => {
-      const response = await fetch(`${baseAPI}/websiteList`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        ToastService.error("Failed to fetch websites");
-        console.error("HTTP error:", response.statusText);
-        setLoading(false);
-        return;
-      }
-
-      const text = await response.text();
-      try {
-        const data = JSON.parse(text) as IWebsite[];
-        const enabledWebsites = data.filter((website) => website.isEnabled);
-        if (enabledWebsites.length > 0) {
-          const defaultWebsite = enabledWebsites[0].url;
-          setSelectedWebsite(defaultWebsite);
-          fetchProducts(defaultWebsite, 1, searchTerm);
-        }
-      } catch (error) {
-        console.error("Error parsing JSON:", error);
-        ToastService.error("Error parsing websites");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchWebsites();
-  }, [token]);
-
-  const fetchProducts = async (
-    webURL: string,
-    page: number,
-    searchTerm: string = "",
-  ) => {
     setLoading(true);
 
     try {
@@ -80,7 +41,12 @@ const Page: React.FC = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ webURL, page, productsPerPage, searchTerm }),
+        body: JSON.stringify({
+          webURL: DEFAULT_WEB_URL,
+          page,
+          productsPerPage,
+          searchTerm: search,
+        }),
       });
 
       if (!response.ok) throw new Error("Failed to fetch products.");
@@ -88,7 +54,6 @@ const Page: React.FC = () => {
 
       if (data.error) {
         setProducts([]);
-
         setTotalPages(1);
       } else {
         setProducts(data.products);
@@ -102,9 +67,14 @@ const Page: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+    if (!token) return;
+    fetchProducts(1, searchTerm);
+  }, [token]);
+
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
-    fetchProducts(selectedWebsite, newPage, searchTerm);
+    fetchProducts(newPage, searchTerm);
   };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -113,7 +83,7 @@ const Page: React.FC = () => {
 
   const handleSearch = () => {
     setCurrentPage(1);
-    fetchProducts(selectedWebsite, 1, searchTerm);
+    fetchProducts(1, searchTerm);
   };
 
   const closeModal = () => {
@@ -130,8 +100,7 @@ const Page: React.FC = () => {
     <AuthLayout>
       <NoScrollLayout>
         <div className="md:pt-6 pt-4 md:px-6 px-3">
-          {/* Dropdown and Search Input - Side by Side */}
-          <div className="md:flex items-center gap-4 ">
+          <div className="md:flex items-center gap-4">
             <h1 className="text-2xl font-bold mb-3 dark:text-gray-300">
               Products
             </h1>
@@ -163,7 +132,7 @@ const Page: React.FC = () => {
         </div>
       </NoScrollLayout>
       {isImageOpen && selectedImage && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-65">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/65">
           <div className="relative">
             <Image
               src={selectedImage}
@@ -181,10 +150,10 @@ const Page: React.FC = () => {
           </div>
         </div>
       )}
-      <div className="mx-auto md:px-6 px-3   rounded-md md:min-h-[66%] min-h-[20vh] ">
+      <div className="mx-auto md:px-6 px-3 rounded-md md:min-h-[66%] min-h-[20vh]">
         {(isLoading && products.length === 0) || loading ? (
           <ProductSkeleton />
-        ) : !loading && products.length === 0 && selectedWebsite ? (
+        ) : !loading && products.length === 0 ? (
           <div className="flex items-center justify-center mt-28 min-h-[20%]">
             <NoDataFoundTable />
           </div>
@@ -201,9 +170,9 @@ const Page: React.FC = () => {
                     return (
                       <div
                         key={index}
-                        className="md:flex items-center justify-between dark:bg-gray-800 bg-white  dark:border-gray-700 shadow-md border rounded-lg p-4 "
+                        className="md:flex items-center justify-between dark:bg-gray-800 bg-white dark:border-gray-700 shadow-md border rounded-lg p-4"
                       >
-                        <div className="flex items-center space-x-4 ">
+                        <div className="flex items-center space-x-4">
                           <Image
                             src={product.image}
                             alt={product.name}
@@ -227,21 +196,21 @@ const Page: React.FC = () => {
                         <div className="flex items-center md:space-x-6 space-x-2 md:mt-0 mt-6">
                           <div className="">
                             <div className="flex items-center justify-center">
-                              <div className="text-blue-600 bg-blue-100 rounded-full w-8 h-8 flex items-center justify-center">
-                                <h5 className="text-center text-lg font-semibold ">
+                              <div className="text-blue-600 rounded-full w-8 h-8 flex items-center justify-center">
+                                <h5 className="text-center text-lg font-semibold">
                                   {processing}
                                 </h5>
                               </div>
                             </div>
 
-                            <h6 className="text-xs font-semibold bg-blue-100 text-center text-blue-500 mt-3 md:px-4 px-2 md:min-w-28 w-auto py-0.5 rounded-lg">
+                            <h6 className="text-xs font-semibold text-center text-blue-500 mt-3 md:px-4 px-2 md:min-w-28 w-auto py-0.5 rounded-lg">
                               Processing
                             </h6>
                           </div>
                           <div className="">
                             <div className="flex items-center justify-center">
                               <div className="bg-green-200 text-green-600 rounded-full w-8 h-8 flex items-center justify-center">
-                                <h5 className="text-center text-lg font-semibold ">
+                                <h5 className="text-center text-lg font-semibold">
                                   {rd}
                                 </h5>
                               </div>
@@ -254,7 +223,7 @@ const Page: React.FC = () => {
                           <div className="">
                             <div className="flex items-center justify-center">
                               <div className="bg-yellow-100 text-yellow-600 rounded-full w-8 h-8 flex items-center justify-center">
-                                <h5 className="text-center text-lg font-semibold ">
+                                <h5 className="text-center text-lg font-semibold">
                                   {onHold}
                                 </h5>
                               </div>
@@ -267,7 +236,7 @@ const Page: React.FC = () => {
                           <div className="">
                             <div className="flex items-center justify-center">
                               <div className="bg-red-100 text-red-600 rounded-full w-9 h-9 flex items-center justify-center">
-                                <h5 className="text-center text-lg font-semibold ">
+                                <h5 className="text-center text-lg font-semibold">
                                   {unpaid}
                                 </h5>
                               </div>
@@ -287,7 +256,7 @@ const Page: React.FC = () => {
 
             {totalPages > 1 && (
               <div className="flex md:justify-end justify-between items-center md:items-end mt-6">
-                <div className="flex items-center  md:justify-end justify-between w-full space-x-3">
+                <div className="flex items-center md:justify-end justify-between w-full space-x-3">
                   <button
                     className="bg-blue-400 text-white px-2 rounded-lg"
                     onClick={() =>

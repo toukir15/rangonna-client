@@ -144,12 +144,12 @@ const Page: React.FC = () => {
                 <div className="md:flex items-center  2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 md:pb-0 mb-2">
                     <div className="md:flex items-center gap-3">
                         <div className="flex items-center gap-3">
-                            <h2 className="2xl:text-2xl lg:text-xl text-lg text-blue-900 font-semibold dark:text-gray-300">
+                            <h2 className="2xl:text-2xl lg:text-xl text-lg font-semibold text-app">
                                 Menu Management
                             </h2>
                             <div className="flex ">
                                 <Button
-                                    className="flex items-center !bg-green-200 !text-green-600 !px-3 !py-1.5"
+                                    className="btn-primary btn-primary-inline inline-flex items-center gap-2"
                                     onClick={handleAddClick}
                                 >
                                     <span className="ml-1">Add Menu</span>

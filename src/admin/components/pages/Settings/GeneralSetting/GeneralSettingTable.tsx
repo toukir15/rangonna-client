@@ -47,32 +47,32 @@ const GeneralSettingTable: React.FC = () => {
         printLabel="Label Print"
       >
         <Thead>
-          <Tr className="dark:bg-gray-700 bg-blue-100 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
-            <Th className="2xl:min-w-32 lg:min-w-14 min-w-48 text-blue-900 dark:text-gray-200">
+          <Tr className="dark:bg-gray-700 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
+            <Th className="2xl:min-w-32 lg:min-w-14 min-w-48 dark:text-gray-200">
               Shop Name
             </Th>
-            <Th className="2xl:min-w-40 lg:min-w-32 min-w-60  text-blue-900 dark:text-gray-200">
+            <Th className="2xl:min-w-40 lg:min-w-32 min-w-60 dark:text-gray-200">
               Shop Address
             </Th>
 
-            <Th className="2xl:min-w-32 lg:min-w-28 min-w-36 text-blue-900 dark:text-gray-200">
+            <Th className="2xl:min-w-32 lg:min-w-28 min-w-36 dark:text-gray-200">
               Phone Number
             </Th>
-            <Th className="2xl:min-w-36 lg:min-w-28 min-w-36 text-blue-900 dark:text-gray-200">
+            <Th className="2xl:min-w-36 lg:min-w-28 min-w-36 dark:text-gray-200">
               Website Name
             </Th>
-            <Th className="2xl:min-w-36 lg:min-w-28 min-w-36 text-blue-900 dark:text-gray-200">
+            <Th className="2xl:min-w-36 lg:min-w-28 min-w-36 dark:text-gray-200">
               Image
             </Th>
 
-            <Th className="  text-blue-900 dark:text-gray-200 ">Actions</Th>
+            <Th className="dark:text-gray-200">Actions</Th>
           </Tr>
         </Thead>
         <Tbody className="dark:bg-gray-800 bg-white">
           {generalData?.map((general: any, index: number) => {
             return (
               <Tr
-                className=" hover:bg-gray-100 dark:hover:bg-gray-800"
+                className="hover:bg-gray-100 dark:hover:bg-gray-800"
                 key={index}
               >
                 <Td>{general?.shop_name}</Td>

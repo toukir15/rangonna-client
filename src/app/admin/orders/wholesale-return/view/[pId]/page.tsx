@@ -70,9 +70,9 @@ const Page: React.FC = () => {
   return (
     <AuthLayout>
       <NoScrollLayout>
-        <div className="md:flex items-center justify-between 2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 md:pb-0 mb-2 ">
+        <div className="md:flex items-center justify-between 2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 md:pb-0 mb-2">
           <div className="flex items-center gap-4">
-            <h2 className="2xl:text-2xl lg:text-xl text-lg text-blue-900 font-semibold dark:text-gray-300">
+            <h2 className="2xl:text-2xl lg:text-xl text-lg font-semibold text-app">
               Purchase Return Detail : {singleData?.invoice}
             </h2>
           </div>
@@ -120,7 +120,7 @@ const Page: React.FC = () => {
         {isLoading ? (
           <PurchaseSkeleton />
         ) : (
-          <div className=" flex flex-wrap gap-5 items-center justify-between pr-20">
+          <div className="flex flex-wrap gap-5 items-center justify-between pr-20">
             {/* <div>
               <h3 className="text-lg font-semibold">Supplier Info</h3>
               <p>{singleData?.supplier?.name}</p>
@@ -151,7 +151,7 @@ const Page: React.FC = () => {
               <p>Warehouse : {singleData?.warehouse?.title}</p>
               <p>
                 Payment Status :{" "}
-                <span className=" uppercase">{singleData?.payment_status}</span>
+                <span className="uppercase">{singleData?.payment_status}</span>
               </p>
             </div>
           </div>
@@ -162,8 +162,8 @@ const Page: React.FC = () => {
           {isLoading ? (
             <EditProductInfoSkeleton />
           ) : (
-            <table className="min-w-full border-collapse border dark:border-gray-500">
-              <thead className="bg-blue-100 dark:bg-gray-700 h-[55px] shadow-sm border-b border-gray-300 dark:border-gray-700 p-20">
+            <table className="edit-order-products-table">
+              <thead className="dark:bg-gray-700 h-[55px] shadow-sm border-b border-gray-300 dark:border-gray-700 p-20">
                 <tr>
                   <th className="dark:border-gray-600 px-4 py-2 dark:text-gray-300">
                     Product
@@ -197,7 +197,7 @@ const Page: React.FC = () => {
                             alt={productData?.product?.featured_image?.title}
                             width={50}
                             height={50}
-                            className=" rounded-lg "
+                            className="rounded-lg"
                           />
                           <p>{productData?.product?.title}</p>
                         </div>

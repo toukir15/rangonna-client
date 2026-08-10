@@ -12,7 +12,6 @@ import Input from "@admin/components/core/Input/Input";
 import ButtonLoader from "@admin/components/core/Button/ButtonLoader";
 import SelectComponent from "@admin/components/core/Select/Select";
 import { TeamService } from "@admin/@services/apis/TeamService/Permission.service";
-import { GlobalService } from "@admin/@services/apis/GlobalService/Global.service";
 import { Controller } from "react-hook-form";
 import CustomDatePicker from "@admin/components/core/Calendar/DatePicker";
 import { formatDateRange } from "@admin/utils/hook.utils";
@@ -24,7 +23,6 @@ const Page: React.FC = () => {
   const [permissionData, setPermissionData] = useState<IGroupOption[]>([]);
   const [warehouseData, setWarehouseData] = useState<any>();
   const [leavePolicyData, setLeavePolicyData] = useState<any>();
-  const [websiteData, setWebsiteData] = useState<any[]>([]);
   const [isSubmit, setIsSubmit] = useState<boolean>(false);
 
   const {
@@ -44,7 +42,6 @@ const Page: React.FC = () => {
       base_salary: "",
       date: "",
       password: "",
-      website: null,
     },
   });
 
@@ -74,21 +71,6 @@ const Page: React.FC = () => {
         ToastService.error(err.message);
       });
   };
-
-  const getWebsites = () => {
-    GlobalService.getWebsiteList()
-      .then((res: any) => {
-        if (res?.success) {
-          setWebsiteData(Array.isArray(res?.data) ? res.data : []);
-        } else {
-          ToastService.error(res?.message);
-        }
-      })
-      .catch((err: { message: string }) => {
-        ToastService.error(err.message);
-      });
-  };
-
 
   useEffect(() => {
     TeamService.getPermission({ searchTerm: "", page: 1, limit: 100 })
@@ -126,7 +108,6 @@ const Page: React.FC = () => {
       holiday_salary: data.holiday_salary,
       warehouse: data.warehouse.value,
       leave_policy: data.leave_policy.value,
-      website: data.website.value,
     };
 
 
@@ -170,15 +151,9 @@ const Page: React.FC = () => {
     value: item._id,
   }));
 
-  const websiteDataOption = websiteData?.map((item: any) => ({
-    label: item.web_name || item.web_url || "Website",
-    value: item._id,
-  }));
-
   useEffect(() => {
     getWarehouse();
     getLeavePolicy();
-    getWebsites();
   }, []);
 
   const baseSalaryWatch = watch("base_salary");
@@ -237,34 +212,6 @@ const Page: React.FC = () => {
               )}
             </div>
 
-            <div className="pb-2">
-              <label className="block font-inter text-sm font-semibold text-neutral-600 dark:text-gray-300 mb-1">
-                Team
-                <span className="text-red-400 font-inter text-[12px] font-semibold ms-1">
-                  *
-                </span>
-              </label>
-              <Controller
-                name="website"
-                control={control}
-                rules={{ required: true }}
-                render={({ field }) => (
-                  <SelectComponent
-                    options={websiteDataOption}
-                    value={field.value}
-                    onChange={field.onChange}
-                    placeholder="Select Team"
-                    isRequired
-                    className=""
-                  />
-                )}
-              />
-              {errors.website && (
-                <p className="text-red-500 text-sm">
-                  {(errors.website as any)?.message as string}
-                </p>
-              )}
-            </div>
             <div className="mb-4">
               <p className="font-inter text-sm font-semibold text-neutral-600 dark:text-gray-300 mb-1 ">
                 Group{" "}
@@ -442,7 +389,7 @@ const Page: React.FC = () => {
 
           <div className="flex justify-end gap-3 mt-6">
             <Button
-              className="bg-gray-400"
+              className="btn-secondary"
               onClick={() => router.push("/admin/team/member")}
             >
               Cancel

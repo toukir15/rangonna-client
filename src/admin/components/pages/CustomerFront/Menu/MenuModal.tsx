@@ -3,7 +3,6 @@
 import React, {
     useContext,
     useEffect,
-    useMemo,
     useRef,
     useState,
 } from "react";
@@ -11,7 +10,6 @@ import Modal from "@admin/components/core/ModalFrom/ModalFrom";
 import Icon from "@admin/components/core/Icon/Icon";
 import Button from "@admin/components/core/Button/Button";
 import ButtonLoader from "@admin/components/core/Button/ButtonLoader";
-import SelectComponent from "@admin/components/core/Select/Select";
 import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
@@ -26,14 +24,8 @@ import * as yup from "yup";
 import { ToastService } from "@admin/utils/toastr.service";
 import { MenuContext } from "@/app/admin/customer-front/menu/page";
 import { MenuService } from "@admin/@services/apis/CustomerFront/MenuService/Menu.service";
-import { GlobalService } from "@admin/@services/apis/GlobalService/Global.service";
 
 // ====================== Types ======================
-type TSelectOption = {
-    label: string;
-    value: string;
-};
-
 type TSubmenuForm = {
     name: string;
     route: string;
@@ -48,7 +40,6 @@ type TNavItemForm = {
 };
 
 type FormValues = {
-    website: TSelectOption | null;
     navBarItems: TNavItemForm[];
 };
 
@@ -69,11 +60,6 @@ type TNavItem = {
 
 type TMenuItem = {
     _id: string;
-    website?: {
-        _id: string;
-        web_name?: string;
-        web_url?: string;
-    };
     navBarItems?: TNavItem[];
 };
 
@@ -87,7 +73,6 @@ type TContext = {
 
 // ====================== Default Value ======================
 const defaultValue: FormValues = {
-    website: null,
     navBarItems: [
         {
             name: "",
@@ -100,14 +85,6 @@ const defaultValue: FormValues = {
 
 // ====================== Validation ======================
 const schema: yup.ObjectSchema<any> = yup.object({
-    website: yup
-        .object({
-            label: yup.string().required(),
-            value: yup.string().required(),
-        })
-        .nullable()
-        .required("Website is required"),
-
     navBarItems: yup
         .array()
         .of(
@@ -376,14 +353,6 @@ const MenuModal: React.FC = () => {
         useContext(MenuContext) as TContext;
 
     const [isSubmit, setIsSubmit] = useState(false);
-    const [websiteData, setWebsiteData] = useState<any[]>([]);
-
-    const websiteOptions = useMemo(() => {
-        return (websiteData || []).map((item: any) => ({
-            label: item?.web_name || "Unnamed Website",
-            value: item?._id || "",
-        }));
-    }, [websiteData]);
 
     const {
         handleSubmit,
@@ -420,32 +389,10 @@ const MenuModal: React.FC = () => {
             }>
             | undefined) || [];
 
-    const getWebsiteList = async () => {
-        try {
-            const res = await GlobalService.getWebsiteList();
-            if (res?.success) {
-                setWebsiteData(res?.data || []);
-            } else {
-                ToastService.error(res?.message);
-            }
-        } catch (err: any) {
-            ToastService.error(err?.message || "Failed to fetch websites");
-        }
-    };
-
-    useEffect(() => {
-        if (isModalOpen) {
-            getWebsiteList();
-        }
-    }, [isModalOpen]);
-
     useEffect(() => {
         if (!isModalOpen) return;
 
         if (modalMode === "Edit" && items) {
-            const selectedWebsite =
-                websiteOptions.find((w) => w.value === items?.website?._id) || null;
-
             const mappedNavItems: TNavItemForm[] =
                 items?.navBarItems && items.navBarItems.length > 0
                     ? items.navBarItems.map((nav) => ({
@@ -464,7 +411,6 @@ const MenuModal: React.FC = () => {
                     : defaultValue.navBarItems;
 
             reset({
-                website: selectedWebsite,
                 navBarItems: mappedNavItems,
             });
 
@@ -473,7 +419,7 @@ const MenuModal: React.FC = () => {
             reset(defaultValue);
             replaceNav(defaultValue.navBarItems);
         }
-    }, [isModalOpen, modalMode, items, websiteOptions, reset, replaceNav]);
+    }, [isModalOpen, modalMode, items, reset, replaceNav]);
 
     const onCloseModal = () => {
         setIsModalOpen(false);
@@ -485,7 +431,6 @@ const MenuModal: React.FC = () => {
         setIsSubmit(true);
 
         const payload = {
-            website: data?.website?.value,
             navBarItems: (data?.navBarItems || []).map((nav, navIndex) => ({
                 id: navIndex + 1,
                 name: nav?.name,
@@ -542,32 +487,6 @@ const MenuModal: React.FC = () => {
 
                 <Modal.Body>
                     <div className="space-y-5">
-                        <div>
-                            <label className="block text-sm font-semibold text-neutral-600 dark:text-gray-300 mb-1">
-                                Website <span className="text-red-500">*</span>
-                            </label>
-
-                            <Controller
-                                name="website"
-                                control={control}
-                                render={({ field }) => (
-                                    <SelectComponent
-                                        options={websiteOptions}
-                                        value={field.value}
-                                        onChange={field.onChange}
-                                        placeholder="Select Website"
-                                        isRequired
-                                    />
-                                )}
-                            />
-
-                            {errors?.website?.message && (
-                                <p className="text-red-500 text-xs mt-1">
-                                    {errors.website.message as string}
-                                </p>
-                            )}
-                        </div>
-
                         <div className="flex items-center justify-between">
                             <h4 className="text-base font-semibold text-gray-800 dark:text-white">
                                 Main Menu Items

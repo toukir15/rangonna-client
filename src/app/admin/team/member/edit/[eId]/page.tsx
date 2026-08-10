@@ -17,7 +17,6 @@ import CustomDatePicker from "@admin/components/core/Calendar/DatePicker";
 import { ToastService } from "@admin/utils/toastr.service";
 import { formatDateRange } from "@admin/utils/hook.utils";
 import { dispatchPermissionsRefresh } from "@admin/utils/permissionRefresh";
-import { GlobalService } from "@admin/@services/apis/GlobalService/Global.service";
 
 const editMemberSchema = yup.object({
   name: yup.string().required("User name is required"),
@@ -34,13 +33,6 @@ const editMemberSchema = yup.object({
     })
     .nullable()
     .required("Warehouse is required"),
-  website: yup
-    .object({
-      label: yup.string().required(),
-      value: yup.string().required(),
-    })
-    .nullable()
-    .required("Team is required"),
   base_salary: yup
     .number()
     .typeError("Base salary must be a number")
@@ -64,7 +56,6 @@ interface FormValues {
   permission: string;
   role: string;
   warehouse: { label: string; value: string } | null;
-  website: { label: string; value: string } | null;
   leave_policy: { label: string; value: string } | null;
   base_salary: number | string;
   holiday_salary: number | string;
@@ -80,7 +71,6 @@ const Page: React.FC = () => {
   const [isSubmit, setIsSubmit] = useState(false);
   const [userData, setUserData] = useState<any>(null);
   const [leavePolicyData, setLeavePolicyData] = useState<any>();
-  const [websiteData, setWebsiteData] = useState<any[]>([]);
 
   const {
     handleSubmit,
@@ -101,7 +91,6 @@ const Page: React.FC = () => {
       permission: "",
       role: "",
       warehouse: null,
-      website: null,
       leave_policy: null,
       base_salary: "",
       holiday_salary: 500,
@@ -123,11 +112,6 @@ const Page: React.FC = () => {
       .replace(/\b\w/g, (char: string) => char.toUpperCase()),
     value: item._id,
   }));
-  const websiteDataOption = websiteData?.map((item: any) => ({
-    label: item.web_name || item.web_url || "Website",
-    value: item._id,
-  }));
-
   const roleOption = [
     { value: "admin", label: "Admin" },
     { value: "call-center", label: "Call-center" },
@@ -179,20 +163,6 @@ const Page: React.FC = () => {
       });
   };
 
-  const getWebsites = () => {
-    GlobalService.getWebsiteList()
-      .then((res: any) => {
-        if (res?.success) {
-          setWebsiteData(Array.isArray(res?.data) ? res.data : []);
-        } else {
-          ToastService.error(res?.message);
-        }
-      })
-      .catch((err: { message: string }) => {
-        ToastService.error(err.message);
-      });
-  };
-
   useEffect(() => {
     TeamService.getPermission({ searchTerm: "", page: 1, limit: 100 })
       .then((res: any) => {
@@ -215,7 +185,6 @@ const Page: React.FC = () => {
   useEffect(() => {
     getWarehouse();
     getLeavePolicy();
-    getWebsites();
   }, []);
 
   useEffect(() => {
@@ -251,16 +220,6 @@ const Page: React.FC = () => {
           }
         : null);
 
-    const site = userData?.website;
-    const selectedWebsite =
-      websiteDataOption?.find((w: any) => w.value === site?._id) ??
-      (site?._id
-        ? {
-            label: site?.web_name || site?.web_url || "Website",
-            value: site?._id,
-          }
-        : null);
-
     let parsedJoiningDate: Date | null = null;
 
     if (userData?.joining_date) {
@@ -277,14 +236,13 @@ const Page: React.FC = () => {
       permission: userData?.permission ?? "",
       role: userData?.role ?? "",
       warehouse: selectedWarehouse,
-      website: selectedWebsite,
       leave_policy: selectedLeavePolicy,
       base_salary: userData?.base_salary ?? "",
       holiday_salary: userData?.holiday_salary ?? 500,
       password: "",
       joining_date: parsedJoiningDate,
     });
-  }, [userData, reset, warehouseData.length, leavePolicyData?.length, websiteData.length]);
+  }, [userData, reset, warehouseData.length, leavePolicyData?.length]);
 
   const baseSalaryWatch = watch("base_salary");
 
@@ -324,7 +282,6 @@ const Page: React.FC = () => {
       holiday_salary: Number(data.holiday_salary) || 0,
       warehouse: data.warehouse?.value,
       leave_policy: data.leave_policy?.value,
-      website: data.website?.value,
     };
 
     TeamService.updateTeam(eId, payload)
@@ -395,33 +352,6 @@ const Page: React.FC = () => {
               {errors.warehouse && (
                 <p className="text-red-500 text-sm">
                   {errors.warehouse.message as string}
-                </p>
-              )}
-            </div>
-
-            <div className="pb-2">
-              <label className="block font-inter text-sm font-semibold text-neutral-600 dark:text-gray-300 mb-1">
-                Team
-                <span className="text-red-400 font-inter text-[12px] font-semibold ms-1">
-                  *
-                </span>
-              </label>
-              <Controller
-                name="website"
-                control={control}
-                render={({ field }) => (
-                  <SelectComponent
-                    options={websiteDataOption}
-                    value={field.value}
-                    onChange={field.onChange}
-                    placeholder="Select Team"
-                    isRequired
-                  />
-                )}
-              />
-              {errors.website && (
-                <p className="text-red-500 text-sm">
-                  {(errors.website as any)?.message as string}
                 </p>
               )}
             </div>

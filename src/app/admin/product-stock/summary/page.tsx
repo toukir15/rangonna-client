@@ -180,7 +180,7 @@ const Page: React.FC = () => {
               {/* <div className="flex items-center gap-2">
                 {hasPermission(permissionList, "product_stock_report_sync") && (
                   <Button
-                    className="flex items-center bg-blue-500 !px-4"
+                    className="btn-primary btn-primary-inline inline-flex items-center gap-2"
                     onClick={() => setIsAlertOpen(true)}
                   >
                     <Icon name={"sync"} />
@@ -190,7 +190,7 @@ const Page: React.FC = () => {
 
                 {hasPermission(permissionList, "product_search_sync") && (
                   <Button
-                    className="flex items-center bg-blue-500 !px-4"
+                    className="btn-primary btn-primary-inline inline-flex items-center gap-2"
                     onClick={() => setIsSearchAlertOpen(true)}
                   >
                     <Icon name={"sync"} />

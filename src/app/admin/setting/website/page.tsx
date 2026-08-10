@@ -272,13 +272,13 @@ const Page: React.FC = () => {
         <div className="sm:flex items-center justify-between 2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 md:pb-0 mb-2">
           <div className="sm:flex items-center sm:gap-3">
             <div className="flex items-center gap-3">
-              <h2 className="2xl:text-2xl lg:text-xl text-lg text-blue-900 font-semibold dark:text-gray-300">
+              <h2 className="2xl:text-2xl lg:text-xl text-lg font-semibold text-app">
                 Website
               </h2>
               {permissionList.includes("setting_website_create") &&
                 !isPriorityEditMode && (
                   <Button
-                    className="!bg-green-200 !text-green-600 !py-1.5 text-nowrap !px-4"
+                    className="btn-primary btn-primary-inline inline-flex items-center gap-2"
                     onClick={handleAddClick}
                   >
                     Add Website

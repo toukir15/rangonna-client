@@ -1,8 +1,10 @@
+"use client";
+
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { Thead, Tbody, Tr, Th, Td } from "@admin/components/Table/Table";
 import TableWrapper from "@admin/components/Table/TableWrapper";
-import { getStatusStyle } from "@admin/utils/system.utils";
-import { getWebName, hasPermission, noData } from "@admin/utils";
+import { getStatusLabel, getStatusStyle } from "@admin/utils/system.utils";
+import { getWebName, noData, trimString } from "@admin/utils";
 import { CourierBookingContext } from "@/app/admin/couriers/booking/page";
 import { TableCheckbox } from "@admin/components/Table/TableCheckbox";
 import NodataImg from "@admin/assets/images/Image-not-found.png";
@@ -15,6 +17,7 @@ import {
   PathaoBooking,
 } from "@admin/@interfaces/couriers/booking.interface";
 import { useGlobalContext } from "@admin/context/GlobalContext";
+import { ToastService } from "@admin/utils/toastr.service";
 
 const BookingCouriersTable: React.FC = () => {
   const { permissionList } = useGlobalContext();
@@ -51,6 +54,16 @@ const BookingCouriersTable: React.FC = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  const copyToClipboard = async (text: string, label = "Copied") => {
+    try {
+      await navigator.clipboard.writeText(text);
+      ToastService.success(label);
+    } catch (err) {
+      console.error("Failed to copy: ", err);
+    }
+  };
+
   return (
     <div>
       <TableWrapper
@@ -59,196 +72,234 @@ const BookingCouriersTable: React.FC = () => {
         noDataViewCondition={orderList?.length < 1 ? "No data available" : null}
         isSwitchOn={true}
         isLoading={tableLoading}
-        className="min-h-[700px]"
+        className="orders-table-nested !mt-0 min-h-[560px] !flex-1"
         colValue={10}
       >
         <Thead>
-          <Tr className="dark:bg-gray-700 bg-blue-100 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
-            <Th>
+          <Tr>
+            <Th className="is-center">
               <TableCheckbox checked={isCheck} onChange={handleSelectAll} />
             </Th>
-            <Th className="2xl:min-w-32 lg:min-w-14 min-w-48 text-blue-900 dark:text-gray-200">
-              Order ID
-            </Th>
-            <Th className="2xl:min-w-40 lg:min-w-32 min-w-40  text-blue-900 dark:text-gray-200">
-              Customer Info
-            </Th>
-
-            <Th className="2xl:min-w-32 lg:min-w-28 min-w-32 text-blue-900 dark:text-gray-200">
-              Products
-            </Th>
-            <Th className="2xl:min-w-36 lg:min-w-28 min-w-40 text-blue-900 dark:text-gray-200">
-              Status
-            </Th>
-            <Th className="2xl:min-w-36 lg:min-w-28 min-w-36 text-blue-900 dark:text-gray-200">
-              Total & Due
-            </Th>
-
-            <Th className="2xl:min-w-32 lg:min-w-28 min-w-48 text-blue-900 dark:text-gray-200">
+            <Th className="2xl:min-w-32 lg:min-w-14 min-w-32">Order ID</Th>
+            <Th className="2xl:min-w-40 lg:min-w-32 min-w-40">Customer Info</Th>
+            <Th className="2xl:min-w-32 lg:min-w-28 min-w-32">Products</Th>
+            <Th className="2xl:min-w-36 lg:min-w-28 min-w-36">Status</Th>
+            <Th className="2xl:min-w-36 lg:min-w-28 min-w-36">Total & Due</Th>
+            <Th className="2xl:min-w-32 lg:min-w-28 min-w-32 !text-nowrap">
               Customer Note & Note
             </Th>
-
-            <Th className="  text-blue-900 dark:text-gray-200 2xl:min-w-32 lg:min-w-28 min-w-36">
-              Courier Status
-            </Th>
-            <Th className=" text-blue-900 dark:text-gray-200">Action</Th>
+            <Th className="is-center min-w-28">Courier Status</Th>
+            <Th className="is-right">Actions</Th>
           </Tr>
         </Thead>
-        <Tbody className="dark:bg-gray-800 bg-white">
-          {orderList &&
-            orderList?.map((order: PathaoBooking, index: number) => {
-              return (
-                <Tr
-                  className=" hover:bg-gray-100 dark:hover:bg-gray-800"
-                  key={index}
-                >
-                  <Td>
-                    <TableCheckbox
-                      checked={selectedOrders.includes(order?.order?._id)}
-                      onClick={(e) => e.stopPropagation()}
-                      onChange={() => handleSelectOrder(order?.order?._id)}
-                    />
-                  </Td>
-                  <Td>
-                    <div className="flex flex-wrap text-base font-bold">
-                      <span>{order?.order_sysid || noData}</span>
-                    </div>
-                    <div className="mt-0.5">
-                      <span>{getWebName(order?.order?.domain) || noData}</span>
-                    </div>
-                    <div className="mt-0.5">
-                      <span>
-                        {formatTimeAgo(new Date(order?.createdAt)) || noData}
-                      </span>
-                    </div>
-                  </Td>
-                  <Td>
-                    <div className="text-base font-bold">
-                      <span>
-                        {order?.order?.customer?.first_name}{" "}
-                        {order?.order.customer?.last_name}
-                      </span>
-                    </div>
-                    <div className="mt-2 flex items-center">
-                      <a href={`tel:${order?.order?.customer?.phone}`}>
-                        {order?.order?.customer?.phone}
-                      </a>
-                    </div>
+        <Tbody>
+          {orderList?.map((order: PathaoBooking, index: number) => {
+            const phone = order?.order?.customer?.phone;
+            const orderSysId = String(order?.order_sysid ?? "");
 
-                    <div className="mt-0.5">
-                      <span>{order?.order?.payment?.title || noData}</span>
-                    </div>
-                  </Td>
-                  <Td>
-                    <div className="flex gap-2 ">
-                      {order?.order?.line_items
-                        .slice(0, 3)
-                        .map((item: LineItem, index: number) => (
-                          <div key={index} className="flex items-center ">
-                            <div className="w-16 h-16 relative cursor-pointer">
-                              <Image
-                                src={
-                                  item?.product_id?.featured_image?.src
-                                    ? item?.product_id?.featured_image?.src
-                                    : NodataImg
-                                }
-                                alt={item?.product_id?._id}
-                                className="rounded"
-                                title={item.title}
-                                width={90}
-                                height={20}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleImageClick(
-                                    item?.product_id?.featured_image?.src
-                                  );
-                                }}
-                              />
-                            </div>
-                          </div>
-                        ))}
-                    </div>
-                  </Td>
-                  <Td>
-                    <div
-                      className={`${getStatusStyle(
-                        order?.order?.status
-                      )} min-w-20 max-w-40 text-center`}
-                    >
-                      {order?.order?.status}
-                    </div>
-                  </Td>
-                  <Td>
-                    <div className="flex flex-wrap">
-                      <span className="min-w-10 text-md font-semibold text-gray-600 dark:text-gray-300">
-                        Total
-                      </span>
-                      <span className="text-md font-semibold text-gray-600 dark:text-gray-300">
-                        {" "}
-                        : ৳ {order?.order?.total || noData}
-                      </span>
-                    </div>
-                    <div className="flex flex-wrap mt-1.5">
-                      <span className="min-w-10 text-md font-semibold text-gray-600 dark:text-gray-300">
-                        Due
-                      </span>
-                      <span className="text-md font-semibold text-gray-600 dark:text-gray-300">
-                        {" "}
-                        : ৳ {order?.order?.due || noData}
-                      </span>
-                    </div>
-                  </Td>
+            return (
+              <Tr key={order?.order?._id ?? index}>
+                <Td>
+                  <TableCheckbox
+                    checked={selectedOrders.includes(order?.order?._id)}
+                    onClick={(e) => e.stopPropagation()}
+                    onChange={() => handleSelectOrder(order?.order?._id)}
+                  />
+                </Td>
 
-                  <Td>
-                    <div className="flex flex-wrap">
-                      {order?.error_message || noData}
-                    </div>
-                    <div className="flex flex-wrap">
-                      {order?.consignment_id || noData}
-                    </div>
-                  </Td>
-
-                  <Td>
-                    <div className="relative max-w-40">
-                      <Icon
-                        name={`${order?.consignment_id && "done_all"}`}
-                        className={`${
-                          order?.consignment_id && "text-green-600"
-                        }`}
-                      />
-                    </div>
-                  </Td>
-                  <Td>
-                    {hasPermission(permissionList, "order_edit")}
-                    <div className="relative max-w-40">
-                      <Icon
-                        name={"more_horiz"}
-                        variant="outlined"
-                        onClick={() => togglePopup(index)}
-                        className="cursor-pointer"
-                      />
-                      {popupIndex === index && (
-                        <div
-                          ref={popupRef}
-                          className="absolute top-8 right-0 bg-white border dark:bg-gray-700 dark:border-gray-500 shadow-md rounded-lg p-2 z-20 min-w-40"
+                <Td>
+                  <div className="table-user-info">
+                    <div className="table-id-row">
+                      <span className="table-id-chip">
+                        {order?.order_sysid || noData}
+                      </span>
+                      {orderSysId && (
+                        <button
+                          type="button"
+                          className="table-copy-btn"
+                          aria-label="Copy order ID"
+                          title="Copy order ID"
+                          onClick={() =>
+                            copyToClipboard(
+                              orderSysId,
+                              "Order ID copied to clipboard!",
+                            )
+                          }
                         >
+                          <Icon
+                            size={13}
+                            name="content_copy"
+                            variant="outlined"
+                          />
+                        </button>
+                      )}
+                    </div>
+                    <p className="data-table-muted">
+                      {getWebName(order?.order?.domain) || noData}
+                    </p>
+                    <span className="table-date-cell">
+                      <Icon
+                        name="calendar_today"
+                        size={13}
+                        variant="outlined"
+                      />
+                      {formatTimeAgo(new Date(order?.createdAt)) || noData}
+                    </span>
+                  </div>
+                </Td>
+
+                <Td>
+                  <div className="table-contact-stack">
+                    <span className="data-table-primary">
+                      {trimString(order?.order?.customer?.first_name, 50)}{" "}
+                      {order?.order?.customer?.last_name}
+                    </span>
+                    {phone ? (
+                      <span className="table-contact-line">
+                        <Icon name="call" size={14} variant="outlined" />
+                        <a href={`tel:${phone}`}>{phone}</a>
+                        <button
+                          type="button"
+                          className="table-copy-btn"
+                          aria-label="Copy phone number"
+                          title="Copy phone number"
+                          onClick={() =>
+                            copyToClipboard(
+                              phone,
+                              "Number copied to clipboard!",
+                            )
+                          }
+                        >
+                          <Icon
+                            name="content_copy"
+                            size={13}
+                            variant="outlined"
+                          />
+                        </button>
+                      </span>
+                    ) : (
+                      <span className="data-table-muted">{noData}</span>
+                    )}
+                    <span className="data-table-muted">
+                      {order?.order?.payment?.title || noData}
+                    </span>
+                  </div>
+                </Td>
+
+                <Td>
+                  <div className="table-product-thumbs">
+                    {order?.order?.line_items
+                      ?.slice(0, 3)
+                      ?.map((item: LineItem, itemIndex: number) => {
+                        const src =
+                          item?.product_id?.featured_image?.src || NodataImg;
+
+                        return (
+                          <button
+                            key={itemIndex}
+                            type="button"
+                            className="table-product-thumb"
+                            title={item?.title}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (typeof src === "string") {
+                                handleImageClick(src);
+                              }
+                            }}
+                          >
+                            <Image
+                              src={src}
+                              quality={70}
+                              alt={item?.title || "Product Image"}
+                              width={120}
+                              height={108}
+                            />
+                          </button>
+                        );
+                      })}
+                  </div>
+                </Td>
+
+                <Td>
+                  <span className={getStatusStyle(order?.order?.status)}>
+                    {getStatusLabel(order?.order?.status)}
+                  </span>
+                </Td>
+
+                <Td>
+                  <div className="table-contact-stack">
+                    <span className="table-amount">
+                      <span className="table-amount-label">Total</span>
+                      ৳ {order?.order?.total || 0}
+                    </span>
+                    <span
+                      className={`table-role-badge ${
+                        Number(order?.order?.due) > 0
+                          ? "is-rejected"
+                          : "is-approved"
+                      }`}
+                    >
+                      Due: ৳ {order?.order?.due || 0}
+                    </span>
+                  </div>
+                </Td>
+
+                <Td>
+                  <div className="table-contact-stack">
+                    <span className="data-table-muted">
+                      {trimString(order?.error_message, 100) || noData}
+                    </span>
+                    <span className="data-table-secondary">
+                      {order?.consignment_id || noData}
+                    </span>
+                  </div>
+                </Td>
+
+                <Td className="is-center">
+                  {order?.consignment_id ? (
+                    <span className="table-courier-status" title="Booked">
+                      <Icon name="done_all" variant="filled" size={16} />
+                    </span>
+                  ) : (
+                    <span className="table-empty-value">—</span>
+                  )}
+                </Td>
+
+                <Td className="is-right">
+                  <div className="relative max-w-40">
+                    <button
+                      type="button"
+                      className="data-table-action-btn"
+                      aria-expanded={popupIndex === index}
+                      onClick={() => togglePopup(index)}
+                    >
+                      <Icon name="more_vert" variant="outlined" size={18} />
+                    </button>
+
+                    {popupIndex === index && (
+                      <div
+                        ref={popupRef}
+                        className="absolute top-9 right-0 z-20 min-w-40 rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-1.5 shadow-[var(--shadow-soft)]"
+                      >
+                        {permissionList.includes("order_edit") && (
                           <button
                             onClick={() =>
                               router.push(
-                                `/admin/orders/edit/${String(order?.order?._id)}`
+                                `/admin/orders/edit/${String(order?.order?._id)}`,
                               )
                             }
-                            className="block w-full text-left px-4 py-2 hover:bg-gray-100 rounded-lg dark:hover:bg-gray-600"
+                            className="block w-full rounded-lg px-3 py-2 text-left text-sm text-app hover:bg-[var(--bg-hover)]"
                           >
                             Edit
                           </button>
-                        </div>
-                      )}
-                    </div>
-                  </Td>
-                </Tr>
-              );
-            })}
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </Td>
+              </Tr>
+            );
+          })}
         </Tbody>
       </TableWrapper>
     </div>

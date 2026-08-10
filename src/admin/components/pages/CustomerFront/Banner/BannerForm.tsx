@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
     Controller,
@@ -14,17 +14,10 @@ import {
 } from "react-hook-form";
 import * as yup from "yup";
 import { ToastService } from "@admin/utils/toastr.service";
-import { GlobalService } from "@admin/@services/apis/GlobalService/Global.service";
 import { BannerService } from "@admin/@services/apis/CustomerFront/BannerService/Banner.service";
 import { useRouter } from "next/navigation";
 import Button from "@admin/components/core/Button/Button";
-import SelectComponent from "@admin/components/core/Select/Select";
 import ButtonLoader from "@admin/components/core/Button/ButtonLoader";
-
-type TSelectOption = {
-    label: string;
-    value: string;
-};
 
 type TBannerItemForm = {
     image: string;
@@ -35,7 +28,6 @@ type TBannerItemForm = {
 };
 
 type FormValues = {
-    website: TSelectOption | null;
     mobile: TBannerItemForm[];
     desktop: TBannerItemForm[];
 };
@@ -50,11 +42,6 @@ type TBannerItem = {
 
 export type TBannerData = {
     _id: string;
-    website?: {
-        _id: string;
-        web_name?: string;
-        web_url?: string;
-    };
     mobile?: TBannerItem[];
     desktop?: TBannerItem[];
 };
@@ -75,7 +62,6 @@ const defaultBannerItem: TBannerItemForm = {
 };
 
 const defaultValue: FormValues = {
-    website: null,
     mobile: [{ ...defaultBannerItem }],
     desktop: [{ ...defaultBannerItem }],
 };
@@ -92,13 +78,6 @@ const bannerItemSchema: yup.ObjectSchema<TBannerItemForm> = yup.object({
 });
 
 const schema: yup.ObjectSchema<FormValues> = yup.object({
-    website: yup
-        .object({
-            label: yup.string().required(),
-            value: yup.string().required(),
-        })
-        .nullable()
-        .required("Website is required"),
     mobile: yup
         .array()
         .of(bannerItemSchema)
@@ -359,14 +338,6 @@ const BannerForm: React.FC<BannerFormProps> = ({
 }) => {
     const router = useRouter();
     const [isSubmit, setIsSubmit] = useState(false);
-    const [websiteData, setWebsiteData] = useState<any[]>([]);
-
-    const websiteOptions = useMemo(() => {
-        return (websiteData || []).map((item: any) => ({
-            label: item?.web_name || "Unnamed Website",
-            value: item?._id || "",
-        }));
-    }, [websiteData]);
 
     const {
         handleSubmit,
@@ -390,28 +361,8 @@ const BannerForm: React.FC<BannerFormProps> = ({
         name: "desktop",
     });
 
-    const getWebsiteList = async () => {
-        try {
-            const res = await GlobalService.getWebsiteList();
-            if (res?.success) {
-                setWebsiteData(res?.data || []);
-            } else {
-                ToastService.error(res?.message || "Failed to fetch websites");
-            }
-        } catch (err: any) {
-            ToastService.error(err?.message || "Failed to fetch websites");
-        }
-    };
-
-    useEffect(() => {
-        getWebsiteList();
-    }, []);
-
     useEffect(() => {
         if (mode === "edit" && initialData) {
-            const selectedWebsite =
-                websiteOptions.find((w) => w.value === initialData?.website?._id) || null;
-
             const mappedMobile =
                 initialData?.mobile && initialData.mobile.length > 0
                     ? initialData.mobile.map((banner) => ({
@@ -435,34 +386,23 @@ const BannerForm: React.FC<BannerFormProps> = ({
                     : [{ ...defaultBannerItem }];
 
             reset({
-                website: selectedWebsite,
                 mobile: mappedMobile,
                 desktop: mappedDesktop,
             });
 
             replaceMobile(mappedMobile);
             replaceDesktop(mappedDesktop);
-        }
-
-        if (mode === "create") {
+        } else {
             reset(defaultValue);
             replaceMobile(defaultValue.mobile);
             replaceDesktop(defaultValue.desktop);
         }
-    }, [
-        mode,
-        initialData,
-        websiteOptions,
-        reset,
-        replaceMobile,
-        replaceDesktop,
-    ]);
+    }, [mode, initialData, reset, replaceMobile, replaceDesktop]);
 
     const formSubmit = async (data: FormValues) => {
         setIsSubmit(true);
 
         const payload = {
-            website: data?.website?.value,
             mobile: (data?.mobile || []).map((item) => ({
                 image: item.image,
                 link: item.link,
@@ -522,31 +462,6 @@ const BannerForm: React.FC<BannerFormProps> = ({
                     </div>
 
                     <div className="p-4 md:p-6 space-y-6">
-                        <div>
-                            <label className="block text-sm font-semibold text-neutral-600 dark:text-gray-300 mb-1">
-                                Website <span className="text-red-500">*</span>
-                            </label>
-
-                            <Controller
-                                name="website"
-                                control={control}
-                                render={({ field }) => (
-                                    <SelectComponent
-                                        options={websiteOptions}
-                                        value={field.value}
-                                        onChange={field.onChange}
-                                        placeholder="Select Website"
-                                        isRequired
-                                    />
-                                )}
-                            />
-
-                            {errors?.website?.message && (
-                                <p className="text-red-500 text-xs mt-1">
-                                    {errors.website.message as string}
-                                </p>
-                            )}
-                        </div>
 
                         <BannerFields
                             title="Mobile Banner"

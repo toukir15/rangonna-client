@@ -8,33 +8,66 @@ export const getStatusStyle = (status?: string) => {
       return `${base} is-pending`;
     case "waiting-payment":
       return `${base} is-warning`;
+    case "processing":
+    case "in progress":
+    case "in-progress":
+      return `${base} is-indigo`;
     case "recall":
       return `${base} is-info`;
     case "approved":
     case "delivery":
+    case "complete":
+    case "completed":
+    case "solved":
+    case "paid":
       return `${base} is-approved`;
     case "printed":
       return `${base} is-violet`;
     case "ready-for-box":
-      return `${base} is-neutral`;
+      return `${base} is-teal`;
     case "in-transit":
       return `${base} is-teal`;
     case "follow-up":
+    case "on hold":
+    case "on-hold":
+    case "in review":
+    case "in-review":
       return `${base} is-indigo`;
     case "partial-delivery":
+    case "partial":
+    case "issue":
       return `${base} is-info`;
     case "cancel":
     case "cancelled":
     case "canceled":
     case "rejected":
     case "damaged":
+    case "failed":
+    case "due":
+    case "close":
       return `${base} is-rejected`;
     case "refunded":
       return `${base} is-fuchsia`;
     case "return":
+    case "returned":
       return `${base} is-rose`;
     case "exchange":
+    case "exchanged":
       return `${base} is-neutral`;
+    case "received-product":
+    case "received-from-supplier":
+      return `${base} is-teal`;
+    case "assign":
+    case "product-sent-to-supplier":
+      return `${base} is-info`;
+    case "checking":
+      return `${base} is-violet`;
+    case "high":
+      return `${base} is-rose`;
+    case "medium":
+      return `${base} is-violet`;
+    case "low":
+      return `${base} is-teal`;
     default:
       return `${base} is-neutral`;
   }
@@ -49,6 +82,10 @@ export const getStatusFilterTone = (status?: string) => {
       return "is-pending";
     case "waiting-payment":
       return "is-to-pay";
+    case "processing":
+    case "in-progress":
+    case "in progress":
+      return "is-follow-up";
     case "recall":
       return "is-recall";
     case "approved":
@@ -65,6 +102,25 @@ export const getStatusFilterTone = (status?: string) => {
       return "is-delivery";
     case "partial-delivery":
       return "is-pd";
+    case "complete":
+    case "completed":
+    case "delivered":
+      return "is-delivery";
+    case "created":
+    case "picked":
+      return "is-pending";
+    case "on-hold":
+      return "is-follow-up";
+    case "error":
+    case "delivery-failed":
+      return "is-cancel";
+    case "returned":
+    case "paid-return":
+      return "is-return";
+    case "exchanged":
+      return "is-exchange";
+    case "assigned-for-delivery":
+      return "is-approved";
     case "cancel":
     case "cancelled":
     case "canceled":
@@ -75,6 +131,10 @@ export const getStatusFilterTone = (status?: string) => {
       return "is-return";
     case "exchange":
       return "is-exchange";
+    case "issue":
+      return "is-to-pay";
+    case "close":
+      return "is-cancel";
     case "damaged":
     case "rejected":
       return "is-damaged";
@@ -109,62 +169,9 @@ export const getStatusLabel = (status?: string) => {
   }
 };
 
-export const priorityStyle = (priority?: string) => {
-  switch (priority?.toLowerCase()) {
-    case "high":
-      // 🔥 Deep rose / danger but premium
-      return "bg-rose-100 text-rose-700 font-semibold";
+export const priorityStyle = (priority?: string) => getStatusStyle(priority);
 
-    case "medium":
-      // 🟣 Royal violet – unique & professional
-      return "bg-violet-100 text-violet-700 font-semibold";
-
-    case "low":
-      // 🟢 Mint / teal – calm & modern
-      return "bg-teal-100 text-teal-700 font-semibold";
-
-    default:
-      return "bg-slate-100 text-slate-600";
-  }
-};
-
-export const taskStatusStyle = (status?: string) => {
-  switch (status?.toLowerCase()) {
-    case "pending":
-      // 🟡 Waiting / not started
-      return "bg-yellow-100 text-yellow-800 py-1.5 rounded-lg font-semibold uppercase";
-
-    case "in progress":
-    case "in-progress":
-      // 🔵 Actively working
-      return "bg-blue-100 text-blue-800 py-1.5 rounded-lg font-semibold uppercase";
-
-    case "on hold":
-    case "on-hold":
-      // 🟠 Paused / blocked
-      return "bg-orange-200 text-orange-800 py-1.5 rounded-lg font-semibold uppercase";
-
-    case "in review":
-    case "in-review":
-      // 🟣 Under review / QA / approval
-      return "bg-violet-100 text-violet-800 py-1.5 rounded-lg font-semibold uppercase";
-
-    case "complete":
-    case "completed":
-      // 🟢 Finished successfully
-      return "bg-green-100 text-green-800 py-1.5 rounded-lg font-semibold uppercase";
-
-    case "cancel":
-    case "canceled":
-    case "cancelled":
-      // 🔴 Stopped / failed
-      return "bg-red-100 text-red-800 py-1.5 rounded-lg font-semibold uppercase";
-
-    default:
-      // ⚪ Neutral fallback
-      return "bg-slate-100 text-slate-800 py-1.5 rounded-lg font-semibold uppercase";
-  }
-};
+export const taskStatusStyle = (status?: string) => getStatusStyle(status);
 
 export const getStatusBgStyle = (status: string) => {
   switch (status?.toLowerCase()) {
@@ -236,40 +243,6 @@ export const getStatusTextStyle = (status: string) => {
   }
 };
 
-export const ReportIssueStatusStyle = (status: string) => {
-  switch (status?.toLowerCase()) {
-    case "pending":
-      return "bg-yellow-100 text-yellow-700 py-1.5 rounded-lg font-semibold uppercase";
-    case "received-product":
-      return "bg-green-100 text-green-700 py-1.5 rounded-lg font-semibold uppercase";
-    case "assign":
-      return "bg-blue-100 text-blue-700 py-1.5 rounded-lg font-semibold uppercase";
-    case "product-sent-to-supplier":
-      return "bg-indigo-100 text-indigo-700 py-1.5 rounded-lg font-semibold uppercase";
-    case "received-from-supplier":
-      return "bg-teal-100 text-teal-700 py-1.5 rounded-lg font-semibold uppercase";
-    case "checking":
-      return "bg-purple-100 text-purple-700 py-1.5 rounded-lg font-semibold uppercase";
-    case "solved":
-      return "bg-emerald-100 text-emerald-700 py-1.5 rounded-lg font-semibold uppercase";
-    case "delivery":
-      return "bg-cyan-100 text-cyan-700 py-1.5 rounded-lg font-semibold uppercase";
-    case "close":
-      return "bg-red-100 text-red-700 py-1.5 rounded-lg font-semibold uppercase";
-    default:
-      return "bg-slate-100 text-slate-700 py-1.5 rounded-lg font-semibold uppercase";
-  }
-};
+export const ReportIssueStatusStyle = (status: string) => getStatusStyle(status);
 
-export const getPaymentStatusStyle = (status: string) => {
-  switch (status) {
-    case "paid":
-      return "text-green-600 bg-green-100 px-4 py-0.5 rounded-md uppercase font-semibold text-center w-20 mt-1 text-sm";
-    case "due":
-      return "text-red-600 bg-red-100 px-4 py-0.5 rounded-md uppercase font-semibold text-center w-20 mt-1 text-sm";
-    case "partial":
-      return "text-yellow-600 bg-yellow-100 px-4 py-0.5 rounded-md uppercase font-semibold text-center w-20 mt-1 text-sm";
-    default:
-      return "text-gray-600 bg-gray-100 px-4 py-0.5 rounded-md uppercase font-semibold text-center w-20 mt-1 text-sm";
-  }
-};
+export const getPaymentStatusStyle = (status: string) => getStatusStyle(status);

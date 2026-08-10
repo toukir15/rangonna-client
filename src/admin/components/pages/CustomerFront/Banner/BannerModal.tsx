@@ -1,11 +1,10 @@
 "use client";
 
-import React, { useContext, useEffect, useMemo, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Modal from "@admin/components/core/ModalFrom/ModalFrom";
 import Icon from "@admin/components/core/Icon/Icon";
 import Button from "@admin/components/core/Button/Button";
 import ButtonLoader from "@admin/components/core/Button/ButtonLoader";
-import SelectComponent from "@admin/components/core/Select/Select";
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
     Controller,
@@ -18,15 +17,9 @@ import {
 } from "react-hook-form";
 import * as yup from "yup";
 import { ToastService } from "@admin/utils/toastr.service";
-import { GlobalService } from "@admin/@services/apis/GlobalService/Global.service";
 import { BannerService } from "@admin/@services/apis/CustomerFront/BannerService/Banner.service";
 import { BannerContext } from "@/app/admin/customer-front/banner/page";
 // import { ENV } from "@admin/@config/ENV.config";
-
-type TSelectOption = {
-    label: string;
-    value: string;
-};
 
 type TBannerItemForm = {
     image: string;
@@ -37,7 +30,6 @@ type TBannerItemForm = {
 };
 
 type FormValues = {
-    website: TSelectOption | null;
     mobile: TBannerItemForm[];
     desktop: TBannerItemForm[];
 };
@@ -52,11 +44,6 @@ type TBannerItem = {
 
 type TBannerData = {
     _id: string;
-    website?: {
-        _id: string;
-        web_name?: string;
-        web_url?: string;
-    };
     mobile?: TBannerItem[];
     desktop?: TBannerItem[];
 };
@@ -78,7 +65,6 @@ const defaultBannerItem: TBannerItemForm = {
 };
 
 const defaultValue: FormValues = {
-    website: null,
     mobile: [{ ...defaultBannerItem }],
     desktop: [{ ...defaultBannerItem }],
 };
@@ -95,13 +81,6 @@ const bannerItemSchema: yup.ObjectSchema<TBannerItemForm> = yup.object({
 });
 
 const schema: yup.ObjectSchema<FormValues> = yup.object({
-    website: yup
-        .object({
-            label: yup.string().required(),
-            value: yup.string().required(),
-        })
-        .nullable()
-        .required("Website is required"),
     mobile: yup
         .array()
         .of(bannerItemSchema)
@@ -351,14 +330,6 @@ const BannerModal: React.FC = () => {
         useContext(BannerContext) as TContext;
 
     const [isSubmit, setIsSubmit] = useState(false);
-    const [websiteData, setWebsiteData] = useState<any[]>([]);
-
-    const websiteOptions = useMemo(() => {
-        return (websiteData || []).map((item: any) => ({
-            label: item?.web_name || "Unnamed Website",
-            value: item?._id || "",
-        }));
-    }, [websiteData]);
 
     const {
         handleSubmit,
@@ -382,32 +353,10 @@ const BannerModal: React.FC = () => {
         name: "desktop",
     });
 
-    const getWebsiteList = async () => {
-        try {
-            const res = await GlobalService.getWebsiteList();
-            if (res?.success) {
-                setWebsiteData(res?.data || []);
-            } else {
-                ToastService.error(res?.message || "Failed to fetch websites");
-            }
-        } catch (err: any) {
-            ToastService.error(err?.message || "Failed to fetch websites");
-        }
-    };
-
-    useEffect(() => {
-        if (isModalOpen) {
-            getWebsiteList();
-        }
-    }, [isModalOpen]);
-
     useEffect(() => {
         if (!isModalOpen) return;
 
         if (modalMode === "Edit" && items) {
-            const selectedWebsite =
-                websiteOptions.find((w) => w.value === items?.website?._id) || null;
-
             const mappedMobile =
                 items?.mobile && items.mobile.length > 0
                     ? items.mobile.map((banner) => ({
@@ -431,7 +380,6 @@ const BannerModal: React.FC = () => {
                     : [{ ...defaultBannerItem }];
 
             reset({
-                website: selectedWebsite,
                 mobile: mappedMobile,
                 desktop: mappedDesktop,
             });
@@ -447,7 +395,6 @@ const BannerModal: React.FC = () => {
         isModalOpen,
         modalMode,
         items,
-        websiteOptions,
         reset,
         replaceMobile,
         replaceDesktop,
@@ -464,7 +411,6 @@ const BannerModal: React.FC = () => {
         setIsSubmit(true);
 
         const payload = {
-            website: data?.website?.value,
             mobile: (data?.mobile || []).map((item) => ({
                 image: item.image,
                 link: item.link,
@@ -523,32 +469,6 @@ const BannerModal: React.FC = () => {
 
                 <Modal.Body>
                     <div className="space-y-6">
-                        <div>
-                            <label className="block text-sm font-semibold text-neutral-600 dark:text-gray-300 mb-1">
-                                Website <span className="text-red-500">*</span>
-                            </label>
-
-                            <Controller
-                                name="website"
-                                control={control}
-                                render={({ field }) => (
-                                    <SelectComponent
-                                        options={websiteOptions}
-                                        value={field.value}
-                                        onChange={field.onChange}
-                                        placeholder="Select Website"
-                                        isRequired
-                                    />
-                                )}
-                            />
-
-                            {errors?.website?.message && (
-                                <p className="text-red-500 text-xs mt-1">
-                                    {errors.website.message as string}
-                                </p>
-                            )}
-                        </div>
-
                         <BannerFields
                             title="Mobile Banner"
                             type="mobile"

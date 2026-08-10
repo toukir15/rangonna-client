@@ -165,13 +165,13 @@ const Page: React.FC = () => {
         <div className="sm:flex items-center justify-between 2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 md:pb-0 mb-2">
           <div className="sm:flex items-center gap-4">
             <div className="flex items-center gap-3">
-              <h2 className="2xl:text-2xl lg:text-xl text-lg text-blue-900 font-semibold dark:text-gray-300">
+              <h2 className="2xl:text-2xl lg:text-xl text-lg font-semibold text-app">
                 Purchases
               </h2>
-              <div className=" ">
+              <div className="">
                 {permissionList.includes("purchase_create") && (
                   <Button
-                    className="flex items-center !bg-green-200 !text-green-600 !px-4 !py-1.5"
+                    className="btn-primary btn-primary-inline inline-flex items-center gap-2"
                     onClick={handleAddClick}
                   >
 
@@ -205,12 +205,12 @@ const Page: React.FC = () => {
             colValue={12}
           >
             <Thead>
-              <Tr className="dark:bg-gray-700  bg-blue-100 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
+              <Tr className="dark:bg-gray-700 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
                 <Th className="dark:text-gray-300 2xl:min-w-20 lg:min-w-28 min-w-28">
                   <p>Date</p>
                 </Th>
                 <Th className="dark:text-gray-300 2xl:min-w-28 lg:min-w-28 min-w-28">
-                  <div className="flex items-center ">
+                  <div className="flex items-center">
                     <div>
                       <p>Invoice</p>
                     </div>
@@ -219,13 +219,13 @@ const Page: React.FC = () => {
                       <div className="h-1.5">
                         <Icon
                           name={"arrow_drop_up"}
-                          className=" cursor-pointer"
+                          className="cursor-pointer"
                         />
                       </div>
                       <div className="">
                         <Icon
                           name={"arrow_drop_down"}
-                          className=" cursor-pointer"
+                          className="cursor-pointer"
                         />{" "}
                       </div>
                     </div>
@@ -289,11 +289,11 @@ const Page: React.FC = () => {
                       <p className={`${paidColor}`}>{item?.paid}</p>
                     </Td>
                     <Td><p className={`${dueColor}`}>{item?.due}</p></Td>
-                    <Td className=" uppercase">{item?.status}</Td>
+                    <Td className="uppercase">{item?.status}</Td>
                     <Td>
                       <Link
                         href={`/admin/purchase/purchase/view/${item?._id}`}
-                        className="bg-blue-500 px-4 py-1 rounded-lg text-white text-center w-20 cursor-pointer"
+                        className="data-table-view-btn"
                       >
                         View
                       </Link>
@@ -318,7 +318,7 @@ const Page: React.FC = () => {
                             {permissionList.includes("purchase_edit") && (
                               <>
                                 <button
-                                  className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg "
+                                  className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg"
                                   onClick={() =>
                                     router.push(
                                       `/admin/purchase/purchase/edit-purchases/${item?._id}`
@@ -338,7 +338,7 @@ const Page: React.FC = () => {
 
 
                             <button
-                              className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg "
+                              className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg"
                               onClick={() => handleShowPayments(item)}
                             >
                               Payment History

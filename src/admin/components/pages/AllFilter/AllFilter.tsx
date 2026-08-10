@@ -3,15 +3,11 @@
 import React from "react";
 import SelectComponent from "@admin/components/core/Select/Select";
 import CalendarRange from "@admin/components/core/Calendar/CalendarRange";
-import { IWebsiteOption, SelectOption } from "@admin/@interfaces/common.interface";
+import { SelectOption } from "@admin/@interfaces/common.interface";
 import CustomDatePicker from "@admin/components/core/Calendar/DatePicker";
 import Icon from "@admin/components/core/Icon/Icon";
 
 type Props = {
-  isWebsiteFilter?: boolean;
-  websiteOptions?: IWebsiteOption[];
-  selectedWebsite?: SelectOption;
-  setSelectedWebsite?: (_val: SelectOption) => void;
   isCalendarFilter?: boolean;
   range?: any;
   setRange?: any;
@@ -344,7 +340,8 @@ const AllFilter: React.FC<Props> = ({
           </div>
         )}
         {isCourierTypeFilter && (
-          <div className="">
+          <label className="data-table-filter">
+            <Icon name="local_shipping" variant="outlined" size={18} />
             <SelectComponent
               options={courierTypeOptions}
               value={selectedCourierType}
@@ -353,9 +350,10 @@ const AllFilter: React.FC<Props> = ({
                 setCurrentPage?.(1);
               }}
               placeholder="Select Courier"
-              className="md:w-48 w-full"
+              className="data-table-filter-select"
+              size="sm"
             />
-          </div>
+          </label>
         )}
     </div>
   );

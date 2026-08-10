@@ -5,7 +5,6 @@ import Button from "../core/Button/Button";
 import Icon from "../core/Icon/Icon";
 import BulkAction from "../pages/Orders/BulkAction";
 import TableLoading from "./TableLoading";
-import SelectWebsite from "./SelectWebsite";
 
 interface TableWrapperProps {
   data?: any[] | any;
@@ -36,7 +35,6 @@ interface TableWrapperProps {
   labelPrintBtn?: boolean;
   bulkActionBtn?: boolean;
   openBulk?: boolean;
-  selectedWebsite?: boolean;
 }
 
 const bulkBtnClass =
@@ -66,7 +64,6 @@ const TableWrapper: React.FC<TableWrapperProps> = ({
   labelPrintBtn,
   bulkActionBtn,
   openBulk,
-  selectedWebsite,
 }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [styles, setStyles] = useState({
@@ -157,8 +154,6 @@ const TableWrapper: React.FC<TableWrapperProps> = ({
       )}
 
       <div className="data-table-viewport">
-        {selectedWebsite === null ? <SelectWebsite /> : null}
-
         {isLoading ? (
           <div className="data-table-loading">
             <TableLoading />

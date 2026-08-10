@@ -346,7 +346,7 @@ const DepositModal = () => {
           </Button>
           <Button
             type="submit"
-            className="px-4 py-2 text-sm bg-blue-500 text-white rounded"
+            className="btn-primary"
             disabled={isSubmit}
           >
             {isSubmit ? (

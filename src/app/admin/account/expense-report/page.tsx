@@ -78,7 +78,7 @@ const Page: React.FC = () => {
       <NoScrollLayout>
         <div className="2xl:pt-4 pt-2 2xl:px-4 px-3 w-full">
           <div className="flex flex-wrap items-center items-center gap-3">
-            <h1 className="2xl:text-2xl lg:text-xl text-lg font-semibold dark:text-gray-300 text-gray-800  flex text-nowrap">
+            <h1 className="2xl:text-2xl lg:text-xl text-lg font-semibold dark:text-gray-300 text-gray-800 flex text-nowrap">
               Expense Report
             </h1>
               <AllFilter
@@ -104,11 +104,11 @@ const Page: React.FC = () => {
           colValue={7}
         >
           <Thead>
-            <Tr className="dark:bg-gray-700 bg-blue-100 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
-              <Th className="2xl:min-w-32 lg:min-w-14 min-w-32 text-blue-900 dark:text-gray-200">
+            <Tr className="dark:bg-gray-700 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
+              <Th className="2xl:min-w-32 lg:min-w-14 min-w-32 dark:text-gray-200">
                 Name
               </Th>
-              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40  text-blue-900 dark:text-gray-200">
+              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40 dark:text-gray-200">
                 Total : <span className="text-red-600">{totalAmount}</span>
               </Th>
               <Th className="dark:text-gray-300 min-w-40">Quick View</Th>

@@ -54,9 +54,9 @@ const DepositSettingTable = () => {
         colValue={7}
       >
         <Thead>
-          <Tr className="dark:bg-gray-700 bg-blue-100 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
+          <Tr className="dark:bg-gray-700 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
             <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-28 min-w-32">
-              <div className="flex items-center ">
+              <div className="flex items-center">
                 <div>
                   <p>Payment Method</p>
                 </div>

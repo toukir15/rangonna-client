@@ -202,7 +202,7 @@ const Page: React.FC = () => {
           {permissionList.includes("setting_general_create") && (
             <Button
               onClick={handleAddClick}
-              className="!bg-green-200 !text-green-600 !py-1.5 !px-4 text-nowrap"
+              className="btn-primary btn-primary-inline inline-flex items-center gap-2"
             >
               Add General
             </Button>

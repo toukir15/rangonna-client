@@ -6,26 +6,22 @@ import React, { useContext } from "react";
 import ButtonLoader from "@admin/components/core/Button/ButtonLoader";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useState, useEffect } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { ToastService } from "@admin/utils/toastr.service";
 import { ProductBrandContext } from "@/app/admin/product/brand/page";
 import { ProductBrandService } from "@admin/@services/apis/ProductService/ProductBrand.service";
-import SelectComponent from "@admin/components/core/Select/Select";
-import { GlobalService } from "@admin/@services/apis/GlobalService/Global.service";
 
 interface IDefault {
   key: string;
   value: string;
-  websites: any;
 }
 
-const defaultValue: IDefault = { key: "", value: "", websites: [] };
+const defaultValue: IDefault = { key: "", value: "" };
 
 const webSchema = yup.object({
   key: yup.string().required("Title is required"),
   value: yup.string().required("Slug is required"),
-  websites: yup.mixed().nullable().required(),
 });
 
 const toSlug = (s: string) =>
@@ -42,14 +38,12 @@ const ProductBrandModal = () => {
   const { modalMode, items, setIsModalOpen, fetchProductBrand, isModalOpen } =
     useContext(ProductBrandContext);
   const [isSubmit, setIsSubmit] = useState<boolean>(false);
-  const [websiteOption, setWebsiteOption] = useState<any[]>([]);
 
   const {
     handleSubmit,
     register,
     setValue,
     reset,
-    control,
     formState: { errors },
   } = useForm<any>({
     resolver: yupResolver(webSchema),
@@ -60,25 +54,10 @@ const ProductBrandModal = () => {
     if (modalMode === "Edit" && items) {
       setValue("key", items?.key ?? "");
       setValue("value", items?.value ?? "");
-
-      const selectedWebsitesRaw = Array.isArray(items?.websites)
-        ? items.websites
-        : [];
-      const selectedWebsites = selectedWebsitesRaw
-        .map((url: string) =>
-          websiteOptions.find((opt) => opt.value === url) ?? null
-        )
-        .filter(Boolean);
-
-      setValue("websites", selectedWebsites, {
-        shouldValidate: true,
-        shouldDirty: false,
-      });
     } else {
       reset(defaultValue);
-      setValue("websites", [], { shouldValidate: false, shouldDirty: false });
     }
-  }, [modalMode, items, websiteOption, setValue, reset]);
+  }, [modalMode, items, setValue, reset]);
 
   const keyRegister = register("key", {
     onChange: (e) => {
@@ -89,10 +68,8 @@ const ProductBrandModal = () => {
 
   const formSubmit = async (formData: any) => {
     const payload = {
-      ...formData,
-      websites: Array.isArray(formData.websites)
-        ? formData.websites.map((sync: any) => sync.value)
-        : [],
+      key: formData.key,
+      value: formData.value,
     };
     setIsSubmit(true);
     if (modalMode === "Edit") {
@@ -124,33 +101,9 @@ const ProductBrandModal = () => {
         .catch((err: { message: string }) => ToastService.error(err.message))
         .finally(() => {
           setIsSubmit(false);
-          //   reset();
         });
     }
   };
-
-  const fetchWebsite = () => {
-    GlobalService.getWebsiteList()
-      .then((res: any) => {
-        if (res?.success) {
-          setWebsiteOption(res?.data);
-        } else {
-          ToastService.error(res?.message);
-        }
-      })
-      .catch((err: { message: string }) => {
-        ToastService.error(err.message);
-      });
-  };
-
-  useEffect(() => {
-    fetchWebsite();
-  }, []);
-
-  const websiteOptions = websiteOption?.map((item) => ({
-    label: item.web_name,
-    value: item.web_url,
-  }));
 
   return (
     <form onSubmit={handleSubmit(formSubmit)}>
@@ -174,35 +127,6 @@ const ProductBrandModal = () => {
         </Modal.Header>
         <Modal.Body>
           <div>
-            <div className="w-full">
-              <p className="font-inter text-sm font-semibold text-neutral-600 dark:text-gray-300 mb-1">
-                Website{" "}
-                <span className="text-red-400 font-inter text-[12px] font-semibold">
-                  *
-                </span>
-              </p>
-              <Controller
-                name="websites"
-                control={control}
-                defaultValue={[]}
-                render={({ field }) => (
-                  <SelectComponent
-                    options={websiteOptions}
-                    value={Array.isArray(field.value) ? field.value : []}
-                    onChange={(val: any) => field.onChange(val || [])}
-                    placeholder="Select Website"
-                    isMulti
-                    isRequired
-                    className="w-full"
-                  />
-                )}
-              />
-              {errors.websites && (
-                <p className="text-red-500 text-sm">
-                  {errors.websites.message as string}
-                </p>
-              )}
-            </div>
             <Input
               label={"Title"}
               registerProperty={keyRegister}
@@ -231,7 +155,7 @@ const ProductBrandModal = () => {
           </Button>
           <Button
             type="submit"
-            className="px-4 py-2 text-sm bg-blue-500 text-white rounded"
+            className="btn-primary"
             disabled={isSubmit}
           >
             {isSubmit ? <ButtonLoader /> : "Confirm"}

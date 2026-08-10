@@ -96,13 +96,13 @@ const AddStoreModal = () => {
   }, [isModalStoreOpen]);
 
   return (
-    <form onSubmit={handleSubmit(formSubmit)}>
-      <Modal
-        isOpen={isModalStoreOpen}
-        onClose={() => setIsModalStoreOpen(false)}
-        width="w-full md:w-3/4"
-        maxWidth="max-w-2xl"
-      >
+    <Modal
+      isOpen={isModalStoreOpen}
+      onClose={() => setIsModalStoreOpen(false)}
+      width="w-full md:w-3/4"
+      maxWidth="max-w-2xl"
+    >
+      <form onSubmit={handleSubmit(formSubmit)}>
         <Modal.Header className="flex items-center justify-between">
           <h3 className="text-lg font-medium leading-6 text-gray-900 dark:text-white">
             Add Store
@@ -144,6 +144,7 @@ const AddStoreModal = () => {
         </Modal.Body>
         <Modal.Footer className="flex justify-end space-x-2">
           <Button
+            type="button"
             onClick={() => setIsModalStoreOpen(false)}
             className="px-4 py-2 text-sm text-gray-700 dark:text-gray-300"
           >
@@ -151,7 +152,7 @@ const AddStoreModal = () => {
           </Button>
           <Button
             type="submit"
-            className="px-4 py-2 text-sm bg-blue-500 text-white rounded"
+            className="btn-primary"
             disabled={isSubmit}
           >
             {isSubmit ? (
@@ -163,8 +164,8 @@ const AddStoreModal = () => {
             )}
           </Button>
         </Modal.Footer>
-      </Modal>
-    </form>
+      </form>
+    </Modal>
   );
 };
 

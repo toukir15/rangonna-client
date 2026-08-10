@@ -237,7 +237,7 @@ const Page: React.FC = () => {
             {permissionList.includes("courier_create") && (
               <Button
                 onClick={handleAddClick}
-                className="flex items-center !px-3 !bg-green-200 !text-green-500 !py-1.5"
+                className="btn-primary btn-primary-inline inline-flex items-center gap-2"
               >
                 Add Courier
               </Button>

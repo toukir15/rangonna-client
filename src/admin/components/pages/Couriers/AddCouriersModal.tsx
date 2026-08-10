@@ -4,14 +4,11 @@ import Modal from "@admin/components/core/ModalFrom/ModalFrom";
 import React, { useContext, useEffect, useState } from "react";
 import ButtonLoader from "@admin/components/core/Button/ButtonLoader";
 import { ToastService } from "@admin/utils/toastr.service";
-import SelectComponent from "@admin/components/core/Select/Select";
 import patho from "@admin/assets/images/pathao.png";
 import steadfast from "@admin/assets/images/steadfast.jpg";
 import redx from "@admin/assets/images/redx.png";
 import Image from "next/image";
-import { GlobalService } from "@admin/@services/apis/GlobalService/Global.service";
 import { CourierService } from "@admin/@services/apis/CouriersService/Courier.service";
-import { IWebsiteOption } from "@admin/@interfaces/common.interface";
 import { CreateCourierPayload } from "@admin/@interfaces/couriers/couriers.interface";
 import { CourierManagementContext } from "@admin/context/CourierManagementContext";
 
@@ -29,23 +26,16 @@ const AddCouriersModal = () => {
   const [selectedCourier, setSelectedCourier] = useState<string>(
     couriers[0].name
   );
-  const [websiteOptions, setWebsiteOptions] = useState<IWebsiteOption[]>([]);
-  const [selectedWebsite, setSelectedWebsite] = useState<IWebsiteOption | null>(
-    null
-  );
   const [formData, setFormData] = useState<any>({
     name: "",
     type: couriers[0].name,
-    website_id: null,
   });
 
-  // ✅ Handle field changes
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev: any) => ({ ...prev, [name]: value }));
   };
 
-  // ✅ Select courier
   const handleCourierSelect = (courierName: string) => {
     setSelectedCourier(courierName);
     setFormData((prev: any) => ({
@@ -54,59 +44,32 @@ const AddCouriersModal = () => {
     }));
   };
 
-  // ✅ Fetch websites
-  const fetchWebList = async () => {
-    try {
-      const res = await GlobalService.getWebsiteList();
-      if (res?.success) {
-        const options = res?.data?.map((item: any) => ({
-          label: item.web_name,
-          value: item._id,
-        }));
-        setWebsiteOptions(options);
-      } else ToastService.error(res?.message);
-    } catch (err: any) {
-      ToastService.error(err.message);
-    }
-  };
-
-  // ✅ Initialize on open
   useEffect(() => {
     if (isModalOpen) {
-      fetchWebList();
       if (modalMode === "Edit" && items) {
         const courierType = items?.type || items?.courierType || couriers[0].name;
         const credentials = items?.credentials || {};
         setSelectedCourier(courierType);
-        setSelectedWebsite({
-          label: items?.website?.web_name || items?.website_id?.web_name || "",
-          value: items?.website?._id || items?.website_id?._id || items?.website_id || null,
-        });
         setFormData({
           ...items,
           ...credentials,
           marchant_store_id:
             credentials.merchant_store_id || items?.marchant_store_id || "",
-          website_id: items?.website?._id || items?.website_id?._id || items?.website_id || null,
         });
       } else {
-        // Reset when Create
-        setFormData({ name: "", type: couriers[0].name, website_id: null });
+        setFormData({ name: "", type: couriers[0].name });
         setSelectedCourier(couriers[0].name);
-        setSelectedWebsite(null);
       }
     }
   }, [isModalOpen, modalMode, items]);
 
   const buildPayload = (): CreateCourierPayload => {
-    const website_id = selectedWebsite?.value as string;
     const webhook = formData.webhook?.trim() || undefined;
 
     if (selectedCourier === "SteadFast") {
       return {
         name: formData.name,
         provider: "steadfast",
-        website_id,
         store_name: formData.store_name,
         ...(webhook ? { webhook } : {}),
         credentials: {
@@ -120,7 +83,6 @@ const AddCouriersModal = () => {
     return {
       name: formData.name,
       provider: "pathao",
-      website_id,
       store_name: formData.store_name || "",
       ...(webhook ? { webhook } : {}),
       credentials: {
@@ -145,13 +107,8 @@ const AddCouriersModal = () => {
     return CourierService.createCourier(payload);
   };
 
-  // ✅ Submit (Create / Edit)
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedWebsite?.value) {
-      ToastService.error("Please select a website");
-      return;
-    }
     setIsSubmit(true);
     try {
       const payload = buildPayload();
@@ -171,31 +128,11 @@ const AddCouriersModal = () => {
     }
   };
 
-  // ✅ Dynamic Field Render
   const renderFormFields = () => {
     if (!selectedCourier) return <p>Please select a courier.</p>;
 
     return (
       <>
-        <div className="mb-6">
-          <label className="block font-semibold mb-2 text-gray-600">
-            Select Website
-          </label>
-          <SelectComponent
-            options={websiteOptions}
-            value={selectedWebsite}
-            onChange={(opt: any) => {
-              setSelectedWebsite(opt);
-              setFormData((prev: any) => ({
-                ...prev,
-                website_id: opt?.value || null,
-              }));
-            }}
-            placeholder="Select Website"
-            className="w-full"
-          />
-        </div>
-
         <div className="md:mb-4 mb-2">
           <label className="block text-sm font-semibold text-gray-700 mb-1">
             Name
@@ -222,6 +159,9 @@ const AddCouriersModal = () => {
             <div key={f} className="md:mb-4 mb-2">
               <label className="block text-sm font-semibold text-gray-700 mb-1 capitalize">
                 {f.replace(/_/g, " ")}
+                {f === "webhook" && (
+                  <span className="text-gray-400 font-normal ml-1">(optional)</span>
+                )}
               </label>
               <input
                 type={f === "password" ? "password" : "text"}
@@ -230,6 +170,7 @@ const AddCouriersModal = () => {
                 onChange={handleInputChange}
                 placeholder={`Enter ${f}`}
                 className="w-full p-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                required={f !== "webhook"}
               />
             </div>
           ))}
@@ -281,13 +222,14 @@ const AddCouriersModal = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        width="w-full md:w-3/4"
-        maxWidth="max-w-2xl"
-      >
+    <Modal
+      isOpen={isModalOpen}
+      onClose={() => setIsModalOpen(false)}
+      width="w-full md:w-3/4"
+      maxWidth="max-w-2xl"
+    >
+      {/* Form must live inside Modal: portal moves children outside any outer <form>. */}
+      <form onSubmit={handleSubmit}>
         <Modal.Header className="flex items-center justify-between">
           <h3 className="text-lg font-medium text-gray-900 dark:text-white">
             {modalMode === "Edit" ? "Edit Courier" : "Add Courier"}
@@ -324,13 +266,17 @@ const AddCouriersModal = () => {
         </Modal.Body>
 
         <Modal.Footer className="flex justify-end space-x-2">
-          <Button className="bg-gray-400" onClick={() => setIsModalOpen(false)}>
+          <Button
+            type="button"
+            className="btn-secondary"
+            onClick={() => setIsModalOpen(false)}
+          >
             Cancel
           </Button>
           <Button
             type="submit"
             className="rounded-m flex justify-center font-medium text-white bg-blue-500"
-            disabled={isSubmit || !selectedWebsite?.value}
+            disabled={isSubmit}
           >
             {isSubmit ? (
               <ButtonLoader />
@@ -341,8 +287,8 @@ const AddCouriersModal = () => {
             )}
           </Button>
         </Modal.Footer>
-      </Modal>
-    </form>
+      </form>
+    </Modal>
   );
 };
 

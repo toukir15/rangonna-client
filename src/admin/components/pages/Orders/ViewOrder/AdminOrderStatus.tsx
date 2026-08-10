@@ -2,6 +2,7 @@
 import Icon from "@admin/components/core/Icon/Icon";
 import StatusSkeleton from "@admin/components/Skeleton/Orders/ViewOrder/StatusSkeleton";
 import React, { useMemo, useState } from "react";
+import { getStatusLabel, getStatusStyle } from "@admin/utils/system.utils";
 
 interface OrderStatusProps {
   currentStep: string;
@@ -31,20 +32,6 @@ const AdminOrderStatus: React.FC<OrderStatusProps> = ({
     { label: "Refunded", key: "refunded", icon: "autorenew" },
     { label: "Exchange", key: "exchange", icon: "change_circle" },
   ];
-
-  // Centralized status styles
-  const statusStyles: Record<string, string> = {
-    pending: "bg-yellow-50 text-yellow-600 border border-yellow-300",
-    "waiting-payment": "bg-yellow-50 text-yellow-600 border border-yellow-300",
-    approved: "bg-green-50 text-green-600 border border-green-300",
-    printed: "bg-cyan-50 text-cyan-600 border border-cyan-300",
-    "ready-for-box": "bg-blue-50 text-blue-600 border border-blue-300",
-    cancel: "bg-red-50 text-red-600 border border-red-300",
-    refunded: "bg-lime-50 text-lime-600 border border-lime-300",
-    return: "bg-amber-50 text-amber-600 border border-amber-300",
-    "follow-up": "bg-purple-50 text-purple-600 border border-purple-300",
-    exchange: "bg-pink-50 text-pink-600 border border-pink-300",
-  };
 
   // Centralized messages
   const statusMessages: Record<string, string> = {
@@ -102,18 +89,19 @@ const AdminOrderStatus: React.FC<OrderStatusProps> = ({
   return (
     <div>
       {currentStep ? (
-        <div
-          className={`rounded-lg md:px-4 md:py-4 px-2 py-4 mb-3 ${
-            statusStyles[currentStep] || "bg-white dark:bg-gray-800 shadow-md"
-          }`}
-        >
+        <div className="mb-3 rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] px-2 py-4 shadow-[var(--shadow-soft)] md:px-4 md:py-4">
+          <div className="mb-3">
+            <span className={getStatusStyle(currentStep)}>
+              {getStatusLabel(currentStep)}
+            </span>
+          </div>
           <div className="flex items-center justify-between">
             {statusMessages[currentStep] ? (
-              <p className="text-lg py-4">
+              <p className="text-lg py-4 text-app">
                 {statusMessages[currentStep].includes("Admin Order Page") ? (
                   <>
                     This is the{" "}
-                    <span className="font-semibold text-blue-600">
+                    <span className="font-semibold text-brand">
                       Admin Order Page
                     </span>
                     . You have view-only permission here, so no further action
@@ -129,19 +117,19 @@ const AdminOrderStatus: React.FC<OrderStatusProps> = ({
 
                 const iconColor = isCancelled
                   ? step.key === "cancel"
-                    ? "bg-red-600 border-red-500 text-white"
-                    : "bg-gray-300 border-gray-200 text-white"
+                    ? "bg-[var(--color-danger,#dc2626)] border-[var(--color-danger,#dc2626)] text-white"
+                    : "bg-[var(--bg-hover)] border-[var(--border)] text-[var(--text-muted)]"
                   : isCurrentStep
-                  ? "bg-green-600 border-green-500 text-white"
-                  : "bg-gray-300 border-gray-200 text-white";
+                  ? "bg-[var(--color-primary)] border-[var(--color-primary)] text-white"
+                  : "bg-[var(--bg-hover)] border-[var(--border)] text-[var(--text-muted)]";
 
                 const labelColor = isCancelled
                   ? step.key === "cancel"
-                    ? "text-red-600 dark:text-red-400 font-bold"
-                    : "text-gray-600 dark:text-gray-400"
+                    ? "text-[var(--color-danger,#dc2626)] font-bold"
+                    : "text-app-muted"
                   : isCurrentStep
-                  ? "text-green-600 dark:text-green-400 font-bold"
-                  : "text-gray-600 dark:text-gray-400";
+                  ? "text-brand font-bold"
+                  : "text-app-muted";
 
                 return (
                   <React.Fragment key={step.key}>
@@ -165,7 +153,7 @@ const AdminOrderStatus: React.FC<OrderStatusProps> = ({
                         {(statusLoading || loading) &&
                           loadingName === step.label && (
                             <div className="absolute inset-0 flex items-center justify-center">
-                              <div className="animate-spin rounded-full h-11 w-11 border-b-4 border-green-600"></div>
+                              <div className="animate-spin rounded-full h-11 w-11 border-b-4 border-[var(--color-primary)]"></div>
                             </div>
                           )}
                       </div>

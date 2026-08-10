@@ -15,7 +15,6 @@ import { ToastService } from "@admin/utils/toastr.service";
 import NodataImage from "@admin/assets/images/Image-not-found.png";
 import { OrdersService } from "@admin/@services/apis/OrdersService/Orders.service";
 import EmptyCart from "@admin/components/pages/Orders/EmptyCart";
-import { GlobalService } from "@admin/@services/apis/GlobalService/Global.service";
 import { useGlobalContext } from "@admin/context/GlobalContext";
 import { useRouter } from "next/navigation";
 import { setCookie } from "cookies-next";
@@ -63,7 +62,9 @@ const page: React.FC = () => {
   const [orderDetails, setOrderDetails] = useState<any>({ line_items: [] });
   const [discount, setDiscount] = useState<number | null>();
   const [shippingPrice, setShippingPrice] = useState<number>(0);
-  const [domain, setDomain] = useState<string>("");
+  const [domain] = useState<string>(
+    () => process.env.NEXT_PUBLIC_DEFAULT_ORDER_DOMAIN?.trim() || "",
+  );
   const [isImageOpen, setIsImageOpen] = useState<boolean>(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
@@ -89,29 +90,6 @@ const page: React.FC = () => {
   const paymentOption = [
     { value: "cash on delivery", label: "Cash On Delivery" },
   ];
-
-  useEffect(() => {
-    fetchWebList();
-  }, []);
-
-  const fetchWebList = async () => {
-    GlobalService.getWebsiteList()
-      .then((res: any) => {
-        if (res?.success) {
-          const websites = res.data.filter(
-            (item: any) => item.web_name !== "Naviforce Wholesale",
-          );
-          if (websites.length > 0) {
-            setDomain(websites[0].web_url);
-          }
-        } else {
-          ToastService.error(res?.message);
-        }
-      })
-      .catch((err: { message: string }) => {
-        ToastService.error(err.message);
-      });
-  };
 
   const {
     register,
@@ -401,12 +379,10 @@ const page: React.FC = () => {
                     type="text"
                     value={productSearch}
                     onChange={handleSearchChange}
-                    disabled={!domain}
                     placeholder="Search for a product"
                     className={`w-full rounded-lg border p-2.5 pr-10 bg-white dark:bg-gray-800 outline-none transition
                 border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100
-                dark:border-gray-600 dark:focus:border-blue-400 dark:focus:ring-blue-900/30
-                ${!domain ? "opacity-50 cursor-not-allowed" : ""}`}
+                dark:border-gray-600 dark:focus:border-blue-400 dark:focus:ring-blue-900/30`}
                     onKeyDown={(e) => e.key === "Enter" && handleSearchSubmit(e)}
                     onFocus={() =>
                       productSearch.length >= 2 && setShowSuggestions(true)

@@ -2087,30 +2087,6 @@ export const permissions = [
   {
     sectionName: "Setting",
     section: "setting",
-    label: "Website Create",
-    value: "setting_website_create",
-  },
-  {
-    sectionName: "Setting",
-    section: "setting",
-    label: "Website View",
-    value: "setting_website_view",
-  },
-  {
-    sectionName: "Setting",
-    section: "setting",
-    label: "Website Edit",
-    value: "setting_website_edit",
-  },
-  {
-    sectionName: "Setting",
-    section: "setting",
-    label: "Website Delete",
-    value: "setting_website_delete",
-  },
-  {
-    sectionName: "Setting",
-    section: "setting",
     label: "Priority Edit",
     value: "setting_priority_edit",
   },

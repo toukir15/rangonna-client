@@ -257,7 +257,7 @@ const Page: React.FC = () => {
 
                 {permissionList.includes("current_value_monthly_create") && (
                   <Button
-                    className="!bg-green-200 !text-green-600 !py-1.5 !px-4"
+                    className="btn-primary btn-primary-inline inline-flex items-center gap-2"
                     onClick={handleAddClick}
                   >
                     Add Monthly Value

@@ -2,23 +2,21 @@
 import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Icon from "@admin/components/core/Icon/Icon";
-import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
+import AuthLayout from "@admin/layouts/AuthLayout";
 import React, { useState, useEffect, createContext } from "react";
 import PaginationComponent from "@admin/components/core/Pazination/Pazination";
 import useDebounce from "@admin/components/core/UseDebounece/UseDebouence";
-import Button from "@admin/components/core/Button/Button";
 import { ToastService } from "@admin/utils/toastr.service";
 import { useGlobalContext } from "@admin/context/GlobalContext";
-import PageSearch from "@admin/components/core/Search/PageSearch";
 import { useLocalStorageDateRange } from "@admin/utils";
 import { last30DaysRange } from "@admin/utils/helper";
 import { formatDateRange } from "@admin/utils/hook.utils";
-import { noPermission } from "@admin/utils/constant";
 import AllFilter from "@admin/components/pages/AllFilter/AllFilter";
-import RefundTab from "@admin/components/pages/RefundList/RefundTab";
 import RefundTable from "@admin/components/pages/RefundList/RefundTable";
 import RefundModal from "@admin/components/pages/RefundList/RefundModal";
 import { RefundListService } from "@admin/@services/apis/RefundList/RefundList.service";
+import PageHeader from "@admin/components/layout/PageHeader";
+import OrdersTab from "@admin/components/pages/Orders/Components/OrdersTab";
 
 export const RefundListContext = createContext({} as any);
 
@@ -26,6 +24,14 @@ const DEFAULT_DATE_RANGE = {
   ...last30DaysRange(),
   label: "Last 30 Days",
 };
+
+const REFUND_STATUSES = [
+  { status: "all", name: "All Status" },
+  { status: "pending", name: "Pending" },
+  { status: "processing", name: "Processing" },
+  { status: "completed", name: "Completed" },
+  { status: "rejected", name: "Rejected" },
+];
 
 const Page: React.FC = () => {
   const { permissionList, canFetchPageData } = useGlobalContext();
@@ -41,7 +47,8 @@ const Page: React.FC = () => {
   const [modalMode, setModalMode] = useState<"Add" | "Edit">("Add");
   const [selectedRefund, setSelectedRefund] = useState<any>(null);
   const [statusUpdateOnly, setStatusUpdateOnly] = useState<boolean>(false);
-  const [isHydrated, setIsHydrated] = useState(false);  const [filter, setFilter] = useState<string>("all");
+  const [isHydrated, setIsHydrated] = useState(false);
+  const [filter, setFilter] = useState<string>("all");
   const [range, setRange] = useLocalStorageDateRange(
     "supplierReportDateRange",
     DEFAULT_DATE_RANGE,
@@ -85,7 +92,8 @@ const Page: React.FC = () => {
 
       if (res?.success) {
         setReturnListData(res?.data?.data || []);
-        setTotalExpenses(res?.data?.meta?.total_record || 0);      } else {
+        setTotalExpenses(res?.data?.meta?.total_record || 0);
+      } else {
         ToastService.error(res?.message);
       }
     } catch (err: any) {
@@ -129,79 +137,95 @@ const Page: React.FC = () => {
   };
   useTableRefreshRegister(fetchReturnList);
 
-
   return (
     <AuthLayout>
-      <NoScrollLayout>
-        <div className="md:flex flex-wrap items-center items-center gap-3 2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 mb-2">
-          <div className="flex flex-wrap items-center items-center gap-4 ">
-            <h2 className="2xl:text-2xl lg:text-xl text-lg text-blue-900 font-semibold dark:text-gray-300 text-nowrap">
-              Refund Lists
-            </h2>
-              <AllFilter
-              isCalendarFilter={true}
-              range={range}
-              setRange={setRange}
-            />
-            <div>
-              {permissionList.includes("order_refund_create") && (
-                <Button
-                  className="flex items-center !bg-green-100 !text-green-500 !px-4 !py-1.5"
-                  onClick={handleAddClick}
-                >
-                  <span className="ml-1">Add Refund</span>
-                </Button>
-              )}
+      <div className="2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 pb-4 relative w-full">
+        <PageHeader
+          title="Refund Lists"
+          action={
+            permissionList.includes("order_refund_create") ? (
+              <button
+                type="button"
+                onClick={handleAddClick}
+                className="btn-primary btn-primary-inline inline-flex items-center gap-2"
+              >
+                <Icon name="add" size={16} />
+                Add Refund
+              </button>
+            ) : undefined
+          }
+        />
+
+        <RefundListContext.Provider
+          value={{
+            returnListData,
+            tableLoading: tableLoading,
+            modalMode,
+            setModalMode,
+            setIsModalOpen,
+            isModalOpen,
+            fetchReturnList,
+            selectedRefund,
+            setSelectedRefund,
+            statusUpdateOnly,
+            setStatusUpdateOnly,
+          }}
+        >
+          <div className="data-table-card glass-card rounded-2xl orders-table-shell">
+            <div className="premium-table-toolbar">
+              <p className="premium-table-toolbar-title">Refund records</p>
+              <p className="premium-table-toolbar-meta">
+                {totalExpenses.toLocaleString()}{" "}
+                {totalExpenses === 1 ? "refund" : "refunds"}
+              </p>
             </div>
-          </div>
-          <div className="md:w-80 w-full md:my-0 my-2">
-            <PageSearch
-              value={searchTerm}
-              onChange={handleSearchChange}
-              wrapperClass="w-full"
+
+            <div className="data-table-toolbar">
+              <div className="data-table-toolbar-start">
+                <label className="data-table-search">
+                  <Icon name="search" variant="outlined" size={18} />
+                  <input
+                    type="search"
+                    value={searchTerm}
+                    onChange={handleSearchChange}
+                    placeholder="Search refunds..."
+                    aria-label="Search refunds"
+                  />
+                </label>
+                <AllFilter
+                  isCalendarFilter={true}
+                  range={range}
+                  setRange={setRange}
+                />
+              </div>
+            </div>
+
+            <div className="px-4 pb-3">
+              <OrdersTab
+                filter={filter}
+                handleFilterChange={handleFilterChange}
+                allStatuses={REFUND_STATUSES}
+              />
+            </div>
+
+            <RefundTable />
+
+            <PaginationComponent
+              ordersPerPage={productPerPage}
+              handleOrdersPerPageChange={handleProductPerPageChange}
+              currentPage={currentPage}
+              setCurrentPage={setCurrentPage}
+              totalPages={totalPages}
+              totalData={totalExpenses}
+              onRefresh={fetchReturnList}
+              isLoading={tableLoading}
+              showRefresh={false}
+              className="orders-table-pagination !mt-0 !rounded-none !border-x-0 !border-b-0 !shadow-none"
             />
           </div>
-        </div>
-        <div className="px-4 lg:mt-0">
-          <RefundTab
-            filter={filter}
-            handleFilterChange={handleFilterChange}
-            IsSearch={false}
-            isCount={true}
-          />
-        </div>
-      </NoScrollLayout>
 
-      <div className="min-h-[75vh] 2xl:px-4 px-3">
-        <div className="xl:mt-3 mt-2">
-          <RefundListContext.Provider
-            value={{
-              returnListData,
-              tableLoading: tableLoading,
-              modalMode,
-              setModalMode,
-              setIsModalOpen,
-              isModalOpen,
-              fetchReturnList,
-              selectedRefund,
-              setSelectedRefund,
-              statusUpdateOnly,
-              setStatusUpdateOnly,
-            }}
-          >
-            <RefundTable />
-            <RefundModal />
-          </RefundListContext.Provider>
-
-          <PaginationComponent
-            ordersPerPage={productPerPage}
-            handleOrdersPerPageChange={handleProductPerPageChange}
-            currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
-            totalPages={totalPages}
-            totalData={totalExpenses}
-          />
-        </div>
+          <RefundModal />
+        </RefundListContext.Provider>
       </div>
     </AuthLayout>
   );

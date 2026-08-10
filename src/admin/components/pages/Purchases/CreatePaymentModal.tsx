@@ -386,14 +386,14 @@ const CreatePaymentModal = ({
                 {permissionList.includes("purc_e") && (
                   <Button
                     onClick={() => setModalMode("Add")}
-                    className="flex items-center bg-blue-500 !px-4 !py-2"
+                    className="btn-primary inline-flex items-center gap-2"
                   >
                     <Icon name={"add"} />
                     <span className="ml-1">Add Payment</span>
                   </Button>
                 )}
               </div>
-              <table className="min-w-full border-collapse border dark:border-gray-500">
+              <table className="edit-order-products-table">
                 <thead className="bg-blue-50 dark:bg-gray-700 h-[55px] shadow-sm border-b border-gray-300 dark:border-gray-700 p-20 ">
                   <tr>
                     <th className="dark:border-gray-600 px-4 py-2 dark:text-gray-300 text-sm">
@@ -480,7 +480,7 @@ const CreatePaymentModal = ({
             </Button>
             <Button
               type="submit"
-              className="px-4 py-2 text-sm bg-blue-500 text-white rounded"
+              className="btn-primary"
               disabled={isSubmit}
             >
               {isSubmit ? (

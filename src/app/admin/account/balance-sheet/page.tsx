@@ -64,7 +64,7 @@ const Page = (): JSX.Element => {
       <NoScrollLayout>
         <div className="sm:flex items-center justify-between 2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 md:pb-0 mb-2">
           <div className="sm:flex items-center gap-4">
-            <h2 className="2xl:text-2xl lg:text-xl text-lg text-blue-900 font-semibold dark:text-gray-300 text-nowrap">
+            <h2 className="2xl:text-2xl lg:text-xl text-lg font-semibold text-app text-nowrap">
               Balance Lists
             </h2>
           </div>

@@ -177,7 +177,7 @@ const Page: React.FC = () => {
                         <div className="md:flex items-center md:space-x-4 w-full">
 
 
-                            <div className=" items-center w-full gap-4">
+                            <div className="items-center w-full gap-4">
                                 <div>
                                     <p className="text-2xl font-bold text-center pb-3">{myWarehouse?.product_name}</p>
                                 </div>
@@ -212,7 +212,7 @@ const Page: React.FC = () => {
                             {tableLoading ? (
                                 <EmployeeReport />
                             ) : activeType ? (
-                                <div className="flex items-center justify-center gap-6 mb-4 ">
+                                <div className="flex items-center justify-center gap-6 mb-4">
                                     {CardData?.map((data: ICardData, index: number) => {
                                         return <ShopCart data={data} key={index} />;
                                     })}
@@ -246,17 +246,17 @@ const Page: React.FC = () => {
                     colValue={4}
                 >
                     <Thead>
-                        <Tr className="dark:bg-gray-700 bg-blue-100 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
-                            <Th className="2xl:min-w-32 lg:min-w-14 min-w-32 text-blue-900 dark:text-gray-200">
+                        <Tr className="dark:bg-gray-700 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
+                            <Th className="2xl:min-w-32 lg:min-w-14 min-w-32 dark:text-gray-200">
                                 Date
                             </Th>
-                            <Th className="2xl:min-w-40 lg:min-w-32 min-w-40 text-blue-900 dark:text-gray-200">
+                            <Th className="2xl:min-w-40 lg:min-w-32 min-w-40 dark:text-gray-200">
                                 Reference
                             </Th>
-                            <Th className="2xl:min-w-40 lg:min-w-32 min-w-40 text-blue-900 dark:text-gray-200">
+                            <Th className="2xl:min-w-40 lg:min-w-32 min-w-40 dark:text-gray-200">
                                 Quantity
                             </Th>
-                            <Th className="2xl:min-w-40 lg:min-w-32 min-w-40 text-blue-900 dark:text-gray-200">
+                            <Th className="2xl:min-w-40 lg:min-w-32 min-w-40 dark:text-gray-200">
                                 Source
                             </Th>
                         </Tr>

@@ -977,7 +977,6 @@ const OrderViewPageContent: React.FC = () => {
               date={orderDetails?.createdAt}
               isLoading={isSummaryLoading}
               fetchOrderSumary={fetchOrderSumary}
-              domain={orderDetails?.domain}
               handleStatusUpdate={handleStatusUpdate}
               orderStatus={orderDetails?.status}
             />

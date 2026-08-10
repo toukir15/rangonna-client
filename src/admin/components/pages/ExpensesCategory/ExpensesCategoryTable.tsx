@@ -92,7 +92,7 @@ const ExpensesCategoryTable: React.FC = () => {
       colValue={10}
     >
       <Thead>
-        <Tr className="dark:bg-gray-700 bg-blue-100 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
+        <Tr className="dark:bg-gray-700 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
           <Th className="dark:text-gray-300 2xl:min-w-16 lg:min-w-16 min-w-16">
             #
           </Th>
@@ -106,19 +106,19 @@ const ExpensesCategoryTable: React.FC = () => {
             Note
           </Th>
           <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-14 min-w-40">
-            <div className="flex items-center ">
+            <div className="flex items-center">
               <div>
                 <p>Date</p>
               </div>
               {!isPriorityEditMode && (
                 <div className="mt-2">
                   <div className="h-1.5">
-                    <Icon name={"arrow_drop_up"} className=" cursor-pointer" />
+                    <Icon name={"arrow_drop_up"} className="cursor-pointer" />
                   </div>
                   <div className="">
                     <Icon
                       name={"arrow_drop_down"}
-                      className=" cursor-pointer"
+                      className="cursor-pointer"
                     />
                   </div>
                 </div>

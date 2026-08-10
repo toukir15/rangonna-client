@@ -311,16 +311,16 @@ const Page: React.FC = () => {
       </Alert>
 
       <NoScrollLayout>
-        <div className="md:flex gap-3 items-center  2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 md:pb-0 mb-2">
+        <div className="md:flex gap-3 items-center 2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 md:pb-0 mb-2">
           <div className="flex items-center gap-3">
-            <h2 className="2xl:text-2xl lg:text-xl text-lg text-blue-900 font-semibold dark:text-gray-300">
+            <h2 className="2xl:text-2xl lg:text-xl text-lg font-semibold text-app">
               Supplier
             </h2>
-            <div className="flex  gap-2">
+            <div className="flex gap-2">
               {permissionList.includes("purchase_supplier_create") &&
                 !isPriorityEditMode && (
                   <Button
-                    className="flex items-center !bg-green-200 !text-green-600 !px-4 !py-1.5 text-nowrap"
+                    className="btn-primary btn-primary-inline inline-flex items-center gap-2"
                     onClick={handleAddClick}
                   >
                     Add Supplier
@@ -376,12 +376,12 @@ const Page: React.FC = () => {
             colValue={7}
           >
             <Thead>
-              <Tr className="dark:bg-gray-700 bg-blue-100 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
+              <Tr className="dark:bg-gray-700 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
                 <Th className="dark:text-gray-300 2xl:min-w-20 lg:min-w-16 min-w-20">
                   #
                 </Th>
                 <Th className="dark:text-gray-300 2xl:min-w-40 lg:min-w-32 min-w-40">
-                  <div className="flex items-center ">
+                  <div className="flex items-center">
                     <div>
                       <p>Name</p>
                     </div>
@@ -390,13 +390,13 @@ const Page: React.FC = () => {
                         <div className="h-1.5">
                           <Icon
                             name={"arrow_drop_up"}
-                            className=" cursor-pointer"
+                            className="cursor-pointer"
                           />
                         </div>
                         <div className="">
                           <Icon
                             name={"arrow_drop_down"}
-                            className=" cursor-pointer"
+                            className="cursor-pointer"
                           />
                         </div>
                       </div>

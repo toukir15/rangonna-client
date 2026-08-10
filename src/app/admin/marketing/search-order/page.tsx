@@ -215,11 +215,11 @@ const Page: React.FC = () => {
               </button>
             </div>
           </div>
-          <div className="mt-4  w-full">
+          <div className="mt-4 w-full">
             {cardLoading ? (
               <EmployeeReport />
             ) : (
-              <div className="grid  md:grid-cols-5 grid-cols-1 md:gap-4 gap-3 w-full">
+              <div className="grid md:grid-cols-5 grid-cols-1 md:gap-4 gap-3 w-full">
                 {CardData?.map((data: ICardData, index: number) => {
                   return <ShopCart data={data} key={index} />;
                 })}
@@ -242,7 +242,7 @@ const Page: React.FC = () => {
           }
         >
           <Thead>
-            <Tr className="bg-blue-100 dark:bg-gray-700 h-[50px]">
+            <Tr className="dark:bg-gray-700 h-[50px]">
               <Th className="min-w-28">Date</Th>
               <Th className="min-w-28">Order ID</Th>
               <Th>Campaign</Th>
@@ -260,10 +260,10 @@ const Page: React.FC = () => {
                   <Td>
                     <div className="flex items-center">
                       <p>{data.sysid}</p>
-                      <p className="bg-red-600 text-white  text-center rounded-full p-1 ml-2 w-7">
+                      <p className="bg-red-600 text-white text-center rounded-full p-1 ml-2 w-7">
                         {Array.isArray(data?.campaign) &&
                         data.campaign.length > 0 ? (
-                          <div className="flex flex-col gap-1 ">
+                          <div className="flex flex-col gap-1">
                             {data.campaign.length}
                           </div>
                         ) : (
@@ -275,7 +275,7 @@ const Page: React.FC = () => {
                   <Td>
                     {Array.isArray(data?.campaign) &&
                     data.campaign.length > 0 ? (
-                      <div className="flex flex-col gap-1 ">
+                      <div className="flex flex-col gap-1">
                         {data.campaign.map((item: string, i: number) => (
                           <span
                             key={i}

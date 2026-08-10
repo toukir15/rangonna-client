@@ -33,7 +33,7 @@ const BalanceSheetTable: React.FC = () => {
       colValue={7}
     >
       <Thead>
-        <Tr className="dark:bg-gray-700 bg-blue-100 h-[50px] border-b border-gray-300">
+        <Tr className="dark:bg-gray-700 h-[50px] border-b border-gray-300">
           <Th>Account Name</Th>
           <Th>Balance</Th>
           <Th>Last Balance</Th>
@@ -74,7 +74,7 @@ const BalanceSheetTable: React.FC = () => {
               </Td>
               <Td className="font-bold !text-[16px]">
                 {currentBalance}{" "}
-                <span className="!text-xs text-green-500 ml-2 ">
+                <span className="!text-xs text-green-500 ml-2">
                   +{item?.total_deposit - item?.total_expense - item?.balance}
                 </span>
               </Td>

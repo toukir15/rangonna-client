@@ -352,7 +352,7 @@ const TeamModal: React.FC = () => {
         </Modal.Body>
 
         <Modal.Footer className="flex justify-end gap-3">
-          <Button className="bg-gray-400" onClick={() => setOpenDrawer(false)}>
+          <Button className="btn-secondary" onClick={() => setOpenDrawer(false)}>
             Cancel
           </Button>
           <Button

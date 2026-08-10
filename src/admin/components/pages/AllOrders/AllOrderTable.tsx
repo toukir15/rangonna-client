@@ -41,7 +41,6 @@ const AllOrderTable: React.FC = () => {
     handleSelectOrder,
     handleImageClick,
     filter,
-    selectedWebsite,
   } = useContext(AllOrderListContext);
 
   const router = useRouter();
@@ -173,7 +172,6 @@ const AllOrderTable: React.FC = () => {
         bulkActionBtn={true}
         openBulk={filter === "ready-for-box"}
         handleBulkAction={handleBalkUpdate}
-        selectedWebsite={selectedWebsite}
       >
         <Thead>
           <Tr>
@@ -211,28 +209,34 @@ const AllOrderTable: React.FC = () => {
 
                 <Td>
                   <div className="table-user-info">
-                    <div className="flex items-center gap-1.5">
+                    <div className="table-id-row">
                       <span className="table-id-chip">
                         {order?.sysid || noData}
                       </span>
-                      <Icon
-                        size={14}
-                        name="content_copy"
-                        variant="outlined"
-                        className="cursor-pointer text-[var(--text-muted)] hover:text-[var(--accent)]"
+                      <button
+                        type="button"
+                        className="table-copy-btn"
+                        aria-label="Copy order ID"
+                        title="Copy order ID"
                         onClick={() => {
                           navigator.clipboard.writeText(
                             String(order?.sysid ?? ""),
                           );
                           ToastService.success("Order ID copied to clipboard!");
                         }}
-                      />
+                      >
+                        <Icon
+                          size={13}
+                          name="content_copy"
+                          variant="outlined"
+                        />
+                      </button>
                     </div>
                     <p className="data-table-muted">
                       {getWebName(order?.domain) || noData}
                     </p>
                     <span className="table-date-cell">
-                      <Icon name="calendar_today" size={14} variant="outlined" />
+                      <Icon name="calendar_today" size={13} variant="outlined" />
                       {formatTimeAgo(order?.createdAt) || noData}
                     </span>
                   </div>
@@ -249,12 +253,19 @@ const AllOrderTable: React.FC = () => {
                       <a href={`tel:${order?.customer?.phone}`}>
                         {order?.customer?.phone}
                       </a>
-                      <Icon
+                      <button
+                        type="button"
+                        className="table-copy-btn"
+                        aria-label="Copy phone number"
+                        title="Copy phone number"
                         onClick={() => copyToClipboard(order?.customer?.phone)}
-                        name="content_copy"
-                        size={14}
-                        className="cursor-pointer"
-                      />
+                      >
+                        <Icon
+                          name="content_copy"
+                          size={13}
+                          variant="outlined"
+                        />
+                      </button>
                     </span>
                     <span className="data-table-muted">
                       {order?.payment?.title || noData}
@@ -263,7 +274,7 @@ const AllOrderTable: React.FC = () => {
                 </Td>
 
                 <Td>
-                  <div className="flex gap-2">
+                  <div className="table-product-thumbs">
                     {order?.line_items
                       ?.slice(0, 3)
                       ?.map((item: any, itemIndex: number) => {
@@ -272,25 +283,26 @@ const AllOrderTable: React.FC = () => {
                           notFoundImage;
 
                         return (
-                          <div key={itemIndex} className="flex items-center">
-                            <div className="w-16 h-12 relative cursor-pointer">
-                              <Image
-                                src={src}
-                                quality={50}
-                                alt={item?.title || "Product Image"}
-                                className="rounded"
-                                title={item?.title}
-                                width={90}
-                                height={20}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  if (typeof src === "string") {
-                                    handleImageClick(src);
-                                  }
-                                }}
-                              />
-                            </div>
-                          </div>
+                          <button
+                            key={itemIndex}
+                            type="button"
+                            className="table-product-thumb"
+                            title={item?.title}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (typeof src === "string") {
+                                handleImageClick(src);
+                              }
+                            }}
+                          >
+                            <Image
+                              src={src}
+                              quality={70}
+                              alt={item?.title || "Product Image"}
+                              width={120}
+                              height={108}
+                            />
+                          </button>
                         );
                       })}
                   </div>
@@ -305,7 +317,8 @@ const AllOrderTable: React.FC = () => {
                 <Td>
                   <div className="table-contact-stack">
                     <span className="table-amount">
-                      Total: ৳ {order?.total || 0}
+                      <span className="table-amount-label">Total</span>
+                      ৳ {order?.total || 0}
                     </span>
                     <span
                       className={`table-role-badge ${

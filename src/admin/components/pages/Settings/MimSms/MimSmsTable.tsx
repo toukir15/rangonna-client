@@ -52,7 +52,7 @@ const MimSmsTable = () => {
             colValue={3}
         >
             <Thead>
-                <Tr className="dark:bg-gray-700 bg-blue-100 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
+                <Tr className="dark:bg-gray-700 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
                     <Th className="dark:text-gray-300">
                         Title
                     </Th>
@@ -78,7 +78,7 @@ const MimSmsTable = () => {
                                         {popupIndex === index && (
                                             <div
                                                 ref={popupRef}
-                                                className="absolute top-8  bg-white border shadow-md rounded-lg p-4 z-20 min-w-40 dark:bg-gray-700 dark:border-gray-500"
+                                                className="absolute top-8 bg-white border shadow-md rounded-lg p-4 z-20 min-w-40 dark:bg-gray-700 dark:border-gray-500"
                                             >
                                                 {hasPermission(permissionList, "mim_sms_template_edit") && (
                                                     <button

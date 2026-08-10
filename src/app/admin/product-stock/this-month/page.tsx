@@ -89,7 +89,7 @@ const Page: React.FC = () => {
         <div className="2xl:pt-4 pt-2 2xl:px-4 px-3 w-full mb-2">
           <div className="sm:flex flex-wrap items-center items-center gap-3 w-full">
             <div className="flex flex-wrap items-center items-center gap-3">
-              <h1 className="2xl:text-2xl lg:text-xl text-lg font-semibold dark:text-gray-300 text-gray-800  text-nowrap">
+              <h1 className="2xl:text-2xl lg:text-xl text-lg font-semibold dark:text-gray-300 text-gray-800 text-nowrap">
                 This Month Stock Report
               </h1>
               <AllFilter
@@ -110,7 +110,7 @@ const Page: React.FC = () => {
         </div>
       </NoScrollLayout>
 
-      <div className="2xl:px-4 px-3 relative md:min-h-[85%] w-full ">
+      <div className="2xl:px-4 px-3 relative md:min-h-[85%] w-full">
         <TableWrapper
           showCheckbox={true}
           data={thisMonthData}
@@ -123,30 +123,30 @@ const Page: React.FC = () => {
           colValue={9}
         >
           <Thead>
-            <Tr className="dark:bg-gray-700 bg-blue-100 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
-              <Th className="2xl:min-w-32 lg:min-w-14 min-w-32 text-blue-900 dark:text-gray-200 text-nowrap">
+            <Tr className="dark:bg-gray-700 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
+              <Th className="2xl:min-w-32 lg:min-w-14 min-w-32 dark:text-gray-200 text-nowrap">
                 Name
               </Th>
-              <Th className="2xl:min-w-32 lg:min-w-14 min-w-32 text-blue-900 dark:text-gray-200 text-nowrap">
+              <Th className="2xl:min-w-32 lg:min-w-14 min-w-32 dark:text-gray-200 text-nowrap">
                 Last Month
               </Th>
 
-              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40  text-blue-900 dark:text-gray-200 text-nowrap">
+              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40 dark:text-gray-200 text-nowrap">
                 Current Stock
               </Th>
-              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40  text-blue-900 dark:text-gray-200 text-nowrap">
+              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40 dark:text-gray-200 text-nowrap">
                 Box Stock
               </Th>
 
-              <Th className="2xl:min-w-36 lg:min-w-28 min-w-36 text-blue-900 dark:text-gray-200  text-nowrap">
+              <Th className="2xl:min-w-36 lg:min-w-28 min-w-36 dark:text-gray-200 text-nowrap">
                 Active Order
               </Th>
 
-              <Th className="2xl:min-w-36 lg:min-w-28 min-w-36 text-blue-900 dark:text-gray-200">
+              <Th className="2xl:min-w-36 lg:min-w-28 min-w-36 dark:text-gray-200">
                 Transit Order
               </Th>
 
-              <Th className="2xl:min-w-36 lg:min-w-28 min-w-36 text-blue-900 dark:text-gray-200">
+              <Th className="2xl:min-w-36 lg:min-w-28 min-w-36 dark:text-gray-200">
                 Quick View
               </Th>
             </Tr>
@@ -155,7 +155,7 @@ const Page: React.FC = () => {
             {thisMonthData?.map((report: any, index: number) => {
               return (
                 <Tr
-                  className=" hover:bg-gray-100 dark:hover:bg-gray-800"
+                  className="hover:bg-gray-100 dark:hover:bg-gray-800"
                   key={index}
                 >
                   <Td>

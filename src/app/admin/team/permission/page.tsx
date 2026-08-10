@@ -158,7 +158,7 @@ const Page: React.FC = () => {
               </h1>
               {permissionList.includes("team_permission_create") && (
                 <Button
-                  className="!bg-green-200 !text-green-600 !py-1.5 flex items-center !px-3 text-nowrap"
+                  className="btn-primary btn-primary-inline inline-flex items-center gap-2"
                   onClick={handleAddClick}
                 >
                   Add Group
@@ -190,17 +190,17 @@ const Page: React.FC = () => {
             isSwitchOn
           >
             <Thead>
-              <Tr className="dark:bg-gray-700 bg-blue-100 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
-                <Th className="min-w-14 text-blue-900 dark:text-gray-200">
+              <Tr className="dark:bg-gray-700 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
+                <Th className="min-w-14 dark:text-gray-200">
                   SL
                 </Th>
-                <Th className="min-w-48 text-blue-900 dark:text-gray-200">
+                <Th className="min-w-48 dark:text-gray-200">
                   Group Name
                 </Th>
-                <Th className="min-w-48 text-blue-900 dark:text-gray-200">
+                <Th className="min-w-48 dark:text-gray-200">
                   Total Member
                 </Th>
-                <Th className="min-w-36 text-blue-900 dark:text-gray-200">
+                <Th className="min-w-36 dark:text-gray-200">
                   Action
                 </Th>
               </Tr>
@@ -231,7 +231,7 @@ const Page: React.FC = () => {
                             {popupIndex === index && (
                               <div
                                 ref={popupRef}
-                                className="absolute top-8 right-0 bg-white border dark:bg-gray-700 dark:border-gray-500  shadow-md rounded-lg p-2 z-20 min-w-40"
+                                className="absolute top-8 right-0 bg-white border dark:bg-gray-700 dark:border-gray-500 shadow-md rounded-lg p-2 z-20 min-w-40"
                               >
                                 {hasPermission(
                                   permissionList,

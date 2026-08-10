@@ -180,7 +180,7 @@ const Page: React.FC = () => {
     <AuthLayout>
       <NoScrollLayout>
         <div className="2xl:pt-4 pt-2 2xl:px-4 px-3 w-full">
-          <div className="lg:flex lg:flex-wrap  items-center md:justify-between pb-2">
+          <div className="lg:flex lg:flex-wrap items-center md:justify-between pb-2">
             <div className="md:flex items-center md:space-x-4 w-full">
               <Icon
                 onClick={() => router.back()}
@@ -197,7 +197,7 @@ const Page: React.FC = () => {
         </div>
       </NoScrollLayout>
 
-      <div className="2xl:px-4 px-3 relative md:min-h-[85%] w-full ">
+      <div className="2xl:px-4 px-3 relative md:min-h-[85%] w-full">
         {isLoading ? (
           <OrderDetailsHeaderSkeleton />
         ) : (
@@ -211,7 +211,7 @@ const Page: React.FC = () => {
             {/* Glass Effect */}
             <div className="absolute inset-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md" />
 
-            <div className="relative grid grid-cols-1 md:text-start  text-center md:grid-cols-3 gap-6 text-gray-900 dark:text-gray-100">
+            <div className="relative grid grid-cols-1 md:text-start text-center md:grid-cols-3 gap-6 text-gray-900 dark:text-gray-100">
               {/* Task Info */}
               <div>
                 <h2 className="text-xl font-extrabold tracking-tight">
@@ -225,16 +225,16 @@ const Page: React.FC = () => {
                   </span>
                 </p>
 
-                <p className="text-sm font-medium ">
+                <p className="text-sm font-medium">
                   ⏳ End:{" "}
-                  <span className="font-semibold ">
+                  <span className="font-semibold">
                     {taskDetails?.end_date}
                   </span>
                 </p>
               </div>
 
               {/* Priority */}
-              <div className="flex flex-col justify-center  md:items-start items-center">
+              <div className="flex flex-col justify-center md:items-start items-center">
                 <h3 className="text-lg font-bold mb-2">Priority</h3>
 
                 <span
@@ -276,16 +276,16 @@ const Page: React.FC = () => {
           {isLoading ? (
             <DetailsInfoSkeleton />
           ) : (
-            <div className="bg-white dark:bg-gray-800 rounded-lg md:p-6 p-4  ">
-              <h3 className="text-lg font-bold ">Description: </h3>
+            <div className="bg-white dark:bg-gray-800 rounded-lg md:p-6 p-4">
+              <h3 className="text-lg font-bold">Description: </h3>
               {/* <p>{taskDetails?.description}</p> */}
               <CustomHTMLParser htmlContent={taskDetails?.description} />
             </div>
           )}
         </div>
 
-        <div className=" mt-4 md:flex gap-4 items-start">
-          <div className=" md:w-8/12 w-full h-auto">
+        <div className="mt-4 md:flex gap-4 items-start">
+          <div className="md:w-8/12 w-full h-auto">
             <div className="bg-white dark:bg-gray-800 rounded-lg md:p-4">
               <MyTaskDetailsStatus
                 currentStep={taskStatus?.status || ""}
@@ -324,7 +324,7 @@ const Page: React.FC = () => {
 
                 <button
                   onClick={() => setIsModalOpen(true)}
-                  className="text-blue-500 bg-blue-100 px-2 py-0.5  rounded-lg hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium"
+                  className="text-blue-500 px-2 py-0.5 rounded-lg hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium"
                 >
                   + Add Note
                 </button>
@@ -337,10 +337,7 @@ const Page: React.FC = () => {
                   {taskNotes.notes.map((note: any, index: number) => (
                     <div
                       key={index}
-                      className="flex gap-2 items-center justify-between
-        bg-green-50 dark:bg-green-900/30
-        px-3 py-2 rounded-lg
-        border border-green-100 dark:border-green-900"
+                      className="flex gap-2 items-center justify-between bg-green-50 dark:bg-green-900/30 px-3 py-2 rounded-lg border border-green-100 dark:border-green-900"
                     >
                       <p className="text-sm text-green-700 dark:text-green-200">
                         {note.text} -

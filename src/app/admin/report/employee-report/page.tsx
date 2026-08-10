@@ -228,31 +228,31 @@ const Page: React.FC = () => {
             // }
             >
               <Thead>
-                <Tr className="dark:bg-gray-700 bg-blue-100 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
-                  <Th className="min-w-32 text-blue-900 dark:text-gray-200">
+                <Tr className="dark:bg-gray-700 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
+                  <Th className="min-w-32 dark:text-gray-200">
                     SL
                   </Th>
 
-                  <Th className="min-w-48 text-blue-900 dark:text-gray-200">
+                  <Th className="min-w-48 dark:text-gray-200">
                     Employee Name
                   </Th>
-                  <Th className="min-w-32 text-blue-900 dark:text-gray-200">
+                  <Th className="min-w-32 dark:text-gray-200">
                     Total
                   </Th>
 
-                  <Th className="min-w-36 text-blue-900 dark:text-gray-200">
+                  <Th className="min-w-36 dark:text-gray-200">
                     Confirmed
                   </Th>
-                  <Th className=" min-w-48 text-blue-900 dark:text-gray-200">
+                  <Th className="min-w-48 dark:text-gray-200">
                     Unpaid
                   </Th>
-                  <Th className=" min-w-40 text-blue-900 dark:text-gray-200">
+                  <Th className="min-w-40 dark:text-gray-200">
                     Followup
                   </Th>
-                  <Th className="min-w-36 text-blue-900 dark:text-gray-200">
+                  <Th className="min-w-36 dark:text-gray-200">
                     Cancelled
                   </Th>
-                  <Th className="min-w-36 text-blue-900 dark:text-gray-200">
+                  <Th className="min-w-36 dark:text-gray-200">
                     Create
                   </Th>
                 </Tr>
@@ -266,7 +266,7 @@ const Page: React.FC = () => {
                         key={index}
                       >
                         <Td>
-                          <div className=" font-bold">
+                          <div className="font-bold">
                             {employeeReport?.userId}
                           </div>
                         </Td>

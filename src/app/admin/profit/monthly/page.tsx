@@ -1,12 +1,5 @@
 "use client";
 import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
-import {
-  IWebsiteOption,
-  IWebsiteResponse,
-  SelectOption,
-} from "@admin/@interfaces/common.interface";
-import { GlobalService } from "@admin/@services/apis/GlobalService/Global.service";
-import Icon from "@admin/components/core/Icon/Icon";
 import { Tbody, Td, Th, Thead, Tr } from "@admin/components/Table/Table";
 import TableWrapper from "@admin/components/Table/TableWrapper";
 import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
@@ -21,17 +14,11 @@ import {
 } from "@admin/@interfaces/profit/monthlyProfit/monthlyProfit.interface";
 import PageSearch from "@admin/components/core/Search/PageSearch";
 import AllFilter from "@admin/components/pages/AllFilter/AllFilter";
-import Button from "@admin/components/core/Button/Button";
 
 const Page: React.FC = () => {
-  const [websiteOptions, setWebsiteOptions] = useState<IWebsiteOption[]>([]);
   const [dailyProfitData, setProfitData] = useState<IProfitByOrderSummary[]>(
     []
   );
-  const [selectedWebsite, setSelectedWebsite] = useState<SelectOption>({
-    value: "all",
-    label: "All Website",
-  });
   const [ordersPerPage, setOrdersPerPage] = useState<number>(20);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const debouncedSearchTerm = useDebounce<string>(searchTerm, 300);
@@ -49,33 +36,8 @@ const Page: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchWebList();
-  }, []);
-
-  useEffect(() => {
     fetchMonthlyProfit();
-  }, [debouncedSearchTerm, currentPage, ordersPerPage, selectedWebsite]);
-
-  const fetchWebList = async () => {
-    GlobalService.getWebsiteList()
-      .then((res: any) => {
-        if (res?.success) {
-          const options = res.data.map((item: IWebsiteResponse) => ({
-            label: item.web_name,
-            value: item.web_url,
-          }));
-          setWebsiteOptions([
-            { value: "all", label: "All Website" },
-            ...options,
-          ]);
-        } else {
-          ToastService.error(res?.message);
-        }
-      })
-      .catch((err: { message: string }) => {
-        ToastService.error(err.message);
-      });
-  };
+  }, [debouncedSearchTerm, currentPage, ordersPerPage]);
 
   const fetchMonthlyProfit = async () => {
     setTableLoading(true);
@@ -102,14 +64,13 @@ const Page: React.FC = () => {
   };
   useTableRefreshRegister(fetchMonthlyProfit);
 
-
   return (
     <AuthLayout>
       <NoScrollLayout>
         <div className="2xl:pt-4 pt-2 2xl:px-4 px-3 w-full">
           <div className="sm:flex flex-wrap items-center pb-2 gap-3">
             <div className="flex flex-wrap items-center items-center gap-3">
-              <h1 className="2xl:text-2xl lg:text-xl text-lg font-semibold dark:text-gray-300 text-gray-800  text-nowrap">
+              <h1 className="2xl:text-2xl lg:text-xl text-lg font-semibold dark:text-gray-300 text-gray-800 text-nowrap">
                 Monthly Profit
               </h1>
               <AllFilter
@@ -127,7 +88,7 @@ const Page: React.FC = () => {
         </div>
       </NoScrollLayout>
 
-      <div className="2xl:px-4 px-3 relative md:min-h-[84%] w-full ">
+      <div className="2xl:px-4 px-3 relative md:min-h-[84%] w-full">
         <TableWrapper
           showCheckbox={true}
           data={dailyProfitData}
@@ -140,27 +101,27 @@ const Page: React.FC = () => {
           colValue={8}
         >
           <Thead>
-            <Tr className="dark:bg-gray-700 bg-blue-100 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
-              <Th className="2xl:min-w-32 lg:min-w-14 min-w-32 text-blue-900 dark:text-gray-200">
+            <Tr className="dark:bg-gray-700 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
+              <Th className="2xl:min-w-32 lg:min-w-14 min-w-32 dark:text-gray-200">
                 Date
               </Th>
-              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40  text-blue-900 dark:text-gray-200">
+              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40 dark:text-gray-200">
                 Total Order
               </Th>
-              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40  text-blue-900 dark:text-gray-200">
+              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40 dark:text-gray-200">
                 Total Quantity
               </Th>
-              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40  text-blue-900 dark:text-gray-200">
+              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40 dark:text-gray-200">
                 Profit
               </Th>
 
-              <Th className="2xl:min-w-32 lg:min-w-28 min-w-32 text-blue-900 dark:text-gray-200">
+              <Th className="2xl:min-w-32 lg:min-w-28 min-w-32 dark:text-gray-200">
                 Discount
               </Th>
-              <Th className="2xl:min-w-32 lg:min-w-28 min-w-32 text-blue-900 dark:text-gray-200">
+              <Th className="2xl:min-w-32 lg:min-w-28 min-w-32 dark:text-gray-200">
                 Shipping
               </Th>
-              <Th className="2xl:min-w-32 lg:min-w-28 min-w-32 text-blue-900 dark:text-gray-200">
+              <Th className="2xl:min-w-32 lg:min-w-28 min-w-32 dark:text-gray-200">
                 Net Profit
               </Th>
             </Tr>
@@ -170,7 +131,7 @@ const Page: React.FC = () => {
               (profitData: IProfitByOrderSummary, index: number) => {
                 return (
                   <Tr
-                    className=" hover:bg-gray-100 dark:hover:bg-gray-800"
+                    className="hover:bg-gray-100 dark:hover:bg-gray-800"
                     key={index}
                   >
                     <Td>{formatMonthYear(profitData?.date)}</Td>

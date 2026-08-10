@@ -84,7 +84,7 @@ const DashBoardShowroomExpenseTable: React.FC = () => {
       colValue={7}
     >
       <Thead>
-        <Tr className="bg-blue-100 dark:bg-gray-700 h-[40px]">
+        <Tr className="dark:bg-gray-700 h-[40px]">
           <Th className="dark:text-gray-300 min-w-40">Date</Th>
           <Th className="dark:text-gray-300 min-w-40">Title</Th>
           <Th className="dark:text-gray-300 min-w-32">Amount</Th>
@@ -130,15 +130,7 @@ const DashBoardShowroomExpenseTable: React.FC = () => {
                         onChange={() => handleStatusToggle(item)}
                       />
                       <div
-                        className="
-    relative w-11 h-6 bg-gray-200 rounded-full peer
-    dark:bg-gray-600
-    after:content-[''] after:absolute after:top-[2px] after:left-[2px]
-    after:bg-white after:border-gray-300 after:border
-    after:rounded-full after:h-5 after:w-5 after:transition-all
-    peer-checked:bg-green-500 peer-checked:after:translate-x-full
-    peer-disabled:opacity-50 peer-disabled:cursor-not-allowed
-  "
+                        className="relative w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-600 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500 peer-checked:after:translate-x-full peer-disabled:opacity-50 peer-disabled:cursor-not-allowed"
                       />
                     </label>
                   ) : (

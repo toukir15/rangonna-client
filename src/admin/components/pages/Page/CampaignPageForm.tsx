@@ -137,7 +137,7 @@ const CampaignPageForm: React.FC<CampaignPageFormProps> = ({ mode, pageId }) => 
     <AuthLayout>
       <div className="p-3 md:p-4">
         <div className="mb-4 flex items-center justify-between gap-3">
-          <h2 className="2xl:text-2xl lg:text-xl text-lg text-blue-900 font-semibold dark:text-gray-300">
+          <h2 className="2xl:text-2xl lg:text-xl text-lg font-semibold text-app">
             {mode === "edit" ? "Edit Campaign Page" : "Create Campaign Page"}
           </h2>
           <Link

@@ -50,8 +50,7 @@ const BannerTable = () => {
                 colValue={4}
             >
                 <Thead>
-                    <Tr className="dark:bg-gray-700 bg-blue-100 h-[52px] shadow-sm border-b dark:border-gray-700 border-gray-300">
-                        <Th className="dark:text-gray-300 min-w-[220px]">Website</Th>
+                    <Tr className="dark:bg-gray-700 h-[52px] shadow-sm border-b dark:border-gray-700 border-gray-300">
                         <Th className="dark:text-gray-300 min-w-[420px]">Mobile Banner</Th>
                         <Th className="dark:text-gray-300 min-w-[420px]">Desktop Banner</Th>
                         <Th className="dark:text-gray-300 min-w-[90px]">Action</Th>
@@ -68,34 +67,6 @@ const BannerTable = () => {
                                 className="align-top border-b border-gray-200 dark:border-gray-700"
                                 key={item?._id || index}
                             >
-                                <Td className="py-4">
-                                    <div className="rounded-xl border border-gray-200 dark:border-gray-600 p-4 bg-gray-50 dark:bg-gray-900/40">
-                                        <div className="flex items-start gap-3">
-                                            <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center shrink-0">
-                                                <Icon name="language" className="text-blue-600" />
-                                            </div>
-
-                                            <div className="min-w-0">
-                                                <p className="font-semibold text-base text-gray-800 dark:text-white">
-                                                    {item?.website?.web_name || "N/A"}
-                                                </p>
-                                                <p className="text-sm text-blue-500 dark:text-gray-400 truncate py-1">
-                                                    {item?.website?.web_url || "No URL"}
-                                                </p>
-
-                                                <div className="flex flex-wrap gap-2 mt-2">
-                                                    <span className="text-xs px-2 py-1 rounded-full bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300">
-                                                        {mobileItems.length} Mobile
-                                                    </span>
-                                                    <span className="text-xs px-2 py-1 rounded-full bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300">
-                                                        {desktopItems.length} Desktop
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </Td>
-
                                 <Td className="py-4">
                                     <div className="space-y-3">
                                         {mobileItems.length > 0 ? (
@@ -134,7 +105,7 @@ const BannerTable = () => {
                                                                 <p className="text-xs text-gray-500 mt-2 break-all">
                                                                     Link: {banner?.link || "-"}
                                                                 </p>
-                                                                <span className="inline-block mt-2 text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
+                                                                <span className="inline-block mt-2 text-xs px-2 py-1 rounded-full text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
                                                                     Priority: {banner?.priority ?? "-"}
                                                                 </span>
                                                             </div>

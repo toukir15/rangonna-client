@@ -55,7 +55,7 @@ const TaskTable: React.FC = () => {
       colValue={10}
     >
       <Thead>
-        <Tr className="dark:bg-gray-700 bg-blue-100 h-[50px]  shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
+        <Tr className="dark:bg-gray-700 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
           <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-28 min-w-40">
             Task No
           </Th>
@@ -74,7 +74,7 @@ const TaskTable: React.FC = () => {
           <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-28 min-w-40">
             Status
           </Th>
-          <Th className="dark:text-gray-300 ">Assign</Th>
+          <Th className="dark:text-gray-300">Assign</Th>
           <Th className="dark:text-gray-300">Priority</Th>
           <Th className="dark:text-gray-300">View</Th>
           <Th className="dark:text-gray-300">Duplicate</Th>
@@ -96,12 +96,12 @@ const TaskTable: React.FC = () => {
                 </div>
               </Td>
 
-              <Td className=" ">
+              <Td className="">
                 <div className="flex flex-col w-40 text-center gap-1">
                   {data?.assign_employee?.map((emp: any, index: number) => (
                     <span
                       key={index}
-                      className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs"
+                      className="px-2 py-1 text-blue-700 rounded text-xs"
                     >
                       {emp.name}
                     </span>
@@ -124,7 +124,7 @@ const TaskTable: React.FC = () => {
               <Td>
                 {hasPermission(permissionList, "task_view") && (
                   <Link
-                    className="bg-blue-500 px-4 py-1 rounded-lg text-white text-center w-20 cursor-pointer"
+                    className="data-table-view-btn"
                     href={`/admin/task-manager/task/view/${data?._id}`}
                   >
                     View

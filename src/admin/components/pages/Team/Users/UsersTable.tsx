@@ -80,34 +80,34 @@ const UsersTable: React.FC = () => {
         colValue={7}
       >
         <Thead>
-          <Tr className="dark:bg-gray-700 bg-blue-100 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
-            <Th className="xl:min-w-24 min-w-20 text-blue-900 dark:text-gray-200">
+          <Tr className="dark:bg-gray-700 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
+            <Th className="xl:min-w-24 min-w-20 dark:text-gray-200">
               Image
             </Th>
-            <Th className="min-w-40 text-blue-900 dark:text-gray-200">Name</Th>
-            <Th className="xl:min-w-40 min-w-20 text-blue-900 dark:text-gray-200">
+            <Th className="min-w-40 dark:text-gray-200">Name</Th>
+            <Th className="xl:min-w-40 min-w-20 dark:text-gray-200">
               Phone No
             </Th>
-            <Th className="xl:min-w-32 min-w-24 text-blue-900 dark:text-gray-200">
+            <Th className="xl:min-w-32 min-w-24 dark:text-gray-200">
               Email
             </Th>
-            <Th className="xl:min-w-28  text-blue-900 dark:text-gray-200">
+            <Th className="xl:min-w-28 dark:text-gray-200">
               Role
             </Th>
-            <Th className="xl:min-w-36 text-blue-900 dark:text-gray-200">
+            <Th className="xl:min-w-36 dark:text-gray-200">
               Status
             </Th>
-            <Th className="xl:min-w-36 text-blue-900 dark:text-gray-200">
+            <Th className="xl:min-w-36 dark:text-gray-200">
               Active
             </Th>
-            <Th className="xl:min-w-20 text-blue-900 dark:text-gray-200">
+            <Th className="xl:min-w-20 dark:text-gray-200">
               Action
             </Th>
           </Tr>
         </Thead>
         <Tbody className="dark:bg-gray-800 bg-white">
           {teamData?.data?.map((item: any, index: number) => (
-            <Tr key={index} className=" h-14">
+            <Tr key={index} className="h-14">
               <Td>
                 <Image
                   src={item?.image ? item.image : logo}

@@ -75,7 +75,7 @@ const Page: React.FC = () => {
     <AuthLayout>
       <NoScrollLayout>
         <div className="2xl:pt-4 pt-2 2xl:px-4 px-3 w-full">
-          <div className="lg:flex lg:flex-wrap  items-center md:justify-between pb-2">
+          <div className="lg:flex lg:flex-wrap items-center md:justify-between pb-2">
             <div className="md:flex items-center md:space-x-4 w-full">
               <div className="">
                 <h1 className="2xl:text-2xl lg:text-xl text-lg font-semibold dark:text-gray-300 text-gray-800 md:mb-0 mb-2 flex text-nowrap">
@@ -94,7 +94,7 @@ const Page: React.FC = () => {
         </div>
       </NoScrollLayout>
 
-      <div className="2xl:px-4 px-3 relative md:min-h-[84%] w-full ">
+      <div className="2xl:px-4 px-3 relative md:min-h-[84%] w-full">
         <TableWrapper
           showCheckbox={true}
           data={userLogsData}
@@ -107,24 +107,24 @@ const Page: React.FC = () => {
           colValue={9}
         >
           <Thead>
-            <Tr className="dark:bg-gray-700 bg-blue-100 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
-              <Th className="2xl:min-w-32 lg:min-w-14 min-w-40 text-blue-900 dark:text-gray-200">
+            <Tr className="dark:bg-gray-700 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
+              <Th className="2xl:min-w-32 lg:min-w-14 min-w-40 dark:text-gray-200">
                 User
               </Th>
-              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40  text-blue-900 dark:text-gray-200">
+              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40 dark:text-gray-200">
                 Action
               </Th>
 
-              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40  text-blue-900 dark:text-gray-200">
+              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40 dark:text-gray-200">
                 Create
               </Th>
-              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40  text-blue-900 dark:text-gray-200">
+              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40 dark:text-gray-200">
                 Update
               </Th>
-              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40  text-blue-900 dark:text-gray-200">
+              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40 dark:text-gray-200">
                 Message
               </Th>
-              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40  text-blue-900 dark:text-gray-200">
+              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40 dark:text-gray-200">
                 View
               </Th>
             </Tr>

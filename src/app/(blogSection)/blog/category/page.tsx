@@ -48,7 +48,7 @@ const categories = [
 export default function BlogCategoryPage() {
   return (
     <main className="py-6">
-      <div className="max-w-layout mx-auto px-4 bg-white border-primary-border border  rounded-lg  p-4">
+      <div className="max-w-layout mx-auto px-4 bg-white border-primary-border border rounded-lg p-4">
         {/* Header */}
         <section className="mb-10 overflow-hidden rounded-3xl bg-white shadow-sm">
           <div className="relative h-[320px] w-full">
@@ -114,7 +114,7 @@ export default function BlogCategoryPage() {
                 {/* Content */}
                 <div className="flex flex-col justify-center p-8">
                   <div className="mb-4 flex items-center gap-3">
-                    <span className="rounded-full bg-blue-100 px-4 py-1 text-xs font-semibold text-blue-600">
+                    <span className="rounded-full px-4 py-1 text-xs font-semibold text-blue-600">
                       {post.category}
                     </span>
 

@@ -38,11 +38,6 @@ const DEFAULT_DATE_RANGE = {
 const ORDER_LIST_FIELDS =
   "_id,createdAt,label,customer.first_name,customer.last_name,customer.phone,note.text,due,is_print,line_items.image,line_items.stock_status,order_id,payment.title,status,total,sysid,domain,customer_note.text,notes.text,line_items.title,line_items.quantity,line_items.total,order_created";
 
-const ALL_WEBSITE_OPTION: SelectOption = {
-  value: "all",
-  label: "All Website",
-};
-
 const ALL_SOURCE_OPTIONS = [
   { value: "all", label: "All Source" },
   { value: "showroom", label: "Showroom" },
@@ -519,7 +514,6 @@ const Page: React.FC = () => {
           handleImageClick,
           setModalOpen,
           filter,
-          selectedWebsite: ALL_WEBSITE_OPTION,
         }}
       >
         <div className="2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 pb-4 relative w-full">

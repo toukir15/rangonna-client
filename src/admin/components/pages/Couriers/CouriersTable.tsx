@@ -34,24 +34,20 @@ const CouriersTable: React.FC = () => {
         printLabel="Label Print"
       >
         <Thead>
-          <Tr className="dark:bg-gray-700 bg-blue-100 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
-            <Th className="2xl:min-w-32 lg:min-w-14 min-w-32 text-blue-900 dark:text-gray-200">
+          <Tr className="dark:bg-gray-700 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
+            <Th className="2xl:min-w-32 lg:min-w-14 min-w-32 dark:text-gray-200">
               Courier Type
             </Th>
-            <Th className="2xl:min-w-40 lg:min-w-32 min-w-48  text-blue-900 dark:text-gray-200">
+            <Th className="2xl:min-w-40 lg:min-w-32 min-w-48 dark:text-gray-200">
               Name
             </Th>
-
-            <Th className="2xl:min-w-32 lg:min-w-28 min-w-40 text-blue-900 dark:text-gray-200">
-              Assigned Website
-            </Th>
-            <Th className="2xl:min-w-32 lg:min-w-28 min-w-32 text-blue-900 dark:text-gray-200">
+            <Th className="2xl:min-w-32 lg:min-w-28 min-w-32 dark:text-gray-200">
               Store
             </Th>
-            <Th className="2xl:min-w-36 lg:min-w-28 min-w-36 text-blue-900 dark:text-gray-200">
+            <Th className="2xl:min-w-36 lg:min-w-28 min-w-36 dark:text-gray-200">
               Add Store
             </Th>
-            <Th className="2xl:min-w-36 lg:min-w-28 min-w-36 text-blue-900 dark:text-gray-200">
+            <Th className="2xl:min-w-36 lg:min-w-28 min-w-36 dark:text-gray-200">
               Action
             </Th>
           </Tr>
@@ -60,12 +56,11 @@ const CouriersTable: React.FC = () => {
           {courierData?.map((data: any, index: number) => {
             return (
               <Tr
-                className=" hover:bg-gray-100 dark:hover:bg-gray-800"
+                className="hover:bg-gray-100 dark:hover:bg-gray-800"
                 key={index}
               >
                 <Td>{data.courierType || "Pathao"}</Td>
                 <Td>{data.name}</Td>
-                <Td>{data?.website_id?.web_name}</Td>
                 <Td>{data.store_name}</Td>
 
                 <Td>
@@ -74,7 +69,7 @@ const CouriersTable: React.FC = () => {
                   ) : (
                     <div>
                       <Button
-                        className="bg-blue-600 !py-1 !px-3 !text-xs"
+                        className="data-table-view-btn"
                         onClick={() => handleStoreAddClick(data)}
                       >
                         Add Store

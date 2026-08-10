@@ -18,7 +18,7 @@ export interface SteadfastCredentials {
 export interface CreatePathaoCourierPayload {
   name: string;
   provider: "pathao";
-  website_id: string;
+  website_id?: string;
   store_name: string;
   webhook?: string;
   credentials: PathaoCredentials;
@@ -27,7 +27,7 @@ export interface CreatePathaoCourierPayload {
 export interface CreateSteadfastCourierPayload {
   name: string;
   provider: "steadfast";
-  website_id: string;
+  website_id?: string;
   store_name: string;
   webhook?: string;
   credentials: SteadfastCredentials;

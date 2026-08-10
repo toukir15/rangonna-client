@@ -5,7 +5,6 @@ import React, { useEffect, useRef, useState } from "react";
 import * as yup from "yup";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import Button from "@admin/components/core/Button/Button";
 import SelectComponent from "@admin/components/core/Select/Select";
 import { ToastService } from "@admin/utils/toastr.service";
 import CustomDatePicker from "@admin/components/core/Calendar/DatePicker";
@@ -21,6 +20,7 @@ import ButtonLoader from "@admin/components/core/Button/ButtonLoader";
 import { useRouter } from "next/navigation";
 import useDebounce from "@admin/components/core/UseDebounece/UseDebouence";
 import ImagePreviewModal from "@admin/components/core/ImagePreview/ImagePreviewModal";
+import PageHeader from "@admin/components/layout/PageHeader";
 
 const defaultValue: any = {
   supplier: "",
@@ -402,12 +402,8 @@ const Page: React.FC = () => {
   return (
     <AuthLayout>
       <NoScrollLayout>
-        <div className="flex items-center justify-between 2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 md:pb-0 mb-2">
-          <div className="flex items-center gap-4">
-            <h2 className="2xl:text-2xl lg:text-xl text-lg text-blue-900 font-semibold dark:text-gray-300">
-              Create Purchases
-            </h2>
-          </div>
+        <div className="edit-order-page !pb-0">
+          <PageHeader title="Create Purchases" />
         </div>
       </NoScrollLayout>
 
@@ -418,106 +414,115 @@ const Page: React.FC = () => {
             e.preventDefault();
           }
         }}
-        className=" px-4 min-h-[75vh] !w-full"
+        className="edit-order-page !pt-0 min-h-[75vh]"
       >
-        <div className="grid xl:grid-cols-3 md:grid-cols-2 grid-cols-1 xl:gap-6 md:gap-2  !w-full">
-          <Controller
-            name="date"
-            control={control}
-            render={({ field }) => (
-              <CustomDatePicker
-                selectedDate={field.value}
-                onChange={(date) => field.onChange(date)}
-                label="Purchases Date"
-                dateFormat="dd-MM-yy"
-                wrapperClassName="w-full"
+        <div className="edit-order-shell data-table-card glass-card">
+          <div className="edit-order-form-grid">
+            <div className="edit-order-field">
+              <Controller
+                name="date"
+                control={control}
+                render={({ field }) => (
+                  <CustomDatePicker
+                    selectedDate={field.value}
+                    onChange={(date) => field.onChange(date)}
+                    label="Purchases Date"
+                    dateFormat="dd-MM-yy"
+                    wrapperClassName="w-full"
+                  />
+                )}
               />
-            )}
-          />
-          <div className="pb-2">
-            <label className="block font-inter text-sm font-semibold text-neutral-600 dark:text-gray-300 mb-1">
-              Supplier
-              <span className="text-red-400 font-inter text-[12px] font-semibold ms-1">
-                *
-              </span>
-            </label>
-            <Controller
-              name="supplier"
-              control={control}
-              rules={{ required: true }}
-              render={({ field }) => (
-                <SelectComponent
-                  options={supplierDataOption}
-                  value={field.value}
-                  onChange={field.onChange}
-                  placeholder="Select Supplier"
-                  isRequired
-                  className=""
-                />
-              )}
-            />
+            </div>
+            <div className="edit-order-field">
+              <label className="form-label">
+                Supplier
+                <span className="ms-1 text-xs text-[var(--color-danger,#ef4444)]">
+                  *
+                </span>
+              </label>
+              <Controller
+                name="supplier"
+                control={control}
+                rules={{ required: true }}
+                render={({ field }) => (
+                  <SelectComponent
+                    options={supplierDataOption}
+                    value={field.value}
+                    onChange={field.onChange}
+                    placeholder="Select Supplier"
+                    isRequired
+                    size="sm"
+                  />
+                )}
+              />
+            </div>
           </div>
 
-
-        </div>
-        <div className="my-4">
-          <div>
-            <div className="mb-3  w-full">
-              <div className="relative">
+          <div className="mt-2">
+            <div className="edit-order-products-head">
+              <h2>Products</h2>
+              <div className="edit-order-search !max-w-none">
                 <input
                   ref={inputRef}
                   type="text"
                   value={productSearch}
                   onChange={handleSearchChange}
-                  className="p-4 px-4 pr-10 w-full border bg-gray-200 dark:text-gray-400 dark:bg-gray-700 dark:border-gray-600 border-gray-300 rounded-lg shadow-sm focus:ring-1 focus:ring-blue-400 focus:outline-none"
                   placeholder="Search for a product"
                   onFocus={() =>
                     productSearch.length >= 2 && setShowSuggestions(true)
                   }
-                  onKeyDown={(e) => e.key === "Enter" && handleSearchSubmit(e)}
+                  onKeyDown={(e) =>
+                    e.key === "Enter" && handleSearchSubmit(e)
+                  }
                 />
                 <button
                   type="button"
-                  className="absolute right-4 top-3.5 text-gray-400"
+                  className="edit-order-search-btn"
                   onClick={handleSearchSubmit}
+                  aria-label="Search products"
                 >
-                  <Icon name="search" variant="outlined" size={40} />
+                  <Icon name="search" variant="outlined" size={18} />
                 </button>
 
                 {showSuggestions && productSearch.length >= 2 && (
                   <div
                     ref={suggestionsRef}
-                    className="absolute left-0 w-full dark:bg-gray-700 bg-white border dark:text-gray-300 dark:border-gray-500 border-gray-300 mt-1 rounded-md z-10 max-h-72 overflow-y-auto"
+                    className="edit-order-suggestions"
                   >
                     {filteredProducts.length > 0 ? (
-                      filteredProducts.map((product: any, index: number) => {
-                        return (
-                          <div
-                            key={index}
-                            className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer flex  gap-2 items-center"
-                            onClick={() => handleProductSelect(product)}
-                          >
+                      filteredProducts.map((product: any, index: number) => (
+                        <div
+                          key={index}
+                          className="edit-order-suggestion-item"
+                          onClick={() => handleProductSelect(product)}
+                        >
+                          <div className="flex min-w-0 items-center gap-3">
                             <Image
                               src={
-                                product?.featured_image
-                                  ? product?.featured_image.src
-                                  : NodataImage
+                                product?.featured_image?.src || NodataImage
                               }
-                              width={40}
-                              height={40}
-                              className="rounded-md"
+                              width={56}
+                              height={56}
                               alt="Product Image"
-                            // onClick={() => handleImageClick(product.image)}
                             />
-                            <span>{product?.title} -</span><span className="text-red-600">({product?.sku})</span>
-                            <span className="font-semibold">
-                              BDT {product?.pricing?.purchase_price}
-                            </span>
+                            <div className="min-w-0">
+                              <p className="truncate text-sm font-medium text-app">
+                                {product?.title}
+                              </p>
+                              {product?.sku ? (
+                                <p className="truncate text-xs text-app-muted">
+                                  SKU: {product.sku}
+                                </p>
+                              ) : null}
+                            </div>
                           </div>
-                        );
-                      })
+                          <span className="shrink-0 text-sm font-semibold text-brand">
+                            ৳ {product?.pricing?.purchase_price}
+                          </span>
+                        </div>
+                      ))
                     ) : (
-                      <div className="p-4 text-center text-gray-500">
+                      <div className="px-3 py-4 text-center text-sm text-app-muted">
                         No products found
                       </div>
                     )}
@@ -525,225 +530,229 @@ const Page: React.FC = () => {
                 )}
               </div>
             </div>
+
+            <div className="edit-order-products-card">
+              <div className="overflow-x-auto">
+                <table className="edit-order-products-table">
+                  <thead>
+                    <tr>
+                      <th className="is-center">#</th>
+                      <th>Product</th>
+                      <th>Name</th>
+                      <th>Net Unit Cost</th>
+                      <th className="is-center">
+                        Quantity ({totalQuantity})
+                      </th>
+                      <th className="is-right">Subtotal</th>
+                      <th className="is-center">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {orderDetails?.purchase_products?.length > 0 ? (
+                      [...orderDetails.purchase_products]
+                        .reverse()
+                        .map((product: any, reversedIndex: number) => {
+                          const originalIndex =
+                            orderDetails.purchase_products.length -
+                            1 -
+                            reversedIndex;
+                          const unitCost =
+                            productUnitCosts[product.product_id] !== undefined
+                              ? productUnitCosts[product.product_id]
+                              : product?.purchase_price ||
+                                product?.unit_cost ||
+                                0;
+                          const lineSubtotal = (
+                            Number(unitCost) * Number(product.quantity) -
+                            (product.discount || 0)
+                          ).toFixed(2);
+                          const imageSrc = product?.image || NodataImage;
+
+                          return (
+                            <tr key={originalIndex}>
+                              <td className="is-center">
+                                <span className="text-sm font-semibold text-app-muted">
+                                  {originalIndex + 1}
+                                </span>
+                              </td>
+                              <td>
+                                <button
+                                  type="button"
+                                  className="edit-order-product-thumb"
+                                  title={product?.title || "Product image"}
+                                  onClick={() => {
+                                    if (product?.image) {
+                                      handleImageClick(product.image);
+                                    }
+                                  }}
+                                >
+                                  <Image
+                                    src={imageSrc}
+                                    width={140}
+                                    height={140}
+                                    quality={80}
+                                    alt={product?.title || "Product Image"}
+                                  />
+                                </button>
+                              </td>
+                              <td>
+                                <div className="edit-order-product-meta">
+                                  <p className="edit-order-product-title">
+                                    {product?.title}
+                                  </p>
+                                  {product?.sku ? (
+                                    <p className="edit-order-product-sub">
+                                      SKU: {product.sku}
+                                    </p>
+                                  ) : null}
+                                </div>
+                              </td>
+                              <td>
+                                <div className="inline-flex items-center gap-2">
+                                  <span className="edit-order-money is-strong">
+                                    ৳ {Number(unitCost).toFixed(2)}
+                                  </span>
+                                  <button
+                                    type="button"
+                                    className="table-copy-btn !opacity-100"
+                                    aria-label="Edit unit cost"
+                                    title="Edit unit cost"
+                                    onClick={() => handleEditClick(product)}
+                                  >
+                                    <Icon
+                                      name="edit_square"
+                                      variant="outlined"
+                                      size={16}
+                                      className="text-brand"
+                                    />
+                                  </button>
+                                </div>
+                              </td>
+                              <td className="is-center">
+                                <div className="edit-order-qty">
+                                  <button
+                                    type="button"
+                                    aria-label="Decrease quantity"
+                                    onClick={() =>
+                                      decrementQuantity(originalIndex)
+                                    }
+                                  >
+                                    <Icon name="remove" size={16} />
+                                  </button>
+                                  <input
+                                    type="number"
+                                    value={product.quantity}
+                                    onChange={(e) =>
+                                      handleQuantityChange(
+                                        originalIndex,
+                                        e.target.value,
+                                      )
+                                    }
+                                    aria-label="Quantity"
+                                    className="!w-16"
+                                  />
+                                  <button
+                                    type="button"
+                                    aria-label="Increase quantity"
+                                    onClick={() =>
+                                      incrementQuantity(originalIndex)
+                                    }
+                                  >
+                                    <Icon name="add" size={16} />
+                                  </button>
+                                </div>
+                              </td>
+                              <td className="is-right">
+                                <span className="edit-order-money is-strong">
+                                  ৳ {lineSubtotal}
+                                </span>
+                              </td>
+                              <td className="is-center">
+                                <button
+                                  type="button"
+                                  className="edit-order-remove-btn"
+                                  aria-label="Remove product"
+                                  title="Remove product"
+                                  onClick={() =>
+                                    handleRemoveProduct(product?.product_id)
+                                  }
+                                >
+                                  <Icon
+                                    name="delete"
+                                    variant="outlined"
+                                    size={18}
+                                  />
+                                </button>
+                              </td>
+                            </tr>
+                          );
+                        })
+                    ) : (
+                      <tr>
+                        <td colSpan={7} className="edit-order-empty">
+                          No products added yet
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+
+              <div className="edit-order-summary">
+                <div className="edit-order-summary-card">
+                  <div className="edit-order-summary-row">
+                    <span>Subtotal</span>
+                    <strong>৳ {subtotal.toFixed(2)}</strong>
+                  </div>
+                  <div className="edit-order-summary-row">
+                    <span>Shipping</span>
+                    <strong>৳ {shipping.toFixed(2)}</strong>
+                  </div>
+                  <div className="edit-order-summary-row">
+                    <span>Discount (−)</span>
+                    <strong>৳ {discount.toFixed(2)}</strong>
+                  </div>
+                  <div className="edit-order-summary-row is-total">
+                    <span>Total</span>
+                    <strong>৳ {total.toFixed(2)}</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-          <div className="overflow-x-auto">
-            <table className="min-w-full border-collapse border dark:border-gray-500">
-              <thead className="bg-blue-100 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 h-[40px] shadow-sm border-b border-gray-300">
-                <tr>
-                  <th className="border dark:border-gray-600 px-4 py-2 min-w-40 text-sm font-semibold">
-                    Serial
-                  </th>
-                  <th className="border dark:border-gray-600 px-4 py-2 min-w-40 text-sm font-semibold">
-                    Product Image
-                  </th>
-                  <th className="border dark:border-gray-600 px-4 py-2 min-w-60 text-sm font-semibold">
-                    Product Name
-                  </th>
-                  <th className="border dark:border-gray-600 px-4 py-2 min-w-60 text-sm font-semibold">
-                    Net Unit Cost
-                  </th>
-                  <th className="border dark:border-gray-600 px-4 py-2 min-w-40 text-sm font-semibold">
-                    Quantity ({totalQuantity})
-                  </th>
 
-                  <th className="border dark:border-gray-600 px-4 py-2 min-w-32 text-sm font-semibold">
-                    Subtotal
-                  </th>
-
-                  <th className="border dark:border-gray-600 px-4 py-2 min-w-20 text-sm font-semibold">
-                    Action
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {orderDetails?.purchase_products?.length > 0 ? (
-                  [...orderDetails.purchase_products]
-                    .reverse()
-                    .map((product: any, reversedIndex: number) => {
-                      const originalIndex =
-                        orderDetails.purchase_products.length -
-                        1 -
-                        reversedIndex;
-
-                      return (
-                        <tr
-                          key={originalIndex}
-                          className="odd:bg-gray-100 dark:odd:bg-gray-700 dark:border-gray-600 border"
-                        >
-                          <td className="border dark:border-gray-600  px-4 py-2 dark:text-gray-400 text-center text-sm font-semibold">
-                            {originalIndex + 1}
-                          </td>
-
-                          <td className="flex items-center justify-center my-2 cursor-pointer">
-                            {
-                              <Image
-                                src={
-                                  product?.image ? product?.image : NodataImage
-                                }
-                                width={60}
-                                height={60}
-                                className="rounded-md"
-                                alt="Product Image"
-                                onClick={() => handleImageClick(product.image)}
-
-                              />
-                            }
-                          </td>
-                          <td className="border dark:border-gray-600 text-sm font-semibold px-4 py-2 dark:text-gray-400">
-                            <p>{product?.title}</p>
-                            <p className="pt-1">Sku: {product?.sku}</p>
-                          </td>
-                          <td className="border dark:border-gray-600 text-sm font-semibold px-4 py-2 dark:text-gray-400">
-                            <span className="flex items-center gap-4">
-                              <p>
-                                {productUnitCosts[product.product_id] !==
-                                  undefined
-                                  ? productUnitCosts[product.product_id]
-                                  : product?.purchase_price || 0}
-                              </p>
-                              <Icon
-                                name={"edit_square"}
-                                onClick={() => handleEditClick(product)}
-                                className="text-blue-600 cursor-pointer"
-                              />
-                            </span>
-                          </td>
-                          <td className="border dark:border-gray-600 px-4 py-2">
-                            <div className="flex items-center justify-center">
-                              <button
-                                type="button"
-                                onClick={() => decrementQuantity(originalIndex)}
-                                className="bg-gray-300 dark:bg-gray-600 px-3 py-1 rounded-l"
-                              >
-                                -
-                              </button>
-                              <input
-                                type="number"
-                                value={product.quantity}
-                                onChange={(e) =>
-                                  handleQuantityChange(
-                                    originalIndex,
-                                    e.target.value
-                                  )
-                                }
-                                className="w-28 text-center py-1 border-t border-b dark:border-gray-600 dark:bg-gray-700"
-                              />
-                              <button
-                                type="button"
-                                onClick={() => incrementQuantity(originalIndex)}
-                                className="bg-gray-300 dark:bg-gray-600 px-3 py-1 rounded-r"
-                              >
-                                +
-                              </button>
-                            </div>
-                          </td>
-
-
-                          <td className="border dark:border-gray-600 px-4 text-sm font-semibold py-2 dark:text-gray-400">
-                            {(
-                              (productUnitCosts[product.product_id] !==
-                                undefined
-                                ? productUnitCosts[product.product_id]
-                                : product.unit_cost || 0) *
-                              product.quantity -
-                              (product.discount || 0)
-                            ).toFixed(2)}
-                          </td>
-
-                          <td className="border px-4 py-2 text-center dark:border-gray-600">
-                            <button
-                              type="button"
-                              onClick={() =>
-                                handleRemoveProduct(product?.product_id)
-                              }
-                              className="text-red-600 hover:text-red-800 dark:hover:text-red-400"
-                            >
-                              <Icon name="delete" variant="filled" />
-                            </button>
-                          </td>
-                        </tr>
-                      );
-                    })
-                ) : (
-                  <tr>
-                    <td
-                      colSpan={6}
-                      className="text-center py-4 dark:text-gray-400"
-                    >
-                      No products added yet
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-              <tfoot>
-                <tr>
-                  <td
-                    colSpan={6}
-                    className="text-right font-semibold px-4 py-2 dark:text-gray-300"
-                  >
-                    Subtotal:
-                  </td>
-                  <td className="px-4 py-2 dark:text-gray-300 text-end">
-                    {subtotal.toFixed(2)}
-                  </td>
-                  <td></td>
-                </tr>
-
-                <tr>
-                  <td
-                    colSpan={6}
-                    className="text-right font-semibold px-4 py-2 dark:text-gray-300"
-                  >
-                    Shipping:
-                  </td>
-                  <td className="px-4 py-2 dark:text-gray-300 text-end">
-                    {shipping.toFixed(2)}
-                  </td>
-                  <td></td>
-                </tr>
-
-                <tr>
-                  <td
-                    colSpan={6}
-                    className="text-right font-semibold px-4 py-2 dark:text-gray-300"
-                  >
-                    Discount(-):
-                  </td>
-                  <td className="px-4 py-2 dark:text-gray-300 text-end">
-                    {discount.toFixed(2)}
-                  </td>
-                  <td></td>
-                </tr>
-
-                <tr>
-                  <td
-                    colSpan={6}
-                    className="text-right font-semibold px-4 py-2 dark:text-gray-300"
-                  >
-                    Total:
-                  </td>
-                  <td className="px-4 py-2 dark:text-gray-300 text-end">
-                    {total.toFixed(2)}
-                  </td>
-                  <td></td>
-                </tr>
-              </tfoot>
-            </table>
-          </div>
-        </div>
-        <div className="mb-8 grid xl:grid-cols-3 md:grid-cols-2 grid-cols-1 xl:gap-6 md:gap-2">
-          <div className="">
-            <Input
-              label={"Shipping"}
-              registerProperty={register("shipping")}
-              errorText={errors?.shipping?.message}
-              type="number"
-              placeholder="Enter your discount"
-            />
-            <div className="pb-2">
-              <label className="block font-inter text-sm font-semibold text-neutral-600 dark:text-gray-300 mb-1">
+          <div className="edit-order-form-grid mt-5">
+            <div className="edit-order-field">
+              <Input
+                label="Shipping"
+                registerProperty={register("shipping")}
+                errorText={errors?.shipping?.message}
+                type="number"
+                placeholder="Enter shipping amount"
+              />
+            </div>
+            <div className="edit-order-field">
+              <Input
+                label="Discount"
+                registerProperty={register("discount")}
+                errorText={errors?.discount?.message}
+                type="number"
+                placeholder="Enter discount amount"
+              />
+            </div>
+            <div className="edit-order-field">
+              <Input
+                label="Document"
+                registerProperty={register("document")}
+                errorText={errors?.document?.message}
+                type="text"
+                placeholder="Enter document reference"
+              />
+            </div>
+            <div className="edit-order-field">
+              <label className="form-label">
                 Status
-                <span className="text-red-400 font-inter text-[12px] font-semibold ms-1">
+                <span className="ms-1 text-xs text-[var(--color-danger,#ef4444)]">
                   *
                 </span>
               </label>
@@ -756,59 +765,36 @@ const Page: React.FC = () => {
                     options={statusOptions}
                     value={field.value}
                     onChange={field.onChange}
-                    placeholder="Select Supplier"
+                    placeholder="Select Status"
                     isRequired
-                    className=""
+                    size="sm"
                   />
                 )}
               />
             </div>
+            <div className="edit-order-field xl:col-span-2">
+              <Input
+                label="Note"
+                registerProperty={register("note")}
+                errorText={errors?.note?.message}
+                type="textarea"
+                placeholder="Enter note"
+              />
+            </div>
           </div>
-          <div className="">
-            <Input
-              label={"Discount"}
-              registerProperty={register("discount")}
-              errorText={errors?.discount?.message}
-              type="number"
-              placeholder="Enter your discount"
-            />
-            <Input
-              label={"Note"}
-              registerProperty={register("note")}
-              errorText={errors?.note?.message}
-              type="textarea"
-              placeholder="Enter your discount"
-            />
-          </div>
-          <div className="">
-            <Input
-              label={"Document"}
-              registerProperty={register("document")}
-              errorText={errors?.document?.message}
-              type="text"
-              placeholder="Enter your discount"
-            />
-          </div>
-        </div>
 
-        <div className="flex gap-3 items-end justify-end">
-          <Button
-            className="bg-gray-400"
-            onClick={() => {
-              router.push("/admin/purchase/purchase");
-            }}
-          >
-            Cancel
-          </Button>
-          <Button
-            type="submit"
-            className={
-              "disabled:bg-gray-400 rounded-m flex justify-center font-medium text-white bg-blue-500 "
-            }
-            disabled={isSubmit}
-          >
-            {isSubmit ? <ButtonLoader /> : "Create"}
-          </Button>
+          <div className="edit-order-actions">
+            <button
+              type="button"
+              className="btn-secondary"
+              onClick={() => router.push("/admin/purchase/purchase")}
+            >
+              Cancel
+            </button>
+            <button type="submit" className="btn-primary" disabled={isSubmit}>
+              {isSubmit ? <ButtonLoader /> : "Create"}
+            </button>
+          </div>
         </div>
       </form>
 

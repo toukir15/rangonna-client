@@ -309,16 +309,14 @@ const AddRolesDrawer: React.FC<AddRolesDrawerProps> = ({
         <Drawer.Footer className=" flex items-end justify-end">
           <div className="flex gap-3">
             <Button
-              className="bg-gray-400"
+              className="btn-secondary"
               onClick={() => setOpenDrawer(false)}
             >
               Cancel
             </Button>
             <Button
               type="submit"
-              className={
-                "disabled:bg-gray-400 rounded-m flex justify-center font-medium text-white bg-blue-500 "
-              }
+              className="btn-primary"
               disabled={isSubmit}
             >
               {isSubmit ? (

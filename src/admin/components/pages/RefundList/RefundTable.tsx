@@ -11,9 +11,9 @@ import { RefundListService } from "@admin/@services/apis/RefundList/RefundList.s
 import { ToastService } from "@admin/utils/toastr.service";
 import Alert from "@admin/components/core/Aleart/Aleart";
 import Image from "next/image";
-import Button from "@admin/components/core/Button/Button";
 import Link from "next/link";
 import { reasonOptions } from "../Utilities/paymentData";
+import { getStatusLabel, getStatusStyle } from "@admin/utils/system.utils";
 
 type RefundUser = {
   _id?: string;
@@ -35,37 +35,10 @@ type RefundOrder = {
   }[];
 };
 
-const StatusBadge = ({ status }: { status?: string }) => {
-  const s = (status || "").toLowerCase();
-
-  const map: Record<string, string> = {
-    pending: "bg-amber-50 text-amber-700 ring-amber-200",
-    approved: "bg-blue-50 text-blue-700 ring-blue-200",
-    processing: "bg-indigo-50 text-indigo-700 ring-indigo-200",
-    completed: "bg-emerald-50 text-emerald-700 ring-emerald-200",
-    rejected: "bg-red-50 text-red-700 ring-red-200",
-    failed: "bg-red-50 text-red-700 ring-red-200",
-  };
-
-  return (
-    <span
-      className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-bold ring-1 ${
-        map[s] || "bg-gray-50 text-gray-600 ring-gray-200"
-      }`}
-    >
-      {(status || "--").toUpperCase()}
-    </span>
-  );
-};
-
 const Money = ({ amount }: { amount?: number }) => {
   const value = typeof amount === "number" ? amount : 0;
 
-  return (
-    <span className="text-base font-bold text-gray-900 dark:text-white">
-      ৳ {value.toFixed(2)}
-    </span>
-  );
+  return <span className="table-amount">৳ {value.toFixed(2)}</span>;
 };
 
 const UserInfo = ({ user }: { user?: RefundUser }) => {
@@ -264,7 +237,7 @@ const RefundTable: React.FC = () => {
       </Alert>
 
       <TableWrapper
-        className="min-h-[650px] rounded-2xl border border-gray-100 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800"
+        className="orders-table-nested !mt-0 min-h-[560px] !flex-1"
         isSwitchOn
         data={returnListData}
         isLoading={tableLoading}
@@ -272,51 +245,30 @@ const RefundTable: React.FC = () => {
         colValue={9}
       >
         <Thead>
-          <Tr className="h-[54px] bg-gray-50 dark:bg-gray-900">
-            <Th className="min-w-72 text-xs font-bold uppercase tracking-wide text-gray-600 dark:text-gray-300 bg-blue-100 dark:bg-gray-700">
-              Order Details
-            </Th>
-            <Th className="min-w-40 text-xs font-bold uppercase tracking-wide text-gray-600 dark:text-gray-300 bg-blue-100 dark:bg-gray-700">
-              Refund Amount
-            </Th>
-            <Th className="min-w-36 text-xs font-bold uppercase tracking-wide text-gray-600 dark:text-gray-300 bg-blue-100 dark:bg-gray-700">
-              Status
-            </Th>
-            <Th className="min-w-40 text-xs font-bold uppercase tracking-wide text-gray-600 dark:text-gray-300 bg-blue-100 dark:bg-gray-700">
-              Reason & Note
-            </Th>
-            <Th className="min-w-40 text-xs font-bold uppercase tracking-wide text-gray-600 dark:text-gray-300 bg-blue-100 dark:bg-gray-700">
-              Created By
-            </Th>
-            <Th className="min-w-40 text-xs font-bold uppercase tracking-wide text-gray-600 dark:text-gray-300 bg-blue-100 dark:bg-gray-700">
-              Approved By
-            </Th>
-            <Th className="min-w-40 text-xs font-bold uppercase tracking-wide text-gray-600 dark:text-gray-300 bg-blue-100 dark:bg-gray-700">
-              Paid By
-            </Th>
-            <Th className="min-w-36 text-xs font-bold uppercase tracking-wide text-gray-600 dark:text-gray-300 bg-blue-100 dark:bg-gray-700">
-              View
-            </Th>
-            <Th className="min-w-24 text-center text-xs font-bold uppercase tracking-wide text-gray-600 dark:text-gray-300 bg-blue-100 dark:bg-gray-700">
-              Action
-            </Th>
+          <Tr>
+            <Th className="min-w-72">Order Details</Th>
+            <Th className="min-w-40">Refund Amount</Th>
+            <Th className="min-w-36">Status</Th>
+            <Th className="min-w-40">Reason & Note</Th>
+            <Th className="min-w-40">Created By</Th>
+            <Th className="min-w-40">Approved By</Th>
+            <Th className="min-w-40">Paid By</Th>
+            <Th className="min-w-28 is-center">View</Th>
+            <Th className="min-w-24 is-center">Action</Th>
           </Tr>
         </Thead>
 
-        <Tbody className="bg-white dark:bg-gray-800">
+        <Tbody>
           {items.map((item: any, index) => {
             const reasonLabel =
               reasonOptions.find((option) => option.value === item?.reason)
                 ?.label || "--";
             return (
-              <Tr
-                key={item?._id || index}
-                className="group align-top transition hover:bg-blue-50/40 dark:hover:bg-gray-700/40"
-              >
+              <Tr key={item?._id || index}>
                 <Td>
-                  <div className="max-w-64 ">
-                    <div className="flex items-center gap-2">
-                      <span className="rounded-lg bg-blue-50 px-2.5 py-1 text-sm font-bold text-blue-700 dark:bg-blue-900/40 dark:text-blue-300">
+                  <div className="table-user-info max-w-64">
+                    <div className="table-id-row">
+                      <span className="table-id-chip">
                         #{item?.order?.sysid || "--"}
                       </span>
                     </div>
@@ -330,17 +282,15 @@ const RefundTable: React.FC = () => {
                     <Money amount={item?.amount} />
 
                     <div className="flex flex-wrap gap-2">
-                      <p
-                        className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
-                          item?.is_partial
-                            ? "bg-orange-50 text-orange-700"
-                            : "bg-green-50 text-green-700"
+                      <span
+                        className={`table-role-badge ${
+                          item?.is_partial ? "is-warning" : "is-approved"
                         }`}
                       >
                         {item?.is_partial ? "Partial Refund" : "Full Refund"}
-                      </p>
+                      </span>
 
-                      <span className="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-semibold text-gray-600 dark:bg-gray-700 dark:text-gray-300">
+                      <span className="table-role-badge is-neutral">
                         {item?.payment_method || "--"}
                       </span>
                     </div>
@@ -348,18 +298,15 @@ const RefundTable: React.FC = () => {
                 </Td>
 
                 <Td>
-                  <div className="">
-                    <StatusBadge status={item?.status} />
-                  </div>
-                  <div className="">
-                    <p className="font-bold text-gray-900 dark:text-white py-1">
-                      {item?.trx_id || "--"}
-                    </p>
-
-                    <div className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2.5 py-1 text-xs text-gray-500 dark:bg-gray-700 dark:text-gray-300">
-                      <Icon name="schedule" variant="outlined" size={14} />
+                  <div className="table-contact-stack">
+                    <span className={getStatusStyle(item?.status)}>
+                      {getStatusLabel(item?.status)}
+                    </span>
+                    <p className="data-table-primary">{item?.trx_id || "--"}</p>
+                    <span className="table-date-cell">
+                      <Icon name="schedule" variant="outlined" size={13} />
                       {item?.createdAt ? formatTimeAgo(item.createdAt) : "--"}
-                    </div>
+                    </span>
                   </div>
                 </Td>
 
@@ -406,43 +353,41 @@ const RefundTable: React.FC = () => {
                   </div>
                 </Td>
 
-                <Td>
-                  <div className="">
-                    <Link href={`/admin/orders/refund/view/${item?._id}`}>
-                      <Button
-                        type="button"
-                        className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 !px-4 !py-1 !text-xs font-bold text-white shadow-sm transition hover:bg-blue-700"
-                      >
-                        View
-                      </Button>
-                    </Link>
-                  </div>
+                <Td className="is-center">
+                  <Link
+                    href={`/admin/orders/refund/view/${item?._id}`}
+                    className="data-table-view-btn"
+                  >
+                    <Icon name="visibility" variant="outlined" size={14} />
+                    View
+                  </Link>
                 </Td>
 
-                <Td>
+                <Td className="is-center">
                   {hasPermission(
                     permissionList,
                     "order_refund_edit",
                     "order_refund_delete",
                   ) &&
                     item?.status !== "completed" && (
-                      <div className="relative flex justify-center py-4">
+                      <div className="relative flex justify-center">
                         <button
                           type="button"
                           onClick={() => togglePopup(index)}
-                          className="flex  items-center justify-center   text-gray-600 shadow-sm transition "
+                          className="data-table-action-btn"
+                          aria-expanded={popupIndex === index}
                         >
                           <Icon
-                            name="more_horiz"
+                            name="more_vert"
                             variant="outlined"
-                            size={20}
+                            size={18}
                           />
                         </button>
 
                         {popupIndex === index && (
                           <div
                             ref={popupRef}
-                            className="absolute right-4 top-14 z-30 w-44 overflow-hidden rounded-xl border border-gray-100 bg-white shadow-xl dark:border-gray-600 dark:bg-gray-700"
+                            className="data-table-row-menu"
                           >
                             {canEdit && item?.status !== "completed" && (
                               <button

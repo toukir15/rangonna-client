@@ -101,10 +101,10 @@ const DescriptionEditModal = ({
         width="w-full md:w-3/4"
         maxWidth="max-w-2xl"
       >
-        <Modal.Header className="flex items-center justify-between ">
+        <Modal.Header className="flex items-center justify-between">
           <h3 className="text-lg font-medium leading-6 text-gray-900 dark:text-white">
             Edit
-            <span className="font-bold text-blue-900 dark:text-gray-300 ps-2">
+            <span className="font-bold dark:text-gray-300 ps-2">
               #{orderDetail?.order_sysid}
             </span>
           </h3>
@@ -170,7 +170,7 @@ const DescriptionEditModal = ({
           </Button>
           <Button
             type="submit"
-            className="px-4 py-2 text-sm bg-blue-500 text-white rounded"
+            className="btn-primary"
             disabled={isSubmit}
           >
             {isSubmit ? (

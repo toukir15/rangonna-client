@@ -14,6 +14,7 @@ import EditOrderSkeleton from "@admin/components/Skeleton/Orders/EditOrder/EditO
 import NodataImage from "@admin/assets/images/Image-not-found.png";
 import { ProductsInfoTable } from "@admin/components/pages/Orders/EditOrder/ProductsInfoTable";
 import { useGlobalContext } from "@admin/context/GlobalContext";
+import PageHeader from "@admin/components/layout/PageHeader";
 
 const Page: React.FC = () => {
   const { sysId } = useParams();
@@ -356,256 +357,213 @@ const Page: React.FC = () => {
         </div>
       </Alert>
 
-      <div className="md:p-6 p-3 min-h-[83vh] lg:px-4">
-        <div className="bg-white md:p-6 p-4 rounded-lg dark:bg-gray-800">
-          <h1 className="text-2xl font-bold mb-4 dark:text-gray-400">
-            Edit Order{" "}
-            <span className="text-blue-900 dark:text-gray-300">
-              #{orderDetails?.sysid}
-            </span>
-          </h1>
+      <div className="edit-order-page">
+        <PageHeader
+          title={`Edit Order${
+            orderDetails?.sysid ? ` #${orderDetails.sysid}` : ""
+          }`}
+        />
 
+        <div className="edit-order-shell data-table-card glass-card">
           <form onSubmit={handleSubmit}>
             {isLoading ? (
               <EditOrderSkeleton />
             ) : (
-              <div className="md:flex w-full md:gap-20">
-                <div className=" w-full grid xl:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-x-10 gap-y-2 ">
-                  <div className="mb-5">
-                    <label className="block text-gray-700 dark:text-gray-400 ">
-                      First Name
-                    </label>
-                    <input
-                      type="text"
-                      name="first_name"
-                      defaultValue={orderDetails?.customer?.first_name || ""}
-                      onChange={handleInputChange}
-                      className="p-2 px-4 pr-10 w-full dark:text-gray-400 dark:bg-gray-700 dark:border-gray-600 border border-gray-300 rounded-lg shadow-sm focus:ring-1 focus:ring-blue-400 focus:outline-none"
-                      required
-                      placeholder="Enter customer name"
-                    />
-                  </div>
-                  <div className="mb-5">
-                    <label className="block text-gray-700 dark:text-gray-400">
-                      Last Name
-                    </label>
-                    <input
-                      type="text"
-                      name="last_name"
-                      defaultValue={orderDetails?.customer?.last_name || ""}
-                      onChange={handleInputChange}
-                      className="p-2 px-4 pr-10 w-full dark:text-gray-400 dark:bg-gray-700 dark:border-gray-600 border border-gray-300 rounded-lg shadow-sm focus:ring-1 focus:ring-blue-400 focus:outline-none"
-                      placeholder="Enter customer name"
-                    />
-                  </div>
-
-                  <div className="mb-5">
-                    <label className="block text-gray-700 dark:text-gray-400">
-                      Mobile Number
-                    </label>
-                    <input
-                      type="tel"
-                      name="phone"
-                      defaultValue={orderDetails?.customer?.phone || ""}
-                      onChange={handleInputChange}
-                      className="p-2 px-4 pr-10 w-full dark:text-gray-400 border dark:bg-gray-700 dark:border-gray-600 border-gray-300 rounded-lg shadow-sm focus:ring-1 focus:ring-blue-400 focus:outline-none"
-                      required
-                      placeholder="Enter mobile number"
-                    />
-                  </div>
-                  <div className="mb-5">
-                    <label className="block text-gray-700 dark:text-gray-400">
-                      Delivery Address
-                    </label>
-                    <input
-                      type="text"
-                      name="address"
-                      defaultValue={orderDetails?.customer?.address || ""}
-                      onChange={handleInputChange}
-                      className="p-2 px-4 pr-10 w-full dark:text-gray-400 border dark:bg-gray-700 dark:border-gray-600 border-gray-300 rounded-lg shadow-sm focus:ring-1 focus:ring-blue-400 focus:outline-none"
-                      required
-                      placeholder="Enter delivery address"
-                    />
-                  </div>
-
-                  <div className="mb-4">
-                    <label className="block text-gray-700 dark:text-gray-400">
-                      Delivery Fee
-                    </label>
-                    <input
-                      type="number"
-                      name="shipping_total"
-                      value={orderDetails?.shipping_line?.total || ""}
-                      onChange={handleInputChange}
-                      onWheel={(e) => e.currentTarget.blur()}
-                      onKeyDown={(e) => {
-                        if (e.key === "ArrowUp" || e.key === "ArrowDown") {
-                          e.preventDefault();
-                        }
-                      }}
-                      className="p-2 px-4 pr-10 w-full border dark:text-gray-400 dark:bg-gray-700 dark:border-gray-600 border-gray-300 rounded-lg shadow-sm focus:ring-1 focus:ring-blue-400 focus:outline-none"
-                      min="0"
-                      placeholder="Enter delivery fee"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-gray-700  dark:text-gray-400">
-                      Discount Amount
-                    </label>
-                    <input
-                      type="number"
-                      name="discount_total"
-                      disabled={hasFlashSale}
-                      value={orderDetails?.discount_total || ""}
-                      onChange={handleInputChange}
-                      onWheel={(e) => e.currentTarget.blur()}
-                      onKeyDown={(e) => {
-                        if (e.key === "ArrowUp" || e.key === "ArrowDown") {
-                          e.preventDefault();
-                        }
-                      }}
-                      className={`p-2 px-4 pr-10 w-full border dark:text-gray-400 dark:bg-gray-700 dark:border-gray-600 border-gray-300 rounded-lg shadow-sm focus:ring-1 focus:ring-blue-400 focus:outline-none ${
-                        hasFlashSale ? "cursor-not-allowed" : ""
-                      }`}
-                      min="0"
-                      placeholder="Enter discount amount"
-                    />
-                  </div>
+              <div className="edit-order-form-grid">
+                <div className="edit-order-field">
+                  <label className="form-label">First Name</label>
+                  <input
+                    type="text"
+                    name="first_name"
+                    defaultValue={orderDetails?.customer?.first_name || ""}
+                    onChange={handleInputChange}
+                    className="input-app"
+                    required
+                    placeholder="Enter customer name"
+                  />
+                </div>
+                <div className="edit-order-field">
+                  <label className="form-label">Last Name</label>
+                  <input
+                    type="text"
+                    name="last_name"
+                    defaultValue={orderDetails?.customer?.last_name || ""}
+                    onChange={handleInputChange}
+                    className="input-app"
+                    placeholder="Enter customer name"
+                  />
+                </div>
+                <div className="edit-order-field">
+                  <label className="form-label">Mobile Number</label>
+                  <input
+                    type="tel"
+                    name="phone"
+                    defaultValue={orderDetails?.customer?.phone || ""}
+                    onChange={handleInputChange}
+                    className="input-app"
+                    required
+                    placeholder="Enter mobile number"
+                  />
+                </div>
+                <div className="edit-order-field">
+                  <label className="form-label">Delivery Address</label>
+                  <input
+                    type="text"
+                    name="address"
+                    defaultValue={orderDetails?.customer?.address || ""}
+                    onChange={handleInputChange}
+                    className="input-app"
+                    required
+                    placeholder="Enter delivery address"
+                  />
+                </div>
+                <div className="edit-order-field">
+                  <label className="form-label">Delivery Fee</label>
+                  <input
+                    type="number"
+                    name="shipping_total"
+                    value={orderDetails?.shipping_line?.total || ""}
+                    onChange={handleInputChange}
+                    onWheel={(e) => e.currentTarget.blur()}
+                    onKeyDown={(e) => {
+                      if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+                        e.preventDefault();
+                      }
+                    }}
+                    className="input-app"
+                    min="0"
+                    placeholder="Enter delivery fee"
+                  />
+                </div>
+                <div className="edit-order-field">
+                  <label className="form-label">Discount Amount</label>
+                  <input
+                    type="number"
+                    name="discount_total"
+                    disabled={hasFlashSale}
+                    value={orderDetails?.discount_total || ""}
+                    onChange={handleInputChange}
+                    onWheel={(e) => e.currentTarget.blur()}
+                    onKeyDown={(e) => {
+                      if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+                        e.preventDefault();
+                      }
+                    }}
+                    className={`input-app ${
+                      hasFlashSale ? "cursor-not-allowed opacity-70" : ""
+                    }`}
+                    min="0"
+                    placeholder="Enter discount amount"
+                  />
                 </div>
               </div>
             )}
 
-            <div className="my-6">
-              <div className="md:flex items-center justify-between">
-                <div>
-                  <h2 className="md:text-xl font-bold mb-2 dark:text-gray-400">
-                    Products Info:{" "}
-                  </h2>
-                </div>
-                <div>
-                  <div className="mb-3 md:w-[500px] w-full">
-                    <div className="relative">
-                      <input
-                        ref={inputRef}
-                        type="text"
-                        value={productSearch}
-                        onChange={handleSearchChange}
-                        className="p-2 px-4 pr-10 w-full border dark:text-gray-400 dark:bg-gray-700 dark:border-gray-600 border-gray-300 rounded-lg shadow-sm focus:ring-1 focus:ring-blue-400 focus:outline-none"
-                        placeholder="Search for a product"
-                        onFocus={() =>
-                          productSearch.length >= 2 && setShowSuggestions(true)
-                        }
-                        onKeyDown={(e) =>
-                          e.key === "Enter" && handleSearchSubmit(e)
-                        }
-                      />
-                      <button
-                        type="button"
-                        className="absolute right-2 top-3 text-gray-400"
-                        onClick={handleSearchSubmit}
-                      >
-                        <Icon name="search" variant="outlined" />
-                      </button>
+            <div className="mt-6">
+              <div className="edit-order-products-head">
+                <h2>Products Info</h2>
+                <div className="edit-order-search">
+                  <input
+                    ref={inputRef}
+                    type="text"
+                    value={productSearch}
+                    onChange={handleSearchChange}
+                    placeholder="Search for a product"
+                    onFocus={() =>
+                      productSearch.length >= 2 && setShowSuggestions(true)
+                    }
+                    onKeyDown={(e) =>
+                      e.key === "Enter" && handleSearchSubmit(e)
+                    }
+                  />
+                  <button
+                    type="button"
+                    className="edit-order-search-btn"
+                    onClick={handleSearchSubmit}
+                    aria-label="Search products"
+                  >
+                    <Icon name="search" variant="outlined" size={18} />
+                  </button>
 
-                      {showSuggestions && productSearch.length >= 2 && (
-                        <div
-                          ref={suggestionsRef}
-                          className="absolute left-0 w-full dark:bg-gray-700 bg-white border border-gray-300 mt-1 rounded-md z-10 max-h-96 overflow-y-auto"
-                        >
-                          {filteredProducts.length > 0 ? (
-                            filteredProducts.map(
-                              (product: any, index: number) => {
-                                return (
-                                  <div
-                                    key={index}
-                                    className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer flex justify-between gap-4 items-center"
-                                    onClick={() => {
-                                      setOrderDetails(
-                                        (prev: { line_items: any }) => ({
-                                          ...prev,
-                                          line_items: [
-                                            ...(prev.line_items || []),
-                                            {
-                                              title: product?.title,
-                                              product_id: {
-                                                _id: product._id,
-                                                featured_image: {
-                                                  src: product.featured_image
-                                                    .src,
-                                                },
-                                              },
-                                              variation_id:
-                                                product.variation_id || "0",
-                                              quantity: 1,
-                                              subtotal: product.price,
-                                              total: product.price,
-                                              sku:
-                                                product.variants?.[0]?.sku ||
-                                                product.sku ||
-                                                "",
-                                              size:
-                                                product.variants?.[0]?.size ||
-                                                "",
-                                              price:
-                                                product?.pricing?.sale_price,
-                                              image:
-                                                product?.featured_image?.src ||
-                                                "",
-                                              manage_stock:
-                                                product.inventory
-                                                  ?.manage_stock || false,
-                                              stock_quantity:
-                                                product.inventory
-                                                  ?.stock_quantity || 0,
-                                              inventory:
-                                                product.inventory || null,
-                                            },
-                                          ],
-                                        }),
-                                      );
-                                      setProductSearch("");
-                                      setFilteredProducts([]);
-                                      setShowSuggestions(false);
-                                    }}
-                                  >
-                                    <div className="flex items-center gap-4">
-                                      <Image
-                                        src={
-                                          product?.featured_image
-                                            ? product?.featured_image?.src
-                                            : NodataImage
-                                        }
-                                        width={50}
-                                        height={50}
-                                        className="rounded-md"
-                                        alt="Product Image"
-                                        onClick={() =>
-                                          handleImageClick(
-                                            product?.featured_image?.src,
-                                          )
-                                        }
-                                      />
-                                      <span className="dark:text-gray-300">
-                                        {product?.title}
-                                      </span>
-                                    </div>
-                                    <span className="font-semibold text-nowrap dark:text-gray-300">
-                                      BDT {product?.pricing?.sale_price}
-                                    </span>
-                                  </div>
-                                );
-                              },
-                            )
-                          ) : (
-                            <div className="p-4 text-center text-gray-500">
-                              No products found
+                  {showSuggestions && productSearch.length >= 2 && (
+                    <div
+                      ref={suggestionsRef}
+                      className="edit-order-suggestions"
+                    >
+                      {filteredProducts.length > 0 ? (
+                        filteredProducts.map((product: any, index: number) => (
+                          <div
+                            key={index}
+                            className="edit-order-suggestion-item"
+                            onClick={() => {
+                              setOrderDetails(
+                                (prev: { line_items: any }) => ({
+                                  ...prev,
+                                  line_items: [
+                                    ...(prev.line_items || []),
+                                    {
+                                      title: product?.title,
+                                      product_id: {
+                                        _id: product._id,
+                                        featured_image: {
+                                          src: product.featured_image?.src,
+                                        },
+                                      },
+                                      variation_id:
+                                        product.variation_id || "0",
+                                      quantity: 1,
+                                      subtotal: product.price,
+                                      total: product.price,
+                                      sku:
+                                        product.variants?.[0]?.sku ||
+                                        product.sku ||
+                                        "",
+                                      size:
+                                        product.variants?.[0]?.size || "",
+                                      price: product?.pricing?.sale_price,
+                                      image:
+                                        product?.featured_image?.src || "",
+                                      manage_stock:
+                                        product.inventory?.manage_stock ||
+                                        false,
+                                      stock_quantity:
+                                        product.inventory?.stock_quantity ||
+                                        0,
+                                      inventory: product.inventory || null,
+                                    },
+                                  ],
+                                }),
+                              );
+                              setProductSearch("");
+                              setFilteredProducts([]);
+                              setShowSuggestions(false);
+                            }}
+                          >
+                            <div className="flex items-center gap-3 min-w-0">
+                              <Image
+                                src={
+                                  product?.featured_image?.src || NodataImage
+                                }
+                                width={56}
+                                height={56}
+                                alt="Product Image"
+                              />
+                              <span className="truncate text-sm font-medium text-app">
+                                {product?.title}
+                              </span>
                             </div>
-                          )}
+                            <span className="shrink-0 text-sm font-semibold text-brand">
+                              ৳ {product?.pricing?.sale_price}
+                            </span>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="px-3 py-4 text-center text-sm text-app-muted">
+                          No products found
                         </div>
                       )}
                     </div>
-                  </div>
+                  )}
                 </div>
               </div>
 

@@ -46,7 +46,7 @@ const OrdersTab: React.FC<OrdersTabProps> = ({
   searchQuery,
   handleFilterChange,
   isCount = false,
-  debouncedSearch = () => {},
+  debouncedSearch = () => { },
   IsSearch = false,
   allStatuses = DEFAULT_STATUSES,
 }) => {

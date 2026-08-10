@@ -215,11 +215,11 @@ const Page: React.FC = () => {
               </button>
             </div>
           </div>
-          <div className="mt-4  w-full">
+          <div className="mt-4 w-full">
             {cardLoading ? (
               <EmployeeReport />
             ) : (
-              <div className="grid  md:grid-cols-5 grid-cols-1 md:gap-4 gap-3 w-full">
+              <div className="grid md:grid-cols-5 grid-cols-1 md:gap-4 gap-3 w-full">
                 {CardData?.map((data: ICardData, index: number) => {
                   return <ShopCart data={data} key={index} />;
                 })}
@@ -242,7 +242,7 @@ const Page: React.FC = () => {
           }
         >
           <Thead>
-            <Tr className="bg-blue-100 dark:bg-gray-700 h-[50px]">
+            <Tr className="dark:bg-gray-700 h-[50px]">
               <Th>Date</Th>
               <Th>Total</Th>
               <Th>Active</Th>

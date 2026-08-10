@@ -157,7 +157,7 @@ const Page: React.FC = () => {
         <div className=" 2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 md:pb-0 mb-2">
           <div className="md:flex items-center gap-3">
             <div className="flex items-center gap-3">
-              <h2 className="2xl:text-2xl lg:text-xl text-lg text-blue-900 font-semibold dark:text-gray-300 text-nowrap">
+              <h2 className="2xl:text-2xl lg:text-xl text-lg font-semibold text-app text-nowrap">
                 Product Category
               </h2>
               <div className=" ">

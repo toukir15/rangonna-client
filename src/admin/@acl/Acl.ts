@@ -337,7 +337,6 @@ export const labelPermissionMap: Record<string, string[]> = {
     "setting_general_view",
     "setting_company_view",
     "setting_report_issue_category_view",
-    "setting_website_view",
     "warehouse_view",
     "setting_mim_sms_view",
     "mim_sms_template_view",
@@ -350,7 +349,6 @@ export const labelPermissionMap: Record<string, string[]> = {
   "setting/sms": ["setting_mim_sms_view"],
   "setting/mimsms": ["mim_sms_template_view"],
   "setting/reportissuecategory": ["setting_report_issue_category_view"],
-  "setting/website": ["setting_website_view"],
   "setting/deposit": ["account_settings_view"],
   "setting/expense": [
     "account_expense_settings_view",

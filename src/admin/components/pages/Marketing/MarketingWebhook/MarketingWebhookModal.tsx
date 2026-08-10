@@ -5,28 +5,23 @@ import Icon from "@admin/components/core/Icon/Icon";
 import Input from "@admin/components/core/Input/Input";
 import Modal from "@admin/components/core/ModalFrom/ModalFrom";
 import ButtonLoader from "@admin/components/core/Button/ButtonLoader";
-import SelectComponent from "@admin/components/core/Select/Select";
 import React, { useContext, useEffect, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { ToastService } from "@admin/utils/toastr.service";
-import { GlobalService } from "@admin/@services/apis/GlobalService/Global.service";
 import { MarketingWebHookContext } from "@/app/admin/marketing/marketing-webhook/page";
 import { marketingWebhookService } from "@admin/@services/apis/Marketing/MarketingWebhook.service";
 
 interface FormValues {
-  website: { label: string; value: string } | null;
   webhook_url: string;
 }
 
 const schema = yup.object({
-  website: yup.mixed().required("Website is required"),
   webhook_url: yup.string().required("Webhook URL is required"),
 });
 
 const defaultValues: FormValues = {
-  website: null,
   webhook_url: "",
 };
 
@@ -40,11 +35,9 @@ const MarketingWebhookListModal = () => {
   } = useContext(MarketingWebHookContext);
 
   const [isSubmit, setIsSubmit] = useState(false);
-  const [websiteOptions, setWebsiteOptions] = useState<any[]>([]);
 
   const {
     handleSubmit,
-    control,
     register,
     reset,
     formState: { errors },
@@ -53,32 +46,9 @@ const MarketingWebhookListModal = () => {
     defaultValues,
   });
 
-  /* ---------------- Fetch Website List ---------------- */
-  const fetchWebList = async () => {
-    try {
-      const res = await GlobalService.getWebsiteList();
-      if (res?.success) {
-        setWebsiteOptions(
-          res.data.data.map((item: any) => ({
-            label: item.web_name,
-            value: item._id,
-          }))
-        );
-      }
-    } catch (err: any) {
-      ToastService.error(err.message);
-    }
-  };
-
-  /* ---------------- Edit Mode Reset ---------------- */
   useEffect(() => {
     if (modalMode === "Edit" && items) {
       reset({
-        website: {
-          label: items.website?.web_name,
-          value: items.website?._id,
-        },
-
         webhook_url: items.webhook_url,
       });
     } else {
@@ -86,16 +56,10 @@ const MarketingWebhookListModal = () => {
     }
   }, [modalMode, items, reset]);
 
-  useEffect(() => {
-    if (isModalOpen) fetchWebList();
-  }, [isModalOpen]);
-
-  /* ---------------- Submit ---------------- */
   const onSubmit = async (data: FormValues) => {
     setIsSubmit(true);
 
     const payload = {
-      website: data.website?.value,
       webhook_url: data.webhook_url,
     };
 
@@ -139,20 +103,6 @@ const MarketingWebhookListModal = () => {
         </Modal.Header>
 
         <Modal.Body>
-          <Controller
-            name="website"
-            control={control}
-            render={({ field }) => (
-              <SelectComponent
-                options={websiteOptions}
-                value={field.value}
-                onChange={field.onChange}
-                placeholder="Select Website"
-                isRequired
-              />
-            )}
-          />
-
           <Input
             label="Webhook URL"
             registerProperty={register("webhook_url")}

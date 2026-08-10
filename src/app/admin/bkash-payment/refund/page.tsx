@@ -170,7 +170,7 @@ const Page: React.FC = () => {
       <NoScrollLayout>
         <div className="sm:flex sm:items-center justify-between 2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 md:pb-0 mb-2">
           <div className="sm:flex sm:items-center gap-4">
-            <h2 className="2xl:text-2xl lg:text-xl text-lg text-blue-900 font-semibold dark:text-gray-300">
+            <h2 className="2xl:text-2xl lg:text-xl text-lg font-semibold text-app">
               Bkash Refund
             </h2>
             <div className="sm:w-80 w-full sm:mt-0 mt-2">
@@ -184,7 +184,7 @@ const Page: React.FC = () => {
           <div className="md:mt-0 mt-2 justify-end flex">
             {permissionList.includes("ware_c") && (
               <Button
-                className="flex items-center bg-blue-500 !px-4"
+                className="btn-primary btn-primary-inline inline-flex items-center gap-2"
                 onClick={handleAddClick}
               >
                 <Icon name={"add"} />

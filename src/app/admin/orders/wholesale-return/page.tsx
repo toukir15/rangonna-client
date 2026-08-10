@@ -165,13 +165,13 @@ const Page: React.FC = () => {
       <NoScrollLayout>
         <div className="sm:flex items-center gap-3 2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 md:pb-0 mb-2">
           <div className="sm:flex items-center gap-4">
-            <h2 className="2xl:text-2xl lg:text-xl text-lg text-blue-900 font-semibold dark:text-gray-300">
+            <h2 className="2xl:text-2xl lg:text-xl text-lg font-semibold text-app">
               Wholesale Sales Return
             </h2>
-            <div className="flex justify-end ">
+            <div className="flex justify-end">
               {permissionList.includes("order_wholesale_return_create") && (
                 <Button
-                  className="!bg-green-200 !text-green-600 !py-1.5 !px-4"
+                  className="btn-primary btn-primary-inline inline-flex items-center gap-2"
                   onClick={handleAddClick}
                 >
 
@@ -204,7 +204,7 @@ const Page: React.FC = () => {
             colValue={13}
           >
             <Thead>
-              <Tr className="dark:bg-gray-700  bg-blue-100 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
+              <Tr className="dark:bg-gray-700 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
                 <Th className="dark:text-gray-300 2xl:min-w-28 lg:min-w-28 min-w-28">
                   Invoice
                 </Th>
@@ -218,7 +218,7 @@ const Page: React.FC = () => {
                   Warehouse
                 </Th>
                 <Th className="dark:text-gray-300 2xl:min-w-20 lg:min-w-28 min-w-28">
-                  <div className="flex items-center ">
+                  <div className="flex items-center">
                     <div>
                       <p>Date</p>
                     </div>
@@ -275,10 +275,10 @@ const Page: React.FC = () => {
                       <p className={`${dueColor}`}>{item?.due}</p>
                     </Td>
                     <Td>{item?.shipping}</Td>
-                    <Td className=" uppercase">{item?.status}</Td>
+                    <Td className="uppercase">{item?.status}</Td>
                     <Td>
                       <Link
-                        className="bg-blue-500 px-4 py-1 rounded-lg text-white text-center w-20 cursor-pointer"
+                        className="data-table-view-btn"
                         href={`/admin/orders/wholesale-return/view/${item?._id}`}
                       >
                         View
@@ -306,7 +306,7 @@ const Page: React.FC = () => {
                                 ) && (
                                     <>
                                       <button
-                                        className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg "
+                                        className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg"
                                         onClick={() =>
                                           router.push(
                                             `/admin/orders/wholesale-return/edit-purchases/${item?._id}`

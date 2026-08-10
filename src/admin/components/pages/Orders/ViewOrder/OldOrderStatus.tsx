@@ -75,26 +75,26 @@ const OrderStatus: React.FC<OrderStatusProps> = ({
   const isCancelled = currentStep === "cancel";
 
   return (
-    <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg md:px-4 md:py-4 px-2 py-4 mb-3">
+    <div className="mb-3 rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] px-2 py-4 shadow-[var(--shadow-soft)] md:px-4 md:py-4">
       <div className="flex items-center justify-between">
         {allStatus.map((step, index) => {
           const isCurrentStep = currentStep === step.key;
 
           const iconColor = isCancelled
             ? step.key === "cancel"
-              ? "bg-red-600 border-red-500 text-white"
-              : "bg-gray-300 border-gray-200 text-white"
+              ? "bg-[var(--color-danger,#dc2626)] border-[var(--color-danger,#dc2626)] text-white"
+              : "bg-[var(--bg-hover)] border-[var(--border)] text-[var(--text-muted)]"
             : isCurrentStep
-            ? "bg-green-600 border-green-500 text-white"
-            : "bg-gray-300 border-gray-200 text-white";
+            ? "bg-[var(--color-primary)] border-[var(--color-primary)] text-white"
+            : "bg-[var(--bg-hover)] border-[var(--border)] text-[var(--text-muted)]";
 
           const labelColor = isCancelled
             ? step.key === "cancel"
-              ? "text-red-600 dark:text-red-400 font-bold"
-              : "text-gray-600 dark:text-gray-400"
+              ? "text-[var(--color-danger,#dc2626)] font-bold"
+              : "text-app-muted"
             : isCurrentStep
-            ? "text-green-600 dark:text-green-400 font-bold"
-            : "text-gray-600 dark:text-gray-400";
+            ? "text-brand font-bold"
+            : "text-app-muted";
 
           return (
             <React.Fragment key={index}>
@@ -118,7 +118,7 @@ const OrderStatus: React.FC<OrderStatusProps> = ({
                   {(statusLoading || loading) &&
                     loadingName === step?.label && (
                       <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="animate-spin rounded-full h-11 w-11 border-b-4 border-green-600"></div>
+                        <div className="animate-spin rounded-full h-11 w-11 border-b-4 border-[var(--color-primary)]"></div>
                       </div>
                     )}
                 </div>

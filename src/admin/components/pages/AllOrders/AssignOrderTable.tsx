@@ -111,29 +111,29 @@ const AssignOrderTable: React.FC = () => {
         orderInvoicePrintBtn={true}
       >
         <Thead>
-          <Tr className="dark:bg-gray-700 bg-blue-100 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
-            <Th className="2xl:min-w-32 lg:min-w-14 min-w-32 text-blue-900 dark:text-gray-200">
+          <Tr className="dark:bg-gray-700 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
+            <Th className="2xl:min-w-32 lg:min-w-14 min-w-32 dark:text-gray-200">
               Order ID
             </Th>
-            <Th className="2xl:min-w-40 lg:min-w-32 min-w-40 text-blue-900 dark:text-gray-200">
+            <Th className="2xl:min-w-40 lg:min-w-32 min-w-40 dark:text-gray-200">
               Customer Info
             </Th>
-            <Th className="2xl:min-w-32 lg:min-w-28 min-w-32 text-blue-900 dark:text-gray-200">
+            <Th className="2xl:min-w-32 lg:min-w-28 min-w-32 dark:text-gray-200">
               Products
             </Th>
-            <Th className="2xl:min-w-36 lg:min-w-28 min-w-36 text-blue-900 dark:text-gray-200 ps-10">
+            <Th className="2xl:min-w-36 lg:min-w-28 min-w-36 dark:text-gray-200 ps-10">
               Status
             </Th>
-            <Th className="2xl:min-w-36 lg:min-w-28 min-w-36 text-blue-900 dark:text-gray-200">
+            <Th className="2xl:min-w-36 lg:min-w-28 min-w-36 dark:text-gray-200">
               Total & Due
             </Th>
-            <Th className="2xl:min-w-32 lg:min-w-28 min-w-32 text-blue-900 dark:text-gray-200 !text-nowrap">
+            <Th className="2xl:min-w-32 lg:min-w-28 min-w-32 dark:text-gray-200 !text-nowrap">
               Customer Note & Note
             </Th>
-            <Th className="text-blue-900 dark:text-gray-200 min-w-40 ps-8 ">
+            <Th className="dark:text-gray-200 min-w-40 ps-8">
               View
             </Th>
-            <Th className="text-blue-900 dark:text-gray-200">Actions</Th>
+            <Th className="dark:text-gray-200">Actions</Th>
           </Tr>
         </Thead>
         <Tbody className="dark:bg-gray-800 bg-white">
@@ -278,7 +278,7 @@ const AssignOrderTable: React.FC = () => {
                 </Td>
                 <Td>
                   <div
-                    className="bg-blue-500 px-4 py-1 rounded-lg text-white text-center w-20 cursor-pointer"
+                    className="data-table-view-btn"
                     onClick={() => {
                       if (order?.status) {
                         localStorage.setItem("viewOrderStatus", order.status);

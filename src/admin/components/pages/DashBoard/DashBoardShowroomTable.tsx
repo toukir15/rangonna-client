@@ -35,7 +35,7 @@ const DashBoardShowroomTable: React.FC = () => {
       colValue={4}
     >
       <Thead>
-        <Tr className="bg-blue-100 dark:bg-gray-700 h-[40px]">
+        <Tr className="dark:bg-gray-700 h-[40px]">
           <Th className="dark:text-gray-300 min-w-40">Payment Method</Th>
           <Th className="dark:text-gray-300 min-w-40">Date By Order Amount</Th>
           <Th className="dark:text-gray-300 min-w-40">Daily Amount</Th>
@@ -74,7 +74,7 @@ const DashBoardShowroomTable: React.FC = () => {
 
         {/* ✅ Footer Row */}
         {returnListData?.length > 0 && (
-          <Tr className=" font-semibold">
+          <Tr className="font-semibold">
             <Td className="text-right">Total:</Td>
             <Td>{totalDateAmount}</Td>
             <Td>{totalCreateAmount}</Td>

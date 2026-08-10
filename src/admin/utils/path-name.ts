@@ -6,7 +6,6 @@ export const PRODUCTS: string = "/admin/product";
 export const CUSTOMERS: string = "/admin/customers";
 export const COURIERS: string = "/admin/couriers";
 export const STOCKY: string = "/admin/stocky";
-export const WEBSITES: string = "/admin/websites";
 export const TEAM: string = "/admin/team";
 export const ACTIVITY: string = "/admin/activity";
 export const SUBSCRIPTION: string = "/admin/subscription";

@@ -8,8 +8,7 @@ export const CompanyService = {
   },
   getCompany: async (queryParams?: any): Promise<any> => {
     return await apiIns.get(
-      `/company-settings/website-product-setting` +
-        queryStringMapper(queryParams),
+      `/settings/website-product-setting` + queryStringMapper(queryParams),
     );
   },
   updateCompanySettings: async (payload: any): Promise<any> =>

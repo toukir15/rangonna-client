@@ -58,13 +58,7 @@ const MarketingWebhookTable: React.FC = () => {
       colValue={4}
     >
       <Thead>
-        <Tr className="dark:bg-gray-700 bg-blue-100 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
-          <Th className="dark:text-gray-300 2xl:min-w-40 lg:min-w-40 min-w-40">
-            Website Name
-          </Th>
-          <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-14 min-w-32">
-            Website Url
-          </Th>
+        <Tr className="dark:bg-gray-700 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
           <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-14 min-w-32">
             Webhook Url
           </Th>
@@ -81,8 +75,6 @@ const MarketingWebhookTable: React.FC = () => {
           (webhook: MarketingWebhook, index: number) => {
             return (
               <Tr className="h-14" key={index}>
-                <Td>{webhook?.website?.web_name}</Td>
-                <Td className="text-base font-bold">{webhook?.website_url}</Td>
                 <Td className="">{webhook?.webhook_url}</Td>
                 <Td className="">
                   {activeToggleLoading[webhook._id] ? (

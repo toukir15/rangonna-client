@@ -5,17 +5,12 @@ import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
 import CardSkeleton from "@admin/components/Skeleton/Dashboard/CardSkeleton";
 import { ToastService } from "@admin/utils/toastr.service";
 import { formatDateRange } from "@admin/utils/hook.utils";
-import { GlobalService } from "@admin/@services/apis/GlobalService/Global.service";
 import { dashBoardService } from "@admin/@services/apis/DashboardService/Dashboard.service";
-import { IWebsiteOption, SelectOption } from "@admin/@interfaces/common.interface";
 import { getCookieeeee, useLocalStorageDateRange } from "@admin/utils";
 import ShopCart from "@admin/components/pages/ShopCart/ShopCart";
 import { maxRange } from "@admin/utils/helper";
 import UpdatePasswordModal from "@admin/components/pages/Profile/UpdatePasswordModal";
 import { useGlobalContext } from "@admin/context/GlobalContext";
-import { noPermission } from "@admin/utils/constant";
-import Button from "@admin/components/core/Button/Button";
-import Icon from "@admin/components/core/Icon/Icon";
 import AllFilter from "@admin/components/pages/AllFilter/AllFilter";
 
 const DEFAULT_DATE_RANGE = {
@@ -34,13 +29,7 @@ const Page = () => {
   const router = useRouter();
   const { userInfo, canFetchPageData } = useGlobalContext();
   const [isLoading, setIsLoading] = useState(true);
-  const [isInitialized, setIsInitialized] = useState(false);
   const [allStatus, setAllStatus] = useState<IStatusItem[]>([]);
-  const [selectedWebsite, setSelectedWebsite] = useState<SelectOption>({
-    value: "all",
-    label: "All Website",
-  });
-  const [websiteOptions, setWebsiteOptions] = useState<IWebsiteOption[]>([]);
   const [range, setRange] = useLocalStorageDateRange(
     "dashboardDateRange",
     DEFAULT_DATE_RANGE
@@ -210,43 +199,7 @@ const Page = () => {
   ];
 
   useEffect(() => {
-    const initialize = async () => {
-      try {
-        GlobalService.getWebsiteList()
-          .then((res: any) => {
-            if (res?.success) {
-              const options = res?.data?.map((item: any) => ({
-                label: item.web_name,
-                value: item.web_url,
-              }));
-
-              setWebsiteOptions([
-                { value: "all", label: "All Website" },
-                ...options,
-              ]);
-            } else {
-              ToastService.error(res?.message);
-            }
-          })
-          .catch((err: { message: string }) => {
-            ToastService.error(err.message);
-          });
-
-        setIsInitialized(true);
-      } catch (error: unknown) {
-        if (error instanceof Error) {
-          ToastService.error(error.message);
-        } else {
-          ToastService.error("Failed to initialize data");
-        }
-      }
-    };
-
-    initialize();
-  }, []);
-
-  useEffect(() => {
-    if (!isInitialized || !canFetchPageData) return;
+    if (!canFetchPageData) return;
 
     const fetchData = async () => {
       setIsLoading(true);
@@ -261,7 +214,8 @@ const Page = () => {
         });
 
         if (statusRes?.success) {
-          setAllStatus(statusRes?.data?.orderStatuses || []);        } else {
+          setAllStatus(statusRes?.data?.orderStatuses || []);
+        } else {
           ToastService.error(
             statusRes?.message || "Failed to load status data"
           );
@@ -275,14 +229,14 @@ const Page = () => {
 
     const debounceTimer = setTimeout(fetchData, 300);
     return () => clearTimeout(debounceTimer);
-  }, [selectedWebsite, range, isInitialized, canFetchPageData]);
+  }, [range, canFetchPageData]);
 
   return (
     <AuthLayout>
       <NoScrollLayout>
         <div className="2xl:px-4 px-3 2xl:pt-4 sm:pt-3 pt-2">
           <div className="flex flex-wrap items-center sm:mb-4 mb-4 gap-3">
-            <h2 className="2xl:text-2xl lg:text-xl text-lg text-blue-900 font-semibold dark:text-gray-300 text-nowrap">
+            <h2 className="2xl:text-2xl lg:text-xl text-lg font-semibold text-app text-nowrap">
               Summary
             </h2>
               <AllFilter

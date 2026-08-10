@@ -122,14 +122,14 @@ const Page: React.FC = () => {
     <AuthLayout>
       <NoScrollLayout>
         <div className="2xl:pt-4 pt-2 2xl:px-4 px-3 w-full">
-          <div className="lg:flex lg:flex-wrap  items-center md:justify-between pb-2">
+          <div className="lg:flex lg:flex-wrap items-center md:justify-between pb-2">
             <div className="md:flex items-center md:space-x-4 w-full">
               <div className="">
                 <h1 className="2xl:text-2xl lg:text-xl text-lg font-semibold dark:text-gray-300 text-gray-800 md:mb-0 mb-2 flex text-nowrap">
                   Summary
                 </h1>
               </div>
-              <div className="md:flex items-center w-full  gap-4">
+              <div className="md:flex items-center w-full gap-4">
                 <div className="">
                   <CustomDatePicker
                     selectedDate={selectedMonth || new Date()}
@@ -146,7 +146,7 @@ const Page: React.FC = () => {
               {tableLoading ? (
                 <EmployeeReport />
               ) : (
-                <div className="grid  md:grid-cols-5 grid-cols-1 md:gap-4 gap-3 w-full">
+                <div className="grid md:grid-cols-5 grid-cols-1 md:gap-4 gap-3 w-full">
                   {CardData?.map((data: ICardData, index: number) => {
                     return <ShopCart data={data} key={index} />;
                   })}
@@ -157,7 +157,7 @@ const Page: React.FC = () => {
         </div>
       </NoScrollLayout>
 
-      <div className="2xl:px-4 px-3 relative md:min-h-[74%] w-full ">
+      <div className="2xl:px-4 px-3 relative md:min-h-[74%] w-full">
         <TableWrapper
           showCheckbox={true}
           data={paymentReport}
@@ -170,20 +170,20 @@ const Page: React.FC = () => {
           colValue={4}
         >
           <Thead>
-            <Tr className="dark:bg-gray-700 bg-blue-100 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
-              <Th className="2xl:min-w-32 lg:min-w-14 min-w-32 text-blue-900 dark:text-gray-200">
+            <Tr className="dark:bg-gray-700 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
+              <Th className="2xl:min-w-32 lg:min-w-14 min-w-32 dark:text-gray-200">
                 Account Name
               </Th>
-              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40  text-blue-900 dark:text-gray-200">
+              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40 dark:text-gray-200">
                 Deposit
               </Th>
-              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40  text-blue-900 dark:text-gray-200">
+              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40 dark:text-gray-200">
                 Expense
               </Th>
-              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40  text-blue-900 dark:text-gray-200">
+              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40 dark:text-gray-200">
                 Deposit Method
               </Th>
-              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40  text-blue-900 dark:text-gray-200">
+              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40 dark:text-gray-200">
                 Expense Method
               </Th>
             </Tr>
@@ -221,7 +221,7 @@ const Page: React.FC = () => {
                   </Td>
                   <Td>
                     <div className="flex gap-6">
-                      <div className="text-red-600 ">
+                      <div className="text-red-600">
                         {report?.payment_method_expenses?.length > 0 ? (
                           report.payment_method_expenses.map(
                             (item: any, i: number) => (

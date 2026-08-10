@@ -49,7 +49,7 @@ const ProductBrandTable: React.FC = () => {
       colValue={10}
     >
       <Thead>
-        <Tr className="dark:bg-gray-700 bg-blue-100 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
+        <Tr className="dark:bg-gray-700 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
           <Th className="dark:text-gray-300">Title</Th>
           <Th className="dark:text-gray-300">Slug</Th>
           <Th className="dark:text-gray-300">Action</Th>

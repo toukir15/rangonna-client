@@ -280,14 +280,14 @@ const Page: React.FC = () => {
       <NoScrollLayout>
         <div className="md:flex items-center justify-between 2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 md:pb-0 mb-2">
           <div className="flex items-center gap-3">
-            <h2 className="2xl:text-2xl lg:text-xl text-lg text-blue-900 font-semibold dark:text-gray-300 text-nowrap">
+            <h2 className="2xl:text-2xl lg:text-xl text-lg font-semibold text-app text-nowrap">
               Deposit Category
             </h2>
             <div className="flex mt-2 sm:mt-0 gap-2 flex-wrap">
               {hasPermission(permissionList, "account_deposit_category_create") &&
                 !isPriorityEditMode && (
                   <Button
-                    className="flex items-center !bg-green-200 !text-green-600 !px-4 !py-1.5"
+                    className="btn-primary btn-primary-inline inline-flex items-center gap-2"
                     onClick={handleAddClick}
                   >
 

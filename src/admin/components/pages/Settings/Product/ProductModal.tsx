@@ -25,26 +25,28 @@ const defaultValues: FormValues = {
   categories: [],
 };
 
-// Simple validation: optional arrays
 const schema = yup.object({
   brand_names: yup.array().of(yup.string()),
   categories: yup.array().of(yup.string()),
 });
 
-const ProductModal = ({ items, isModalOpen, setIsModalOpen }: any) => {
+const ProductModal = ({
+  items,
+  isModalOpen,
+  setIsModalOpen,
+  onSuccess,
+}: any) => {
   const [isSubmit, setIsSubmit] = useState(false);
   const [brands, setBrands] = useState<{ key: string; value: string }[]>([]);
   const [categories, setCategories] = useState<
     { key: string; value: string }[]
   >([]);
-  const [companyData, setCompanyData] = useState<any>(null);
 
   const { handleSubmit, watch, setValue, reset } = useForm<any>({
     resolver: yupResolver(schema),
     defaultValues,
   });
 
-  /* ---------------- Checkbox Handler ---------------- */
   const handleCheckboxChange = (
     field: "brand_names" | "categories",
     value: string
@@ -58,25 +60,6 @@ const ProductModal = ({ items, isModalOpen, setIsModalOpen }: any) => {
       );
     } else {
       setValue(field, [...currentValues, value]);
-    }
-  };
-
-  /* ---------------- Fetch Company Settings ---------------- */
-  const fetchCompany = async () => {
-    if (!items?.web_url) return;
-
-    try {
-      const res = await CompanyService.getCompany({
-        domain: items.web_url,
-        page: 1,
-        limit: 50,
-      });
-
-      if (res?.success) {
-        setCompanyData(res.data);
-      }
-    } catch (err: any) {
-      ToastService.error(err.message);
     }
   };
 
@@ -102,34 +85,24 @@ const ProductModal = ({ items, isModalOpen, setIsModalOpen }: any) => {
   };
 
   useEffect(() => {
-    if (companyData) {
-      reset({
-        brand_names: companyData.brand_names?.map((b: any) => b.value) || [],
-        categories: companyData.categories?.map((c: any) => c.value) || [],
-      });
-    }
-  }, [companyData, reset]);
-
-  useEffect(() => {
     fetchBrands();
     fetchCategories();
   }, []);
 
   useEffect(() => {
-    if (isModalOpen) fetchCompany();
-  }, [items?.web_url, isModalOpen]);
+    if (!isModalOpen) return;
+    reset({
+      brand_names: items?.brand_names?.map((b: any) => b.value || b) || [],
+      categories: items?.categories?.map((c: any) => c.value || c) || [],
+    });
+  }, [items, isModalOpen, reset]);
 
   const onSubmit = async (data: FormValues) => {
     setIsSubmit(true);
 
     const payload = {
-      website_product_settings: [
-        {
-          website: items?._id,
-          brand_names: data.brand_names,
-          categories: data.categories,
-        },
-      ],
+      brand_names: data.brand_names,
+      categories: data.categories,
     };
 
     try {
@@ -138,6 +111,7 @@ const ProductModal = ({ items, isModalOpen, setIsModalOpen }: any) => {
       if (res?.success) {
         ToastService.success(res.message);
         setIsModalOpen(false);
+        onSuccess?.();
       } else {
         ToastService.error(res.message);
       }
@@ -152,13 +126,13 @@ const ProductModal = ({ items, isModalOpen, setIsModalOpen }: any) => {
   const categoryValues = watch("categories");
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        width="w-full md:w-3/4"
-        maxWidth="max-w-2xl"
-      >
+    <Modal
+      isOpen={isModalOpen}
+      onClose={() => setIsModalOpen(false)}
+      width="w-full md:w-3/4"
+      maxWidth="max-w-2xl"
+    >
+      <form onSubmit={handleSubmit(onSubmit)}>
         <Modal.Header className="flex items-center justify-between">
           <h3 className="text-lg font-semibold">Edit Product Settings</h3>
           <Icon
@@ -169,7 +143,6 @@ const ProductModal = ({ items, isModalOpen, setIsModalOpen }: any) => {
         </Modal.Header>
 
         <Modal.Body>
-          {/* ---------------- Brands ---------------- */}
           <div className="mb-6">
             <h3 className="font-semibold mb-2">Brands</h3>
             <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
@@ -191,7 +164,6 @@ const ProductModal = ({ items, isModalOpen, setIsModalOpen }: any) => {
             </div>
           </div>
 
-          {/* ---------------- Categories ---------------- */}
           <div>
             <h3 className="font-semibold mb-2">Categories</h3>
             <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
@@ -222,8 +194,8 @@ const ProductModal = ({ items, isModalOpen, setIsModalOpen }: any) => {
             {isSubmit ? <ButtonLoader /> : "Confirm"}
           </Button>
         </Modal.Footer>
-      </Modal>
-    </form>
+      </form>
+    </Modal>
   );
 };
 

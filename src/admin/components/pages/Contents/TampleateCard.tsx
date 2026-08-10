@@ -74,7 +74,7 @@ const TemplateCard: React.FC<TemplateCardProps> = ({
 
         <div className="flex items-start justify-between gap-3 mb-4">
           <div className="flex items-center gap-3">
-            <div className="h-11 w-11 rounded-xl bg-blue-100 flex items-center justify-center text-xl">
+            <div className="h-11 w-11 rounded-xl flex items-center justify-center text-xl">
               ⭐
             </div>
 

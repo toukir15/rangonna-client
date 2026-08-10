@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
     Controller,
@@ -13,20 +13,13 @@ import {
 import * as yup from "yup";
 import { ToastService } from "@admin/utils/toastr.service";
 import { MenuService } from "@admin/@services/apis/CustomerFront/MenuService/Menu.service";
-import { GlobalService } from "@admin/@services/apis/GlobalService/Global.service";
 import { useRouter } from "next/navigation";
 import Button from "@admin/components/core/Button/Button";
-import SelectComponent from "@admin/components/core/Select/Select";
 import ButtonLoader from "@admin/components/core/Button/ButtonLoader";
 import MaterialIconSelect from "./MaterialIconSelect";
 import { materialIconOptions } from "./materialIconOptions";
 
 // ====================== Types ======================
-type TSelectOption = {
-    label: string;
-    value: string;
-};
-
 type TSubmenuForm = {
     name: string;
     route: string;
@@ -43,7 +36,6 @@ type TNavItemForm = {
 };
 
 export type FormValues = {
-    website: TSelectOption | null;
     navBarItems: TNavItemForm[];
 };
 
@@ -66,11 +58,6 @@ type TNavItem = {
 
 export type TMenuItem = {
     _id: string;
-    website?: {
-        _id: string;
-        web_name?: string;
-        web_url?: string;
-    };
     navBarItems?: TNavItem[];
 };
 
@@ -83,7 +70,6 @@ type MenuFormProps = {
 
 // ====================== Default Value ======================
 const defaultValue: FormValues = {
-    website: null,
     navBarItems: [
         {
             name: "",
@@ -97,14 +83,6 @@ const defaultValue: FormValues = {
 
 // ====================== Validation ======================
 const schema: yup.ObjectSchema<any> = yup.object({
-    website: yup
-        .object({
-            label: yup.string().required(),
-            value: yup.string().required(),
-        })
-        .nullable()
-        .required("Website is required"),
-
     navBarItems: yup
         .array()
         .of(
@@ -346,14 +324,6 @@ const MenuForm: React.FC<MenuFormProps> = ({
 }) => {
     const router = useRouter();
     const [isSubmit, setIsSubmit] = useState(false);
-    const [websiteData, setWebsiteData] = useState<any[]>([]);
-
-    const websiteOptions = useMemo(() => {
-        return (websiteData || []).map((item: any) => ({
-            label: item?.web_name || "Unnamed Website",
-            value: item?._id || "",
-        }));
-    }, [websiteData]);
 
     const {
         handleSubmit,
@@ -392,28 +362,8 @@ const MenuForm: React.FC<MenuFormProps> = ({
             }>
             | undefined) || [];
 
-    const getWebsiteList = async () => {
-        try {
-            const res = await GlobalService.getWebsiteList();
-            if (res?.success) {
-                setWebsiteData(res?.data || []);
-            } else {
-                ToastService.error(res?.message);
-            }
-        } catch (err: any) {
-            ToastService.error(err?.message || "Failed to fetch websites");
-        }
-    };
-
-    useEffect(() => {
-        getWebsiteList();
-    }, []);
-
     useEffect(() => {
         if (mode === "edit" && initialData) {
-            const selectedWebsite =
-                websiteOptions.find((w) => w.value === initialData?.website?._id) || null;
-
             const mappedNavItems: TNavItemForm[] =
                 initialData?.navBarItems && initialData.navBarItems.length > 0
                     ? initialData.navBarItems.map((nav) => ({
@@ -434,7 +384,6 @@ const MenuForm: React.FC<MenuFormProps> = ({
                     : defaultValue.navBarItems;
 
             reset({
-                website: selectedWebsite,
                 navBarItems: mappedNavItems,
             });
 
@@ -445,13 +394,12 @@ const MenuForm: React.FC<MenuFormProps> = ({
             reset(defaultValue);
             replaceNav(defaultValue.navBarItems);
         }
-    }, [mode, initialData, websiteOptions, reset, replaceNav]);
+    }, [mode, initialData, reset, replaceNav]);
 
     const formSubmit = async (data: FormValues) => {
         setIsSubmit(true);
 
         const payload = {
-            website: data?.website?.value,
             navBarItems: (data?.navBarItems || []).map((nav, navIndex) => ({
                 id: navIndex + 1,
                 name: nav?.name,
@@ -511,32 +459,6 @@ const MenuForm: React.FC<MenuFormProps> = ({
                     </div>
 
                     <div className="p-4 md:p-6 space-y-5">
-                        <div>
-                            <label className="block text-sm font-semibold text-neutral-600 dark:text-gray-300 mb-1">
-                                Website <span className="text-red-500">*</span>
-                            </label>
-
-                            <Controller
-                                name="website"
-                                control={control}
-                                render={({ field }) => (
-                                    <SelectComponent
-                                        options={websiteOptions}
-                                        value={field.value}
-                                        onChange={field.onChange}
-                                        placeholder="Select Website"
-                                        isRequired
-                                    />
-                                )}
-                            />
-
-                            {errors?.website?.message && (
-                                <p className="text-red-500 text-xs mt-1">
-                                    {errors.website.message as string}
-                                </p>
-                            )}
-                        </div>
-
                         <div className="flex items-center justify-between">
                             <h4 className="text-base font-semibold text-gray-800 dark:text-white">
                                 Main Menu Items

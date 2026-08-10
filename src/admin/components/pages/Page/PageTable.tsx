@@ -69,7 +69,7 @@ const PageTable: React.FC = () => {
       colValue={7}
     >
       <Thead>
-        <Tr className="dark:bg-gray-700 bg-blue-100 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300">
+        <Tr className="dark:bg-gray-700 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300">
           <Th className="dark:text-gray-300 min-w-56">Title</Th>
           <Th className="dark:text-gray-300 min-w-40">Slug</Th>
           <Th className="dark:text-gray-300 min-w-72">Description</Th>
@@ -112,7 +112,7 @@ const PageTable: React.FC = () => {
                   href={getCampaignPageViewUrl(item.slug)}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="bg-blue-500 px-4 py-1 rounded-lg text-white text-center cursor-pointer inline-block"
+                  className="data-table-view-btn"
                 >
                   View
                 </a>

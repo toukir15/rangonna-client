@@ -53,7 +53,7 @@ const AllExpensesTable: React.FC = () => {
       colValue={7}
     >
       <Thead>
-        <Tr className="dark:bg-gray-700 bg-blue-100 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
+        <Tr className="dark:bg-gray-700 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
           <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-14 min-w-48">
             Date
           </Th>

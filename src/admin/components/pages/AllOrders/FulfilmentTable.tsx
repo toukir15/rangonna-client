@@ -30,7 +30,6 @@ const FulfillmentTable: React.FC = () => {
         statusSubmitting,
         handleImageClick,
         filter,
-        selectedWebsite,
         handleAddAdvance,
         payLoadingId,
     } = useContext(fulfillmentContext);
@@ -67,43 +66,42 @@ const FulfillmentTable: React.FC = () => {
                 bulkActionBtn={true}
                 openBulk={filter === "ready-for-box"}
                 handleBulkAction={handleBalkUpdate}
-                selectedWebsite={selectedWebsite}
             >
                 <Thead>
-                    <Tr className="dark:bg-gray-700 bg-blue-100 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
-                        <Th className="2xl:min-w-32 lg:min-w-14 min-w-32 text-blue-900 dark:text-gray-200">
+                    <Tr className="dark:bg-gray-700 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
+                        <Th className="2xl:min-w-32 lg:min-w-14 min-w-32 dark:text-gray-200">
                             Order ID
                         </Th>
 
-                        <Th className="2xl:min-w-32 lg:min-w-28 min-w-32 text-blue-900 dark:text-gray-200">
+                        <Th className="2xl:min-w-32 lg:min-w-28 min-w-32 dark:text-gray-200">
                             Products
                         </Th>
 
-                        <Th className="2xl:min-w-36 lg:min-w-28 min-w-36 text-blue-900 dark:text-gray-200 ps-10">
+                        <Th className="2xl:min-w-36 lg:min-w-28 min-w-36 dark:text-gray-200 ps-10">
                             Status
                         </Th>
 
-                        <Th className="2xl:min-w-36 lg:min-w-28 min-w-36 text-blue-900 dark:text-gray-200">
+                        <Th className="2xl:min-w-36 lg:min-w-28 min-w-36 dark:text-gray-200">
                             Total
                         </Th>
 
-                        <Th className="2xl:min-w-36 lg:min-w-28 min-w-36 text-blue-900 dark:text-gray-200">
+                        <Th className="2xl:min-w-36 lg:min-w-28 min-w-36 dark:text-gray-200">
                             Paid
                         </Th>
 
-                        <Th className="2xl:min-w-36 lg:min-w-28 min-w-36 text-blue-900 dark:text-gray-200">
+                        <Th className="2xl:min-w-36 lg:min-w-28 min-w-36 dark:text-gray-200">
                             Due
                         </Th>
 
-                        <Th className="2xl:min-w-32 lg:min-w-28 min-w-32 text-blue-900 dark:text-gray-200 !text-nowrap">
+                        <Th className="2xl:min-w-32 lg:min-w-28 min-w-32 dark:text-gray-200 !text-nowrap">
                             Last Note
                         </Th>
 
-                        <Th className="text-blue-900 dark:text-gray-200 min-w-40 ps-8">
+                        <Th className="dark:text-gray-200 min-w-40 ps-8">
                             View
                         </Th>
 
-                        <Th className="text-blue-900 dark:text-gray-200">Actions</Th>
+                        <Th className="dark:text-gray-200">Actions</Th>
                     </Tr>
                 </Thead>
 
@@ -242,7 +240,7 @@ const FulfillmentTable: React.FC = () => {
                                                 localStorage.setItem("viewOrderStatus", order.status);
                                             }
                                         }}
-                                        className="bg-blue-500 px-4 py-1 rounded-lg text-white text-center w-20 cursor-pointer inline-block"
+                                        className="data-table-view-btn"
                                     >
                                         View
                                     </Link>
@@ -252,7 +250,7 @@ const FulfillmentTable: React.FC = () => {
                                     <Button
                                         onClick={() => handleAddAdvance(order?._id)}
                                         disabled={payLoadingId === order?._id}
-                                        className="bg-blue-100 !px-4 !py-0.5 rounded-lg !text-blue-600 text-center cursor-pointer inline-block text-nowrap !text-sm min-w-[90px]"
+                                        className="!px-4 !py-0.5 rounded-lg !text-blue-600 text-center cursor-pointer inline-block text-nowrap !text-sm min-w-[90px]"
                                     >
                                         {payLoadingId === order?._id ? <ButtonLoader /> : "Pay"}
                                     </Button>

@@ -609,11 +609,6 @@ export const sideBarItems: ISideBarItems[] = [
         label: "Report Category",
         icon: "report",
       },
-      {
-        href: "/admin/setting/website",
-        label: "Website",
-        icon: "language",
-      },
     ],
     mainSubLink: true,
   },

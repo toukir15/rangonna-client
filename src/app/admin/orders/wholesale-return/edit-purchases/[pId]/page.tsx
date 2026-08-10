@@ -451,14 +451,14 @@ const Page: React.FC = () => {
       <NoScrollLayout>
         <div className="flex items-center justify-between 2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 md:pb-0 mb-2">
           <div className="flex items-center gap-4">
-            <h2 className="2xl:text-2xl lg:text-xl text-lg text-blue-900 font-semibold dark:text-gray-300">
+            <h2 className="2xl:text-2xl lg:text-xl text-lg font-semibold text-app">
               Update Sales Return
             </h2>
           </div>
         </div>
       </NoScrollLayout>
 
-      <form onSubmit={handleSubmit(formSubmit)} className=" px-4 min-h-[75vh]">
+      <form onSubmit={handleSubmit(formSubmit)} className="px-4 min-h-[75vh]">
         {isLoading ? (
           <UpdatePurchaseSkeleton />
         ) : (
@@ -498,7 +498,7 @@ const Page: React.FC = () => {
                   type="text"
                   value={productSearch}
                   onChange={handleSearchChange}
-                  className="p-4 px-4 pr-10 w-full border bg-gray-200 dark:text-gray-400 dark:bg-gray-700 dark:border-gray-600 border-gray-300 rounded-lg shadow-sm focus:ring-1 focus:ring-blue-400 focus:outline-none"
+                  className="input-app !pr-10"
                   placeholder="Search for a product"
                   onFocus={() =>
                     productSearch?.length >= 2 && setShowSuggestions(true)
@@ -527,7 +527,7 @@ const Page: React.FC = () => {
                             onClick={() => handleProductSelect(product)}
                           >
                             <span>{product?.title}</span>
-                            <span className="font-semibold ">
+                            <span className="font-semibold">
                               BDT {product.price?.toFixed(2)}
                             </span>
                           </div>
@@ -547,8 +547,8 @@ const Page: React.FC = () => {
             <EditProductInfoSkeleton />
           ) : (
             <div className="overflow-x-auto">
-              <table className="min-w-full border-collapse border dark:border-gray-500">
-                <thead className="bg-blue-100 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 h-[40px] shadow-sm border-b border-gray-300 ">
+              <table className="edit-order-products-table">
+                <thead className="">
                   <tr>
                     <th className="border dark:border-gray-600 px-4 py-2 min-w-40 text-sm font-semibold">
                       Serial
@@ -601,7 +601,7 @@ const Page: React.FC = () => {
                             key={originalIndex}
                             className="odd:bg-gray-100 dark:odd:bg-gray-700 dark:border-gray-600 border"
                           >
-                            <td className="border dark:border-gray-600  px-4 py-2 dark:text-gray-400 text-center text-sm font-semibold">
+                            <td className="border dark:border-gray-600 px-4 py-2 dark:text-gray-400 text-center text-sm font-semibold">
                               {originalIndex + 1}
                             </td>
 
@@ -812,7 +812,7 @@ const Page: React.FC = () => {
 
         <div className="flex gap-3 items-end justify-end">
           <Button
-            className="bg-gray-400"
+            className="btn-secondary"
             onClick={() => {
               router.push("/admin/purchases");
             }}
@@ -821,9 +821,7 @@ const Page: React.FC = () => {
           </Button>
           <Button
             type="submit"
-            className={
-              "disabled:bg-gray-400 rounded-m flex justify-center font-medium text-white bg-blue-500 "
-            }
+            className="btn-primary"
             disabled={isSubmit}
           >
             {isSubmit ? <ButtonLoader /> : "Update"}

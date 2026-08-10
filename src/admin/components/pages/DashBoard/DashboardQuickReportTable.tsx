@@ -26,7 +26,7 @@ const DashboardQuickReportTable: React.FC = () => {
       colValue={3}
     >
       <Thead>
-        <Tr className="bg-blue-100 dark:bg-gray-700 h-[40px]">
+        <Tr className="dark:bg-gray-700 h-[40px]">
           <Th className="dark:text-gray-300 min-w-40">
             <div className="flex items-center gap-2">
               <p>Date</p>

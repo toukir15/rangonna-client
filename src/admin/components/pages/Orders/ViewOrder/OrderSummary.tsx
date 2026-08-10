@@ -16,7 +16,6 @@ const OrderSummary: React.FC<any> = ({
   isLoading,
   date,
   fetchOrderSumary,
-  domain,
   handleStatusUpdate,
   orderStatus,
 }) => {
@@ -81,10 +80,9 @@ const OrderSummary: React.FC<any> = ({
           <span className="ov-summary__time">{`(${formatTimeAgo(date)})`}</span>
           {hasFlashSale && <span className="text-xl ps-2">🔥</span>}
         </h3>
-        {domain === "https://naviforce.com.bd" &&
-          ["pending", "approved", "waiting-payment", "follow-up"].includes(
-            orderStatus
-          ) ? (
+        {["pending", "approved", "waiting-payment", "follow-up"].includes(
+          orderStatus
+        ) ? (
           <p
             className={`ov-summary__coupon ${
               sumary?.coupon?.amount || hasFlashSale ? "is-disabled" : ""

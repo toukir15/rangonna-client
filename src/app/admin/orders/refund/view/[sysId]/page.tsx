@@ -97,7 +97,7 @@ const refundTrackerFlowMap: Record<string, string[]> = {
 
 const statusStyle: Record<string, string> = {
   pending: "bg-amber-100 text-amber-700 border-amber-200",
-  processing: "bg-blue-100 text-blue-700 border-blue-200",
+  processing: "text-blue-700 border-blue-200",
   completed: "bg-emerald-100 text-emerald-700 border-emerald-200",
   rejected: "bg-red-100 text-red-700 border-red-200",
 };
@@ -373,7 +373,7 @@ const Page: React.FC = () => {
   return (
     <AuthLayout>
       <NoScrollLayout>
-        <div className="flex flex-wrap items-center  gap-3 px-3 pb-3 pt-3 2xl:px-4 2xl:pt-4">
+        <div className="flex flex-wrap items-center gap-3 px-3 pb-3 pt-3 2xl:px-4 2xl:pt-4">
           <div className="flex items-center gap-3">
             <div>
               <h2 className="text-lg font-extrabold text-blue-950 dark:text-gray-200 lg:text-xl 2xl:text-2xl">
@@ -404,7 +404,7 @@ const Page: React.FC = () => {
         </div>
       </NoScrollLayout>
       {/* bg-slate-50 */}
-      <div className="min-h-[72vh]  px-3 pb-5 pt-3 2xl:px-4">
+      <div className="min-h-[72vh] px-3 pb-5 pt-3 2xl:px-4">
         {isLoading ? (
           <RefundViewSkeleton />
         ) : !refund?._id ? (
@@ -416,7 +416,7 @@ const Page: React.FC = () => {
         ) : (
           <div className="space-y-4">
             <div className="overflow-hidden rounded-3xl border border-blue-100 bg-white shadow-sm">
-              <div className="relative  p-5">
+              <div className="relative p-5">
                 <div className="absolute right-0 top-0 h-32 w-32 rounded-full bg-white/10 blur-2xl" />
 
                 <div className="relative flex flex-wrap items-start justify-between gap-4 border-b border-blue-100 pb-4">
@@ -425,7 +425,7 @@ const Page: React.FC = () => {
                       Refund Order
                     </p>
 
-                    <h1 className="mt-1 text-2xl font-black text-blue-900">
+                    <h1 className="mt-1 text-2xl font-black">
                       #{refund?.order?.sysid || "--"}
                     </h1>
 

@@ -305,13 +305,13 @@ const Page: React.FC = () => {
       </Alert>
 
       <NoScrollLayout>
-        <div className="2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 md:flex flex-wrap items-center items-center gap-3  mb-2">
+        <div className="2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 md:flex flex-wrap items-center items-center gap-3 mb-2">
           <div className="flex flex-wrap items-center items-center gap-3">
             <h2 className="2xl:text-2xl font-poppins dark:text-gray-300 font-semibold text-nowrap">
               Incomplete Orders
             </h2>
           </div>
-          <div className="md:w-80  w-full md:mt-0 mt-2">
+          <div className="md:w-80 w-full md:mt-0 mt-2">
             <PageSearch
               value={searchTerm}
               onChange={handleSearchChange}
@@ -333,30 +333,30 @@ const Page: React.FC = () => {
           className="min-h-[700px]"
         >
           <Thead>
-            <Tr className="bg-blue-100 dark:bg-gray-700 h-[50px] shadow-sm border-b border-gray-300 p-20">
+            <Tr className="dark:bg-gray-700 h-[50px] shadow-sm border-b border-gray-300 p-20">
               <Th>
                 <TableCheckbox checked={isCheck} onChange={handleSelectAll} />
               </Th>
-              <Th className="min-w-20 text-blue-900 dark:text-gray-300">ID</Th>
-              <Th className="min-w-32 text-blue-900 dark:text-gray-300">
+              <Th className="min-w-20 dark:text-gray-300">ID</Th>
+              <Th className="min-w-32 dark:text-gray-300">
                 Customer Info
               </Th>
-              <Th className="min-w-44 text-blue-900 dark:text-gray-300">
+              <Th className="min-w-44 dark:text-gray-300">
                 Created / Updated
               </Th>
-              <Th className="min-w-52 text-blue-900 dark:text-gray-300">
+              <Th className="min-w-52 dark:text-gray-300">
                 Products
               </Th>
-              <Th className="min-w-44 text-blue-900 dark:text-gray-300">
+              <Th className="min-w-44 dark:text-gray-300">
                 Address
               </Th>
-              <Th className="min-w-36 text-blue-900 dark:text-gray-300">
+              <Th className="min-w-36 dark:text-gray-300">
                 Ratio
               </Th>
-              <Th className="min-w-44 text-blue-900 dark:text-gray-300">
+              <Th className="min-w-44 dark:text-gray-300">
                 Note
               </Th>
-              <Th className="text-blue-900 dark:text-gray-300">Action</Th>
+              <Th className="dark:text-gray-300">Action</Th>
             </Tr>
           </Thead>
 

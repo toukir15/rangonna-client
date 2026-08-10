@@ -130,12 +130,12 @@ const Page = () => {
       </Alert>
       <NoScrollLayout>
         <div className="p-4 flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-blue-900 dark:text-gray-300">
+          <h2 className="text-xl font-semibold dark:text-gray-300">
             Payment Setting
           </h2>
           <div className="mt-2 lg:mt-0 flex justify-end">
             <Button
-              className="flex items-center bg-blue-500 !px-4"
+              className="btn-primary btn-primary-inline inline-flex items-center gap-2"
               onClick={handleAddClick}
             >
               <Icon name={"add"} />
@@ -158,7 +158,7 @@ const Page = () => {
             colValue={10}
           >
             <Thead>
-              <Tr className="dark:bg-gray-700 bg-blue-100 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
+              <Tr className="dark:bg-gray-700 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
                 <Th className="dark:text-gray-300">Source</Th>
                 <Th className="dark:text-gray-300">Title</Th>
                 <Th className="dark:text-gray-300">Category</Th>

@@ -151,12 +151,12 @@ const Page: React.FC = () => {
         <div className="2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 ">
           <div className="sm:flex sm:items-center gap-4">
             <div className="flex items-center gap-3">
-              <h2 className="2xl:text-2xl lg:text-xl text-lg text-blue-900 font-semibold dark:text-gray-300">
+              <h2 className="2xl:text-2xl lg:text-xl text-lg font-semibold text-app">
                 MiM SMS Settings
               </h2>
               {permissionList.includes("mim_sms_template_create") && (
                 <Button
-                  className="!bg-green-200 !text-green-600 !py-1.5 text-nowrap !px-4"
+                  className="btn-primary btn-primary-inline inline-flex items-center gap-2"
                   onClick={handleAddClick}
                 >
                   Create SMS

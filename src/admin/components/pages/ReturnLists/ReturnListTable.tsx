@@ -3,28 +3,11 @@ import React, { useContext } from "react";
 import TableWrapper from "@admin/components/Table/TableWrapper";
 import { Tbody, Td, Th, Thead, Tr } from "@admin/components/Table/Table";
 import Image from "next/image";
-import Button from "@admin/components/core/Button/Button";
 import { ReturnListContext } from "@/app/admin/orders/return/page";
 import { useGlobalContext } from "@admin/context/GlobalContext";
 import { formatTimeAgo } from "@admin/utils/hook.utils";
-
-const StatusBadge = ({ status }: { status: string }) => {
-  const map: Record<string, string> = {
-    return: "bg-red-100 text-red-700",
-    exchange: "bg-blue-100 text-blue-700",
-    issue: "bg-yellow-100 text-yellow-700",
-  };
-
-  return (
-    <span
-      className={`px-3 py-1 rounded-full text-xs font-semibold ${
-        map[status] || "bg-gray-100 text-gray-600"
-      }`}
-    >
-      {status?.toUpperCase()}
-    </span>
-  );
-};
+import { getStatusLabel, getStatusStyle } from "@admin/utils/system.utils";
+import NodataImage from "@admin/assets/images/Image-not-found.png";
 
 const ReturnListTable: React.FC = () => {
   const { permissionList } = useGlobalContext();
@@ -33,7 +16,7 @@ const ReturnListTable: React.FC = () => {
 
   return (
     <TableWrapper
-      className="min-h-[650px]"
+      className="orders-table-nested !mt-0 min-h-[560px] !flex-1"
       isSwitchOn
       data={returnListData}
       isLoading={tableLoading}
@@ -43,139 +26,135 @@ const ReturnListTable: React.FC = () => {
       colValue={8}
     >
       <Thead>
-        <Tr className="bg-blue-100 dark:bg-gray-700 h-[50px]">
-          <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-32 min-w-40 ">
-            Order ID
-          </Th>
-          <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-32 min-w-40">
-            Product
-          </Th>
-          <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-32 min-w-40">
-            Return Status
-          </Th>
-
-          <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-32 min-w-40">
-            Issue
-          </Th>
-          <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-32 min-w-40">
-            Creator
-          </Th>
-          <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-32 min-w-40">
-            New Order
-          </Th>
-          <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-32 min-w-40">
-            Update Status
-          </Th>
+        <Tr>
+          <Th className="min-w-40">Order ID</Th>
+          <Th className="min-w-48">Product</Th>
+          <Th className="min-w-32">Return Status</Th>
+          <Th className="min-w-32">Issue</Th>
+          <Th className="min-w-32">Creator</Th>
+          <Th className="min-w-40">New Order</Th>
+          <Th className="min-w-28 is-center">Update Status</Th>
         </Tr>
       </Thead>
 
-      <Tbody className="bg-white dark:bg-gray-800">
+      <Tbody>
         {returnListData?.map((item: any, index: number) => {
           const oldItems = item?.return_line_items || [];
           const newItems = item?.exchange_line_items || [];
 
           return (
-            <Tr key={index} className="h-20 align-top">
+            <Tr key={index}>
               <Td>
-                <div className="max-w-96">
-                  <p className="font-semibold pt-2">{item?.old_order?.sysid}</p>
-                  {/* <p className="font-semibold pt-2">
-                    {item?.old_order?.status}
-                  </p> */}
-                  <StatusBadge status={item?.old_order?.status} />
-                  <p className="font-semibold pt-2">
+                <div className="table-user-info">
+                  <span className="table-id-chip">
+                    {item?.old_order?.sysid || "--"}
+                  </span>
+                  <span className={getStatusStyle(item?.old_order?.status)}>
+                    {getStatusLabel(item?.old_order?.status)}
+                  </span>
+                  <span className="table-date-cell">
                     {formatTimeAgo(item?.createdAt)}
-                  </p>
+                  </span>
                 </div>
               </Td>
               <Td>
-                <div className="space-y-4 max-w-80">
-                  {oldItems.map((p: any, index: number) => (
-                    <div key={index} className="flex gap-3 items-center">
-                      <Image
-                        src={p?.product?.featured_image?.src || ""}
-                        alt={p?.title}
-                        width={45}
-                        height={45}
-                        className="rounded border"
-                      />
-                      <div>
-                        <p className="text-sm font-medium">{p?.title}</p>
-                        <p className="text-sm font-medium">
-                          Qty: {p?.quantity}
-                        </p>
-                        {/* {item?.status === "exchange" ? (
-                          <p className="text-xs text-blue-600">New Product</p>
-                        ) : null} */}
+                <div className="table-contact-stack max-w-80">
+                  <div className="table-product-thumbs flex-wrap">
+                    {oldItems.map((p: any, i: number) => (
+                      <div key={i} className="flex items-center gap-2">
+                        <div className="table-product-thumb !cursor-default">
+                          <Image
+                            src={p?.product?.featured_image?.src || NodataImage}
+                            alt={p?.title || "Product"}
+                            width={120}
+                            height={108}
+                          />
+                        </div>
+                        <div className="edit-order-product-meta">
+                          <p className="edit-order-product-title !text-sm">
+                            {p?.title}
+                          </p>
+                          <p className="edit-order-product-sub">
+                            Qty: {p?.quantity}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
 
-                  {/* NEW / EXCHANGE */}
                   {item?.status === "exchange" &&
-                    newItems.map((p: any, index: number) => (
-                      <div key={index} className="flex gap-3 items-center">
-                        <Image
-                          src={p?.product?.featured_image?.src || ""}
-                          alt={p?.title}
-                          width={45}
-                          height={45}
-                          className="rounded border"
-                        />
-                        <div>
-                          <p className="text-sm font-medium">{p?.title}</p>
-                          {item?.status === "exchange" ? (
-                            <p className="text-xs text-gray-500">Old Product</p>
-                          ) : null}
+                    newItems.map((p: any, i: number) => (
+                      <div key={`new-${i}`} className="flex items-center gap-2">
+                        <div className="table-product-thumb !cursor-default">
+                          <Image
+                            src={p?.product?.featured_image?.src || NodataImage}
+                            alt={p?.title || "Product"}
+                            width={120}
+                            height={108}
+                          />
+                        </div>
+                        <div className="edit-order-product-meta">
+                          <p className="edit-order-product-title !text-sm">
+                            {p?.title}
+                          </p>
+                          <p className="edit-order-product-sub">Old Product</p>
                         </div>
                       </div>
                     ))}
 
-                  <p className="font-semibold py-2">
-                    Note: {item?.old_order?.last_note?.text} -{" "}
-                    {item?.old_order?.last_note?.user_name}
+                  <p className="data-table-muted">
+                    Note: {item?.old_order?.last_note?.text || "--"} —{" "}
+                    {item?.old_order?.last_note?.user_name || ""}
                   </p>
                 </div>
               </Td>
 
-              <Td className="max-w-56">
-                <StatusBadge status={item?.status} />
+              <Td>
+                <span className={getStatusStyle(item?.status)}>
+                  {getStatusLabel(item?.status)}
+                </span>
               </Td>
-              <Td className="max-w-56">
-                <p className="text-sm">{item?.issue_title || "--"}</p>
-              </Td>
-              <Td className="max-w-56">
-                <p className="text-sm">{item?.user?.name || "--"}</p>
-                <p className="text-sm">
-                  {formatTimeAgo(item?.updatedAt) || "--"}
+              <Td>
+                <p className="data-table-secondary">
+                  {item?.issue_title || "--"}
                 </p>
               </Td>
               <Td>
-                <div className="max-w-96">
-                  <p className="font-semibold mb-1">{item?.new_order?.sysid}</p>
-
-                  <StatusBadge status={item?.new_order?.status} />
-                  <p className="font-semibold py-2">
-                    Note: {item?.new_order?.last_note?.text} -{" "}
-                    {item?.new_order?.last_note?.user_name}
+                <div className="table-contact-stack">
+                  <span className="data-table-primary">
+                    {item?.user?.name || "--"}
+                  </span>
+                  <span className="table-date-cell">
+                    {formatTimeAgo(item?.updatedAt) || "--"}
+                  </span>
+                </div>
+              </Td>
+              <Td>
+                <div className="table-contact-stack">
+                  <span className="table-id-chip">
+                    {item?.new_order?.sysid || "--"}
+                  </span>
+                  <span className={getStatusStyle(item?.new_order?.status)}>
+                    {getStatusLabel(item?.new_order?.status)}
+                  </span>
+                  <p className="data-table-muted">
+                    Note: {item?.new_order?.last_note?.text || "--"} —{" "}
+                    {item?.new_order?.last_note?.user_name || ""}
                   </p>
                 </div>
               </Td>
 
-              <Td>
+              <Td className="is-center">
                 {permissionList.includes("order_return_edit") &&
                   item?.status === "issue" &&
                   item?.is_partial === false && (
-                    <div>
-                      <Button
-                        className="bg-blue-500 !px-8 !py-1 !text-xs"
-                        onClick={() => {
-                          handleStatusUpdate(item?._id);
-                        }}
-                      >
-                        Fix it
-                      </Button>
-                    </div>
+                    <button
+                      type="button"
+                      className="btn-primary btn-primary-inline !px-3 !py-1.5 !text-xs"
+                      onClick={() => handleStatusUpdate(item?._id)}
+                    >
+                      Fix it
+                    </button>
                   )}
               </Td>
             </Tr>

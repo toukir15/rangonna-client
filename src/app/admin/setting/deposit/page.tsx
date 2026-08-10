@@ -138,12 +138,12 @@ const Page: React.FC = () => {
         <div className="2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2">
           <div className="md:flex items-center md:gap-3 gap-0">
             <div className="flex items-center gap-3">
-              <h2 className="2xl:text-2xl lg:text-xl text-lg text-blue-900 font-semibold dark:text-gray-300">
+              <h2 className="2xl:text-2xl lg:text-xl text-lg font-semibold text-app">
                 Deposit Setting
               </h2>
               {permissionList.includes("account_settings_create") && (
                 <Button
-                  className="!bg-green-200 !text-green-600 !py-1.5 !px-4 text-nowrap"
+                  className="btn-primary btn-primary-inline inline-flex items-center gap-2"
                   onClick={handleAddClick}
                 >
                   Add Deposit

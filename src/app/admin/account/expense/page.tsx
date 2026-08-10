@@ -360,7 +360,7 @@ const Page: React.FC = () => {
         <div className=" 2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 md:pb-0 mb-2">
           <div className="md:flex flex-wrap items-center items-center gap-3">
             <div className="flex flex-wrap items-center items-center gap-4">
-              <h2 className="2xl:text-2xl lg:text-xl text-lg text-blue-900 font-semibold dark:text-gray-300 text-nowrap">
+              <h2 className="2xl:text-2xl lg:text-xl text-lg font-semibold text-app text-nowrap">
                 Expenses
               </h2>
               <AllFilter
@@ -386,7 +386,7 @@ const Page: React.FC = () => {
               <div className=" ">
                 {hasPermission(permissionList, "account_expense_create") && (
                   <Button
-                    className="flex items-center !bg-green-200 !text-green-600 !px-4 !py-1.5"
+                    className="btn-primary btn-primary-inline inline-flex items-center gap-2"
                     onClick={handleAddClick}
                   >
                     <span className="ml-1 text-nowrap">Add Expenses</span>

@@ -27,11 +27,6 @@ import {
   hasPermission,
   registerWithLiveValidation,
 } from "@admin/utils";
-import {
-  buildGroupedWebsiteOptions,
-  expandWebsiteSelections,
-  mapUrlsToWebsiteSelections,
-} from "@admin/utils/websiteGroups";
 import { processDescriptionDesImages } from "@admin/utils/processDescriptionImage";
 import { stripTrailingEmptyQuillParagraphs } from "@admin/utils/stripTrailingEmptyQuillParagraphs";
 import { ToastService } from "@admin/utils/toastr.service";
@@ -43,8 +38,6 @@ import { useParams, useRouter } from "next/navigation";
 import React, { useEffect, useMemo, useState } from "react";
 import { useForm, Controller, useWatch } from "react-hook-form";
 import * as yup from "yup";
-import { GlobalService } from "@admin/@services/apis/GlobalService/Global.service";
-import Skeleton from "@admin/components/Skeleton/Skeleton";
 
 const RichTextEditor = dynamic(
   () => import("@admin/components/core/Editor/RichTextEditor"),
@@ -85,7 +78,6 @@ const defaultValue: any = {
   main_title: "",
   slug: "",
   category: [] as any[],
-  websites: [] as any[],
   brand: "",
   sale_price: "",
   regular_price: "",
@@ -119,15 +111,6 @@ export const ProductSchema = yup.object({
       }),
     )
     .min(1, "At least one category is required"),
-  websites: yup
-    .array()
-    .of(
-      yup.object({
-        label: yup.string().required(),
-        value: yup.string().required(),
-      }),
-    )
-    .min(1, "At least one Website is required"),
   brand: yup.mixed().nullable(),
   sale_price: yup.string().required("Sale price is required"),
   regular_price: yup.string().required("Regular price is required"),
@@ -171,27 +154,8 @@ const Page: React.FC = () => {
   );
   const [productDetails, setProductDetails] = useState<any | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [websiteOption, setWebsiteOption] = useState<any[]>([]);
   const [content, setContent] = useState("");
   const [seoInfo, setSEOInfo] = useState<boolean>(false);
-
-  const fetchWebsite = () => {
-    GlobalService.getWebsiteList()
-      .then((res: any) => {
-        if (res?.success) {
-          setWebsiteOption(res?.data);
-        } else {
-          ToastService.error(res?.message);
-        }
-      })
-      .catch((err: { message: string }) => {
-        ToastService.error(err.message);
-      });
-  };
-
-  useEffect(() => {
-    fetchWebsite();
-  }, []);
 
   const categoryOptions = useMemo(
     () =>
@@ -200,10 +164,6 @@ const Page: React.FC = () => {
         value: item.value,
       })),
     [productCategoryData],
-  );
-  const webOptionsData = useMemo(
-    () => buildGroupedWebsiteOptions(websiteOption),
-    [websiteOption],
   );
   const brandOptions = useMemo(
     () =>
@@ -323,18 +283,8 @@ const Page: React.FC = () => {
       productDetails.categories.length
         ? productDetails.categories
         : [];
-    const catWebValue =
-      Array.isArray(productDetails.websites) && productDetails.websites.length
-        ? productDetails.websites
-        : [];
-
     const selectedCategories = categoryOptions.filter((c) =>
       catValue.includes(c.value),
-    );
-
-    const selectedWebsites = mapUrlsToWebsiteSelections(
-      catWebValue,
-      webOptionsData,
     );
 
     const selectedBrand = brandOptions.find(
@@ -373,7 +323,6 @@ const Page: React.FC = () => {
       main_title: productDetails.title ?? "",
       slug: productDetails.slug ?? "",
       category: selectedCategories,
-      websites: selectedWebsites,
       brand: selectedBrand,
       sale_price: String(productDetails?.pricing?.sale_price ?? ""),
       regular_price: String(productDetails?.pricing?.regular_price ?? ""),
@@ -409,7 +358,7 @@ const Page: React.FC = () => {
     setAttributesDefaultOn(shouldShowAttrs);
 
     // setContent(productDetails?.description ?? "");
-  }, [productDetails, categoryOptions, brandOptions, webOptionsData]);
+  }, [productDetails, categoryOptions, brandOptions]);
 
   const formSubmit = async (fromData: any) => {
     const attributes = fromData.attributes.map((attr: any, index: number) => ({
@@ -423,7 +372,6 @@ const Page: React.FC = () => {
       slug: fromData.slug,
       categories: (fromData.category || []).map((c: any) => c.value),
       brand: fromData.brand?.value || "",
-      websites: expandWebsiteSelections(fromData.websites ?? []),
       short_description: stripTrailingEmptyQuillParagraphs(content || ""),
       offer_text: fromData.offer_text || "",
       pricing: {
@@ -544,47 +492,6 @@ const Page: React.FC = () => {
             <div className="lg:flex lg:items-start gap-4 lg:h-[calc(100vh-140px)] lg:overflow-hidden">
               <div className="lg:w-3/4 w-full lg:h-full lg:overflow-y-auto">
                 <div className="bg-white dark:bg-gray-700  p-8 rounded-lg ">
-                  <div className="flex items-center gap-4 mb-4">
-                    <h3 className="text-xl font-semibold text-nowrap">
-                      Product Type
-                    </h3>
-                    {loading ? (
-                      <div className="w-full bg-white dark:bg-gray-700 rounded-lg ">
-                        <div className="bg-[#dfdfe0] h-11 mt-2 opacity-70 dark:opacity-50 rounded-xl p-2 ">
-                          <Skeleton type="text" count={1} height={22} />
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="grid md:grid-cols-1 grid-cols-1 gap-x-5 items-center w-full">
-                        <div className="w-full">
-                          <Controller
-                            name="websites"
-                            control={control}
-                            defaultValue={null}
-                            render={({ field }) => (
-                              <SelectComponent
-                                options={webOptionsData}
-                                value={field.value}
-                                onChange={(val: any) =>
-                                  field.onChange(val || [])
-                                }
-                                placeholder="Select product type"
-                                isMulti
-                                isRequired
-                                className="w-full"
-                              />
-                            )}
-                          />
-                          {errors.category && (
-                            <p className="text-red-500 text-sm">
-                              {errors.category.message as string}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
                   {loading ? (
                     <BasicInfoSkeleton />
                   ) : (

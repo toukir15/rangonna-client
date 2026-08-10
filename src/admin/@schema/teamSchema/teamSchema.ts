@@ -61,14 +61,6 @@ export const teamSchema = yup.object({
     .nullable()
     .required("Warehouse is required"),
 
-  website: yup
-    .object({
-      label: yup.string().required(),
-      value: yup.string().required("Team is required"),
-    })
-    .nullable()
-    .required("Team is required"),
-
   // status: yup.boolean().required("Status is required"),
 
   // ✅ form এ field নাম: profile

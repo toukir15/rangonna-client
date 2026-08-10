@@ -105,7 +105,7 @@ const ProductTable: React.FC = () => {
         colValue={11}
       >
         <Thead>
-          <Tr className="dark:bg-gray-700 bg-blue-100 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
+          <Tr className="dark:bg-gray-700 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
             <Th className="dark:text-gray-300 2xl:min-w-14 lg:min-w-12 min-w-12">
               <input
                 type="checkbox"
@@ -241,7 +241,7 @@ const ProductTable: React.FC = () => {
                   <Link
                     href={`https://naviforce.com.bd/product/${item?.slug}`}
                     target="_blank"
-                    className="bg-blue-500 px-6 py-1 rounded-lg text-white text-center w-20 cursor-pointer"
+                    className="data-table-view-btn"
                   >
                     View
                   </Link>
@@ -260,7 +260,7 @@ const ProductTable: React.FC = () => {
 
                 <Td>
                   {(item?.featured_product || item?.is_seo) && (
-                    <div className="rounded-full ">
+                    <div className="rounded-full">
                       <Icon
                         name="check_circle"
                         className="h-5 w-5 text-green-600"
