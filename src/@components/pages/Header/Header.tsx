@@ -190,8 +190,8 @@ const Header: React.FC<HeaderProps> = ({ navItems }) => {
                 <Image
                   src={rongonaaLogo}
                   alt="Rangonaa"
-                  width={833}
-                  height={178}
+                  width={950}
+                  height={253}
                   priority
                   className="rongonaa-logo-img"
                 />

@@ -4,9 +4,9 @@ import GlobalLoading from "@/@components/pages/GlobalLoading/GlobalLoading";
 import CategoryPageClient from "@/@components/pages/CategoryPageClient/CategoryPageClient";
 
 type PageProps = {
-    params: {
+    params: Promise<{
         categoryName: string;
-    };
+    }>;
 };
 
 const formatCategoryName = (value: string) => {
@@ -18,7 +18,7 @@ const formatCategoryName = (value: string) => {
 export async function generateMetadata({
     params,
 }: PageProps): Promise<Metadata> {
-    const categoryNameParam = params?.categoryName ?? "";
+    const { categoryName: categoryNameParam = "" } = await params;
     const categoryName = formatCategoryName(categoryNameParam || "category");
 
     return {
@@ -46,8 +46,8 @@ export async function generateMetadata({
     };
 }
 
-export default function CategoryPage({ params }: PageProps) {
-    const categoryName = params?.categoryName ?? "";
+export default async function CategoryPage({ params }: PageProps) {
+    const { categoryName = "" } = await params;
 
     return (
         <Suspense fallback={<GlobalLoading />}>

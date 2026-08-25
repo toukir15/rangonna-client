@@ -2,7 +2,6 @@ import Link from "next/link";
 import { IProduct } from "@/@interfaces/common.interface";
 import DayDealCount from "../DayDealCount/DayDealCount";
 import FlashSaleCard from "./FlashSaleCard";
-import SectionHeader from "./SectionHeader";
 import { ENV } from "@/@config/env.config";
 
 export const revalidate = 10;
@@ -87,14 +86,14 @@ export default async function BestOffersPage() {
   if (products.length === 0) return null;
 
   return (
-    <section className="rongonaa-home-section rongonaa-home-section--border">
+    <section className="rongonaa-home-section rongonaa-home-section--border rongonaa-home-section--flash">
       <div className="rongonaa-home-section__inner">
         <div className="rongonaa-flash-sale__header">
-          <SectionHeader
-            eyebrow="Limited time"
-            title="Flash Sale"
-            description="Handpicked stacks at special prices — while stock lasts."
-          />
+          <div className="rongonaa-flash-sale__heading">
+            <span className="rongonaa-flash-sale__mark" aria-hidden />
+            <h2 className="rongonaa-flash-sale__title">Flash Sale</h2>
+          </div>
+
           <div className="rongonaa-flash-sale__aside">
             <DayDealCount />
             <Link

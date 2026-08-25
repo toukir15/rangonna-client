@@ -1,0 +1,18 @@
+# Rangonaa frontend (Next.js)
+# Used by Railway / Coolify / Nixpacks deployments
+
+[variables]
+NIXPACKS_NODE_VERSION = "22"
+NEXT_TELEMETRY_DISABLED = "1"
+
+[phases.setup]
+nixPkgs = ["...", "openssl"]
+
+[phases.install]
+cmds = ["yarn install --frozen-lockfile"]
+
+[phases.build]
+cmds = ["yarn build"]
+
+[start]
+cmd = "yarn start"

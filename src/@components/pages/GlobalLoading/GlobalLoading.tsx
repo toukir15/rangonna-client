@@ -31,8 +31,8 @@ const GlobalLoading = () => {
           <Image
             src={rongonaaLogo}
             alt="Rangonaa"
-            width={200}
-            height={48}
+            width={240}
+            height={64}
             priority
             className="rongonaa-global-loading__logo"
           />

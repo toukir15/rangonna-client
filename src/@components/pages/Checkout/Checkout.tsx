@@ -725,24 +725,30 @@ const Checkout: React.FC = () => {
       ? `Pay With Bkash - ৳${calculateDue().toFixed(2)}`
       : `Confirm Order - ৳${calculateDue().toFixed(2)}`;
 
-  const renderTrustBenefits = (gridClass = "") => (
-    <div className={`rongonaa-checkout-trust-grid ${gridClass}`}>
-      <div className="rongonaa-checkout-trust-item">
-        <ShieldCheck />
-        <span>১০০% অরিজিনাল</span>
-      </div>
-      <div className="rongonaa-checkout-trust-item">
-        <Banknote />
-        <span>ক্যাশ অন ডেলিভারি</span>
-      </div>
-      <div className="rongonaa-checkout-trust-item">
-        <Truck />
-        <span>দ্রুত ডেলিভারি</span>
-      </div>
-      <div className="rongonaa-checkout-trust-item">
-        <PackageCheck />
-        <span>হাতে চেক করে নেওয়া</span>
-      </div>
+  const renderTrustBenefits = (variant: "strip" | "grid" = "grid") => (
+    <div
+      className={
+        variant === "strip"
+          ? "rongonaa-checkout-trust-strip"
+          : "rongonaa-checkout-trust-grid"
+      }
+    >
+      <span className="rongonaa-checkout-trust-chip">
+        <ShieldCheck aria-hidden />
+        ১০০% অরিজিনাল
+      </span>
+      <span className="rongonaa-checkout-trust-chip">
+        <Banknote aria-hidden />
+        ক্যাশ অন ডেলিভারি
+      </span>
+      <span className="rongonaa-checkout-trust-chip">
+        <Truck aria-hidden />
+        দ্রুত ডেলিভারি
+      </span>
+      <span className="rongonaa-checkout-trust-chip">
+        <PackageCheck aria-hidden />
+        হাতে চেক করে নেওয়া
+      </span>
     </div>
   );
 
@@ -777,40 +783,27 @@ const Checkout: React.FC = () => {
         secondaryActionText={modal.type === "warning" ? "Cancel" : undefined}
         onSecondaryAction={() => setModal((s) => ({ ...s, open: false }))}
       />
-      <div className="rongonaa-checkout-hero">
-        <p className="rongonaa-checkout-kicker">Secure Checkout</p>
-        <h1 className="rongonaa-checkout-title">Complete Your Order</h1>
+      <header className="rongonaa-checkout-top">
+        <h1 className="rongonaa-checkout-title">Checkout</h1>
         <p className="rongonaa-checkout-subtitle">
-          ডেলিভারি তথ্য দিন, পেমেন্ট পছন্দ করুন — দ্রুত ও নিরাপদ checkout
+          ডেলিভারি তথ্য দিন — Cash on Delivery available
         </p>
-        <div className="rongonaa-checkout-steps">
-          <span className="rongonaa-checkout-step-pill">Bag</span>
-          <span className="rongonaa-checkout-step-pill rongonaa-checkout-step-pill--active">
-            Details
-          </span>
-          <span className="rongonaa-checkout-step-pill">Confirm</span>
-        </div>
-      </div>
+        <nav className="rongonaa-checkout-progress" aria-label="Checkout progress">
+          <span className="rongonaa-checkout-progress-step is-done">Bag</span>
+          <span className="rongonaa-checkout-progress-line" aria-hidden />
+          <span className="rongonaa-checkout-progress-step is-active">Details</span>
+          <span className="rongonaa-checkout-progress-line" aria-hidden />
+          <span className="rongonaa-checkout-progress-step">Confirm</span>
+        </nav>
+      </header>
 
       <form
-        className="rongonaa-checkout-grid"
+        className="rongonaa-checkout-layout"
         onSubmit={handleSubmit(formSubmit)}
       >
-        <div className="rongonaa-checkout-main">
-          <section className="rongonaa-checkout-card">
-            <div className="rongonaa-checkout-card-head">
-              <span className="rongonaa-checkout-step-num">01</span>
-              <div>
-                <p className="rongonaa-checkout-kicker">Delivery</p>
-                <h2 className="rongonaa-checkout-card-title">
-                  Customer Information
-                </h2>
-                <p className="rongonaa-checkout-card-desc">
-                  নাম, ফোন ও ঠিকানা সঠিকভাবে দিন
-                </p>
-              </div>
-            </div>
-
+        <div className="rongonaa-checkout-form">
+          <section className="rongonaa-checkout-section">
+            <h2 className="rongonaa-checkout-section-title">Your details</h2>
             <div className="rongonaa-checkout-fields">
             <Input
               label="Full Name (আপনার নাম)"
@@ -866,17 +859,8 @@ const Checkout: React.FC = () => {
             </div>
           </section>
 
-          <section className="rongonaa-checkout-card">
-            <div className="rongonaa-checkout-card-head">
-              <span className="rongonaa-checkout-step-num">02</span>
-              <div>
-                <p className="rongonaa-checkout-kicker">Delivery Zone</p>
-                <h2 className="rongonaa-checkout-card-title">Shipping</h2>
-                <p className="rongonaa-checkout-card-desc">
-                  ঠিকানা অনুযায়ী স্বয়ংক্রিয়ভাবে সিলেক্ট হতে পারে
-                </p>
-              </div>
-            </div>
+          <section className="rongonaa-checkout-section">
+            <h2 className="rongonaa-checkout-section-title">Shipping</h2>
             <Controller
               name="shipping"
               control={control}
@@ -901,19 +885,8 @@ const Checkout: React.FC = () => {
             />
           </section>
 
-          <section className="rongonaa-checkout-card">
-            <div className="rongonaa-checkout-card-head">
-              <span className="rongonaa-checkout-step-num">03</span>
-              <div>
-                <p className="rongonaa-checkout-kicker">Payment</p>
-                <h2 className="rongonaa-checkout-card-title">
-                  Payment Method
-                </h2>
-                <p className="rongonaa-checkout-card-desc">
-                  ডেলিভারির সময় ক্যাশ দিয়ে পেমেন্ট করুন
-                </p>
-              </div>
-            </div>
+          <section className="rongonaa-checkout-section">
+            <h2 className="rongonaa-checkout-section-title">Payment</h2>
             <Controller
               name="payment"
               control={control}
@@ -946,12 +919,12 @@ const Checkout: React.FC = () => {
           </div>
         </div>
 
-        <aside className="rongonaa-checkout-sidebar">
-          <div className="rongonaa-checkout-summary">
-            <div className="rongonaa-checkout-summary-head">
-              <p className="rongonaa-checkout-summary-title">Order Summary</p>
+        <aside className="rongonaa-checkout-aside">
+          <div className="rongonaa-checkout-order">
+            <div className="rongonaa-checkout-order-head">
+              <h2 className="rongonaa-checkout-order-title">Order</h2>
               {totalItemCount > 0 ? (
-                <span className="rongonaa-checkout-summary-count">
+                <span className="rongonaa-checkout-order-count">
                   {totalItemCount} items
                 </span>
               ) : null}
@@ -1038,7 +1011,7 @@ const Checkout: React.FC = () => {
                   Have a coupon code?
                 </p>
                 <div className="rongonaa-checkout-coupon-row">
-                  <div className="w-full">
+                  <div className="rongonaa-checkout-coupon-field">
                     <Input
                       placeholder="Enter coupon code"
                       onChange={(e: any) =>
@@ -1052,8 +1025,8 @@ const Checkout: React.FC = () => {
                     />
                   </div>
                   <Button
-                    className={`rongonaa-checkout-coupon-btn premium-cta ${
-                      !couponCode ? "!bg-primary-muted" : ""
+                    className={`rongonaa-checkout-coupon-btn${
+                      !couponCode ? " is-disabled" : ""
                     }`}
                     onClick={handleCoupon}
                     type="button"
@@ -1093,8 +1066,7 @@ const Checkout: React.FC = () => {
           </div>
 
           <div className="rongonaa-checkout-trust hidden lg:block">
-            <p className="rongonaa-checkout-trust-title">Why Rongonaa?</p>
-            {renderTrustBenefits("rongonaa-checkout-trust-grid--sidebar")}
+            {renderTrustBenefits("strip")}
           </div>
         </aside>
 
@@ -1103,7 +1075,6 @@ const Checkout: React.FC = () => {
         </div>
 
         <div className="rongonaa-checkout-trust lg:hidden">
-          <p className="rongonaa-checkout-trust-title">Why Rongonaa?</p>
           {renderTrustBenefits()}
         </div>
       </form>

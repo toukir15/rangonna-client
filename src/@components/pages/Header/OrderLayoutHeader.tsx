@@ -11,8 +11,8 @@ export default function OrderLayoutHeader() {
           <Image
             src={rongonaaLogo}
             alt="Rangonaa"
-            width={833}
-            height={178}
+            width={950}
+            height={253}
             className="rongonaa-logo-img rongonaa-logo-img--checkout"
             priority
           />

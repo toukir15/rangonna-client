@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 type SectionHeaderProps = {
-  eyebrow: string;
+  eyebrow?: string;
   title: string;
   description?: string;
   href?: string;
@@ -29,9 +29,13 @@ export default function SectionHeader({
       } ${className}`.trim()}
     >
       <div className={centered ? "rongonaa-section-header__center-copy" : ""}>
-        <p className="rongonaa-section-header__eyebrow">{eyebrow}</p>
+        {eyebrow ? (
+          <p className="rongonaa-section-header__eyebrow">{eyebrow}</p>
+        ) : null}
         <h2 className="rongonaa-section-header__title">{title}</h2>
-        <span className="rongonaa-section-header__rule" aria-hidden />
+        {eyebrow || description ? (
+          <span className="rongonaa-section-header__rule" aria-hidden />
+        ) : null}
         {description ? (
           <p className="rongonaa-section-header__desc">{description}</p>
         ) : null}

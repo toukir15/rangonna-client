@@ -22,7 +22,7 @@ export const COLOR_THEMES: ColorTheme[] = [
     id: "saffron",
     name: "Burgundy",
     description: "Deep burgundy accents",
-    ivory: "#faf7f2",
+    ivory: "#FDF3F3",
     pearl: "#f5f1ea",
     primary: "#7f1d1d",
     primaryLight: "#b54a4a",

@@ -104,8 +104,8 @@ export default function Footer() {
               <Image
                 src={rongonaaLogo}
                 alt="Rangonaa"
-                width={833}
-                height={178}
+                width={950}
+                height={253}
                 className="rongonaa-logo-img rongonaa-logo-img--footer"
               />
             </Link>

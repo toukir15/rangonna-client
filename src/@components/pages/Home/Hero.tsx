@@ -7,27 +7,27 @@ import Link from "next/link";
 const slides = [
   {
     src: "/hero-banner.png",
-    alt: "Woman wearing Rangonaa ivory and gold glass bangles",
+    alt: "Woman in cream saree wearing gold and plum crystal bangles",
     eyebrow: "Luxury Collection",
-    headline: "Celebrate Every Moment with Elegance",
-    copy: "Handcrafted women's bangles that blend tradition with modern beauty.",
-    position: "object-[78%_center] sm:object-[72%_center]",
+    headline: "Celebrate Every\nMoment with Elegance",
+    copy: "Tradition meets modern beauty.",
+    position: "object-[70%_center] sm:object-[68%_center]",
   },
   {
     src: "/hero-festival.png",
-    alt: "Woman wearing vibrant multicolor crystal festival bangles",
+    alt: "Woman in plum lehenga wearing teal, gold and magenta festival bangles",
     eyebrow: "Festival Edit",
-    headline: "Color, Crystal & Quiet Luxury",
-    copy: "Vibrant glass stacks lined with champagne crystal for every celebration.",
-    position: "object-[80%_center] sm:object-[70%_center]",
+    headline: "Color, Crystal &\nQuiet Luxury",
+    copy: "Glass stacks for every celebration.",
+    position: "object-[72%_center] sm:object-[68%_center]",
   },
   {
     src: "/hero-bridal.png",
-    alt: "Bride wearing ivory and rose-gold bridal bangles with mehendi",
+    alt: "Bridal hands with mehendi, pearl and gold chura on maroon zari lehenga",
     eyebrow: "Bridal Collection",
-    headline: "Heirloom Beauty for Her Day",
-    copy: "Soft ivory and rose-gold stacks crafted for weddings and forever memories.",
-    position: "object-[82%_center] sm:object-[75%_center]",
+    headline: "Heirloom Beauty\nfor Her Day",
+    copy: "Crafted for weddings and forever.",
+    position: "object-[70%_center] sm:object-[68%_center]",
   },
 ] as const;
 
@@ -76,17 +76,6 @@ export default function Hero() {
               <p className="rongonaa-hero__eyebrow">{slide.eyebrow}</p>
             </div>
 
-            <div className="rongonaa-hero__brand">
-              <Image
-                src="/logo-rangonaa.png"
-                alt="Rangonaa"
-                fill
-                priority
-                className="object-contain object-left"
-                sizes="(max-width: 640px) 288px, 416px"
-              />
-            </div>
-
             <h1 className="rongonaa-hero__headline">{slide.headline}</h1>
             <p className="rongonaa-hero__desc">{slide.copy}</p>
 
@@ -95,14 +84,14 @@ export default function Hero() {
                 href="/churi"
                 className="rongonaa-hero__cta rongonaa-hero__cta--primary"
               >
-                Shop Best Sellers
+                Shop Now
                 <span aria-hidden>→</span>
               </Link>
               <Link
                 href="/churi/bridal"
                 className="rongonaa-hero__cta rongonaa-hero__cta--ghost"
               >
-                Bridal Collection
+                Bridal
               </Link>
             </div>
 
