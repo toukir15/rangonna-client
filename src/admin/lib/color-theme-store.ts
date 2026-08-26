@@ -17,6 +17,8 @@ function emit() {
   listeners.forEach((l) => l());
 }
 
+
+
 function readStoredThemeId(): ColorThemeId {
   if (typeof window === "undefined") return DEFAULT_COLOR_THEME;
   try {
