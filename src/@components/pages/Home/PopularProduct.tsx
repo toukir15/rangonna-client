@@ -9,7 +9,7 @@ export const revalidate = 10;
 async function getPopularProducts() {
   try {
     const qs = new URLSearchParams({
-      limit: "5",
+      limit: "6",
       category: "all",
       sort: "best-selling",
     });
@@ -33,7 +33,7 @@ async function getPopularProducts() {
 
 const PopularProduct = async () => {
   const response = await getPopularProducts();
-  const products: IProduct[] = (response?.data?.data ?? []).slice(0, 5);
+  const products: IProduct[] = (response?.data?.data ?? []).slice(0, 6);
 
   if (!products.length) return null;
 

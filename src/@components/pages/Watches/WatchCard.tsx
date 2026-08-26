@@ -232,9 +232,8 @@ const WatchCard: React.FC<ProductCardProps> = ({
                   inCart ? setIsCartDrawer(true) : handleAddToCard([data])
                 }
                 disabled={adLoading}
-                className={`rongonaa-flash-card__cta rongonaa-flash-card__cta--cart ${
-                  inCart ? "rongonaa-flash-card__cta--active" : ""
-                }`}
+                className={`rongonaa-flash-card__cta rongonaa-flash-card__cta--cart ${inCart ? "rongonaa-flash-card__cta--active" : ""
+                  }`}
               >
                 {adLoading ? (
                   <ButtonLoader size="sm" color="primary" />
@@ -255,9 +254,8 @@ const WatchCard: React.FC<ProductCardProps> = ({
                     : handleOrderNow([data])
                 }
                 disabled={orderLoading}
-                className={`rongonaa-flash-card__cta rongonaa-flash-card__cta--buy ${
-                  inCart ? "rongonaa-flash-card__cta--active" : ""
-                }`}
+                className={`rongonaa-flash-card__cta rongonaa-flash-card__cta--buy ${inCart ? "rongonaa-flash-card__cta--active" : ""
+                  }`}
               >
                 {orderLoading ? (
                   <ButtonLoader size="sm" color="primary" />

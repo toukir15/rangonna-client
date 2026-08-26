@@ -9,7 +9,7 @@ export default function NewProductLoad({
 }: {
   initialProducts: IProduct[];
 }) {
-  const products = initialProducts.slice(0, 5);
+  const products = initialProducts.slice(0, 6);
 
   if (!products.length) return null;
 

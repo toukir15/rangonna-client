@@ -627,6 +627,21 @@ export const sideBarItems: ISideBarItems[] = [
         label: "Banner",
         icon: "image",
       },
+      {
+        href: "/admin/customer-front/featured-collection",
+        label: "Featured Collection",
+        icon: "grid_view",
+      },
+      {
+        href: "/admin/customer-front/shop-occasion",
+        label: "Shop by Occasion",
+        icon: "event",
+      },
+      {
+        href: "/admin/customer-front/customer-review",
+        label: "Customer Review",
+        icon: "reviews",
+      },
     ],
     mainSubLink: true,
   },

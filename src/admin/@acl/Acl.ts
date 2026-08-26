@@ -360,6 +360,9 @@ export const labelPermissionMap: Record<string, string[]> = {
   customerfront: ["customer_front_menu"],
   "customerfront/menu": ["customer_front_menu"],
   "customerfront/banner": ["customer_front_menu"],
+  "customerfront/featuredcollection": ["customer_front_menu"],
+  "customerfront/shopoccasion": ["customer_front_menu"],
+  "customerfront/customerreview": ["customer_front_menu"],
   // ===== Blog Page =====
   blog: ["blog_view"],
   pages: ["campaign_page_view"],

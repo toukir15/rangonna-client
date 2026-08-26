@@ -6,7 +6,7 @@ import { ENV } from "@/@config/env.config";
 
 export const revalidate = 10;
 
-const FLASH_LIMIT = 5;
+const FLASH_LIMIT = 6;
 
 function parseProductList(json: unknown): IProduct[] {
   if (!json || typeof json !== "object") return [];
@@ -43,7 +43,7 @@ async function fetchFromApi(params: Record<string, string>): Promise<IProduct[]>
 }
 
 /**
- * Home Flash Sale — API driven, max 5 products.
+ * Home Flash Sale — API driven, max 6 products (6 on mobile, 5 on desktop).
  * Primary: GET /product?category=flash-sale&limit=5
  * If fewer than 5 tagged, fill from best-selling so the grid stays full.
  */
@@ -90,20 +90,12 @@ export default async function BestOffersPage() {
       <div className="rongonaa-home-section__inner">
         <div className="rongonaa-flash-sale__header">
           <div className="rongonaa-flash-sale__heading">
-            <span className="rongonaa-flash-sale__mark" aria-hidden />
+            <p className="rongonaa-flash-sale__kicker">Limited offer</p>
             <h2 className="rongonaa-flash-sale__title">Flash Sale</h2>
+            <span className="rongonaa-flash-sale__rule" aria-hidden />
           </div>
 
-          <div className="rongonaa-flash-sale__aside">
-            <DayDealCount />
-            <Link
-              href="/churi/flash-sale"
-              className="rongonaa-flash-sale__view-all"
-            >
-              View All
-              <span aria-hidden>→</span>
-            </Link>
-          </div>
+          <DayDealCount />
         </div>
 
         <div className="rongonaa-flash-sale__grid">
@@ -111,6 +103,11 @@ export default async function BestOffersPage() {
             <FlashSaleCard key={data._id} data={data} cta="order" />
           ))}
         </div>
+
+        <Link href="/churi/flash-sale" className="rongonaa-flash-sale__view-all">
+          View All
+          <span aria-hidden>→</span>
+        </Link>
       </div>
     </section>
   );

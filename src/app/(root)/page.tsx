@@ -1,4 +1,4 @@
-import Hero from "@/@components/pages/Home/Hero";
+import HeroSection from "@/@components/pages/Home/HeroSection";
 import StoreCategories from "@/@components/pages/Home/StoreCategories";
 import ShopByOccasion from "@/@components/pages/Home/ShopByOccasion";
 import GirlsEmotion from "@/@components/pages/Home/GirlsEmotion";
@@ -14,7 +14,7 @@ import InstagramGallery from "@/@components/pages/Home/InstagramGallery";
 export default function Home() {
   return (
     <>
-      <Hero />
+      <HeroSection />
       <BestOffers />
       <StoreCategories />
       <PopularProduct />

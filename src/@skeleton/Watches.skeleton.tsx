@@ -1,24 +1,11 @@
 import React from "react";
 
+/** Compact product-grid loader — replaces heavy skeleton cards */
 const WatchSkeleton: React.FC = () => {
-  const cards = Array.from({ length: 10 }, (_, i) => i + 1);
-
   return (
-    <div className="rongonaa-shop-grid rongonaa-skel-grid mt-5" aria-hidden="true">
-      {cards.map((id) => (
-        <article key={id} className="rongonaa-skel-card">
-          <div className="rongonaa-skel-card__media" />
-          <div className="rongonaa-skel-card__body">
-            <div className="rongonaa-skel-line rongonaa-skel-line--title" />
-            <div className="rongonaa-skel-line rongonaa-skel-line--sub" />
-            <div className="rongonaa-skel-line rongonaa-skel-line--price" />
-            <div className="rongonaa-skel-actions">
-              <div className="rongonaa-skel-btn" />
-              <div className="rongonaa-skel-btn rongonaa-skel-btn--cta" />
-            </div>
-          </div>
-        </article>
-      ))}
+    <div className="rongonaa-product-loader" role="status" aria-live="polite">
+      <span className="rongonaa-product-loader__spinner" aria-hidden />
+      <p className="rongonaa-product-loader__text">Loading products…</p>
     </div>
   );
 };

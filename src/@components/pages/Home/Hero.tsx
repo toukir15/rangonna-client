@@ -1,66 +1,74 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import type { TBannerSlide } from "./getBannerData";
 
-const slides = [
-  {
-    src: "/hero-banner.png",
-    alt: "Woman in cream saree wearing gold and plum crystal bangles",
-    eyebrow: "Luxury Collection",
-    headline: "Celebrate Every\nMoment with Elegance",
-    copy: "Tradition meets modern beauty.",
-    position: "object-[70%_center] sm:object-[68%_center]",
-  },
-  {
-    src: "/hero-festival.png",
-    alt: "Woman in plum lehenga wearing teal, gold and magenta festival bangles",
-    eyebrow: "Festival Edit",
-    headline: "Color, Crystal &\nQuiet Luxury",
-    copy: "Glass stacks for every celebration.",
-    position: "object-[72%_center] sm:object-[68%_center]",
-  },
-  {
-    src: "/hero-bridal.png",
-    alt: "Bridal hands with mehendi, pearl and gold chura on maroon zari lehenga",
-    eyebrow: "Bridal Collection",
-    headline: "Heirloom Beauty\nfor Her Day",
-    copy: "Crafted for weddings and forever.",
-    position: "object-[70%_center] sm:object-[68%_center]",
-  },
-] as const;
+type HeroProps = {
+  desktopSlides: TBannerSlide[];
+  mobileSlides: TBannerSlide[];
+};
 
-export default function Hero() {
+function isExternal(href: string) {
+  return /^https?:\/\//i.test(href);
+}
+
+export default function Hero({ desktopSlides, mobileSlides }: HeroProps) {
   const [index, setIndex] = useState(0);
-  const slide = slides[index];
-
-  const go = useCallback((i: number) => setIndex(i), []);
-  const next = useCallback(
-    () => setIndex((i) => (i + 1) % slides.length),
-    [],
-  );
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth <= 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
+  const slides = useMemo(() => {
+    if (isMobile && mobileSlides.length) return mobileSlides;
+    if (desktopSlides.length) return desktopSlides;
+    return mobileSlides;
+  }, [isMobile, desktopSlides, mobileSlides]);
+
+  const slide = slides[index] ?? slides[0];
+
+  const go = useCallback((i: number) => setIndex(i), []);
+  const next = useCallback(() => {
+    setIndex((i) => (slides.length ? (i + 1) % slides.length : 0));
+  }, [slides.length]);
+
+  useEffect(() => {
+    setIndex(0);
+  }, [isMobile, slides.length]);
+
+  useEffect(() => {
+    if (slides.length < 2) return;
     const id = setInterval(next, 7000);
     return () => clearInterval(id);
-  }, [next]);
+  }, [next, slides.length]);
+
+  if (!slide) return null;
+
+  const ctaHref = slide.link || "/churi";
+  const ctaClass = "rongonaa-hero__cta rongonaa-hero__cta--primary";
 
   return (
     <section className="rongonaa-hero" aria-label="Featured collections">
       {slides.map((s, i) => (
         <div
-          key={s.src}
+          key={`${s.src}-${i}`}
           className={`rongonaa-hero__slide${i === index ? " is-active" : ""}`}
           aria-hidden={i !== index}
         >
           <Image
             src={s.src}
-            alt={s.alt}
+            alt={s.headline || `Banner ${i + 1}`}
             fill
             priority={i === 0}
-            className={`rongonaa-hero__img ${s.position}`}
+            className="rongonaa-hero__img object-center"
             sizes="100vw"
+            unoptimized
           />
         </div>
       ))}
@@ -71,45 +79,50 @@ export default function Hero() {
       <div className="rongonaa-hero__content">
         <div className="rongonaa-hero__inner">
           <div className="rongonaa-hero__copy">
-            <div className="rongonaa-hero__eyebrow-row">
-              <span className="rongonaa-hero__eyebrow-line" aria-hidden />
-              <p className="rongonaa-hero__eyebrow">{slide.eyebrow}</p>
-            </div>
+            {slide.headline ? (
+              <h1 className="rongonaa-hero__headline">{slide.headline}</h1>
+            ) : null}
 
-            <h1 className="rongonaa-hero__headline">{slide.headline}</h1>
-            <p className="rongonaa-hero__desc">{slide.copy}</p>
+            {slide.copy ? (
+              <p className="rongonaa-hero__desc">{slide.copy}</p>
+            ) : null}
 
             <div className="rongonaa-hero__actions">
-              <Link
-                href="/churi"
-                className="rongonaa-hero__cta rongonaa-hero__cta--primary"
-              >
-                Shop Now
-                <span aria-hidden>→</span>
-              </Link>
-              <Link
-                href="/churi/bridal"
-                className="rongonaa-hero__cta rongonaa-hero__cta--ghost"
-              >
-                Bridal
-              </Link>
+              {isExternal(ctaHref) ? (
+                <a
+                  href={ctaHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={ctaClass}
+                >
+                  Shop Now
+                  <span aria-hidden>→</span>
+                </a>
+              ) : (
+                <Link href={ctaHref} className={ctaClass}>
+                  Shop Now
+                  <span aria-hidden>→</span>
+                </Link>
+              )}
             </div>
 
-            <div className="rongonaa-hero__pager">
-              {slides.map((s, i) => (
-                <button
-                  key={s.src}
-                  type="button"
-                  onClick={() => go(i)}
-                  aria-label={`Show ${s.eyebrow}`}
-                  className={`rongonaa-hero__dot${i === index ? " is-active" : ""}`}
-                />
-              ))}
-              <span className="rongonaa-hero__count">
-                {String(index + 1).padStart(2, "0")} /{" "}
-                {String(slides.length).padStart(2, "0")}
-              </span>
-            </div>
+            {slides.length > 1 ? (
+              <div className="rongonaa-hero__pager">
+                {slides.map((s, i) => (
+                  <button
+                    key={`${s.src}-dot-${i}`}
+                    type="button"
+                    onClick={() => go(i)}
+                    aria-label={`Show slide ${i + 1}`}
+                    className={`rongonaa-hero__dot${i === index ? " is-active" : ""}`}
+                  />
+                ))}
+                <span className="rongonaa-hero__count">
+                  {String(index + 1).padStart(2, "0")} /{" "}
+                  {String(slides.length).padStart(2, "0")}
+                </span>
+              </div>
+            ) : null}
           </div>
         </div>
       </div>

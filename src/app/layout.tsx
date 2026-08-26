@@ -77,6 +77,11 @@ export const metadata: Metadata = {
     description:
       "Handcrafted women's bangles blending tradition with modern beauty.",
   },
+  icons: {
+    icon: [{ url: "/favicon.png", type: "image/png" }],
+    shortcut: "/favicon.png",
+    apple: "/apple-icon.png",
+  },
 };
 
 export default function RootLayout({

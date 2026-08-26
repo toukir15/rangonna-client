@@ -133,7 +133,7 @@ export const revalidate = 60; // ISR প্রতি 60 sec পর refresh হ�
 async function getInitialProducts(): Promise<IProduct[]> {
   try {
     const qs = new URLSearchParams({
-      limit: "5",
+      limit: "6",
       page: "1",
       category: "all",
       sort: "new-released",

@@ -21,8 +21,6 @@ import {
 import ButtonLoader from "@/@components/core/Button/ButtonLoader";
 import { IMenuItem } from "@/@interfaces/RouteInterface/route.interface";
 import MobileSearch from "../NavigationBar/MobileSearch";
-import ThemePicker from "./ThemePicker";
-
 interface HeaderProps {
   navItems: IMenuItem[];
 }
@@ -203,33 +201,35 @@ const Header: React.FC<HeaderProps> = ({ navItems }) => {
               onBlur={handleBlur}
               onFocus={() => setShowSuggestions(true)}
             >
-              <Icon
-                name="search"
-                variant="outlined"
-                size={18}
-                className="rongonaa-search-icon"
-              />
-              <input
-                ref={searchInputRef}
-                value={searchId}
-                onChange={handleInputChange}
-                onKeyDown={handleKeyPress}
-                type="text"
-                placeholder="Search bangles, bridal, festival..."
-                className="rongonaa-search-input"
-              />
-              <button
-                type="button"
-                className="rongonaa-search-submit"
-                onClick={handleSubmit}
-                aria-label="Search products"
-              >
-                {searchLoading ? (
-                  <ButtonLoader className="!py-0" />
-                ) : (
-                  <span className="rongonaa-search-submit__label">Search</span>
-                )}
-              </button>
+              <div className="rongonaa-search-shell__bar">
+                <Icon
+                  name="search"
+                  variant="outlined"
+                  size={18}
+                  className="rongonaa-search-icon"
+                />
+                <input
+                  ref={searchInputRef}
+                  value={searchId}
+                  onChange={handleInputChange}
+                  onKeyDown={handleKeyPress}
+                  type="text"
+                  placeholder="Search bangles, bridal, festival..."
+                  className="rongonaa-search-input"
+                />
+                <button
+                  type="button"
+                  className="rongonaa-search-submit"
+                  onClick={handleSubmit}
+                  aria-label="Search products"
+                >
+                  {searchLoading ? (
+                    <ButtonLoader className="!py-0" />
+                  ) : (
+                    <span className="rongonaa-search-submit__label">Search</span>
+                  )}
+                </button>
+              </div>
 
               {showSuggestions && searchId.trim().length >= 3 && (
                 <div
@@ -268,8 +268,6 @@ const Header: React.FC<HeaderProps> = ({ navItems }) => {
               </a>
 
               <div className="rongonaa-action-rail">
-                <ThemePicker />
-
                 <button
                   type="button"
                   className="rongonaa-icon-action hidden lg:inline-flex"

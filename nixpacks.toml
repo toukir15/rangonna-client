@@ -9,7 +9,8 @@ NEXT_TELEMETRY_DISABLED = "1"
 nixPkgs = ["...", "openssl"]
 
 [phases.install]
-cmds = ["yarn install --frozen-lockfile"]
+# --ignore-engines: Coolify Nixpacks Node is 22.11.0, some deps need ^22.13.0
+cmds = ["yarn install --frozen-lockfile --ignore-engines"]
 
 [phases.build]
 cmds = ["yarn build"]

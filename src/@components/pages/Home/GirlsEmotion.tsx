@@ -1,6 +1,5 @@
-import Image from "next/image";
-import Link from "next/link";
 import SectionHeader from "./SectionHeader";
+import GirlsEmotionGrid from "./GirlsEmotionGrid";
 
 const emotions = [
   {
@@ -38,7 +37,7 @@ const emotions = [
     href: "/churi/luxury",
     image: "/hero-banner.png",
   },
-] as const;
+];
 
 export default function GirlsEmotion() {
   return (
@@ -52,32 +51,7 @@ export default function GirlsEmotion() {
           linkLabel="Shop all moods"
         />
 
-        <div className="rongonaa-emotion-grid">
-          {emotions.map((e, i) => (
-            <Link key={e.name} href={e.href} className="rongonaa-emotion-card">
-              <Image
-                src={e.image}
-                alt={e.name}
-                fill
-                className="rongonaa-emotion-card__img"
-                sizes="(max-width: 768px) 50vw, 20vw"
-              />
-              <div className="rongonaa-emotion-card__shade" />
-              <span className="rongonaa-emotion-card__index" aria-hidden>
-                {String(i + 1).padStart(2, "0")}
-              </span>
-              <div className="rongonaa-emotion-card__info">
-                <p className="rongonaa-emotion-card__bangla">{e.bangla}</p>
-                <span className="rongonaa-emotion-card__rule" aria-hidden />
-                <h3 className="rongonaa-emotion-card__name">{e.name}</h3>
-                <p className="rongonaa-emotion-card__copy">{e.copy}</p>
-                <span className="rongonaa-emotion-card__cta">
-                  Feel it <span aria-hidden>→</span>
-                </span>
-              </div>
-            </Link>
-          ))}
-        </div>
+        <GirlsEmotionGrid items={emotions} />
       </div>
     </section>
   );

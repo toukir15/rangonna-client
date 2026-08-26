@@ -28,7 +28,11 @@ export default function SectionHeader({
         centered ? "rongonaa-section-header--center" : ""
       } ${className}`.trim()}
     >
-      <div className={centered ? "rongonaa-section-header__center-copy" : ""}>
+      <div
+        className={`rongonaa-section-header__copy${
+          centered ? " rongonaa-section-header__center-copy" : ""
+        }`}
+      >
         {eyebrow ? (
           <p className="rongonaa-section-header__eyebrow">{eyebrow}</p>
         ) : null}

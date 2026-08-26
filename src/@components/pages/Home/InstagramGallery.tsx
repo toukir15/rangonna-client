@@ -29,14 +29,14 @@ export default function InstagramGallery() {
               href="https://instagram.com"
               target="_blank"
               rel="noreferrer"
-              className="rongonaa-ig-card"
+              className={`rongonaa-ig-card${i === 0 ? " rongonaa-ig-card--hero" : ""}`}
             >
               <Image
                 src={item.src}
                 alt={item.label}
                 fill
                 className="rongonaa-ig-card__img"
-                sizes="(max-width: 768px) 50vw, 16vw"
+                sizes={i === 0 ? "(max-width: 767px) 100vw, 20vw" : "(max-width: 767px) 50vw, 20vw"}
               />
               <div className="rongonaa-ig-card__overlay">
                 <span className="rongonaa-ig-card__label">{item.label}</span>

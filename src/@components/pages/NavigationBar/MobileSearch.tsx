@@ -58,31 +58,34 @@ const MobileSearch = ({ embedded = false }: MobileSearchProps) => {
 
   return (
     <div className={embedded ? "w-full" : "lg:hidden w-full px-4 pb-3 pt-1"}>
-      <div className="relative w-full">
-        <Icon
-          name="search"
-          variant="outlined"
-          size={18}
-          className="absolute left-3 top-1/2 z-10 -translate-y-1/2 text-primary"
-        />
-        <input
-          value={searchId}
-          onChange={(e) => setSearchId(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") handleSubmit();
-          }}
-          type="text"
-          placeholder="Search bangles, bridal..."
-          className="rongonaa-search-input !h-11 !py-0 !pl-9 !pr-16 !text-[0.78rem]"
-        />
-        <button
-          type="button"
-          className="rongonaa-search-submit"
-          onClick={handleSubmit}
-          aria-label="Search"
-        >
-          <span className="rongonaa-search-submit__label">Go</span>
-        </button>
+      <div className="rongonaa-search-shell rongonaa-search-shell--mobile">
+        <div className="rongonaa-search-shell__bar">
+          <Icon
+            name="search"
+            variant="outlined"
+            size={20}
+            className="rongonaa-search-icon"
+          />
+          <input
+            value={searchId}
+            onChange={(e) => setSearchId(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") handleSubmit();
+            }}
+            type="search"
+            enterKeyHint="search"
+            placeholder="Search bangles..."
+            className="rongonaa-search-input"
+          />
+          <button
+            type="button"
+            className="rongonaa-search-submit"
+            onClick={handleSubmit}
+            aria-label="Search"
+          >
+            <Icon name="arrow_forward" size={18} className="rongonaa-search-submit__arrow" />
+          </button>
+        </div>
 
         {showSuggestions && filteredSuggestions.length > 0 && (
           <div
