@@ -6,10 +6,10 @@ NIXPACKS_NODE_VERSION = "22"
 NEXT_TELEMETRY_DISABLED = "1"
 
 [phases.setup]
-nixPkgs = ["...", "openssl"]
+nixPkgs = ["nodejs_22", "yarn", "openssl"]
 
 [phases.install]
-# --ignore-engines: Coolify Nixpacks Node is 22.11.0, some deps need ^22.13.0
+# Yarn engine checks fail if Nixpacks still pins an older Node patch.
 cmds = ["yarn install --frozen-lockfile --ignore-engines"]
 
 [phases.build]
