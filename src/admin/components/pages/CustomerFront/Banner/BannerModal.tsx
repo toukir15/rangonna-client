@@ -93,21 +93,22 @@ const schema: yup.ObjectSchema<FormValues> = yup.object({
         .required(),
 });
 
-const uploadImageToS3 = async (file: File) => {
-    if (!file) throw new Error("No file selected");
-
-    const data = await BannerService.uploadFileDirect(file, "banner");
-    const key = data?.data?.key;
-    const fileUrl = data?.data?.fileUrl;
-
-    if (!key || !fileUrl) {
+const getUploadedFileUrl = (data: any): string => {
+    const fileUrl =
+        data?.data?.fileUrl ||
+        data?.fileUrl ||
+        data?.data?.url ||
+        data?.url;
+    if (!fileUrl || typeof fileUrl !== "string") {
         throw new Error("Invalid upload response");
     }
+    return fileUrl;
+};
 
-    return {
-        key,
-        fileUrl,
-    };
+const uploadBannerImage = async (file: File) => {
+    if (!file) throw new Error("No file selected");
+    const data = await BannerService.uploadFileDirect(file, "banner");
+    return getUploadedFileUrl(data);
 };
 
 type BannerFieldsProps = {
@@ -117,6 +118,7 @@ type BannerFieldsProps = {
     register: UseFormRegister<FormValues>;
     setValue: UseFormSetValue<FormValues>;
     errors: FieldErrors<FormValues>;
+    bannerId?: string;
 };
 
 const BannerFields: React.FC<BannerFieldsProps> = ({
@@ -126,6 +128,7 @@ const BannerFields: React.FC<BannerFieldsProps> = ({
     register,
     setValue,
     errors,
+    bannerId,
 }) => {
     const { fields, append, remove } = useFieldArray({
         control,
@@ -146,15 +149,31 @@ const BannerFields: React.FC<BannerFieldsProps> = ({
         try {
             setUploadingIndex(index);
 
-            const uploaded = await uploadImageToS3(file);
+            const fileUrl = await uploadBannerImage(file);
 
-            setValue(`${type}.${index}.image`, uploaded.fileUrl, {
+            setValue(`${type}.${index}.image`, fileUrl, {
                 shouldDirty: true,
                 shouldTouch: true,
                 shouldValidate: true,
             });
 
-            ToastService.success("Image uploaded successfully");
+            if (bannerId) {
+                try {
+                    await BannerService.updateSlideImage(String(bannerId), {
+                        type,
+                        index,
+                        image: fileUrl,
+                    });
+                    ToastService.success("Image uploaded and saved");
+                } catch (persistErr: any) {
+                    ToastService.error(
+                        persistErr?.message ||
+                            "Image uploaded but failed to save in database"
+                    );
+                }
+            } else {
+                ToastService.success("Image uploaded successfully");
+            }
         } catch (err: any) {
             ToastService.error(err?.message || "Image upload failed");
         } finally {
@@ -476,6 +495,7 @@ const BannerModal: React.FC = () => {
                             register={register}
                             setValue={setValue}
                             errors={errors}
+                            bannerId={items?._id}
                         />
 
                         <BannerFields
@@ -485,6 +505,7 @@ const BannerModal: React.FC = () => {
                             register={register}
                             setValue={setValue}
                             errors={errors}
+                            bannerId={items?._id}
                         />
                     </div>
                 </Modal.Body>

@@ -7,7 +7,7 @@ import AuthLayout from "@admin/layouts/AuthLayout";
 import PageHeader from "@admin/components/layout/PageHeader";
 import { ToastService } from "@admin/utils/toastr.service";
 import React, { useEffect, useState } from "react";
-// import PaginationComponent from "@admin/components/core/Pazination/Pazination";
+import PaginationComponent from "@admin/components/core/Pazination/Pazination";
 import {
   IOrderSkipTwentySummaryItem,
   IOrderSkipTwentySummaryResponse,
@@ -22,22 +22,22 @@ const Page: React.FC = () => {
   const [reportSummaryData, setReportSummaryData] = useState<
     IOrderSkipTwentySummaryItem[]
   >([]);
-  // const [ordersPerPage, setOrdersPerPage] = useState<number>(10);
+  const [ordersPerPage, setOrdersPerPage] = useState<number>(10);
   const [tableLoading, setTableLoading] = useState<boolean>(true);
-  // const [currentPage, setCurrentPage] = useState<number>(1);
-  // const [totalOrders, setTotalOrders] = useState<number>(0);
-  // const totalPages = Math.ceil(totalOrders / ordersPerPage);  // default: current month will be passed
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalOrders, setTotalOrders] = useState<number>(0);
+  const totalPages = Math.ceil(totalOrders / ordersPerPage) || 1;
   const [selectedMonth, setSelectedMonth] = useState<Date | null>(new Date());
 
-  // const handleLogsPerPageChange = (newLogsPerPage: number) => {
-  //   setOrdersPerPage(newLogsPerPage);
-  //   localStorage.setItem("ordersLogsPerPage", newLogsPerPage.toString());
-  // };
+  const handleLogsPerPageChange = (newLogsPerPage: number) => {
+    setOrdersPerPage(newLogsPerPage);
+    setCurrentPage(1);
+    localStorage.setItem("ordersLogsPerPage", newLogsPerPage.toString());
+  };
 
   useEffect(() => {
     fetchMarOrderSummaryReport();
-  }, [ selectedMonth]);
-  // currentPage, ordersPerPage,
+  }, [selectedMonth, currentPage, ordersPerPage]);
 
   const formatMonth = (date: Date | null): string | null => {
     if (!date) return null;
@@ -49,14 +49,14 @@ const Page: React.FC = () => {
   const fetchMarOrderSummaryReport = async () => {
     setTableLoading(true);
     dashBoardService.getOrderSkipTwentySummary({
-      page: 1,
-      limit: 12,
+      page: currentPage,
+      limit: ordersPerPage,
       ...(selectedMonth ? { month: formatMonth(selectedMonth) } : {}),
     })
       .then((res: IOrderSkipTwentySummaryResponse) => {
         if (res?.success) {
           setReportSummaryData(res?.data?.data ?? []);
-          // setTotalOrders(res?.data?.meta?.total ?? 0);
+          setTotalOrders(res?.data?.meta?.total ?? 0);
         } else {
           ToastService.error(res?.message);
         }

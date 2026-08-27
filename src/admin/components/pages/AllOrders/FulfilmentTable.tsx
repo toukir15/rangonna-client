@@ -239,6 +239,7 @@ const FulfillmentTable: React.FC = () => {
                                 </Td>
 
                                 <Td className="is-right">
+                                    <Button
                                         onClick={() => handleAddAdvance(order?._id)}
                                         disabled={payLoadingId === order?._id}
                                         className="!px-4 !py-0.5 rounded-lg !text-blue-600 text-center cursor-pointer inline-block text-nowrap !text-sm min-w-[90px]"

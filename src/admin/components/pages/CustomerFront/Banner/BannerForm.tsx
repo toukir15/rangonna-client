@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from "react";
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
-    Controller,
     FieldErrors,
     UseFormRegister,
     UseFormSetValue,
@@ -90,21 +89,22 @@ const schema: yup.ObjectSchema<FormValues> = yup.object({
         .required(),
 });
 
-const uploadImageToS3 = async (file: File) => {
-    if (!file) throw new Error("No file selected");
-
-    const data = await BannerService.uploadFileDirect(file, "banner");
-    const key = data?.data?.key;
-    const fileUrl = data?.data?.fileUrl;
-
-    if (!key || !fileUrl) {
+const getUploadedFileUrl = (data: any): string => {
+    const fileUrl =
+        data?.data?.fileUrl ||
+        data?.fileUrl ||
+        data?.data?.url ||
+        data?.url;
+    if (!fileUrl || typeof fileUrl !== "string") {
         throw new Error("Invalid upload response");
     }
+    return fileUrl;
+};
 
-    return {
-        key,
-        fileUrl,
-    };
+const uploadBannerImage = async (file: File) => {
+    if (!file) throw new Error("No file selected");
+    const data = await BannerService.uploadFileDirect(file, "banner");
+    return getUploadedFileUrl(data);
 };
 
 type BannerFieldsProps = {
@@ -114,6 +114,7 @@ type BannerFieldsProps = {
     register: UseFormRegister<FormValues>;
     setValue: UseFormSetValue<FormValues>;
     errors: FieldErrors<FormValues>;
+    bannerId?: string;
 };
 
 const BannerFields: React.FC<BannerFieldsProps> = ({
@@ -123,6 +124,7 @@ const BannerFields: React.FC<BannerFieldsProps> = ({
     register,
     setValue,
     errors,
+    bannerId,
 }) => {
     const { fields, append, remove } = useFieldArray({
         control,
@@ -148,15 +150,31 @@ const BannerFields: React.FC<BannerFieldsProps> = ({
         try {
             setUploadingIndex(index);
 
-            const uploaded = await uploadImageToS3(file);
+            const fileUrl = await uploadBannerImage(file);
 
-            setValue(`${type}.${index}.image`, uploaded.fileUrl, {
+            setValue(`${type}.${index}.image`, fileUrl, {
                 shouldDirty: true,
                 shouldTouch: true,
                 shouldValidate: true,
             });
 
-            ToastService.success("Image uploaded successfully");
+            if (bannerId) {
+                try {
+                    await BannerService.updateSlideImage(String(bannerId), {
+                        type,
+                        index,
+                        image: fileUrl,
+                    });
+                    ToastService.success("Image uploaded and saved");
+                } catch (persistErr: any) {
+                    ToastService.error(
+                        persistErr?.message ||
+                            "Image uploaded but failed to save in database"
+                    );
+                }
+            } else {
+                ToastService.success("Image uploaded successfully");
+            }
         } catch (err: any) {
             ToastService.error(err?.message || "Image upload failed");
         } finally {
@@ -165,168 +183,178 @@ const BannerFields: React.FC<BannerFieldsProps> = ({
         }
     };
 
+    const inputClass =
+        "w-full h-10 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-950 px-3 text-sm text-gray-900 dark:text-white outline-none focus:border-[#7f1d1d] focus:ring-1 focus:ring-[#7f1d1d]/20";
+    const sizeHint = type === "mobile" ? "750 × 1000 px" : "1280 × 300 px";
+
     return (
-        <div className="space-y-2">
-            <div className="flex items-center justify-between">
-                <h4 className="text-base font-semibold text-gray-800 dark:text-white">
-                    {title}
-                </h4>
+        <section className="space-y-4">
+            <div className="flex items-center justify-between gap-3">
+                <div>
+                    <h4 className="text-base font-semibold text-gray-900 dark:text-white">
+                        {title}
+                    </h4>
+                    <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
+                        Recommended size {sizeHint}
+                    </p>
+                </div>
+                <Button
+                    type="button"
+                    className="!px-3 !py-1.5 text-sm bg-[#7f1d1d] text-white"
+                    onClick={() => append({ ...defaultBannerItem })}
+                >
+                    + Add slide
+                </Button>
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-4">
                 {fields.map((field, index) => {
                     const itemError = Array.isArray(fieldErrors)
                         ? fieldErrors[index]
                         : undefined;
-
                     const previewImage = watchedBanners?.[index]?.image;
+                    const uploadId = `banner-upload-${type}-${index}`;
+                    const isUploading = uploadingIndex === index;
 
                     return (
-                        <div
+                        <article
                             key={field.id}
-                            className="border border-gray-200 dark:border-gray-600 rounded-2xl p-5 bg-white dark:bg-gray-900"
+                            className="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/70 dark:bg-gray-950/40 overflow-hidden"
                         >
-                            <div className="flex items-center justify-between mb-4">
-                                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-200">
-                                    {title} #{index + 1}
-                                </h4>
-
+                            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
+                                <span className="text-sm font-semibold text-gray-800 dark:text-gray-100">
+                                    Slide {index + 1}
+                                </span>
                                 <button
                                     type="button"
                                     onClick={() => remove(index)}
-                                    className={`text-sm font-medium ${fields.length === 1
-                                            ? "text-gray-400 cursor-not-allowed"
-                                            : "text-red-500"
-                                        }`}
                                     disabled={fields.length === 1}
+                                    className={`text-xs font-medium ${
+                                        fields.length === 1
+                                            ? "text-gray-400 cursor-not-allowed"
+                                            : "text-red-600 hover:text-red-700"
+                                    }`}
                                 >
                                     Remove
                                 </button>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium mb-1 dark:text-gray-300">
-                                        Upload Image
-                                    </label>
+                            <div className="p-4 space-y-4">
+                                <div className="space-y-3">
+                                    <div className="relative h-36 rounded-lg border border-dashed border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 overflow-hidden">
+                                        {previewImage ? (
+                                            // eslint-disable-next-line @next/next/no-img-element
+                                            <img
+                                                src={previewImage}
+                                                alt={`${title} preview ${index + 1}`}
+                                                className="h-full w-full object-cover"
+                                            />
+                                        ) : (
+                                            <div className="h-full w-full flex items-center justify-center text-xs text-gray-400">
+                                                No image
+                                            </div>
+                                        )}
+                                        {isUploading && (
+                                            <div className="absolute inset-0 bg-white/80 dark:bg-black/60 flex items-center justify-center text-xs font-medium text-[#7f1d1d]">
+                                                Uploading...
+                                            </div>
+                                        )}
+                                    </div>
                                     <input
+                                        id={uploadId}
                                         type="file"
-                                        accept="image/*"
+                                        accept="image/jpeg,image/png,image/webp"
+                                        className="sr-only"
                                         onChange={(e) => handleImageUpload(e, index)}
-                                        className="w-full border rounded-lg px-3 py-2 bg-white dark:bg-gray-900 dark:border-gray-600 dark:text-white"
                                     />
-                                    {uploadingIndex === index && (
-                                        <p className="text-blue-500 text-xs mt-1">Uploading...</p>
-                                    )}
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium mb-1 dark:text-gray-300">
-                                        Image URL
+                                    <label
+                                        htmlFor={uploadId}
+                                        className="flex h-9 w-full cursor-pointer items-center justify-center rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-900 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800"
+                                    >
+                                        {previewImage ? "Replace image" : "Choose image"}
                                     </label>
                                     <input
                                         {...register(`${type}.${index}.image`)}
-                                        placeholder="https://cdn.example.com/banner.jpg"
-                                        className="w-full border rounded-lg px-3 py-2 bg-white dark:bg-gray-900 dark:border-gray-600 dark:text-white"
+                                        placeholder="Image URL"
+                                        className={`${inputClass} text-xs`}
                                     />
                                     {itemError?.image?.message && (
-                                        <p className="text-red-500 text-xs mt-1">
+                                        <p className="text-red-500 text-xs">
                                             {itemError.image.message}
                                         </p>
                                     )}
                                 </div>
 
-                                {!!previewImage && (
-                                    <div className="md:col-span-2">
-                                        <img
-                                            src={previewImage}
-                                            alt={`${title} preview`}
-                                            className="h-28 w-full max-w-xs object-cover rounded-lg border"
+                                <div className="grid grid-cols-1 sm:grid-cols-6 gap-4">
+                                    <div className="sm:col-span-4">
+                                        <label className="block text-sm font-medium mb-1.5 text-gray-700 dark:text-gray-300">
+                                            Title
+                                        </label>
+                                        <input
+                                            {...register(`${type}.${index}.title`)}
+                                            placeholder="Celebrate Every Moment with Elegance"
+                                            className={inputClass}
                                         />
+                                        {itemError?.title?.message && (
+                                            <p className="text-red-500 text-xs mt-1">
+                                                {itemError.title.message}
+                                            </p>
+                                        )}
                                     </div>
-                                )}
-
-                                <div>
-                                    <label className="block text-sm font-medium mb-1 dark:text-gray-300">
-                                        Link
-                                    </label>
-                                    <input
-                                        {...register(`${type}.${index}.link`)}
-                                        placeholder="/sale"
-                                        className="w-full border rounded-lg px-3 py-2 bg-white dark:bg-gray-900 dark:border-gray-600 dark:text-white"
-                                    />
-                                    {itemError?.link?.message && (
-                                        <p className="text-red-500 text-xs mt-1">
-                                            {itemError.link.message}
-                                        </p>
-                                    )}
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium mb-1 dark:text-gray-300">
-                                        Title
-                                    </label>
-                                    <input
-                                        {...register(`${type}.${index}.title`)}
-                                        placeholder="Summer Sale"
-                                        className="w-full border rounded-lg px-3 py-2 bg-white dark:bg-gray-900 dark:border-gray-600 dark:text-white"
-                                    />
-                                    {itemError?.title?.message && (
-                                        <p className="text-red-500 text-xs mt-1">
-                                            {itemError.title.message}
-                                        </p>
-                                    )}
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium mb-1 dark:text-gray-300">
-                                        Priority
-                                    </label>
-                                    <input
-                                        type="number"
-                                        {...register(`${type}.${index}.priority`)}
-                                        placeholder="1"
-                                        className="w-full border rounded-lg px-3 py-2 bg-white dark:bg-gray-900 dark:border-gray-600 dark:text-white"
-                                    />
-                                    {itemError?.priority?.message && (
-                                        <p className="text-red-500 text-xs mt-1">
-                                            {itemError.priority.message}
-                                        </p>
-                                    )}
-                                </div>
-
-                                <div className="md:col-span-2">
-                                    <label className="block text-sm font-medium mb-1 dark:text-gray-300">
-                                        Description
-                                    </label>
-                                    <textarea
-                                        {...register(`${type}.${index}.description`)}
-                                        placeholder="Up to 50% off"
-                                        rows={3}
-                                        className="w-full border rounded-lg px-3 py-2 bg-white dark:bg-gray-900 dark:border-gray-600 dark:text-white"
-                                    />
-                                    {itemError?.description?.message && (
-                                        <p className="text-red-500 text-xs mt-1">
-                                            {itemError.description.message}
-                                        </p>
-                                    )}
+                                    <div className="sm:col-span-2">
+                                        <label className="block text-sm font-medium mb-1.5 text-gray-700 dark:text-gray-300">
+                                            Priority
+                                        </label>
+                                        <input
+                                            type="number"
+                                            {...register(`${type}.${index}.priority`)}
+                                            placeholder="1"
+                                            className={inputClass}
+                                        />
+                                        {itemError?.priority?.message && (
+                                            <p className="text-red-500 text-xs mt-1">
+                                                {itemError.priority.message}
+                                            </p>
+                                        )}
+                                    </div>
+                                    <div className="sm:col-span-6">
+                                        <label className="block text-sm font-medium mb-1.5 text-gray-700 dark:text-gray-300">
+                                            Link
+                                        </label>
+                                        <input
+                                            {...register(`${type}.${index}.link`)}
+                                            placeholder="/churi"
+                                            className={inputClass}
+                                        />
+                                        {itemError?.link?.message && (
+                                            <p className="text-red-500 text-xs mt-1">
+                                                {itemError.link.message}
+                                            </p>
+                                        )}
+                                    </div>
+                                    <div className="sm:col-span-6">
+                                        <label className="block text-sm font-medium mb-1.5 text-gray-700 dark:text-gray-300">
+                                            Description
+                                        </label>
+                                        <textarea
+                                            {...register(`${type}.${index}.description`)}
+                                            placeholder="Tradition meets modern beauty."
+                                            rows={3}
+                                            className="w-full rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-950 px-3 py-2 text-sm text-gray-900 dark:text-white outline-none focus:border-[#7f1d1d] focus:ring-1 focus:ring-[#7f1d1d]/20"
+                                        />
+                                        {itemError?.description?.message && (
+                                            <p className="text-red-500 text-xs mt-1">
+                                                {itemError.description.message}
+                                            </p>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        </article>
                     );
                 })}
             </div>
-
-            <div className="flex items-end justify-end">
-                <Button
-                    type="button"
-                    className="!px-4 !py-2 bg-green-500 text-white"
-                    onClick={() => append({ ...defaultBannerItem })}
-                >
-                    + Add {title}
-                </Button>
-            </div>
-        </div>
+        </section>
     );
 };
 
@@ -445,55 +473,27 @@ const BannerForm: React.FC<BannerFormProps> = ({
 
     return (
         <div className="w-full p-4 md:p-6">
-            <form onSubmit={handleSubmit(formSubmit)}>
-                <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden">
-                    <div className="flex items-center justify-between border-b dark:border-gray-700 px-4 md:px-6 py-4">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+            <form onSubmit={handleSubmit(formSubmit)} className="space-y-5">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                        <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
                             {mode === "edit" ? "Edit Banner" : "Create Banner"}
                         </h3>
-
+                        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                            Upload an image to save it immediately. Title and link apply after you update.
+                        </p>
+                    </div>
+                    <div className="flex items-center gap-2">
                         <Button
                             type="button"
                             onClick={() => router.push("/admin/customer-front/banner")}
-                            className="px-4 py-2 text-sm text-gray-700 dark:text-gray-300"
+                            className="px-4 py-2 text-sm border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300"
                         >
                             Back
                         </Button>
-                    </div>
-
-                    <div className="p-4 md:p-6 space-y-6">
-
-                        <BannerFields
-                            title="Mobile Banner"
-                            type="mobile"
-                            control={control}
-                            register={register}
-                            setValue={setValue}
-                            errors={errors}
-                        />
-
-                        <BannerFields
-                            title="Desktop Banner"
-                            type="desktop"
-                            control={control}
-                            register={register}
-                            setValue={setValue}
-                            errors={errors}
-                        />
-                    </div>
-
-                    <div className="flex justify-end gap-2 border-t dark:border-gray-700 px-4 md:px-6 py-4">
-                        <Button
-                            type="button"
-                            onClick={() => router.push("/admin/customer-front/banner")}
-                            className="px-4 py-2 text-sm text-gray-700 dark:text-gray-300"
-                        >
-                            Cancel
-                        </Button>
-
                         <Button
                             type="submit"
-                            className="px-5 py-2 text-sm bg-blue-500 text-white rounded-lg"
+                            className="px-5 py-2 text-sm bg-[#7f1d1d] text-white rounded-lg"
                             disabled={isSubmit}
                         >
                             {isSubmit ? (
@@ -504,6 +504,32 @@ const BannerForm: React.FC<BannerFormProps> = ({
                                 "Create Banner"
                             )}
                         </Button>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
+                    <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4 md:p-5">
+                        <BannerFields
+                            title="Mobile Banner"
+                            type="mobile"
+                            control={control}
+                            register={register}
+                            setValue={setValue}
+                            errors={errors}
+                            bannerId={bannerId}
+                        />
+                    </div>
+
+                    <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4 md:p-5">
+                        <BannerFields
+                            title="Desktop Banner"
+                            type="desktop"
+                            control={control}
+                            register={register}
+                            setValue={setValue}
+                            errors={errors}
+                            bannerId={bannerId}
+                        />
                     </div>
                 </div>
             </form>

@@ -221,7 +221,7 @@ const ExpensesCategoryTable: React.FC = () => {
                       )}
                     </div>
                   )}
-              </Td
+              </Td>
             </Tr>
           );
         })}

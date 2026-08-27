@@ -14,6 +14,12 @@ export const BannerService = {
 
   updateBanner: async (accId: string, payload: any): Promise<any> =>
     await apiIns.patch("/banner/" + accId, payload),
+
+  updateSlideImage: async (
+    accId: string,
+    payload: { type: "mobile" | "desktop"; index: number; image: string }
+  ): Promise<any> =>
+    await apiIns.patch(`/banner/${accId}/slide-image`, payload),
   getSingleBanner: async (accId: any): Promise<any> =>
     await apiIns.get("/banner/" + accId),
 
