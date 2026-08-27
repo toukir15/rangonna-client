@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import type { TBannerSlide } from "./getBannerData";
@@ -22,10 +22,18 @@ function HeroCarousel({
   variant: "mobile" | "desktop";
 }) {
   const [index, setIndex] = useState(0);
+  const startX = useRef(0);
+  const deltaX = useRef(0);
+  const dragging = useRef(false);
 
   const go = useCallback((i: number) => setIndex(i), []);
   const next = useCallback(() => {
     setIndex((i) => (slides.length ? (i + 1) % slides.length : 0));
+  }, [slides.length]);
+  const prev = useCallback(() => {
+    setIndex((i) =>
+      slides.length ? (i - 1 + slides.length) % slides.length : 0
+    );
   }, [slides.length]);
 
   useEffect(() => {
@@ -36,7 +44,30 @@ function HeroCarousel({
     if (slides.length < 2) return;
     const id = setInterval(next, 7000);
     return () => clearInterval(id);
-  }, [next, slides.length]);
+  }, [next, slides.length, index]);
+
+  const onPointerDown = (e: React.PointerEvent<HTMLElement>) => {
+    if (slides.length < 2) return;
+    if ((e.target as HTMLElement).closest("a, button")) return;
+    dragging.current = true;
+    startX.current = e.clientX;
+    deltaX.current = 0;
+    e.currentTarget.setPointerCapture(e.pointerId);
+  };
+
+  const onPointerMove = (e: React.PointerEvent<HTMLElement>) => {
+    if (!dragging.current) return;
+    deltaX.current = e.clientX - startX.current;
+  };
+
+  const endDrag = () => {
+    if (!dragging.current) return;
+    dragging.current = false;
+    const moved = deltaX.current;
+    deltaX.current = 0;
+    if (moved < -40) next();
+    else if (moved > 40) prev();
+  };
 
   const slide = slides[index] ?? slides[0];
   if (!slide) return null;
@@ -48,6 +79,10 @@ function HeroCarousel({
     <section
       className={`rongonaa-hero rongonaa-hero--${variant}`}
       aria-label="Featured collections"
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={endDrag}
+      onPointerCancel={endDrag}
     >
       {slides.map((s, i) => (
         <div

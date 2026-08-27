@@ -5574,6 +5574,13 @@ input[type=number] {
   min-height: 360px;
   overflow: hidden;
   background: #1a1512;
+  touch-action: pan-y;
+  user-select: none;
+  cursor: grab;
+}
+
+.rongonaa-hero:active {
+  cursor: grabbing;
 }
 
 .rongonaa-hero--desktop {
@@ -5615,6 +5622,9 @@ input[type=number] {
 
 .rongonaa-hero__img {
   object-fit: cover;
+  -webkit-user-drag: none;
+  user-select: none;
+  pointer-events: none;
 }
 
 .rongonaa-hero__wash {
@@ -5810,6 +5820,7 @@ input[type=number] {
   height: 2.45rem;
   width: 100%;
   align-items: center;
+  cursor: pointer;
   justify-content: center;
   gap: 0.45rem;
   padding-inline: 1.25rem;
