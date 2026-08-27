@@ -2,7 +2,7 @@ import React, { useContext, useState } from "react";
 import { Tbody, Td, Th, Thead, Tr } from "@admin/components/Table/Table";
 import TableWrapper from "@admin/components/Table/TableWrapper";
 import Image from "next/image";
-import { hasPermission } from "@admin/utils";
+import { hasPermission, noData } from "@admin/utils";
 import Icon from "@admin/components/core/Icon/Icon";
 import { ProductsContext } from "@/app/admin/product/products/page";
 import { useRouter } from "next/navigation";
@@ -97,16 +97,17 @@ const ProductTable: React.FC = () => {
   return (
     <div>
       <TableWrapper
+        showCheckbox={false}
         isSwitchOn={true}
-        className="min-h-[700px]"
+        className="orders-table-nested !mt-0 min-h-[560px] !flex-1"
         data={productData}
         isLoading={tableLoading}
         noDataViewCondition={productData?.length < 1 && "No data available"}
         colValue={11}
       >
         <Thead>
-          <Tr className="dark:bg-gray-700 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
-            <Th className="dark:text-gray-300 2xl:min-w-14 lg:min-w-12 min-w-12">
+          <Tr>
+            <Th className="2xl:min-w-14 lg:min-w-12 min-w-12">
               <input
                 type="checkbox"
                 checked={isAllVisibleSelected}
@@ -117,33 +118,18 @@ const ProductTable: React.FC = () => {
                 className="h-4 w-4 cursor-pointer"
               />
             </Th>
-            <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-14 min-w-28">
-              Quick View
-            </Th>
-            <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-24 min-w-20">
-              Image
-            </Th>
-            <Th className="dark:text-gray-300 2xl:min-w-52 lg:min-w-44 min-w-48">
-              Name
-            </Th>
-            <Th className="dark:text-gray-300 2xl:min-w-48 lg:min-w-48 min-w-48">
-              Category
-            </Th>
-            <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-20 min-w-20">
-              SKU
-            </Th>
-            <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-28 min-w-28">
-              Sale Price
-            </Th>
-
-            <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-20 min-w-24">
+            <Th className="2xl:min-w-32 lg:min-w-14 min-w-28">Quick View</Th>
+            <Th className="2xl:min-w-32 lg:min-w-24 min-w-20">Image</Th>
+            <Th className="2xl:min-w-52 lg:min-w-44 min-w-48">Name</Th>
+            <Th className="2xl:min-w-48 lg:min-w-48 min-w-48">Category</Th>
+            <Th className="2xl:min-w-32 lg:min-w-20 min-w-20">SKU</Th>
+            <Th className="2xl:min-w-32 lg:min-w-28 min-w-28">Sale Price</Th>
+            <Th className="2xl:min-w-32 lg:min-w-20 min-w-24">
               <div
                 className="flex items-center cursor-pointer"
                 onClick={handleSort}
               >
-                <div>
-                  <p>Stock</p>
-                </div>
+                <p>Stock</p>
                 <div className="mt-2">
                   <div className="h-1.5">
                     <Icon
@@ -168,29 +154,19 @@ const ProductTable: React.FC = () => {
                 </div>
               </div>
             </Th>
-
-            <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-14 min-w-28">
-              View
-            </Th>
-            <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-14 min-w-32">
-              Status
-            </Th>
-
-            <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-14 min-w-28">
-              Is Seo
-            </Th>
-            <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-14 min-w-32">
-              Action
-            </Th>
+            <Th className="2xl:min-w-32 lg:min-w-14 min-w-28">View</Th>
+            <Th className="2xl:min-w-32 lg:min-w-14 min-w-32">Status</Th>
+            <Th className="2xl:min-w-32 lg:min-w-14 min-w-28">Is Seo</Th>
+            <Th className="is-right">Actions</Th>
           </Tr>
         </Thead>
-        <Tbody className="dark:bg-gray-800 bg-white">
+        <Tbody>
           {productData?.map((item: IProduct, index: number) => {
             const isSelected = selectedProductIds?.includes(item?._id);
             const outOfStock = isOutOfStock(item);
 
             return (
-              <Tr key={item?._id || index} className="h-14">
+              <Tr key={item?._id || index}>
                 <Td>
                   <input
                     type="checkbox"
@@ -203,16 +179,17 @@ const ProductTable: React.FC = () => {
                     className="h-4 w-4 cursor-pointer"
                   />
                 </Td>
-                <Td className="">
-                  <div
-                    className="bg-lime-500 px-2 py-0.5 rounded-lg text-white text-center w-20 cursor-pointer"
+                <Td>
+                  <button
+                    type="button"
+                    className="data-table-view-btn"
                     onClick={() => {
                       setModalOpen(true);
                       setProductId(item?._id);
                     }}
                   >
                     Report
-                  </div>
+                  </button>
                 </Td>
                 <Td>
                   {item?.featured_image?.src ? (
@@ -232,11 +209,27 @@ const ProductTable: React.FC = () => {
                     <div className="h-[70px] w-[70px] bg-gray-200 rounded" />
                   )}
                 </Td>
-                <Td className="text-base font-bold">{item?.title}</Td>
-                <Td className="">{item?.categories?.join(", ")}</Td>
-                <Td>{item.sku}</Td>
-                <Td>{item?.pricing?.sale_price}</Td>
-                <Td>{getTotalStock(item)}</Td>
+                <Td>
+                  <span className="data-table-primary">
+                    {item?.title || noData}
+                  </span>
+                </Td>
+                <Td>
+                  <span className="data-table-muted">
+                    {item?.categories?.join(", ") || noData}
+                  </span>
+                </Td>
+                <Td>
+                  <span className="data-table-muted">{item.sku || noData}</span>
+                </Td>
+                <Td>
+                  <span className="table-amount">
+                    {item?.pricing?.sale_price}
+                  </span>
+                </Td>
+                <Td>
+                  <span className="table-amount">{getTotalStock(item)}</span>
+                </Td>
                 <Td>
                   <Link
                     href={`https://naviforce.com.bd/product/${item?.slug}`}
@@ -246,45 +239,42 @@ const ProductTable: React.FC = () => {
                     View
                   </Link>
                 </Td>
-
-                <Td className="text-base font-semibold">
-                  <div
-                    className={` w-28 text-center text-white  rounded-lg py-0.5 ${
-                      outOfStock ? "bg-red-600" : "bg-green-600"
-                    } 
-                   `}
+                <Td>
+                  <span
+                    className={`table-role-badge ${
+                      outOfStock ? "is-rejected" : "is-approved"
+                    }`}
                   >
                     {outOfStock ? "Out Of Stock" : "In Stock"}
-                  </div>
+                  </span>
                 </Td>
-
                 <Td>
                   {(item?.featured_product || item?.is_seo) && (
-                    <div className="rounded-full">
-                      <Icon
-                        name="check_circle"
-                        className="h-5 w-5 text-green-600"
-                      />
-                    </div>
+                    <Icon
+                      name="check_circle"
+                      className="h-5 w-5 text-green-600"
+                    />
                   )}
                 </Td>
-
-                <Td className="">
-                  <div className="relative">
-                    <Icon
-                      name={"more_horiz"}
-                      variant="outlined"
+                <Td className="is-right">
+                  <div className="relative max-w-40">
+                    <button
+                      type="button"
+                      className="data-table-action-btn"
+                      aria-expanded={popupIndex === index}
                       onClick={() => togglePopup(index)}
-                      className="cursor-pointer"
-                    />
+                    >
+                      <Icon name="more_vert" variant="outlined" size={18} />
+                    </button>
                     {popupIndex === index && (
                       <div
                         ref={popupRef}
-                        className="absolute top-8 right-0 bg-white dark:bg-gray-700 dark:border-gray-500 border shadow-md rounded-lg p-4 z-20 min-w-40"
+                        className="absolute top-9 right-0 z-20 min-w-40 rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-1.5 shadow-[var(--shadow-soft)]"
                       >
                         {hasPermission(permissionList, "product_edit") && (
                           <button
-                            className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg"
+                            type="button"
+                            className="block w-full rounded-lg px-3 py-2 text-left text-sm text-app hover:bg-[var(--bg-hover)]"
                             onClick={() => {
                               router.push(
                                 `/admin/product/products/edit/${item?._id}`,
@@ -296,15 +286,16 @@ const ProductTable: React.FC = () => {
                         )}
                         {hasPermission(permissionList, "product_delete") && (
                           <button
-                            className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg"
+                            type="button"
+                            className="block w-full rounded-lg px-3 py-2 text-left text-sm text-app hover:bg-[var(--bg-hover)]"
                             onClick={() => handleDelete(item?._id)}
                           >
                             Delete
                           </button>
                         )}
-
                         <button
-                          className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg"
+                          type="button"
+                          className="block w-full rounded-lg px-3 py-2 text-left text-sm text-app hover:bg-[var(--bg-hover)]"
                           onClick={() => {
                             router.push(
                               `/admin/product/products/duplicate/${item?._id}`,

@@ -3,7 +3,9 @@ import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegi
 import { shopService } from "@admin/@services/apis/SettingsService/Shop.service";
 import Button from "@admin/components/core/Button/Button";
 import Icon from "@admin/components/core/Icon/Icon";
-import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
+import AuthLayout from "@admin/layouts/AuthLayout";
+import PageHeader from "@admin/components/layout/PageHeader";
+import TableRefreshButton from "@admin/components/Table/TableRefreshButton";
 import { ToastService } from "@admin/utils/toastr.service";
 import { createContext, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -194,47 +196,66 @@ const Page: React.FC = () => {
           />
         </div>
       </Alert>
-      <NoScrollLayout>
-        <div className="flex items-center p-4 gap-3">
-          <h1 className="text-xl font-semibold dark:text-gray-300">
-            General Settings
-          </h1>
-          {permissionList.includes("setting_general_create") && (
-            <Button
-              onClick={handleAddClick}
-              className="btn-primary btn-primary-inline inline-flex items-center gap-2"
-            >
-              Add General
-            </Button>
-          )}
+      <div className="2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 pb-4 relative w-full">
+        <PageHeader
+          title="General Settings"
+          action={
+            permissionList.includes("setting_general_create") ? (
+              <Button
+                onClick={handleAddClick}
+                className="btn-primary btn-primary-inline inline-flex items-center gap-2"
+              >
+                <Icon name="add" variant="outlined" size={16} />
+                Add General
+              </Button>
+            ) : undefined
+          }
+        />
+        <div className="data-table-card glass-card rounded-2xl orders-table-shell">
+          <div className="premium-table-toolbar">
+            <p className="premium-table-toolbar-title">General records</p>
+            <p className="premium-table-toolbar-meta">
+              {generalData.length.toLocaleString()}{" "}
+              {generalData.length === 1 ? "record" : "records"}
+            </p>
+          </div>
+          <div className="data-table-toolbar">
+            <div className="data-table-toolbar-start" />
+            <div className="data-table-toolbar-end">
+              <TableRefreshButton
+                onRefresh={handleGetPermission}
+                isLoading={tableLoading}
+                className="!h-9"
+              />
+            </div>
+          </div>
+          <GeneralSettingContext.Provider
+            value={{
+              generalData,
+              tableLoading,
+              handleEditClick,
+              openDrawer,
+              setOpenDrawer,
+              items,
+              drawerMode,
+              handleDrawerSubmit,
+              handleSubmit,
+              register,
+              reset,
+              errors,
+              isSubmit,
+              setValue,
+              setModalOpen,
+              modalOpen,
+              control,
+              handleRemove,
+            }}
+          >
+            <GeneralSettingTable />
+            <GeneralSettingModal />
+          </GeneralSettingContext.Provider>
         </div>
-      </NoScrollLayout>
-
-      <GeneralSettingContext.Provider
-        value={{
-          generalData,
-          tableLoading,
-          handleEditClick,
-          openDrawer,
-          setOpenDrawer,
-          items,
-          drawerMode,
-          handleDrawerSubmit,
-          handleSubmit,
-          register,
-          reset,
-          errors,
-          isSubmit,
-          setValue,
-          setModalOpen,
-          modalOpen,
-          control,
-          handleRemove,
-        }}
-      >
-        <GeneralSettingTable />
-        <GeneralSettingModal />
-      </GeneralSettingContext.Provider>
+      </div>
     </AuthLayout>
   );
 };

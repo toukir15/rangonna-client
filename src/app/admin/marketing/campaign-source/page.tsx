@@ -2,7 +2,9 @@
 import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import { Tbody, Td, Th, Thead, Tr } from "@admin/components/Table/Table";
 import TableWrapper from "@admin/components/Table/TableWrapper";
-import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
+import TableRefreshButton from "@admin/components/Table/TableRefreshButton";
+import AuthLayout from "@admin/layouts/AuthLayout";
+import PageHeader from "@admin/components/layout/PageHeader";
 import { formatDateRange } from "@admin/utils/hook.utils";
 import { ToastService } from "@admin/utils/toastr.service";
 import React, { useEffect, useState } from "react";
@@ -128,21 +130,11 @@ const Page: React.FC = () => {
 
   return (
     <AuthLayout>
-      <NoScrollLayout>
-        <div className="2xl:pt-4 pt-2 2xl:px-4 px-3 w-full">
-          <div className="lg:flex lg:flex-wrap items-center md:justify-between pb-2">
-            <div className="md:flex items-center md:space-x-4 w-full">
-              <div className="">
-                <h1 className="2xl:text-2xl lg:text-xl text-lg font-semibold dark:text-gray-300 text-gray-800 md:mb-0 mb-2 flex text-nowrap">
-                  Campaign Source
-                </h1>
-              </div>
-              <div className="md:flex items-center w-full gap-4">
-                <CalendarRange range={range} setRange={setRange} />
-              </div>
-            </div>
-            <div className="pt-4 w-full">
-              {tableLoading ? (
+      <div className="2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 pb-4 relative w-full">
+        <PageHeader title="Campaign Source" />
+        
+        <div className="mb-4">
+          {tableLoading ? (
                 <EmployeeReport />
               ) : (
                 <div className="grid md:grid-cols-4 grid-cols-1 md:gap-4 gap-3 w-full">
@@ -151,56 +143,69 @@ const Page: React.FC = () => {
                   })}
                 </div>
               )}
+        </div>
+
+        <div className="data-table-card glass-card rounded-2xl orders-table-shell">
+          <div className="premium-table-toolbar">
+            <p className="premium-table-toolbar-title">Campaign Source records</p>
+            <p className="premium-table-toolbar-meta">
+              {tableData?.length?.toLocaleString() || 0} records
+            </p>
+          </div>
+          <div className="data-table-toolbar">
+            <div className="data-table-toolbar-start">
+                <CalendarRange range={range} setRange={setRange} />
+            </div>
+            <div className="data-table-toolbar-end">
+              <TableRefreshButton
+                onRefresh={fetchCampaignReportCard}
+                isLoading={tableLoading}
+                className="!h-9"
+              />
             </div>
           </div>
-        </div>
-      </NoScrollLayout>
-
-      <div className="2xl:px-4 px-3 relative md:min-h-[74%] w-full">
-        <TableWrapper
+          <TableWrapper
           showCheckbox={true}
           data={tableData}
           noDataViewCondition={
             tableData.length < 1 ? "No data available" : null
           }
           isSwitchOn={true}
-          className="min-h-[600px]"
+          className="orders-table-nested !mt-0 min-h-[560px] !flex-1"
           isLoading={tableLoading}
           colValue={7}
         >
           <Thead>
-            <Tr className="dark:bg-gray-700 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
-              <Th className="2xl:min-w-32 lg:min-w-14 min-w-32 dark:text-gray-200">
+            <Tr>
+              <Th className="2xl:min-w-32 lg:min-w-14 min-w-32">
                 Order Source
               </Th>
-              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40 dark:text-gray-200">
+              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40">
                 Total
               </Th>
-              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40 dark:text-gray-200">
+              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40">
                 Active
               </Th>
-              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40 dark:text-gray-200">
+              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40">
                 Delivery
               </Th>
-              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40 dark:text-gray-200">
+              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40">
                 Cancel
               </Th>
-              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40 dark:text-gray-200">
+              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40">
                 Return
               </Th>
             </Tr>
           </Thead>
-          <Tbody className="dark:bg-gray-800 bg-white">
+          <Tbody>
             {tableData?.map((data: ICampaignReportSource, index: number) => {
               const total = data?.total_order || 0;
 
               return (
-                <Tr
-                  className="hover:bg-gray-100 dark:hover:bg-gray-800"
-                  key={index}
+                <Tr key={index}
                 >
-                  <Td>{data?.order_source}</Td>
-                  <Td>{total}</Td>
+                  <Td><span className="table-amount">{data?.order_source}</span></Td>
+                  <Td><span className="table-amount">{total}</span></Td>
 
                   <Td>
                     {data?.active_order}{" "}
@@ -239,6 +244,9 @@ const Page: React.FC = () => {
             })}
           </Tbody>
         </TableWrapper>
+          
+        </div>
+        
       </div>
     </AuthLayout>
   );

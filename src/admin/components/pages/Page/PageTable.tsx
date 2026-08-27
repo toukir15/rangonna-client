@@ -7,7 +7,7 @@ import Icon from "@admin/components/core/Icon/Icon";
 import { Tbody, Td, Th, Thead, Tr } from "@admin/components/Table/Table";
 import TableWrapper from "@admin/components/Table/TableWrapper";
 import { useGlobalContext } from "@admin/context/GlobalContext";
-import { hasPermission } from "@admin/utils";
+import { hasPermission, noData } from "@admin/utils";
 import { IPageItem } from "@admin/@interfaces/page/page.interface";
 
 const STOREFRONT_BASE_URL = "https://naviforce.com.bd";
@@ -61,50 +61,55 @@ const PageTable: React.FC = () => {
 
   return (
     <TableWrapper
+      showCheckbox={false}
       isSwitchOn={true}
-      className="min-h-[650px]"
+      className="orders-table-nested !mt-0 min-h-[560px] !flex-1"
       data={pageData}
       isLoading={tableLoading}
       noDataViewCondition={pageData?.length < 1 ? "No data available" : null}
       colValue={7}
     >
       <Thead>
-        <Tr className="dark:bg-gray-700 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300">
-          <Th className="dark:text-gray-300 min-w-56">Title</Th>
-          <Th className="dark:text-gray-300 min-w-40">Slug</Th>
-          <Th className="dark:text-gray-300 min-w-72">Description</Th>
-          <Th className="dark:text-gray-300 min-w-28">Status</Th>
-          <Th className="dark:text-gray-300 min-w-36">Created At</Th>
-          <Th className="dark:text-gray-300 min-w-24">View</Th>
-          <Th className="dark:text-gray-300 min-w-28">Action</Th>
+        <Tr>
+          <Th className="min-w-56">Title</Th>
+          <Th className="min-w-40">Slug</Th>
+          <Th className="min-w-72">Description</Th>
+          <Th className="min-w-28">Status</Th>
+          <Th className="min-w-36">Created At</Th>
+          <Th className="min-w-24">View</Th>
+          <Th className="is-right">Actions</Th>
         </Tr>
       </Thead>
 
-      <Tbody className="dark:bg-gray-800 bg-white">
+      <Tbody>
         {pageData?.map((item: IPageItem, index: number) => (
-          <Tr className="h-14" key={item?._id || index}>
-            <Td className="text-base font-bold">{item?.title || "N/A"}</Td>
-            <Td>{item?.slug || "N/A"}</Td>
+          <Tr key={item?._id || index}>
             <Td>
-              <p className="line-clamp-2 max-w-md text-sm text-gray-600 dark:text-gray-300">
-                {stripHtml(item?.description) || "N/A"}
+              <span className="data-table-primary">{item?.title || noData}</span>
+            </Td>
+            <Td>
+              <span className="data-table-muted">{item?.slug || noData}</span>
+            </Td>
+            <Td>
+              <p className="line-clamp-2 max-w-md data-table-muted">
+                {stripHtml(item?.description) || noData}
               </p>
             </Td>
             <Td>
               <span
-                className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${
-                  item?.status
-                    ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-                    : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+                className={`table-role-badge ${
+                  item?.status ? "is-approved" : "is-rejected"
                 }`}
               >
                 {item?.status ? "Active" : "Inactive"}
               </span>
             </Td>
             <Td>
-              {item?.createdAt
-                ? new Date(item.createdAt).toLocaleDateString("en-GB")
-                : "N/A"}
+              <span className="data-table-muted">
+                {item?.createdAt
+                  ? new Date(item.createdAt).toLocaleDateString("en-GB")
+                  : noData}
+              </span>
             </Td>
             <Td>
               {permissionList.includes("campaign_page_view") && item?.slug ? (
@@ -117,32 +122,34 @@ const PageTable: React.FC = () => {
                   View
                 </a>
               ) : (
-                "N/A"
+                <span className="data-table-muted">{noData}</span>
               )}
             </Td>
-            <Td>
+            <Td className="is-right">
               {hasPermission(
                 permissionList,
                 "campaign_page_edit",
                 "campaign_page_delete",
               ) && (
-                <div className="relative">
-                  <Icon
-                    name="more_horiz"
-                    variant="outlined"
+                <div className="relative max-w-40">
+                  <button
+                    type="button"
+                    className="data-table-action-btn"
+                    aria-expanded={popupIndex === index}
                     onClick={() => togglePopup(index)}
-                    className="cursor-pointer"
-                  />
+                  >
+                    <Icon name="more_vert" variant="outlined" size={18} />
+                  </button>
 
                   {popupIndex === index && (
                     <div
                       ref={popupRef}
-                      className="absolute top-8 right-0 bg-white border shadow-md rounded-lg p-4 z-20 min-w-40 dark:bg-gray-700 dark:border-gray-500"
+                      className="absolute top-9 right-0 z-20 min-w-40 rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-1.5 shadow-[var(--shadow-soft)]"
                     >
                       {permissionList.includes("campaign_page_edit") && (
                         <button
                           type="button"
-                          className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg"
+                          className="block w-full rounded-lg px-3 py-2 text-left text-sm text-app hover:bg-[var(--bg-hover)]"
                           onClick={() => {
                             router.push(`/admin/pages/edit/${item._id}`);
                             setPopupIndex(null);
@@ -155,7 +162,7 @@ const PageTable: React.FC = () => {
                       {permissionList.includes("campaign_page_delete") && (
                         <button
                           type="button"
-                          className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg"
+                          className="block w-full rounded-lg px-3 py-2 text-left text-sm text-app hover:bg-[var(--bg-hover)]"
                           onClick={() => {
                             handleRemove(item?._id);
                             setPopupIndex(null);

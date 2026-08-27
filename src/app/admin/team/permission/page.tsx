@@ -4,7 +4,7 @@ import Button from "@admin/components/core/Button/Button";
 import Icon from "@admin/components/core/Icon/Icon";
 import { Tbody, Td, Th, Thead, Tr } from "@admin/components/Table/Table";
 import TableWrapper from "@admin/components/Table/TableWrapper";
-import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
+import AuthLayout from "@admin/layouts/AuthLayout";
 import { ToastService } from "@admin/utils/toastr.service";
 import { hasPermission, noData } from "@admin/utils";
 import useDebounce from "@admin/components/core/UseDebounece/UseDebouence";
@@ -13,7 +13,8 @@ import { TeamService } from "@admin/@services/apis/TeamService/Permission.servic
 import PaginationComponent from "@admin/components/core/Pazination/Pazination";
 import { useRouter } from "next/navigation";
 import { useGlobalContext } from "@admin/context/GlobalContext";
-import PageSearch from "@admin/components/core/Search/PageSearch";
+import PageHeader from "@admin/components/layout/PageHeader";
+import TableRefreshButton from "@admin/components/Table/TableRefreshButton";
 
 const Page: React.FC = () => {
   const { permissionList } = useGlobalContext();
@@ -149,40 +150,54 @@ const Page: React.FC = () => {
         </div>
       </Alert>
 
-      <NoScrollLayout>
-        <div className="px-4 pt-4 sm:flex items-center gap-4 justify-between md:mb-4 mb-2">
-          <div className="sm:flex items-center gap-3">
-            <div className="flex items-center gap-3">
-              <h1 className="text-xl font-bold dark:text-gray-300 text-nowrap">
-                Group List
-              </h1>
-              {permissionList.includes("team_permission_create") && (
-                <Button
-                  className="btn-primary btn-primary-inline inline-flex items-center gap-2"
-                  onClick={handleAddClick}
-                >
-                  Add Group
-                </Button>
-              )}
+      <div className="2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 pb-4 relative w-full">
+        <PageHeader
+          title="Group List"
+          action={
+            permissionList.includes("team_permission_create") ? (
+              <Button
+                className="btn-primary btn-primary-inline inline-flex items-center gap-2"
+                onClick={handleAddClick}
+              >
+                <Icon name="add" variant="outlined" size={16} />
+                Add Group
+              </Button>
+            ) : undefined
+          }
+        />
+
+        <div className="data-table-card glass-card rounded-2xl orders-table-shell">
+          <div className="premium-table-toolbar">
+            <p className="premium-table-toolbar-title">Group records</p>
+            <p className="premium-table-toolbar-meta">
+              {totalPermission.toLocaleString()} items
+            </p>
+          </div>
+
+          <div className="data-table-toolbar">
+            <div className="data-table-toolbar-start">
+              <label className="data-table-search">
+                <Icon name="search" variant="outlined" size={18} />
+                <input
+                  type="search"
+                  value={searchTerm}
+                  onChange={handleSearchChange}
+                  placeholder="Search..."
+                />
+              </label>
             </div>
-            <div className="md:w-80 w-full md:my-0 my-2">
-              <PageSearch
-                value={searchTerm}
-                onChange={handleSearchChange}
-                wrapperClass="w-full"
+            <div className="data-table-toolbar-end">
+              <TableRefreshButton
+                onRefresh={() => handleGetPermission(debouncedSearchTerm)}
+                isLoading={isLoading}
+                className="!h-9"
               />
             </div>
           </div>
 
-        </div>
-      </NoScrollLayout>
-
-      {/* Table to display permissions */}
-      <div className="px-4 mb-10 min-h-[40vh]">
-        <div className="">
           <TableWrapper
-            showCheckbox={true}
-            className="min-h-[700px]"
+            showCheckbox={false}
+            className="orders-table-nested !mt-0 min-h-[560px] !flex-1"
             colValue={5}
             printLabel="Label Print"
             data={permissionData}
@@ -190,61 +205,62 @@ const Page: React.FC = () => {
             isSwitchOn
           >
             <Thead>
-              <Tr className="dark:bg-gray-700 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
-                <Th className="min-w-14 dark:text-gray-200">
-                  SL
-                </Th>
-                <Th className="min-w-48 dark:text-gray-200">
-                  Group Name
-                </Th>
-                <Th className="min-w-48 dark:text-gray-200">
-                  Total Member
-                </Th>
-                <Th className="min-w-36 dark:text-gray-200">
-                  Action
-                </Th>
+              <Tr>
+                <Th className="min-w-14">SL</Th>
+                <Th className="min-w-48">Group Name</Th>
+                <Th className="min-w-48">Total Member</Th>
+                <Th className="is-right">Action</Th>
               </Tr>
             </Thead>
-            <Tbody className="dark:bg-gray-800 bg-white">
+            <Tbody>
               {permissionData?.map((permission, index) => {
                 return (
-                  <Tr
-                    className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800"
-                    key={index}
-                  >
-                    <Td className="font-bold">{index + 1}</Td>
-                    <Td className="font-bold">{permission?.name || noData}</Td>
-                    <Td className="font-bold">{permission?.members_count}</Td>
+                  <Tr key={index}>
                     <Td>
+                      <span className="table-amount">{index + 1}</span>
+                    </Td>
+                    <Td>
+                      <span className="data-table-primary">
+                        {permission?.name || noData}
+                      </span>
+                    </Td>
+                    <Td>
+                      <span className="table-amount">
+                        {permission?.members_count}
+                      </span>
+                    </Td>
+                    <Td className="is-right">
                       {hasPermission(
                         permissionList,
                         "team_permission_edit",
                         "team_permission_delete"
                       ) && (
-                          <div className="relative max-w-32">
-                            <Icon
-                              name={"more_horiz"}
-                              variant="outlined"
+                          <div className="relative max-w-40">
+                            <button
+                              type="button"
+                              className="data-table-action-btn"
+                              aria-expanded={popupIndex === index}
                               onClick={() => togglePopup(index)}
-                              className="cursor-pointer"
-                            />
+                            >
+                              <Icon name="more_vert" variant="outlined" size={18} />
+                            </button>
                             {popupIndex === index && (
                               <div
                                 ref={popupRef}
-                                className="absolute top-8 right-0 bg-white border dark:bg-gray-700 dark:border-gray-500 shadow-md rounded-lg p-2 z-20 min-w-40"
+                                className="absolute top-9 right-0 z-20 min-w-40 rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-1.5 shadow-[var(--shadow-soft)]"
                               >
                                 {hasPermission(
                                   permissionList,
                                   "team_permission_edit"
                                 ) && (
                                     <button
+                                      type="button"
                                       onClick={() =>
                                         router.push(
                                           `/admin/team/permission/edit-permission/${permission?._id}`
                                         )
                                       }
-
-                                      className="block w-full text-left px-4 py-2 hover:bg-gray-100rounded-lg dark:hover:bg-gray-600"
+                                      className="block w-full rounded-lg px-3 py-2 text-left text-sm text-app hover:bg-[var(--bg-hover)]"
                                     >
                                       Edit
                                     </button>
@@ -255,10 +271,11 @@ const Page: React.FC = () => {
                                   "team_permission_delete"
                                 ) && (
                                     <button
+                                      type="button"
                                       onClick={() =>
                                         handleRemoveProduct(permission?._id)
                                       }
-                                      className="block w-full text-left px-4 py-2 hover:bg-gray-100 rounded-lg dark:hover:bg-gray-600"
+                                      className="block w-full rounded-lg px-3 py-2 text-left text-sm text-app hover:bg-[var(--bg-hover)]"
                                     >
                                       Delete
                                     </button>
@@ -273,17 +290,18 @@ const Page: React.FC = () => {
               })}
             </Tbody>
           </TableWrapper>
+
+          <PaginationComponent
+            ordersPerPage={permissionPerPage}
+            handleOrdersPerPageChange={handlePermissionPerPageChange}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+            totalPages={totalPages}
+            showRefresh={false}
+            isShowText={true}
+            className="orders-table-pagination !mt-0 !rounded-none !border-x-0 !border-b-0 !shadow-none"
+          />
         </div>
-
-        <PaginationComponent
-          ordersPerPage={permissionPerPage}
-          handleOrdersPerPageChange={handlePermissionPerPageChange}
-          currentPage={currentPage}
-          setCurrentPage={setCurrentPage}
-          totalPages={totalPages}
-        />
-
-
       </div>
     </AuthLayout>
   );

@@ -1,7 +1,7 @@
 "use client";
 import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import Icon from "@admin/components/core/Icon/Icon";
-import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
+import AuthLayout from "@admin/layouts/AuthLayout";
 import React, { Suspense, useRef, useState, useEffect, createContext } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ToastService } from "@admin/utils/toastr.service";
@@ -12,7 +12,8 @@ import Button from "@admin/components/core/Button/Button";
 import Alert from "@admin/components/core/Aleart/Aleart";
 
 import { useGlobalContext } from "@admin/context/GlobalContext";
-import PageSearch from "@admin/components/core/Search/PageSearch";
+import PageHeader from "@admin/components/layout/PageHeader";
+import TableRefreshButton from "@admin/components/Table/TableRefreshButton";
 import BlogTable from "@admin/components/pages/Blog/BlogTable/BlogTable";
 import { BlogService } from "@admin/@services/apis/Blog/blog.service";
 
@@ -209,49 +210,64 @@ const BlogPageContent: React.FC = () => {
         </div>
       </Alert>
 
-      <NoScrollLayout>
-        <div className="md:flex  gap-3 items-center 2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 md:pb-0 mb-2">
-          <div className="flex items-center 4xl:gap-4 gap-2">
-            <h2 className="2xl:text-2xl lg:text-xl text-lg font-semibold text-app text-nowrap">
-              All Blogs
-            </h2>
+      <div className="2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 pb-4 relative w-full">
+        <PageHeader
+          title="All Blogs"
+          action={
+            permissionList.includes("blog_create") ? (
+              <Button
+                className="btn-primary btn-primary-inline inline-flex items-center gap-2"
+                onClick={handleAddClick}
+              >
+                <Icon name="add" variant="outlined" size={16} />
+                Add Blogs
+              </Button>
+            ) : undefined
+          }
+        />
 
-            <div className="">
-              {permissionList.includes("blog_create") && (
-                <Button
-                  className="flex items-center bg-green-200 !text-green-600 !px-4 !py-1.5"
-                  onClick={handleAddClick}
-                >
-                  <span className="ml-1 text-nowrap">Add Blogs</span>
-                </Button>
-              )}
+        <BlogContext.Provider
+          value={{
+            blogData,
+            tableLoading,
+            handleImageClick,
+            togglePopup,
+            popupIndex,
+            popupRef,
+            handleDelete,
+            selectedProductIds,
+            setSelectedProductIds,
+          }}
+        >
+          <div className="data-table-card glass-card rounded-2xl orders-table-shell">
+            <div className="premium-table-toolbar">
+              <p className="premium-table-toolbar-title">Blog records</p>
+              <p className="premium-table-toolbar-meta">
+                {totalProduct.toLocaleString()} items
+              </p>
             </div>
-          </div>
-          <div className="4xl:w-72 md:w-64 w-full md:mt-0 mt-2">
-            <PageSearch
-              value={searchTerm}
-              onChange={handleSearchChange}
-              wrapperClass="w-full"
-            />
-          </div>
-        </div>
-      </NoScrollLayout>
 
-      <BlogContext.Provider
-        value={{
-          blogData,
-          tableLoading,
-          handleImageClick,
-          togglePopup,
-          popupIndex,
-          popupRef,
-          handleDelete,
-          selectedProductIds,
-          setSelectedProductIds,
-        }}
-      >
-        <div className="min-h-[70vh] 2xl:px-4 px-3">
-          <div className="xl:mt-3 mt-2">
+            <div className="data-table-toolbar">
+              <div className="data-table-toolbar-start">
+                <label className="data-table-search">
+                  <Icon name="search" variant="outlined" size={18} />
+                  <input
+                    type="search"
+                    value={searchTerm}
+                    onChange={handleSearchChange}
+                    placeholder="Search..."
+                  />
+                </label>
+              </div>
+              <div className="data-table-toolbar-end">
+                <TableRefreshButton
+                  onRefresh={fetchBlog}
+                  isLoading={tableLoading}
+                  className="!h-9"
+                />
+              </div>
+            </div>
+
             <BlogTable />
 
             <PaginationComponent
@@ -260,17 +276,20 @@ const BlogPageContent: React.FC = () => {
               currentPage={currentPage}
               setCurrentPage={setCurrentPage}
               totalPages={totalPages}
+              showRefresh={false}
+              isShowText={true}
+              className="orders-table-pagination !mt-0 !rounded-none !border-x-0 !border-b-0 !shadow-none"
             />
-
-            {isImageOpen && selectedImage && (
-              <ImagePreviewModal
-                selectedImage={selectedImage}
-                closeModal={closeModal}
-              />
-            )}
           </div>
-        </div>
-      </BlogContext.Provider>
+
+          {isImageOpen && selectedImage && (
+            <ImagePreviewModal
+              selectedImage={selectedImage}
+              closeModal={closeModal}
+            />
+          )}
+        </BlogContext.Provider>
+      </div>
     </AuthLayout>
   );
 };

@@ -3,7 +3,7 @@ import TableWrapper from "@admin/components/Table/TableWrapper";
 import { Tbody, Td, Th, Thead, Tr } from "@admin/components/Table/Table";
 import Icon from "@admin/components/core/Icon/Icon";
 import { useGlobalContext } from "@admin/context/GlobalContext";
-import { hasPermission } from "@admin/utils";
+import { hasPermission, noData } from "@admin/utils";
 import { ProductReviewContext } from "@/app/admin/product/reviews/page";
 import { IReview } from "@admin/@interfaces/review/review.interface";
 import Image from "next/image";
@@ -46,8 +46,9 @@ const ReviewTable: React.FC = () => {
   }, [popupIndex]);
   return (
     <TableWrapper
+      showCheckbox={false}
       isSwitchOn={true}
-      className="min-h-[650px]"
+      className="orders-table-nested !mt-0 min-h-[560px] !flex-1"
       data={productReviewData}
       isLoading={tableLoading}
       noDataViewCondition={
@@ -56,38 +57,22 @@ const ReviewTable: React.FC = () => {
       colValue={10}
     >
       <Thead>
-        <Tr className="dark:bg-gray-700 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
-          <Th className="2xl:min-w-40 lg:min-w-32 min-w-52 dark:text-gray-300">
-            Product Info
-          </Th>
-          <Th className="2xl:min-w-40 lg:min-w-32 min-w-32 dark:text-gray-300">
-            Customer Info
-          </Th>
-          <Th className="2xl:min-w-40 lg:min-w-32 min-w-20 dark:text-gray-300">
-            Rating
-          </Th>
-          <Th className="2xl:min-w-40 lg:min-w-32 min-w-40 dark:text-gray-300">
-            Headline
-          </Th>
-          <Th className="2xl:min-w-40 lg:min-w-32 min-w-40 dark:text-gray-300">
-            Description
-          </Th>
-          <Th className="2xl:min-w-40 lg:min-w-32 min-w-40 dark:text-gray-300">
-            Image
-          </Th>
-          <Th className="2xl:min-w-40 lg:min-w-32 min-w-40 dark:text-gray-300">
-            Creator
-          </Th>
-          <Th className="2xl:min-w-40 lg:min-w-32 min-w-32 dark:text-gray-300">
-            Action
-          </Th>
+        <Tr>
+          <Th className="2xl:min-w-40 lg:min-w-32 min-w-52">Product Info</Th>
+          <Th className="2xl:min-w-40 lg:min-w-32 min-w-32">Customer Info</Th>
+          <Th className="2xl:min-w-40 lg:min-w-32 min-w-20">Rating</Th>
+          <Th className="2xl:min-w-40 lg:min-w-32 min-w-40">Headline</Th>
+          <Th className="2xl:min-w-40 lg:min-w-32 min-w-40">Description</Th>
+          <Th className="2xl:min-w-40 lg:min-w-32 min-w-40">Image</Th>
+          <Th className="2xl:min-w-40 lg:min-w-32 min-w-40">Creator</Th>
+          <Th className="is-right">Actions</Th>
         </Tr>
       </Thead>
-      <Tbody className="dark:bg-gray-800 bg-white">
+      <Tbody>
         {productReviewData?.map((review: IReview, index: number) => {
           return (
-            <Tr className="h-14" key={index}>
-              <Td className="">
+            <Tr key={index}>
+              <Td>
                 <div className="flex gap-4">
                   <div>
                     <Image
@@ -114,15 +99,26 @@ const ReviewTable: React.FC = () => {
                     />
                   </div>
                   <div>
-                    <p>{review?.product?.title}</p>
+                    <span className="data-table-primary">
+                      {review?.product?.title}
+                    </span>
                   </div>
                 </div>
               </Td>
               <Td>
-                <div>
-                  <p>{review?.customer?.first_name}</p>
-                  <p className="pt-1">{review?.customer?.phone}</p>
-                </div>
+                <p className="data-table-primary">
+                  {review?.customer?.first_name || noData}
+                </p>
+                {review?.customer?.phone ? (
+                  <span className="table-contact-line pt-1">
+                    <Icon name="call" size={14} variant="outlined" />
+                    <a href={`tel:${review.customer.phone}`}>
+                      {review.customer.phone}
+                    </a>
+                  </span>
+                ) : (
+                  <p className="data-table-muted pt-1">{noData}</p>
+                )}
               </Td>
               <Td>
                 <div className="flex items-center gap-2">
@@ -138,17 +134,15 @@ const ReviewTable: React.FC = () => {
                       />
                     ))}
                   </div>
-                  <span className="text-sm text-gray-600 dark:text-gray-300">
-                    ({review?.rating})
-                  </span>
+                  <span className="table-amount">({review?.rating})</span>
                 </div>
               </Td>
 
               <Td>
-                <p>{review?.headline}</p>
+                <span className="data-table-primary">{review?.headline}</span>
               </Td>
               <Td>
-                <p className="max-w-64">{review?.description}</p>
+                <p className="max-w-64 data-table-muted">{review?.description}</p>
               </Td>
               <Td>
                 <div className="flex gap-2">
@@ -176,32 +170,37 @@ const ReviewTable: React.FC = () => {
                 </div>
               </Td>
               <Td>
-                <p className="max-w-64">{review?.user?.name}</p>
+                <span className="max-w-64 data-table-muted">
+                  {review?.user?.name}
+                </span>
               </Td>
-              <Td className="">
+              <Td className="is-right">
                 {hasPermission(
                   permissionList,
                   "product_review_edit",
                   "product_review_delete"
                 ) && (
-                  <div className="relative">
-                    <Icon
-                      name={"more_horiz"}
-                      variant="outlined"
+                  <div className="relative max-w-40">
+                    <button
+                      type="button"
+                      className="data-table-action-btn"
+                      aria-expanded={popupIndex === index}
                       onClick={() => togglePopup(index)}
-                      className="cursor-pointer"
-                    />
+                    >
+                      <Icon name="more_vert" variant="outlined" size={18} />
+                    </button>
                     {popupIndex === index && (
                       <div
                         ref={popupRef}
-                        className="absolute top-8 -left-14 bg-white dark:bg-gray-700 dark:border-gray-500 border shadow-md rounded-lg p-4 z-20 min-w-40"
+                        className="absolute top-9 right-0 z-20 min-w-40 rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-1.5 shadow-[var(--shadow-soft)]"
                       >
                         {hasPermission(
                           permissionList,
                           "product_review_edit"
                         ) && (
                           <button
-                            className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg"
+                            type="button"
+                            className="block w-full rounded-lg px-3 py-2 text-left text-sm text-app hover:bg-[var(--bg-hover)]"
                             onClick={() => handleEditClick(review)}
                           >
                             Edit
@@ -213,8 +212,9 @@ const ReviewTable: React.FC = () => {
                           "product_review_delete"
                         ) && (
                           <button
+                            type="button"
                             onClick={() => handleRemove(review._id)}
-                            className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg"
+                            className="block w-full rounded-lg px-3 py-2 text-left text-sm text-app hover:bg-[var(--bg-hover)]"
                           >
                             Delete
                           </button>

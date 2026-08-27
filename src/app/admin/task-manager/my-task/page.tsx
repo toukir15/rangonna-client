@@ -1,15 +1,15 @@
 "use client";
 import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import Icon from "@admin/components/core/Icon/Icon";
-import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
+import AuthLayout from "@admin/layouts/AuthLayout";
+import PageHeader from "@admin/components/layout/PageHeader";
+import TableRefreshButton from "@admin/components/Table/TableRefreshButton";
 import React, { useState, useEffect, createContext } from "react";
 import PaginationComponent from "@admin/components/core/Pazination/Pazination";
 import useDebounce from "@admin/components/core/UseDebounece/UseDebouence";
 import { ToastService } from "@admin/utils/toastr.service";
 import Alert from "@admin/components/core/Aleart/Aleart";
 import { ProductCategoryService } from "@admin/@services/apis/ProductService/ProductCategory.service";
-// import { useGlobalContext } from "@admin/context/GlobalContext";
-import PageSearch from "@admin/components/core/Search/PageSearch";
 import { TaskService } from "@admin/@services/apis/TaskManager/Task/task.service";
 import {
   ITask,
@@ -189,55 +189,67 @@ const Page: React.FC = () => {
           />
         </div>
       </Alert>
-      <NoScrollLayout>
-        <div className=" 2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 md:pb-0 mb-2">
-          <div className="sm:flex items-center justify-between">
-            <div className="sm:flex items-center gap-4">
-              <h2 className="2xl:text-2xl lg:text-xl text-lg font-semibold text-app text-nowrap">
-                My Task List
-              </h2>
-              <div className="md:w-80 w-full md:my-0 my-2">
-                <PageSearch
+      <div className="2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 pb-4 relative w-full">
+        <PageHeader
+          title="My Task List"
+          action={
+            permissionList.includes("task_create") ? (
+              <Button
+                onClick={handleAddClick}
+                className="btn-primary btn-primary-inline inline-flex items-center gap-2"
+              >
+                <Icon name="add" variant="outlined" size={16} />
+                Add Task
+              </Button>
+            ) : undefined
+          }
+        />
+
+        <div className="mb-3">
+          <MyTaskTab
+            filter={filter}
+            handleFilterChange={handleFilterChange}
+            IsSearch={false}
+          />
+        </div>
+
+        <div className="data-table-card glass-card rounded-2xl orders-table-shell">
+          <div className="premium-table-toolbar">
+            <p className="premium-table-toolbar-title">My task records</p>
+            <p className="premium-table-toolbar-meta">
+              {totalExpenses.toLocaleString()}{" "}
+              {totalExpenses === 1 ? "task" : "tasks"}
+            </p>
+          </div>
+
+          <div className="data-table-toolbar">
+            <div className="data-table-toolbar-start">
+              <label className="data-table-search">
+                <Icon name="search" variant="outlined" size={18} />
+                <input
+                  type="search"
                   value={searchTerm}
                   onChange={handleSearchChange}
-                  wrapperClass="w-full"
+                  placeholder="Search..."
                 />
-              </div>
-              <div>
-                <SelectComponent
-                  options={priorityOption}
-                  value={selectedPriority}
-                  onChange={setSelectedPriority}
-                  placeholder="All"
-                  className="md:w-64 w-full"
-                />
-              </div>
+              </label>
+              <SelectComponent
+                options={priorityOption}
+                value={selectedPriority}
+                onChange={setSelectedPriority}
+                placeholder="All"
+                className="md:w-64 w-full"
+              />
             </div>
-
-            <div className="flex justify-end ">
-              {permissionList.includes("task_create") && (
-                <Button
-                  className="btn-primary btn-primary-inline inline-flex items-center gap-2"
-                  onClick={handleAddClick}
-                >
-                  <Icon name={"add"} />
-                  <span className="ml-1">Add Task</span>
-                </Button>
-              )}
+            <div className="data-table-toolbar-end">
+              <TableRefreshButton
+                onRefresh={fetchTask}
+                isLoading={tableLoading}
+                className="!h-9"
+              />
             </div>
           </div>
-          <div className="lg:mt-0 mt-3">
-            <MyTaskTab
-              filter={filter}
-              handleFilterChange={handleFilterChange}
-              IsSearch={false}
-            />
-          </div>
-        </div>
-      </NoScrollLayout>
 
-      <div className="min-h-[75vh] 2xl:px-4 px-3">
-        <div className="xl:mt-3 mt-2">
           <MyTaskContext.Provider
             value={{
               taskData,
@@ -266,6 +278,11 @@ const Page: React.FC = () => {
             setCurrentPage={setCurrentPage}
             totalPages={totalPages}
             totalData={totalExpenses}
+            isShowText={true}
+            onRefresh={fetchTask}
+            isLoading={tableLoading}
+            showRefresh={false}
+            className="orders-table-pagination !mt-0 !rounded-none !border-x-0 !border-b-0 !shadow-none"
           />
         </div>
       </div>

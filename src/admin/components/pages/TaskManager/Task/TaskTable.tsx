@@ -3,12 +3,26 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import TableWrapper from "@admin/components/Table/TableWrapper";
 import { Tbody, Td, Th, Thead, Tr } from "@admin/components/Table/Table";
 import Icon from "@admin/components/core/Icon/Icon";
-import { priorityStyle, taskStatusStyle } from "@admin/utils/system.utils";
 import { TaskContext } from "@/app/admin/task-manager/task/page";
 import { ITask } from "@admin/@interfaces/taskManager/task/task.interface";
 import { useGlobalContext } from "@admin/context/GlobalContext";
-import { hasPermission } from "@admin/utils";
+import { hasPermission, noData } from "@admin/utils";
 import Link from "next/link";
+
+const taskBadgeClass = (status?: string) => {
+  const s = String(status || "").toLowerCase();
+  if (s === "completed" || s === "done") return "is-approved";
+  if (s === "cancelled" || s === "rejected") return "is-rejected";
+  if (s === "pending" || s === "in-progress") return "is-pending";
+  return "is-neutral";
+};
+
+const priorityBadgeClass = (priority?: string) => {
+  const s = String(priority || "").toLowerCase();
+  if (s === "high" || s === "urgent") return "is-rejected";
+  if (s === "medium") return "is-pending";
+  return "is-neutral";
+};
 
 const TaskTable: React.FC = () => {
   const { permissionList } = useGlobalContext();
@@ -47,80 +61,79 @@ const TaskTable: React.FC = () => {
   }, [popupIndex]);
   return (
     <TableWrapper
+      showCheckbox={false}
       isSwitchOn={true}
-      className="min-h-[650px]"
+      className="orders-table-nested !mt-0 min-h-[560px] !flex-1"
       data={taskData}
       isLoading={tableLoading}
       noDataViewCondition={taskData?.length < 1 ? "No data available" : null}
       colValue={10}
     >
       <Thead>
-        <Tr className="dark:bg-gray-700 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
-          <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-28 min-w-40">
-            Task No
-          </Th>
-          <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-28 min-w-40">
-            Title
-          </Th>
-          <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-28 min-w-40">
-            Project
-          </Th>
-          <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-28 min-w-28">
-            Start Date{" "}
-          </Th>
-          <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-28 min-w-28">
-            End Date
-          </Th>
-          <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-28 min-w-40">
-            Status
-          </Th>
-          <Th className="dark:text-gray-300">Assign</Th>
-          <Th className="dark:text-gray-300">Priority</Th>
-          <Th className="dark:text-gray-300">View</Th>
-          <Th className="dark:text-gray-300">Duplicate</Th>
-          <Th className="dark:text-gray-300">Action</Th>
+        <Tr>
+          <Th className="2xl:min-w-32 lg:min-w-28 min-w-40">Task No</Th>
+          <Th className="2xl:min-w-32 lg:min-w-28 min-w-40">Title</Th>
+          <Th className="2xl:min-w-32 lg:min-w-28 min-w-40">Project</Th>
+          <Th className="2xl:min-w-32 lg:min-w-28 min-w-28">Start Date</Th>
+          <Th className="2xl:min-w-32 lg:min-w-28 min-w-28">End Date</Th>
+          <Th className="2xl:min-w-32 lg:min-w-28 min-w-40">Status</Th>
+          <Th>Assign</Th>
+          <Th>Priority</Th>
+          <Th>View</Th>
+          <Th>Duplicate</Th>
+          <Th className="is-right">Actions</Th>
         </Tr>
       </Thead>
-      <Tbody className="dark:bg-gray-800 bg-white">
+      <Tbody>
         {taskData?.map((data: ITask, index: number) => {
           return (
-            <Tr className="h-14" key={index}>
-              <Td className="">{data?.task_no}</Td>
-              <Td className="">{data?.title}</Td>
-              <Td className="">{data?.project?.title}</Td>
-              <Td className="">{data?.start_date}</Td>
-              <Td className="">{data?.end_date}</Td>
+            <Tr key={index}>
               <Td>
-                <div className={`${taskStatusStyle(data.status)} text-center`}>
-                  {data?.status}
-                </div>
+                <span className="data-table-primary">
+                  {data?.task_no || noData}
+                </span>
               </Td>
-
-              <Td className="">
-                <div className="flex flex-col w-40 text-center gap-1">
-                  {data?.assign_employee?.map((emp: any, index: number) => (
-                    <span
-                      key={index}
-                      className="px-2 py-1 text-blue-700 rounded text-xs"
-                    >
+              <Td>
+                <span className="data-table-primary">
+                  {data?.title || noData}
+                </span>
+              </Td>
+              <Td>
+                <span className="data-table-muted">
+                  {data?.project?.title || noData}
+                </span>
+              </Td>
+              <Td>
+                <span className="data-table-muted">
+                  {data?.start_date || noData}
+                </span>
+              </Td>
+              <Td>
+                <span className="data-table-muted">
+                  {data?.end_date || noData}
+                </span>
+              </Td>
+              <Td>
+                <span className={`table-role-badge ${taskBadgeClass(data.status)}`}>
+                  {data?.status || noData}
+                </span>
+              </Td>
+              <Td>
+                <div className="flex flex-col w-40 gap-1">
+                  {data?.assign_employee?.map((emp: any, empIndex: number) => (
+                    <span key={empIndex} className="data-table-muted">
                       {emp.name}
                     </span>
                   ))}
                 </div>
               </Td>
-
-              {/* <Td className="">{data?.priority}</Td>
-               */}
               <Td>
                 <span
-                  className={`px-3 py-1 rounded-lg text-xs uppercase ${priorityStyle(
-                    data?.priority
-                  )}`}
+                  className={`table-role-badge ${priorityBadgeClass(data?.priority)}`}
                 >
-                  {data?.priority}
+                  {data?.priority || noData}
                 </span>
               </Td>
-
               <Td>
                 {hasPermission(permissionList, "task_view") && (
                   <Link
@@ -133,50 +146,54 @@ const TaskTable: React.FC = () => {
               </Td>
               <Td>
                 {hasPermission(permissionList, "task_view") && (
-                  <div
-                    className="bg-green-500 px-4 py-1 rounded-lg text-white text-center w-24 cursor-pointer"
+                  <button
+                    type="button"
+                    className="data-table-view-btn"
                     onClick={() => handleDuplicateClick(data)}
                   >
                     Duplicate
-                  </div>
+                  </button>
                 )}
               </Td>
-              <Td className="">
+              <Td className="is-right">
                 {hasPermission(permissionList, "task_edit", "task_delete") && (
-                  <div className="relative">
-                    <Icon
-                      name={"more_horiz"}
-                      variant="outlined"
+                  <div className="relative max-w-40">
+                    <button
+                      type="button"
+                      className="data-table-action-btn"
+                      aria-expanded={popupIndex === index}
                       onClick={() => togglePopup(index)}
-                      className="cursor-pointer"
-                    />
+                    >
+                      <Icon name="more_vert" variant="outlined" size={18} />
+                    </button>
                     {popupIndex === index && (
                       <div
                         ref={popupRef}
-                        className="absolute top-8 -left-20 bg-white dark:bg-gray-700 dark:border-gray-500 border shadow-md rounded-lg p-4 z-20 min-w-40"
+                        className="absolute top-9 right-0 z-20 min-w-40 rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-1.5 shadow-[var(--shadow-soft)]"
                       >
                         {hasPermission(permissionList, "task_edit") && (
                           <>
                             <button
-                              className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg"
+                              type="button"
+                              className="block w-full rounded-lg px-3 py-2 text-left text-sm text-app hover:bg-[var(--bg-hover)]"
                               onClick={() => handleEditClick(data)}
                             >
                               Edit
                             </button>
-
                             <button
-                              className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg"
+                              type="button"
+                              className="block w-full rounded-lg px-3 py-2 text-left text-sm text-app hover:bg-[var(--bg-hover)]"
                               onClick={() => handleUpdateNote(data)}
                             >
                               Add Notes
                             </button>
                           </>
                         )}
-
                         {hasPermission(permissionList, "task_delete") && (
                           <button
+                            type="button"
                             onClick={() => handleRemove(data._id)}
-                            className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg"
+                            className="block w-full rounded-lg px-3 py-2 text-left text-sm text-app hover:bg-[var(--bg-hover)]"
                           >
                             Delete
                           </button>

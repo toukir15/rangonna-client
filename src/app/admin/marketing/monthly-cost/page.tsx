@@ -1,7 +1,7 @@
 "use client";
 import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import Icon from "@admin/components/core/Icon/Icon";
-import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
+import AuthLayout from "@admin/layouts/AuthLayout";
 import React, { useState, useEffect, JSX, createContext } from "react";
 import PaginationComponent from "@admin/components/core/Pazination/Pazination";
 import Button from "@admin/components/core/Button/Button";
@@ -16,6 +16,8 @@ import {
   IMarketingContext,
   IMarketingResponse,
 } from "@admin/@interfaces/marketing/marketing.interface";
+import PageHeader from "@admin/components/layout/PageHeader";
+import TableRefreshButton from "@admin/components/Table/TableRefreshButton";
 
 export const MarketingContext = createContext<IMarketingContext>(
   {} as IMarketingContext
@@ -155,27 +157,39 @@ const Page = (): JSX.Element => {
         </div>
       </Alert>
 
-      <NoScrollLayout>
-        <div className="flex items-center justify-between 2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 md:pb-0 mb-2">
-          <div className="flex items-center gap-4">
-            <h2 className="2xl:text-2xl lg:text-xl text-lg font-semibold text-app">
-              Marketing
-            </h2>
+      <div className="2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 pb-4 relative w-full">
+        <PageHeader
+          title="Marketing"
+          action={
+            permissionList.includes("marketing_create") ? (
+              <Button
+                className="btn-primary btn-primary-inline inline-flex items-center gap-2"
+                onClick={handleAddClick}
+              >
+                <Icon name="add" variant="outlined" size={16} />
+                Add Marketing
+              </Button>
+            ) : undefined
+          }
+        />
+        <div className="data-table-card glass-card rounded-2xl orders-table-shell">
+          <div className="premium-table-toolbar">
+            <p className="premium-table-toolbar-title">Marketing records</p>
+            <p className="premium-table-toolbar-meta">
+              {totalProduct.toLocaleString()}{" "}
+              {totalProduct === 1 ? "record" : "records"}
+            </p>
           </div>
-          {permissionList.includes("marketing_create") && (
-            <Button
-              className="btn-primary btn-primary-inline inline-flex items-center gap-2"
-              onClick={handleAddClick}
-            >
-              <Icon name={"add"} />
-              <span className="ml-1">Add Marketing</span>
-            </Button>
-          )}
-        </div>
-      </NoScrollLayout>
-
-      <div className="min-h-[75vh] 2xl:px-4 px-3">
-        <div className="xl:mt-3 mt-2">
+          <div className="data-table-toolbar">
+            <div className="data-table-toolbar-start" />
+            <div className="data-table-toolbar-end">
+              <TableRefreshButton
+                onRefresh={getMarketingList}
+                isLoading={tableLoading}
+                className="!h-9"
+              />
+            </div>
+          </div>
           <MarketingContext.Provider
             value={{
               marketingData,
@@ -193,7 +207,6 @@ const Page = (): JSX.Element => {
             <MarketingListModal />
             <MarketingListTable />
           </MarketingContext.Provider>
-
           <PaginationComponent
             ordersPerPage={productPerPage}
             handleOrdersPerPageChange={handleProductPerPageChange}
@@ -201,6 +214,11 @@ const Page = (): JSX.Element => {
             setCurrentPage={setCurrentPage}
             totalPages={totalPages}
             totalData={totalProduct}
+            isShowText={true}
+            onRefresh={getMarketingList}
+            isLoading={tableLoading}
+            showRefresh={false}
+            className="orders-table-pagination !mt-0 !rounded-none !border-x-0 !border-b-0 !shadow-none"
           />
         </div>
       </div>

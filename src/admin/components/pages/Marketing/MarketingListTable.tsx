@@ -6,18 +6,12 @@ import { useGlobalContext } from "@admin/context/GlobalContext";
 import { MarketingContext } from "@/app/admin/marketing/monthly-cost/page";
 import { formatMonthYear } from "@admin/utils/hook.utils";
 import { IMarketing } from "@admin/@interfaces/marketing/marketing.interface";
-import { hasPermission } from "@admin/utils";
+import { hasPermission, noData } from "@admin/utils";
 
 const MarketingListTable: React.FC = () => {
   const { permissionList } = useGlobalContext();
-
-  const {
-    marketingData,
-    tableLoading,
-    handleEditClick,
-    handleRemove,
-    setItems,
-  } = useContext(MarketingContext);
+  const { marketingData, tableLoading, handleEditClick, handleRemove, setItems } =
+    useContext(MarketingContext);
 
   const [popupIndex, setPopupIndex] = useState<number | null>(null);
   const popupRef = useRef<HTMLDivElement | null>(null);
@@ -46,8 +40,9 @@ const MarketingListTable: React.FC = () => {
   }, [popupIndex]);
   return (
     <TableWrapper
+      showCheckbox={false}
       isSwitchOn={true}
-      className="min-h-[600px]"
+      className="orders-table-nested !mt-0 min-h-[560px] !flex-1"
       data={marketingData}
       isLoading={tableLoading}
       noDataViewCondition={
@@ -56,52 +51,56 @@ const MarketingListTable: React.FC = () => {
       colValue={4}
     >
       <Thead>
-        <Tr className="dark:bg-gray-700 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
-          <Th className="dark:text-gray-300 2xl:min-w-40 lg:min-w-40 min-w-40">
-            Month
-          </Th>
-          <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-14 min-w-32">
-            BDT
-          </Th>
-          <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-14 min-w-32">
-            USD
-          </Th>
-          <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-14 min-w-32">
-            Action
-          </Th>
+        <Tr>
+          <Th className="2xl:min-w-40 lg:min-w-40 min-w-40">Month</Th>
+          <Th className="2xl:min-w-32 lg:min-w-14 min-w-32">BDT</Th>
+          <Th className="2xl:min-w-32 lg:min-w-14 min-w-32">USD</Th>
+          <Th className="is-right">Actions</Th>
         </Tr>
       </Thead>
-      <Tbody className="dark:bg-gray-800 bg-white">
+      <Tbody>
         {marketingData?.map((marketing: IMarketing, index: number) => {
           return (
-            <Tr className="h-14" key={index}>
-              <Td>{formatMonthYear(marketing?.date)}</Td>
-              <Td className="text-base font-bold">
-                {marketing?.marketing_cost_bdt}
+            <Tr key={index}>
+              <Td>
+                <span className="data-table-primary">
+                  {formatMonthYear(marketing?.date) || noData}
+                </span>
               </Td>
-              <Td className="">{marketing?.marketing_cost_usd}</Td>
-
-              <Td className="">
+              <Td>
+                <span className="table-amount">
+                  {marketing?.marketing_cost_bdt}
+                </span>
+              </Td>
+              <Td>
+                <span className="table-amount">
+                  {marketing?.marketing_cost_usd}
+                </span>
+              </Td>
+              <Td className="is-right">
                 {hasPermission(
                   permissionList,
                   "marketing_edit",
                   "marketing_delete"
                 ) && (
-                  <div className="relative">
-                    <Icon
-                      name={"more_horiz"}
-                      variant="outlined"
+                  <div className="relative max-w-40">
+                    <button
+                      type="button"
+                      className="data-table-action-btn"
+                      aria-expanded={popupIndex === index}
                       onClick={() => togglePopup(index)}
-                      className="cursor-pointer"
-                    />
+                    >
+                      <Icon name="more_vert" variant="outlined" size={18} />
+                    </button>
                     {popupIndex === index && (
                       <div
                         ref={popupRef}
-                        className="absolute top-8 2xl:right-48 bg-white dark:bg-gray-700 dark:border-gray-500 border shadow-md rounded-lg p-4 z-20 min-w-40"
+                        className="absolute top-9 right-0 z-20 min-w-40 rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-1.5 shadow-[var(--shadow-soft)]"
                       >
                         {hasPermission(permissionList, "marketing_edit") && (
                           <button
-                            className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg"
+                            type="button"
+                            className="block w-full rounded-lg px-3 py-2 text-left text-sm text-app hover:bg-[var(--bg-hover)]"
                             onClick={() => {
                               handleEditClick();
                               setItems(marketing);
@@ -112,7 +111,8 @@ const MarketingListTable: React.FC = () => {
                         )}
                         {hasPermission(permissionList, "marketing_delete") && (
                           <button
-                            className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg"
+                            type="button"
+                            className="block w-full rounded-lg px-3 py-2 text-left text-sm text-app hover:bg-[var(--bg-hover)]"
                             onClick={() => handleRemove(marketing?._id)}
                           >
                             Delete

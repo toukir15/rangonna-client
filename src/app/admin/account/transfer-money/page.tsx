@@ -1,7 +1,7 @@
 "use client";
 import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import Icon from "@admin/components/core/Icon/Icon";
-import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
+import AuthLayout from "@admin/layouts/AuthLayout";
 import React, { useState, useEffect, createContext } from "react";
 import PaginationComponent from "@admin/components/core/Pazination/Pazination";
 import useDebounce from "@admin/components/core/UseDebounece/UseDebouence";
@@ -17,10 +17,11 @@ import {
 import TransfersMoneyTable from "@admin/components/pages/TransfersMoney/TransfersMoneyTable";
 import { useGlobalContext } from "@admin/context/GlobalContext";
 import { hasPermission, useLocalStorageDateRange } from "@admin/utils";
-import CalendarRange from "@admin/components/core/Calendar/CalendarRange";
 import { last30DaysRange } from "@admin/utils/helper";
 import { formatDateRange } from "@admin/utils/hook.utils";
-import PageSearch from "@admin/components/core/Search/PageSearch";
+import AllFilter from "@admin/components/pages/AllFilter/AllFilter";
+import PageHeader from "@admin/components/layout/PageHeader";
+import TableRefreshButton from "@admin/components/Table/TableRefreshButton";
 
 export const TransfersMoneyContext = createContext(
   {} as TransferMoneyContextType
@@ -163,37 +164,50 @@ const Page: React.FC = () => {
           />
         </div>
       </Alert>
-      <NoScrollLayout>
-        <div className="lg:flex items-center justify-between 2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 md:pb-0 mb-2">
-          <div className="md:flex items-center gap-4">
-            <h2 className="2xl:text-2xl lg:text-xl text-lg font-semibold text-app text-nowrap">
-              Transfers Money
-            </h2>
-            <div className="md:w-80 w-full md:my-0 my-2">
-              <PageSearch
-                value={searchTerm}
-                onChange={handleSearchChange}
-                wrapperClass="w-full"
-              />
-            </div>
-            <CalendarRange range={range} setRange={setRange} />
-          </div>
-          <div className="mt-2 lg:mt-0 flex justify-end">
-            {hasPermission(permissionList, "account_transfer_money_create") && (
+      <div className="2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 pb-4 relative w-full">
+        <PageHeader
+          title="Transfers Money"
+          action={
+            hasPermission(permissionList, "account_transfer_money_create") ? (
               <Button
                 className="btn-primary btn-primary-inline inline-flex items-center gap-2"
                 onClick={handleAddClick}
               >
-                <Icon name={"add"} />
-                <span className="ml-1 text-nowrap">Add Lists</span>
+                <Icon name="add" variant="outlined" size={16} />
+                Add Lists
               </Button>
-            )}
+            ) : undefined
+          }
+        />
+        <div className="data-table-card glass-card rounded-2xl orders-table-shell">
+          <div className="premium-table-toolbar">
+            <p className="premium-table-toolbar-title">Transfer records</p>
+            <p className="premium-table-toolbar-meta">
+              {totalProduct.toLocaleString()}{" "}
+              {totalProduct === 1 ? "transfer" : "transfers"}
+            </p>
           </div>
-        </div>
-      </NoScrollLayout>
-
-      <div className="min-h-[75vh] 2xl:px-4 px-3">
-        <div className="xl:mt-3 mt-2">
+          <div className="data-table-toolbar">
+            <div className="data-table-toolbar-start">
+              <label className="data-table-search">
+                <Icon name="search" variant="outlined" size={18} />
+                <input
+                  type="search"
+                  value={searchTerm}
+                  onChange={handleSearchChange}
+                  placeholder="Search..."
+                />
+              </label>
+              <AllFilter isCalendarFilter={true} range={range} setRange={setRange} />
+            </div>
+            <div className="data-table-toolbar-end">
+              <TableRefreshButton
+                onRefresh={getTransferMoney}
+                isLoading={tableLoading}
+                className="!h-9"
+              />
+            </div>
+          </div>
           <TransfersMoneyContext.Provider
             value={{
               transfersMoneyData,
@@ -211,7 +225,6 @@ const Page: React.FC = () => {
             <TransfersMoneyTable />
             <TransfersMoneyModal />
           </TransfersMoneyContext.Provider>
-
           <PaginationComponent
             ordersPerPage={productPerPage}
             handleOrdersPerPageChange={handleProductPerPageChange}
@@ -219,6 +232,11 @@ const Page: React.FC = () => {
             setCurrentPage={setCurrentPage}
             totalPages={totalPages}
             totalData={totalProduct}
+            isShowText={true}
+            onRefresh={getTransferMoney}
+            isLoading={tableLoading}
+            showRefresh={false}
+            className="orders-table-pagination !mt-0 !rounded-none !border-x-0 !border-b-0 !shadow-none"
           />
         </div>
       </div>

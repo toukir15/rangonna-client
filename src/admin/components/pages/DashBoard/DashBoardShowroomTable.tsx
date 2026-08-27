@@ -4,7 +4,7 @@ import TableWrapper from "@admin/components/Table/TableWrapper";
 import { Tbody, Td, Th, Thead, Tr } from "@admin/components/Table/Table";
 import { DashboardShowroomContext } from "@/app/admin/dashboard/showroom/page";
 import Icon from "@admin/components/core/Icon/Icon";
-import { hasPermission } from "@admin/utils";
+import { hasPermission, noData } from "@admin/utils";
 import { useGlobalContext } from "@admin/context/GlobalContext";
 
 const DashBoardShowroomTable: React.FC = () => {
@@ -25,7 +25,8 @@ const DashBoardShowroomTable: React.FC = () => {
 
   return (
     <TableWrapper
-      className=""
+      showCheckbox={false}
+      className="orders-table-nested !mt-0 min-h-[560px] !flex-1"
       isSwitchOn
       data={returnListData}
       isLoading={tableLoading}
@@ -35,49 +36,62 @@ const DashBoardShowroomTable: React.FC = () => {
       colValue={4}
     >
       <Thead>
-        <Tr className="dark:bg-gray-700 h-[40px]">
-          <Th className="dark:text-gray-300 min-w-40">Payment Method</Th>
-          <Th className="dark:text-gray-300 min-w-40">Date By Order Amount</Th>
-          <Th className="dark:text-gray-300 min-w-40">Daily Amount</Th>
-          <Th className="dark:text-gray-300 min-w-40">Quick View</Th>
+        <Tr>
+          <Th className="min-w-40">Payment Method</Th>
+          <Th className="min-w-40">Date By Order Amount</Th>
+          <Th className="min-w-40">Daily Amount</Th>
+          <Th className="is-right">Quick View</Th>
         </Tr>
       </Thead>
-
-      <Tbody className="bg-white dark:bg-gray-800">
+      <Tbody>
         {returnListData?.map((item: any, index: number) => {
           return (
-            <Tr key={index} className="h-8 align-top">
-              <Td>{item?.payment_method}</Td>
-
-              <Td>{item?.transaction_date_amount}</Td>
-              <Td>{item?.createdAt_amount}</Td>
-
+            <Tr key={index}>
               <Td>
+                <span className="table-role-badge is-neutral">
+                  {item?.payment_method || noData}
+                </span>
+              </Td>
+              <Td>
+                <span className="table-amount">
+                  {item?.transaction_date_amount}
+                </span>
+              </Td>
+              <Td>
+                <span className="table-amount">{item?.createdAt_amount}</span>
+              </Td>
+              <Td className="is-right">
                 {hasPermission(
                   permissionList,
                   "showroom_payment_history_quick_view"
                 ) && (
-                    <Icon
-                      onClick={() => {
-                        setModalOpen(true);
-                        setItems(item);
-                      }}
-                      name={"visibility"}
-                      variant="outlined"
-                      className="cursor-pointer"
-                    />
-                  )}
+                  <button
+                    type="button"
+                    className="data-table-action-btn"
+                    onClick={() => {
+                      setModalOpen(true);
+                      setItems(item);
+                    }}
+                  >
+                    <Icon name={"visibility"} variant="outlined" size={18} />
+                  </button>
+                )}
               </Td>
             </Tr>
           );
         })}
-
-        {/* ✅ Footer Row */}
         {returnListData?.length > 0 && (
-          <Tr className="font-semibold">
-            <Td className="text-right">Total:</Td>
-            <Td>{totalDateAmount}</Td>
-            <Td>{totalCreateAmount}</Td>
+          <Tr>
+            <Td>
+              <span className="data-table-primary">Total:</span>
+            </Td>
+            <Td>
+              <span className="table-amount">{totalDateAmount}</span>
+            </Td>
+            <Td>
+              <span className="table-amount">{totalCreateAmount}</span>
+            </Td>
+            <Td />
           </Tr>
         )}
       </Tbody>

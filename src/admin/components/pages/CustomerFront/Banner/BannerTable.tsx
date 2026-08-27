@@ -39,189 +39,137 @@ const BannerTable = () => {
         };
     }, [popupIndex]);
 
-    return (
-        <div>
-            <TableWrapper
-                isSwitchOn={true}
-                className="min-h-[650px]"
-                data={bannerData}
-                isLoading={tableLoading}
-                noDataViewCondition={bannerData?.length < 1 ? "No data available" : null}
-                colValue={4}
-            >
-                <Thead>
-                    <Tr className="dark:bg-gray-700 h-[52px] shadow-sm border-b dark:border-gray-700 border-gray-300">
-                        <Th className="dark:text-gray-300 min-w-[420px]">Mobile Banner</Th>
-                        <Th className="dark:text-gray-300 min-w-[420px]">Desktop Banner</Th>
-                        <Th className="dark:text-gray-300 min-w-[90px]">Action</Th>
-                    </Tr>
-                </Thead>
+    const renderBanners = (items: any[], emptyLabel: string) => (
+        <div className="space-y-3">
+            {items.length > 0 ? (
+                items
+                    .slice()
+                    .sort((a: any, b: any) => (a?.priority || 0) - (b?.priority || 0))
+                    .map((banner: any, bannerIndex: number) => (
+                        <div
+                            key={bannerIndex}
+                            className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-4"
+                        >
+                            <div className="flex gap-3">
+                                <div className="relative w-20 h-20 rounded-lg overflow-hidden border border-[var(--border)] shrink-0 bg-[var(--bg-hover)]">
+                                    {banner?.image ? (
+                                        <Image
+                                            src={banner.image}
+                                            alt={banner?.title || "banner"}
+                                            fill
+                                            className="object-cover"
+                                            unoptimized
+                                        />
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center text-xs data-table-muted">
+                                            No Image
+                                        </div>
+                                    )}
+                                </div>
 
-                <Tbody className="dark:bg-gray-800 bg-white">
-                    {bannerData?.map((item: any, index: number) => {
-                        const mobileItems = item?.mobile || [];
-                        const desktopItems = item?.desktop || [];
-
-                        return (
-                            <Tr
-                                className="align-top border-b border-gray-200 dark:border-gray-700"
-                                key={item?._id || index}
-                            >
-                                <Td className="py-4">
-                                    <div className="space-y-3">
-                                        {mobileItems.length > 0 ? (
-                                            mobileItems
-                                                .slice()
-                                                .sort((a: any, b: any) => (a?.priority || 0) - (b?.priority || 0))
-                                                .map((banner: any, bannerIndex: number) => (
-                                                    <div
-                                                        key={bannerIndex}
-                                                        className="rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-900/50 p-4"
-                                                    >
-                                                        <div className="flex gap-3">
-                                                            <div className="relative w-20 h-20 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-600 shrink-0 bg-gray-100">
-                                                                {banner?.image ? (
-                                                                    <Image
-                                                                        src={banner.image}
-                                                                        alt={banner?.title || "banner"}
-                                                                        fill
-                                                                        className="object-cover"
-                                                                        unoptimized
-                                                                    />
-                                                                ) : (
-                                                                    <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">
-                                                                        No Image
-                                                                    </div>
-                                                                )}
-                                                            </div>
-
-                                                            <div className="min-w-0 flex-1">
-                                                                <p className="font-semibold text-gray-800 dark:text-white">
-                                                                    {banner?.title || "Untitled"}
-                                                                </p>
-                                                                <p className="text-sm text-gray-500 mt-1">
-                                                                    {banner?.description || "No description"}
-                                                                </p>
-                                                                <p className="text-xs text-gray-500 mt-2 break-all">
-                                                                    Link: {banner?.link || "-"}
-                                                                </p>
-                                                                <span className="inline-block mt-2 text-xs px-2 py-1 rounded-full text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
-                                                                    Priority: {banner?.priority ?? "-"}
-                                                                </span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                ))
-                                        ) : (
-                                            <div className="rounded-xl border border-dashed border-gray-300 dark:border-gray-600 p-6 text-center text-sm text-gray-500">
-                                                No mobile banner found
-                                            </div>
-                                        )}
-                                    </div>
-                                </Td>
-
-                                <Td className="py-4">
-                                    <div className="space-y-3">
-                                        {desktopItems.length > 0 ? (
-                                            desktopItems
-                                                .slice()
-                                                .sort((a: any, b: any) => (a?.priority || 0) - (b?.priority || 0))
-                                                .map((banner: any, bannerIndex: number) => (
-                                                    <div
-                                                        key={bannerIndex}
-                                                        className="rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-900/50 p-4"
-                                                    >
-                                                        <div className="flex gap-3">
-                                                            <div className="relative w-20 h-20 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-600 shrink-0 bg-gray-100">
-                                                                {banner?.image ? (
-                                                                    <Image
-                                                                        src={banner?.image}
-                                                                        alt={banner?.title || "banner"}
-                                                                        fill
-                                                                        className="object-cover"
-                                                                        unoptimized
-                                                                    />
-                                                                ) : (
-                                                                    <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">
-                                                                        No Image
-                                                                    </div>
-                                                                )}
-                                                            </div>
-
-                                                            <div className="min-w-0 flex-1">
-                                                                <p className="font-semibold text-gray-800 dark:text-white">
-                                                                    {banner?.title || "Untitled"}
-                                                                </p>
-                                                                <p className="text-sm text-gray-500 mt-1">
-                                                                    {banner?.description || "No description"}
-                                                                </p>
-                                                                <p className="text-xs text-gray-500 mt-2 break-all">
-                                                                    Link: {banner?.link || "-"}
-                                                                </p>
-                                                                <span className="inline-block mt-2 text-xs px-2 py-1 rounded-full bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300">
-                                                                    Priority: {banner?.priority ?? "-"}
-                                                                </span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                ))
-                                        ) : (
-                                            <div className="rounded-xl border border-dashed border-gray-300 dark:border-gray-600 p-6 text-center text-sm text-gray-500">
-                                                No desktop banner found
-                                            </div>
-                                        )}
-                                    </div>
-                                </Td>
-
-                                <Td className="py-4">
-                                    <div className="relative flex justify-center">
-                                        <button
-                                            type="button"
-                                            onClick={() => togglePopup(index)}
-                                            className="w-10 h-10 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center justify-center transition"
-                                        >
-                                            <Icon
-                                                name="more_horiz"
-                                                variant="outlined"
-                                                className="cursor-pointer"
-                                            />
-                                        </button>
-
-                                        {popupIndex === index && (
-                                            <div
-                                                ref={popupRef}
-                                                className="absolute top-11 right-0 bg-white border shadow-lg rounded-xl p-2 z-20 min-w-40 dark:bg-gray-700 dark:border-gray-500"
-                                            >
-
-                                                <button
-                                                    className="block w-full text-left px-4 py-2.5 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg"
-                                                    onClick={() => {
-                                                        router.push(`/admin/customer-front/banner/edit-banner/${item?._id}`)
-                                                    }}
-                                                >
-                                                    Edit
-                                                </button>
-
-
-                                                <button
-                                                    className="block w-full text-left px-4 py-2.5 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg text-red-500"
-                                                    onClick={() => {
-                                                        handleRemove(item?._id);
-                                                        setPopupIndex(null);
-                                                    }}
-                                                >
-                                                    Delete
-                                                </button>
-                                            </div>
-                                        )}
-                                    </div>
-                                </Td>
-                            </Tr>
-                        );
-                    })}
-                </Tbody>
-            </TableWrapper>
+                                <div className="min-w-0 flex-1">
+                                    <p className="data-table-primary">
+                                        {banner?.title || "Untitled"}
+                                    </p>
+                                    <p className="data-table-muted mt-1">
+                                        {banner?.description || "No description"}
+                                    </p>
+                                    <p className="data-table-muted mt-2 break-all text-xs">
+                                        Link: {banner?.link || "-"}
+                                    </p>
+                                    <span className="table-role-badge is-neutral mt-2 inline-block">
+                                        Priority: {banner?.priority ?? "-"}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    ))
+            ) : (
+                <div className="rounded-xl border border-dashed border-[var(--border)] p-6 text-center data-table-muted">
+                    {emptyLabel}
+                </div>
+            )}
         </div>
+    );
+
+    return (
+        <TableWrapper
+            showCheckbox={false}
+            isSwitchOn={true}
+            className="orders-table-nested !mt-0 min-h-[560px] !flex-1"
+            data={bannerData}
+            isLoading={tableLoading}
+            noDataViewCondition={bannerData?.length < 1 ? "No data available" : null}
+            colValue={4}
+        >
+            <Thead>
+                <Tr>
+                    <Th className="min-w-[420px]">Mobile Banner</Th>
+                    <Th className="min-w-[420px]">Desktop Banner</Th>
+                    <Th className="is-right">Actions</Th>
+                </Tr>
+            </Thead>
+
+            <Tbody>
+                {bannerData?.map((item: any, index: number) => {
+                    const mobileItems = item?.mobile || [];
+                    const desktopItems = item?.desktop || [];
+
+                    return (
+                        <Tr key={item?._id || index}>
+                            <Td className="py-4">
+                                {renderBanners(mobileItems, "No mobile banner found")}
+                            </Td>
+
+                            <Td className="py-4">
+                                {renderBanners(desktopItems, "No desktop banner found")}
+                            </Td>
+
+                            <Td className="is-right py-4">
+                                <div className="relative max-w-40">
+                                    <button
+                                        type="button"
+                                        className="data-table-action-btn"
+                                        aria-expanded={popupIndex === index}
+                                        onClick={() => togglePopup(index)}
+                                    >
+                                        <Icon name="more_vert" variant="outlined" size={18} />
+                                    </button>
+
+                                    {popupIndex === index && (
+                                        <div
+                                            ref={popupRef}
+                                            className="absolute top-9 right-0 z-20 min-w-40 rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-1.5 shadow-[var(--shadow-soft)]"
+                                        >
+                                            <button
+                                                type="button"
+                                                className="block w-full rounded-lg px-3 py-2 text-left text-sm text-app hover:bg-[var(--bg-hover)]"
+                                                onClick={() => {
+                                                    router.push(`/admin/customer-front/banner/edit-banner/${item?._id}`)
+                                                }}
+                                            >
+                                                Edit
+                                            </button>
+
+                                            <button
+                                                type="button"
+                                                className="block w-full rounded-lg px-3 py-2 text-left text-sm text-app hover:bg-[var(--bg-hover)]"
+                                                onClick={() => {
+                                                    handleRemove(item?._id);
+                                                    setPopupIndex(null);
+                                                }}
+                                            >
+                                                Delete
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
+                            </Td>
+                        </Tr>
+                    );
+                })}
+            </Tbody>
+        </TableWrapper>
     );
 };
 

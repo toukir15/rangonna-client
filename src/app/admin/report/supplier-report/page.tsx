@@ -2,7 +2,9 @@
 import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import { Tbody, Td, Th, Thead, Tr } from "@admin/components/Table/Table";
 import TableWrapper from "@admin/components/Table/TableWrapper";
-import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
+import TableRefreshButton from "@admin/components/Table/TableRefreshButton";
+import AuthLayout from "@admin/layouts/AuthLayout";
+import PageHeader from "@admin/components/layout/PageHeader";
 import { formatDateRange } from "@admin/utils/hook.utils";
 import { ToastService } from "@admin/utils/toastr.service";
 import React, { useEffect, useState } from "react";
@@ -61,75 +63,81 @@ const Page: React.FC = () => {
 
   return (
     <AuthLayout>
-      <NoScrollLayout>
-        <div className="2xl:pt-4 pt-2 2xl:px-4 px-3 w-full">
-          <div className="lg:flex lg:flex-wrap items-center md:justify-between md:pb-2 pb-0">
-            <div className="sm:flex sm:items-center sm:space-x-4 w-full">
-              <div className="">
-                <h1 className="2xl:text-2xl lg:text-xl text-lg font-semibold dark:text-gray-300 text-gray-800 sm:mb-0 mb-2 flex text-nowrap">
-                  Supplier Report
-                </h1>
-              </div>
-
-              <CalendarRange
+      <div className="2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 pb-4 relative w-full">
+        <PageHeader title="Supplier Report" />
+        
+        <div className="data-table-card glass-card rounded-2xl orders-table-shell">
+          <div className="premium-table-toolbar">
+            <p className="premium-table-toolbar-title">Supplier records</p>
+            <p className="premium-table-toolbar-meta">
+              {supplierData?.length?.toLocaleString() || 0} records
+            </p>
+          </div>
+          <div className="data-table-toolbar">
+            <div className="data-table-toolbar-start">
+                <CalendarRange
                 range={range}
                 setRange={setRange}
                 className="sm:w-72 w-full"
               />
             </div>
+            <div className="data-table-toolbar-end">
+              <TableRefreshButton
+                onRefresh={fetchSupplierReport}
+                isLoading={tableLoading}
+                className="!h-9"
+              />
+            </div>
           </div>
-        </div>
-      </NoScrollLayout>
-
-      <div className="2xl:px-4 px-3 relative md:min-h-[84%] w-full">
-        <TableWrapper
+          <TableWrapper
           showCheckbox={true}
           data={supplierData}
           noDataViewCondition={
             supplierData?.length < 1 ? "No data available" : null
           }
           isSwitchOn={true}
-          className="min-h-[700px]"
+          className="orders-table-nested !mt-0 min-h-[560px] !flex-1"
           isLoading={tableLoading}
           colValue={7}
         >
           <Thead>
-            <Tr className="dark:bg-gray-700 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
-              <Th className="2xl:min-w-32 lg:min-w-14 min-w-32 dark:text-gray-200">
+            <Tr>
+              <Th className="2xl:min-w-32 lg:min-w-14 min-w-32">
                 Name
               </Th>
-              <Th className="2xl:min-w-40 lg:min-w-32 min-w-36 dark:text-gray-200">
+              <Th className="2xl:min-w-40 lg:min-w-32 min-w-36">
                 Total Purchase
               </Th>
-              <Th className="2xl:min-w-40 lg:min-w-32 min-w-24 dark:text-gray-200">
+              <Th className="2xl:min-w-40 lg:min-w-32 min-w-24">
                 Total
               </Th>
-              <Th className="2xl:min-w-40 lg:min-w-32 min-w-20 dark:text-gray-200">
+              <Th className="2xl:min-w-40 lg:min-w-32 min-w-20">
                 Paid
               </Th>
 
-              <Th className="2xl:min-w-32 lg:min-w-28 min-w-32 dark:text-gray-200">
+              <Th className="2xl:min-w-32 lg:min-w-28 min-w-32">
                 Due
               </Th>
             </Tr>
           </Thead>
-          <Tbody className="dark:bg-gray-800 bg-white">
+          <Tbody>
             {supplierData?.map((supplier: ISupplierReport, index: number) => {
               return (
-                <Tr
-                  className="hover:bg-gray-100 dark:hover:bg-gray-800"
-                  key={index}
+                <Tr key={index}
                 >
-                  <Td>{supplier?.company_name}</Td>
-                  <Td>{supplier?.total_purchase}</Td>
-                  <Td>{supplier?.total_amount}</Td>
-                  <Td>{supplier?.total_paid}</Td>
-                  <Td>{supplier?.total_due}</Td>
+                  <Td><span className="data-table-primary">{supplier?.company_name}</span></Td>
+                  <Td><span className="table-amount">{supplier?.total_purchase}</span></Td>
+                  <Td><span className="table-amount">{supplier?.total_amount}</span></Td>
+                  <Td><span className="table-amount">{supplier?.total_paid}</span></Td>
+                  <Td><span className="data-table-muted">{supplier?.total_due}</span></Td>
                 </Tr>
               );
             })}
           </Tbody>
         </TableWrapper>
+          
+        </div>
+        
       </div>
     </AuthLayout>
   );

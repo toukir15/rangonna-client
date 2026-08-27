@@ -5,17 +5,12 @@ import Icon from "@admin/components/core/Icon/Icon";
 import { TransfersMoneyContext } from "@/app/admin/account/transfer-money/page";
 import { formatTimeAgo } from "@admin/utils/hook.utils";
 import { useGlobalContext } from "@admin/context/GlobalContext";
-import { hasPermission } from "@admin/utils";
+import { hasPermission, noData } from "@admin/utils";
 
 const TransfersMoneyTable: React.FC = () => {
   const { permissionList } = useGlobalContext();
-  const {
-    transfersMoneyData,
-    tableLoading,
-    handleEditClick,
-    // handleRemove,
-    setItems,
-  } = useContext(TransfersMoneyContext);
+  const { transfersMoneyData, tableLoading, handleEditClick, setItems } =
+    useContext(TransfersMoneyContext);
 
   const [popupIndex, setPopupIndex] = useState<number | null>(null);
   const popupRef = useRef<HTMLDivElement | null>(null);
@@ -44,8 +39,9 @@ const TransfersMoneyTable: React.FC = () => {
   }, [popupIndex]);
   return (
     <TableWrapper
+      showCheckbox={false}
       isSwitchOn={true}
-      className="min-h-[650px]"
+      className="orders-table-nested !mt-0 min-h-[560px] !flex-1"
       data={transfersMoneyData}
       isLoading={tableLoading}
       noDataViewCondition={
@@ -54,104 +50,84 @@ const TransfersMoneyTable: React.FC = () => {
       colValue={7}
     >
       <Thead>
-        <Tr className="dark:bg-gray-700 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
-          <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-14 min-w-40">
-            <div className="flex items-center">
-              <div>
-                <p>From Account</p>
-              </div>
-              <div className="mt-2">
-                {" "}
-                <div className="h-1.5">
-                  <Icon name={"arrow_drop_up"} className="cursor-pointer" />
-                </div>
-                <div className="">
-                  <Icon name={"arrow_drop_down"} className="cursor-pointer" />{" "}
-                </div>
-              </div>
-            </div>
-          </Th>
-          <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-14 min-w-32">
-            To Account
-          </Th>
-          <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-14 min-w-32">
-            Amount
-          </Th>
-          <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-14 min-w-40">
-            Create Date
-          </Th>
-          <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-14 min-w-40">
-            Update Date
-          </Th>
-          <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-14 min-w-32">
-            Note
-          </Th>
-          <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-14 min-w-32">
-            Action
-          </Th>
+        <Tr>
+          <Th className="2xl:min-w-32 lg:min-w-14 min-w-40">From Account</Th>
+          <Th className="2xl:min-w-32 lg:min-w-14 min-w-32">To Account</Th>
+          <Th className="2xl:min-w-32 lg:min-w-14 min-w-32">Amount</Th>
+          <Th className="2xl:min-w-32 lg:min-w-14 min-w-40">Create Date</Th>
+          <Th className="2xl:min-w-32 lg:min-w-14 min-w-40">Update Date</Th>
+          <Th className="2xl:min-w-32 lg:min-w-14 min-w-32">Note</Th>
+          <Th className="is-right">Actions</Th>
         </Tr>
       </Thead>
-      <Tbody className="dark:bg-gray-800 bg-white">
+      <Tbody>
         {transfersMoneyData?.map((item: any, index: number) => {
           return (
-            <Tr className="h-14" key={index}>
-              <Td>{item?.from_account?.account_name}</Td>
-              <Td className="text-base font-bold">
-                {item?.to_account?.account_name}
+            <Tr key={index}>
+              <Td>
+                <span className="data-table-primary">
+                  {item?.from_account?.account_name || noData}
+                </span>
               </Td>
-              <Td className="">{item?.amount}</Td>
-              <Td>{formatTimeAgo(item?.createdAt)}</Td>
-              <Td>{formatTimeAgo(item?.updatedAt)}</Td>
-
-              <Td>{item?.note}</Td>
-
-              <Td className="">
+              <Td>
+                <span className="data-table-muted">
+                  {item?.to_account?.account_name || noData}
+                </span>
+              </Td>
+              <Td>
+                <span className="table-amount">{item?.amount}</span>
+              </Td>
+              <Td>
+                <span className="data-table-muted">
+                  {formatTimeAgo(item?.createdAt)}
+                </span>
+              </Td>
+              <Td>
+                <span className="data-table-muted">
+                  {formatTimeAgo(item?.updatedAt)}
+                </span>
+              </Td>
+              <Td>
+                <span className="data-table-muted">{item?.note || noData}</span>
+              </Td>
+              <Td className="is-right">
                 {hasPermission(
                   permissionList,
                   "account_transfer_money_edit"
                 ) && (
-                    <div className="relative">
-                      <Icon
-                        name={"more_horiz"}
-                        variant="outlined"
-                        onClick={() => togglePopup(index)}
-                        className="cursor-pointer"
-                      />
-                      {popupIndex === index && (
-                        <div
-                          ref={popupRef}
-                          className="absolute top-8 right-0 bg-white border shadow-md rounded-lg p-4 z-20 min-w-40 dark:bg-gray-700 dark:border-gray-500"
-                        >
-                          {hasPermission(
-                            permissionList,
-                            "account_transfer_money_edit"
-                          ) && (
-                              <button
-                                className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg"
-                                onClick={() => {
-                                  handleEditClick();
-                                  setItems(item);
-                                }}
-                              >
-                                Edit
-                              </button>
-                            )}
-                          {/* {hasPermission(
+                  <div className="relative max-w-40">
+                    <button
+                      type="button"
+                      className="data-table-action-btn"
+                      aria-expanded={popupIndex === index}
+                      onClick={() => togglePopup(index)}
+                    >
+                      <Icon name="more_vert" variant="outlined" size={18} />
+                    </button>
+                    {popupIndex === index && (
+                      <div
+                        ref={popupRef}
+                        className="absolute top-9 right-0 z-20 min-w-40 rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-1.5 shadow-[var(--shadow-soft)]"
+                      >
+                        {hasPermission(
                           permissionList,
-
-                          "tran_mone_d"
+                          "account_transfer_money_edit"
                         ) && (
                           <button
-                            className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg"
-                            onClick={() => handleRemove(item?._id)}
+                            type="button"
+                            className="block w-full rounded-lg px-3 py-2 text-left text-sm text-app hover:bg-[var(--bg-hover)]"
+                            onClick={() => {
+                              handleEditClick();
+                              setItems(item);
+                            }}
                           >
-                            Delete
+                            Edit
                           </button>
-                        )} */}
-                        </div>
-                      )}
-                    </div>
-                  )}
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
               </Td>
             </Tr>
           );

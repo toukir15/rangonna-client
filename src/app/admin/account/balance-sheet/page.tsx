@@ -1,11 +1,13 @@
 "use client";
 import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
-import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
+import AuthLayout from "@admin/layouts/AuthLayout";
 import React, { useState, useEffect, JSX, createContext } from "react";
 import { ToastService } from "@admin/utils/toastr.service";
 import { AccountListService } from "@admin/@services/apis/Account/AccountList/AccountList.service";
 import BalanceSheetTable from "@admin/components/pages/BalanceSheet/BalanceSheetTable";
 import BalanceSheetQuickModal from "@admin/components/pages/Account/BalanceSheet/BalanceSheetQuickModal";
+import PageHeader from "@admin/components/layout/PageHeader";
+import TableRefreshButton from "@admin/components/Table/TableRefreshButton";
 
 export const BalanceListContext = createContext<any>({} as any);
 
@@ -61,18 +63,26 @@ const Page = (): JSX.Element => {
 
   return (
     <AuthLayout>
-      <NoScrollLayout>
-        <div className="sm:flex items-center justify-between 2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 md:pb-0 mb-2">
-          <div className="sm:flex items-center gap-4">
-            <h2 className="2xl:text-2xl lg:text-xl text-lg font-semibold text-app text-nowrap">
-              Balance Lists
-            </h2>
+      <div className="2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 pb-4 relative w-full">
+        <PageHeader title="Balance Lists" />
+        <div className="data-table-card glass-card rounded-2xl orders-table-shell">
+          <div className="premium-table-toolbar">
+            <p className="premium-table-toolbar-title">Balance records</p>
+            <p className="premium-table-toolbar-meta">
+              {balanceData.length.toLocaleString()}{" "}
+              {balanceData.length === 1 ? "account" : "accounts"}
+            </p>
           </div>
-        </div>
-      </NoScrollLayout>
-
-      <div className="min-h-[75vh] 2xl:px-4 px-3">
-        <div className="xl:mt-3 mt-2">
+          <div className="data-table-toolbar">
+            <div className="data-table-toolbar-start" />
+            <div className="data-table-toolbar-end">
+              <TableRefreshButton
+                onRefresh={getAccountList}
+                isLoading={tableLoading}
+                className="!h-9"
+              />
+            </div>
+          </div>
           <BalanceListContext.Provider
             value={{
               balanceData,

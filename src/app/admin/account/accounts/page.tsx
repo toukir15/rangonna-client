@@ -1,7 +1,7 @@
 "use client";
 import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import Icon from "@admin/components/core/Icon/Icon";
-import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
+import AuthLayout from "@admin/layouts/AuthLayout";
 import React, { useState, useEffect, JSX } from "react";
 import PaginationComponent from "@admin/components/core/Pazination/Pazination";
 import useDebounce from "@admin/components/core/UseDebounece/UseDebouence";
@@ -17,7 +17,8 @@ import {
 import AccountListTable from "@admin/components/pages/AccountsLists/AccountListTable";
 import { AccountListContext } from "@admin/context/AccountListContext";
 import { useGlobalContext } from "@admin/context/GlobalContext";
-import PageSearch from "@admin/components/core/Search/PageSearch";
+import PageHeader from "@admin/components/layout/PageHeader";
+import TableRefreshButton from "@admin/components/Table/TableRefreshButton";
 
 type IPriorityPayload = {
   _id: string;
@@ -239,35 +240,32 @@ const Page = (): JSX.Element => {
 
   return (
     <AuthLayout>
-      <NoScrollLayout>
-        <div className="sm:flex items-center  2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 md:pb-0 mb-2 gap-3">
-          <div className="flex items-center gap-4">
-            <h2 className="2xl:text-2xl lg:text-xl text-lg font-semibold text-app text-nowrap">
-              Account Lists
-            </h2>
-
-            <div className=" flex justify-end gap-2 ">
+      <div className="2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 pb-4 relative w-full">
+        <PageHeader
+          title="Account Lists"
+          action={
+            <div className="flex items-center gap-2 flex-wrap">
               {permissionList.includes("account_create") &&
                 !isPriorityEditMode && (
                   <Button
                     className="btn-primary btn-primary-inline inline-flex items-center gap-2"
                     onClick={handleAddClick}
                   >
-
-                    <span className="ml-1 text-nowrap">Add Lists</span>
+                    <Icon name="add" variant="outlined" size={16} />
+                    Add Lists
                   </Button>
                 )}
               {permissionList.includes("setting_priority_edit") && (
                 <Button
-                  className={`flex items-center !py-1.5 !px-4 ${isPriorityEditMode ? "bg-orange-500" : "bg-indigo-500"
-                    }`}
+                  className={`flex items-center !py-1.5 !px-4 ${
+                    isPriorityEditMode ? "bg-orange-500" : "bg-indigo-500"
+                  }`}
                   onClick={handleTogglePriorityEditMode}
                 >
                   <Icon name="filter_list" />
-                  <span className="">{isPriorityEditMode ? "Cancel" : ""}</span>
+                  <span>{isPriorityEditMode ? "Cancel" : ""}</span>
                 </Button>
               )}
-
               {isPriorityEditMode && (
                 <Button
                   className="flex items-center bg-green-600 !px-4 !py-1.5"
@@ -279,23 +277,38 @@ const Page = (): JSX.Element => {
                 </Button>
               )}
             </div>
-
+          }
+        />
+        <div className="data-table-card glass-card rounded-2xl orders-table-shell">
+          <div className="premium-table-toolbar">
+            <p className="premium-table-toolbar-title">Account records</p>
+            <p className="premium-table-toolbar-meta">
+              {totalProduct.toLocaleString()}{" "}
+              {totalProduct === 1 ? "account" : "accounts"}
+            </p>
           </div>
-
-          {!isPriorityEditMode && (
-            <div className="md:w-80 w-full sm:mt-0 mt-2">
-              <PageSearch
-                value={searchTerm}
-                onChange={handleSearchChange}
-                wrapperClass="w-full"
+          <div className="data-table-toolbar">
+            <div className="data-table-toolbar-start">
+              {!isPriorityEditMode && (
+                <label className="data-table-search">
+                  <Icon name="search" variant="outlined" size={18} />
+                  <input
+                    type="search"
+                    value={searchTerm}
+                    onChange={handleSearchChange}
+                    placeholder="Search..."
+                  />
+                </label>
+              )}
+            </div>
+            <div className="data-table-toolbar-end">
+              <TableRefreshButton
+                onRefresh={getAccountList}
+                isLoading={tableLoading}
+                className="!h-9"
               />
             </div>
-          )}
-        </div>
-      </NoScrollLayout>
-
-      <div className="min-h-[75vh] 2xl:px-4 px-3">
-        <div className="xl:mt-3 mt-2">
+          </div>
           <AccountListContext.Provider
             value={{
               accountListData: isPriorityEditMode
@@ -320,7 +333,6 @@ const Page = (): JSX.Element => {
             <AccountListTable />
             <AccountListModal />
           </AccountListContext.Provider>
-
           {!isPriorityEditMode && (
             <PaginationComponent
               ordersPerPage={productPerPage}
@@ -329,6 +341,11 @@ const Page = (): JSX.Element => {
               setCurrentPage={setCurrentPage}
               totalPages={totalPages}
               totalData={totalProduct}
+              isShowText={true}
+              onRefresh={getAccountList}
+              isLoading={tableLoading}
+              showRefresh={false}
+              className="orders-table-pagination !mt-0 !rounded-none !border-x-0 !border-b-0 !shadow-none"
             />
           )}
         </div>

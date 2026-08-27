@@ -2,7 +2,10 @@
 import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import { Tbody, Td, Th, Thead, Tr } from "@admin/components/Table/Table";
 import TableWrapper from "@admin/components/Table/TableWrapper";
-import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
+import TableRefreshButton from "@admin/components/Table/TableRefreshButton";
+import Icon from "@admin/components/core/Icon/Icon";
+import AuthLayout from "@admin/layouts/AuthLayout";
+import PageHeader from "@admin/components/layout/PageHeader";
 import { useDebounce } from "@admin/utils/hook.utils";
 import { ToastService } from "@admin/utils/toastr.service";
 import React, { useEffect, useState } from "react";
@@ -12,7 +15,6 @@ import {
   ProductReport,
   ProductReportResponse,
 } from "@admin/@interfaces/report/productReport.interface";
-import PageSearch from "@admin/components/core/Search/PageSearch";
 import Button from "@admin/components/core/Button/Button";
 import Link from "next/link";
 import Image from "next/image";
@@ -148,27 +150,11 @@ const Page: React.FC = () => {
 
   return (
     <AuthLayout>
-      <NoScrollLayout>
-        <div className="2xl:pt-4 pt-2 2xl:px-4 px-3 w-full mb-2">
-          <div className="lg:flex lg:flex-wrap items-center md:justify-between md:pb-2 pb-0">
-            <div className="md:flex items-center md:space-x-4 w-full">
-              <h1 className="2xl:text-2xl lg:text-xl text-lg font-semibold dark:text-gray-300 text-gray-800 md:mb-0 mb-2 text-nowrap">
-                Stock Report
-              </h1>
-
-              <div className="sm:flex items-center w-full justify-between">
-                <div className="sm:w-80 w-full sm:mt-0 mt-2">
-                  <PageSearch
-                    value={searchTerm}
-                    onChange={handleSearchChange}
-                    wrapperClass="w-full"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="">
-            {isLoading ? (
+      <div className="2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 pb-4 relative w-full">
+        <PageHeader title="Stock Report" />
+        
+        <div className="mb-4">
+          {isLoading ? (
               <EmployeeReport />
             ) : (
               <div className="grid lg:grid-cols-6 md:grid-cols-2 grid-cols-1 md:gap-4 gap-3 w-full">
@@ -177,61 +163,84 @@ const Page: React.FC = () => {
                 })}
               </div>
             )}
-          </div>
         </div>
-      </NoScrollLayout>
 
-      <div className="2xl:px-4 px-3 relative md:min-h-[85%] w-full">
-        <TableWrapper
+        <div className="data-table-card glass-card rounded-2xl orders-table-shell">
+          <div className="premium-table-toolbar">
+            <p className="premium-table-toolbar-title">Stock records</p>
+            <p className="premium-table-toolbar-meta">
+              {totalOrders.toLocaleString()} records
+            </p>
+          </div>
+          <div className="data-table-toolbar">
+            <div className="data-table-toolbar-start">
+                <label className="data-table-search">
+                  <Icon name="search" variant="outlined" size={18} />
+                  <input
+                    type="search"
+                    value={searchTerm}
+                    onChange={handleSearchChange}
+                    placeholder="Search records..."
+                    aria-label="Search records"
+                  />
+                </label>
+            </div>
+            <div className="data-table-toolbar-end">
+              <TableRefreshButton
+                onRefresh={getProductReport}
+                isLoading={tableLoading}
+                className="!h-9"
+              />
+            </div>
+          </div>
+          <TableWrapper
           showCheckbox={true}
           data={reportIssueData}
           noDataViewCondition={
             reportIssueData.length < 1 ? "No data available" : null
           }
           isSwitchOn={true}
-          className="min-h-[650px]"
+          className="orders-table-nested !mt-0 min-h-[560px] !flex-1"
           isLoading={tableLoading}
           colValue={9}
         >
           <Thead>
-            <Tr className="dark:bg-gray-700 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
-              <Th className="2xl:min-w-32 lg:min-w-14 min-w-32 dark:text-gray-200 text-nowrap">
+            <Tr>
+              <Th className="2xl:min-w-32 lg:min-w-14 min-w-32 text-nowrap">
                 Image
               </Th>
-              <Th className="2xl:min-w-32 lg:min-w-14 min-w-32 dark:text-gray-200 text-nowrap">
+              <Th className="2xl:min-w-32 lg:min-w-14 min-w-32 text-nowrap">
                 Name
               </Th>
-              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40 dark:text-gray-200 text-nowrap">
+              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40 text-nowrap">
                 Box Stock
               </Th>
-              <Th className="2xl:min-w-36 lg:min-w-28 min-w-36 dark:text-gray-200 text-nowrap">
+              <Th className="2xl:min-w-36 lg:min-w-28 min-w-36 text-nowrap">
                 Active Order
               </Th>
 
-              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40 dark:text-gray-200 text-nowrap">
+              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40 text-nowrap">
                 Current Stock
               </Th>
-              <Th className="2xl:min-w-36 lg:min-w-28 min-w-36 dark:text-gray-200">
+              <Th className="2xl:min-w-36 lg:min-w-28 min-w-36">
                 Transit Order
               </Th>
-              <Th className="2xl:min-w-36 lg:min-w-28 min-w-36 dark:text-gray-200">
+              <Th className="2xl:min-w-36 lg:min-w-28 min-w-36">
                 Total Received
               </Th>
-              <Th className="2xl:min-w-36 lg:min-w-28 min-w-36 dark:text-gray-200">
+              <Th className="2xl:min-w-36 lg:min-w-28 min-w-36">
                 Release Order
               </Th>
 
-              <Th className="2xl:min-w-36 lg:min-w-28 min-w-36 dark:text-gray-200">
+              <Th className="2xl:min-w-36 lg:min-w-28 min-w-36">
                 Quick View
               </Th>
             </Tr>
           </Thead>
-          <Tbody className="dark:bg-gray-800 bg-white">
+          <Tbody>
             {reportIssueData?.map((report: any, index: number) => {
               return (
-                <Tr
-                  className="hover:bg-gray-100 dark:hover:bg-gray-800"
-                  key={index}
+                <Tr key={index}
                 >
                   <Td>
                     <div>
@@ -247,46 +256,24 @@ const Page: React.FC = () => {
                       )}
                     </div>
                   </Td>
-                  <Td>
-                    <div>
-                      <p className="text-nowrap pb-2 font-semibold">
-                        {report?.product_title}
-                      </p>
-                    </div>
-                  </Td>
-                  <Td>
-                    <div>
-                      {report?.remaining_stock - report?.transit_quantity}
-                    </div>
-                  </Td>
-                  <Td>
-                    <div>
-                      <p>{report?.active_orders_quantity}</p>
-                    </div>
-                  </Td>
+                  <Td><span className="data-table-primary">{report?.product_title}</span></Td>
+                  <Td><span className="table-amount">{report?.remaining_stock - report?.transit_quantity}</span></Td>
+                  <Td><span className="table-amount">{report?.active_orders_quantity}</span></Td>
 
-                  <Td>
-                    <div>{report?.remaining_stock}</div>
-                  </Td>
+                  <Td><span className="table-amount">{report?.remaining_stock}</span></Td>
 
-                  <Td>
-                    {report?.transit_quantity +
-                      report?.wholesale_transit_quantity}
-                  </Td>
-                  <Td>
-                    {report?.purchased_quantity +
+                  <Td><span className="table-amount">{report?.transit_quantity +
+                      report?.wholesale_transit_quantity}</span></Td>
+                  <Td><span className="table-amount">{report?.purchased_quantity +
                       report?.wholesale_returned_quantity +
                       report?.partial_released_quantity +
                       report?.stock_transfer_received_quantity -
-                      report?.stock_transfer_released_quantity}
-                  </Td>
-                  <Td>
-                    {report?.released_quantity -
+                      report?.stock_transfer_released_quantity}</span></Td>
+                  <Td><span className="table-amount">{report?.released_quantity -
                       report?.partial_released_quantity +
                       report?.wholesale_released_quantity +
                       report?.stock_transfer_received_quantity -
-                      report?.stock_transfer_released_quantity}
-                  </Td>
+                      report?.stock_transfer_released_quantity}</span></Td>
 
                   <Td className="ps-10">
                     <Link
@@ -302,15 +289,18 @@ const Page: React.FC = () => {
             })}
           </Tbody>
         </TableWrapper>
-
-        <PaginationComponent
+          <PaginationComponent
           ordersPerPage={ordersPerPage}
           handleOrdersPerPageChange={handleLogsPerPageChange}
           currentPage={currentPage}
           setCurrentPage={setCurrentPage}
           totalPages={totalPages}
           totalData={totalOrders}
-        />
+            isShowText={true}
+            showRefresh={false}
+            className="orders-table-pagination !mt-0 !rounded-none !border-x-0 !border-b-0 !shadow-none"
+          />
+        </div>
         {isModalOpen && selectedImage && (
           <ImagePreviewModal
             selectedImage={selectedImage}

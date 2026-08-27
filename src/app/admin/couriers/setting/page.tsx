@@ -1,7 +1,7 @@
 "use client";
 import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import { useEffect, useRef, useState } from "react";
-import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
+import AuthLayout from "@admin/layouts/AuthLayout";
 import Button from "@admin/components/core/Button/Button";
 import Icon from "@admin/components/core/Icon/Icon";
 import { CourierService } from "@admin/@services/apis/CouriersService/Courier.service";
@@ -14,6 +14,8 @@ import Alert from "@admin/components/core/Aleart/Aleart";
 import AllFilter from "@admin/components/pages/AllFilter/AllFilter";
 import { SelectOption } from "@admin/@interfaces/common.interface";
 import { CourierManagementContext } from "@admin/context/CourierManagementContext";
+import PageHeader from "@admin/components/layout/PageHeader";
+import TableRefreshButton from "@admin/components/Table/TableRefreshButton";
 
 const Page: React.FC = () => {
   const { permissionList } = useGlobalContext();
@@ -222,56 +224,74 @@ const Page: React.FC = () => {
           />
         </div>
       </Alert>
-      <NoScrollLayout>
-        <div className="2xl:pt-4 pt-2 2xl:px-4 px-3">
-          <div className="flex flex-wrap items-center gap-3">
-            <h1 className="text-xl font-semibold dark:text-gray-300">
-              Courier Settings
-            </h1>
+      <div className="2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 pb-4 relative w-full">
+        <PageHeader
+          title="Courier Settings"
+          action={
+            permissionList.includes("courier_create") ? (
+              <Button
+                onClick={handleAddClick}
+                className="btn-primary btn-primary-inline inline-flex items-center gap-2"
+              >
+                <Icon name="add" variant="outlined" size={16} />
+                Add Courier
+              </Button>
+            ) : undefined
+          }
+        />
+
+        <div className="data-table-card glass-card rounded-2xl orders-table-shell">
+          <div className="premium-table-toolbar">
+            <p className="premium-table-toolbar-title">Courier records</p>
+            <p className="premium-table-toolbar-meta">
+              {courierData.length.toLocaleString()}{" "}
+              {courierData.length === 1 ? "courier" : "couriers"}
+            </p>
+          </div>
+
+          <div className="data-table-toolbar">
+            <div className="data-table-toolbar-start">
               <AllFilter
                 isCourierTypeFilter={true}
                 courierTypeOptions={courierTypeOptions}
                 selectedCourierType={selectedCourierType}
                 setSelectedCourierType={setSelectedCourierType}
               />
-            {permissionList.includes("courier_create") && (
-              <Button
-                onClick={handleAddClick}
-                className="btn-primary btn-primary-inline inline-flex items-center gap-2"
-              >
-                Add Courier
-              </Button>
-            )}
+            </div>
+            <div className="data-table-toolbar-end">
+              <TableRefreshButton
+                onRefresh={() => fetchCouriers()}
+                isLoading={tableLoading}
+                className="!h-9"
+              />
+            </div>
           </div>
 
-          
+          <CourierManagementContext.Provider
+            value={{
+              courierData,
+              tableLoading,
+              handleWebsiteChange,
+              fetchCouriers,
+              isModalOpen,
+              setIsModalOpen,
+              modalMode,
+              items,
+              handleEditClick,
+              popupRef,
+              popupIndex,
+              togglePopup,
+              handleStoreAddClick,
+              isModalStoreOpen,
+              setIsModalStoreOpen,
+              handleRemove,
+            }}
+          >
+            <CouriersTable />
+            <AddCouriersModal />
+            <AddStoreModal />
+          </CourierManagementContext.Provider>
         </div>
-      </NoScrollLayout>
-      <div className="md:p-4 p-4 ">
-        <CourierManagementContext.Provider
-          value={{
-            courierData,
-            tableLoading,
-            handleWebsiteChange,
-            fetchCouriers,
-            isModalOpen,
-            setIsModalOpen,
-            modalMode,
-            items,
-            handleEditClick,
-            popupRef,
-            popupIndex,
-            togglePopup,
-            handleStoreAddClick,
-            isModalStoreOpen,
-            setIsModalStoreOpen,
-            handleRemove,
-          }}
-        >
-          <CouriersTable />
-          <AddCouriersModal />
-          <AddStoreModal />
-        </CourierManagementContext.Provider>
       </div>
     </AuthLayout>
   );

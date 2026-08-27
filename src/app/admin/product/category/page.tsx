@@ -1,7 +1,9 @@
 "use client";
 import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import Icon from "@admin/components/core/Icon/Icon";
-import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
+import AuthLayout from "@admin/layouts/AuthLayout";
+import PageHeader from "@admin/components/layout/PageHeader";
+import TableRefreshButton from "@admin/components/Table/TableRefreshButton";
 import React, { useState, useEffect, createContext } from "react";
 import PaginationComponent from "@admin/components/core/Pazination/Pazination";
 import useDebounce from "@admin/components/core/UseDebounece/UseDebouence";
@@ -17,7 +19,6 @@ import {
   ProductCategoryContextType,
 } from "@admin/@interfaces/product/productCategory.interface";
 import { useGlobalContext } from "@admin/context/GlobalContext";
-import PageSearch from "@admin/components/core/Search/PageSearch";
 
 export const ProductCategoryContext = createContext(
   {} as ProductCategoryContextType,
@@ -153,37 +154,52 @@ const Page: React.FC = () => {
           />
         </div>
       </Alert>
-      <NoScrollLayout>
-        <div className=" 2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 md:pb-0 mb-2">
-          <div className="md:flex items-center gap-3">
-            <div className="flex items-center gap-3">
-              <h2 className="2xl:text-2xl lg:text-xl text-lg font-semibold text-app text-nowrap">
-                Product Category
-              </h2>
-              <div className=" ">
-                {permissionList.includes("product_category_create") && (
-                  <Button
-                    className="flex items-center bg-green-200 !text-green-600 !px-4 !py-1.5"
-                    onClick={handleAddClick}
-                  >
-                    <span className="ml-1">Add Category</span>
-                  </Button>
-                )}
-              </div>
+      <div className="2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 pb-4 relative w-full">
+        <PageHeader
+          title="Product Category"
+          action={
+            permissionList.includes("product_category_create") ? (
+              <Button
+                onClick={handleAddClick}
+                className="btn-primary btn-primary-inline inline-flex items-center gap-2"
+              >
+                <Icon name="add" variant="outlined" size={16} />
+                Add Category
+              </Button>
+            ) : undefined
+          }
+        />
+
+        <div className="data-table-card glass-card rounded-2xl orders-table-shell">
+          <div className="premium-table-toolbar">
+            <p className="premium-table-toolbar-title">Category records</p>
+            <p className="premium-table-toolbar-meta">
+              {totalExpenses.toLocaleString()}{" "}
+              {totalExpenses === 1 ? "category" : "categories"}
+            </p>
+          </div>
+
+          <div className="data-table-toolbar">
+            <div className="data-table-toolbar-start">
+              <label className="data-table-search">
+                <Icon name="search" variant="outlined" size={18} />
+                <input
+                  type="search"
+                  value={searchTerm}
+                  onChange={handleSearchChange}
+                  placeholder="Search..."
+                />
+              </label>
             </div>
-            <div className="md:w-80 w-full md:my-0 my-2">
-              <PageSearch
-                value={searchTerm}
-                onChange={handleSearchChange}
-                wrapperClass="w-full"
+            <div className="data-table-toolbar-end">
+              <TableRefreshButton
+                onRefresh={fetchProductCategory}
+                isLoading={tableLoading}
+                className="!h-9"
               />
             </div>
           </div>
-        </div>
-      </NoScrollLayout>
 
-      <div className="min-h-[75vh] 2xl:px-4 px-3">
-        <div className="xl:mt-3 mt-2">
           <ProductCategoryContext.Provider
             value={{
               productCategoryData,
@@ -208,6 +224,11 @@ const Page: React.FC = () => {
             setCurrentPage={setCurrentPage}
             totalPages={totalPages}
             totalData={totalExpenses}
+            isShowText={true}
+            onRefresh={fetchProductCategory}
+            isLoading={tableLoading}
+            showRefresh={false}
+            className="orders-table-pagination !mt-0 !rounded-none !border-x-0 !border-b-0 !shadow-none"
           />
         </div>
       </div>

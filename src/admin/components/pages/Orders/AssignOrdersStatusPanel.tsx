@@ -149,62 +149,51 @@ const AssignOrdersStatusPanel: React.FC<AssignOrdersStatusPanelProps> = ({
         noDataViewCondition={orders?.length < 1 ? "No data available" : null}
         isSwitchOn={true}
         isLoading={tableLoading}
-        className="min-h-[700px]"
+        className="orders-table-nested !mt-0 min-h-[560px] !flex-1"
         colValue={8}
       >
         <Thead>
-          <Tr className="dark:bg-gray-700 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300">
-            <Th className="2xl:min-w-32 lg:min-w-14 min-w-32 dark:text-gray-200">
-              Order ID
-            </Th>
-            <Th className="2xl:min-w-40 lg:min-w-32 min-w-40 dark:text-gray-200">
-              Customer Info
-            </Th>
-            <Th className="2xl:min-w-32 lg:min-w-28 min-w-32 dark:text-gray-200">
-              Products
-            </Th>
-            <Th className="2xl:min-w-36 lg:min-w-28 min-w-36 dark:text-gray-200 ps-10">
-              Status
-            </Th>
-            <Th className="2xl:min-w-36 lg:min-w-28 min-w-36 dark:text-gray-200">
-              Total & Due
-            </Th>
-            <Th className="2xl:min-w-32 lg:min-w-28 min-w-32 dark:text-gray-200 !text-nowrap">
+          <Tr>
+            <Th className="2xl:min-w-32 lg:min-w-14 min-w-32">Order ID</Th>
+            <Th className="2xl:min-w-40 lg:min-w-32 min-w-40">Customer Info</Th>
+            <Th className="2xl:min-w-32 lg:min-w-28 min-w-32">Products</Th>
+            <Th className="2xl:min-w-36 lg:min-w-28 min-w-36">Status</Th>
+            <Th className="2xl:min-w-36 lg:min-w-28 min-w-36">Total & Due</Th>
+            <Th className="2xl:min-w-32 lg:min-w-28 min-w-32 !text-nowrap">
               Customer Note & Note
             </Th>
-            <Th className="dark:text-gray-200 min-w-40 ps-8">
-              View
-            </Th>
-            <Th className="dark:text-gray-200">Actions</Th>
+            <Th className="is-center min-w-40">View</Th>
+            <Th className="is-right">Actions</Th>
           </Tr>
         </Thead>
 
-        <Tbody className="dark:bg-gray-800 bg-white">
+        <Tbody>
           {orders.map((order: any, index: number) => (
-            <Tr
-              className="hover:bg-gray-100 dark:hover:bg-gray-800"
-              key={String(order?._id || index)}
-            >
+            <Tr key={String(order?._id || index)}>
               <Td>
-                <div className="flex text-base font-bold items-center text-nowrap">
-                  <span>{order?.sysid || noData}</span>
-                  <Icon
-                    size={16}
-                    name="content_copy"
-                    variant="outlined"
-                    className="ml-2 cursor-pointer"
-                    onClick={() => {
-                      navigator.clipboard.writeText(String(order?.sysid ?? ""));
-                      ToastService.success("Order ID copied to clipboard!");
-                    }}
-                  />
-                </div>
-                <div className="mt-0.5">
-                  <span>{getWebName(order?.domain) || noData}</span>
-                </div>
-                <div className="mt-0.5 flex items-center gap-1 text-nowrap min-w-32">
-                  <Icon name="calendar_month" size={20} variant="outlined" />
-                  <span>
+                <div className="table-user-info">
+                  <div className="table-id-row">
+                    <span className="table-id-chip">
+                      {order?.sysid || noData}
+                    </span>
+                    <button
+                      type="button"
+                      className="table-copy-btn"
+                      aria-label="Copy order ID"
+                      title="Copy order ID"
+                      onClick={() => {
+                        navigator.clipboard.writeText(String(order?.sysid ?? ""));
+                        ToastService.success("Order ID copied to clipboard!");
+                      }}
+                    >
+                      <Icon size={13} name="content_copy" variant="outlined" />
+                    </button>
+                  </div>
+                  <p className="data-table-muted">
+                    {getWebName(order?.domain) || noData}
+                  </p>
+                  <span className="table-date-cell">
+                    <Icon name="calendar_today" size={13} variant="outlined" />
                     {formatTimeAgo(order?.createdAt || order?.order_created) ||
                       noData}
                   </span>
@@ -212,37 +201,41 @@ const AssignOrdersStatusPanel: React.FC<AssignOrdersStatusPanelProps> = ({
               </Td>
 
               <Td>
-                <div className="text-base font-bold">
-                  <span>
+                <div className="table-contact-stack">
+                  <span className="data-table-primary">
                     {order?.customer?.first_name}
                     {order?.customer?.last_name}
                   </span>
-                </div>
-                <div className="mt-2 flex items-center">
-                  <a href={`tel:${order?.customer?.phone}`}>
-                    {order?.customer?.phone}
-                  </a>
-                  <Icon
-                    onClick={() => copyToClipboard(order?.customer?.phone)}
-                    name="content_copy"
-                    size={16}
-                    className="ml-2 cursor-pointer"
-                  />
-                  <FontAwesomeIcon
-                    icon={faWhatsapp}
-                    className="ml-2 cursor-pointer text-green-500"
-                    onClick={() =>
-                      window.open(
-                        `https://web.whatsapp.com/send?phone=88${String(
-                          order?.customer?.phone || "",
-                        ).replace(/\D/g, "")}`,
-                        "_blank",
-                      )
-                    }
-                  />
-                </div>
-                <div className="mt-0.5 text-nowrap">
-                  <span>{order?.payment?.title || noData}</span>
+                  <span className="table-contact-line">
+                    <Icon name="call" size={14} variant="outlined" />
+                    <a href={`tel:${order?.customer?.phone}`}>
+                      {order?.customer?.phone}
+                    </a>
+                    <button
+                      type="button"
+                      className="table-copy-btn"
+                      aria-label="Copy phone number"
+                      title="Copy phone number"
+                      onClick={() => copyToClipboard(order?.customer?.phone)}
+                    >
+                      <Icon name="content_copy" size={13} variant="outlined" />
+                    </button>
+                    <FontAwesomeIcon
+                      icon={faWhatsapp}
+                      className="ml-1 cursor-pointer text-green-500"
+                      onClick={() =>
+                        window.open(
+                          `https://web.whatsapp.com/send?phone=88${String(
+                            order?.customer?.phone || "",
+                          ).replace(/\D/g, "")}`,
+                          "_blank",
+                        )
+                      }
+                    />
+                  </span>
+                  <span className="data-table-muted">
+                    {order?.payment?.title || noData}
+                  </span>
                 </div>
               </Td>
 
@@ -287,20 +280,17 @@ const AssignOrdersStatusPanel: React.FC<AssignOrdersStatusPanelProps> = ({
               </Td>
 
               <Td>
-                <div className="flex flex-wrap">
-                  <span className="min-w-10 text-md font-semibold text-gray-600 dark:text-gray-300">
-                    Total
+                <div className="table-contact-stack">
+                  <span className="table-amount">
+                    <span className="table-amount-label">Total</span>
+                    ৳ {order?.total || 0}
                   </span>
-                  <span className="text-md font-semibold text-gray-600 dark:text-gray-300">
-                    : ৳ {order?.total || 0}
-                  </span>
-                </div>
-                <div className="flex flex-wrap mt-1.5">
-                  <span className="min-w-10 text-md font-semibold text-gray-600 dark:text-gray-300">
-                    Due
-                  </span>
-                  <span className="text-md font-semibold text-gray-600 dark:text-gray-300">
-                    : ৳ {order?.due || 0}
+                  <span
+                    className={`table-role-badge ${
+                      Number(order?.due) > 0 ? "is-rejected" : "is-approved"
+                    }`}
+                  >
+                    Due: ৳ {order?.due || 0}
                   </span>
                 </div>
               </Td>
@@ -331,27 +321,29 @@ const AssignOrdersStatusPanel: React.FC<AssignOrdersStatusPanelProps> = ({
                 </div>
               </Td>
 
-              <Td>
+              <Td className="is-right">
                 <div className="relative max-w-40">
-                  <Icon
-                    name="more_horiz"
-                    variant="outlined"
+                  <button
+                    type="button"
+                    className="data-table-action-btn"
+                    aria-expanded={popupIndex === index}
                     onClick={() =>
                       setPopupIndex(popupIndex === index ? null : index)
                     }
-                    className="cursor-pointer"
-                  />
+                  >
+                    <Icon name="more_vert" variant="outlined" size={18} />
+                  </button>
                   {popupIndex === index && (
                     <div
                       ref={popupRef}
-                      className="absolute top-8 right-0 bg-white dark:bg-gray-700 border shadow-md rounded-lg p-2 z-20 min-w-40"
+                      className="absolute top-9 right-0 z-20 min-w-40 rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-1.5 shadow-[var(--shadow-soft)]"
                     >
                       <button
                         type="button"
                         onClick={() =>
                           router.push(`/admin/orders/edit/${String(order?._id)}`)
                         }
-                        className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg"
+                        className="block w-full rounded-lg px-3 py-2 text-left text-sm text-app hover:bg-[var(--bg-hover)]"
                       >
                         Edit
                       </button>
@@ -371,7 +363,9 @@ const AssignOrdersStatusPanel: React.FC<AssignOrdersStatusPanelProps> = ({
         setCurrentPage={setCurrentPage}
         totalPages={totalPages}
         totalData={totalOrders}
-        isShowText={false}
+        isShowText={true}
+        showRefresh={false}
+        className="orders-table-pagination !mt-0 !rounded-none !border-x-0 !border-b-0 !shadow-none"
       />
 
       {isImageOpen && selectedImage && (

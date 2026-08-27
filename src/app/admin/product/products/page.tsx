@@ -1,7 +1,9 @@
 "use client";
 import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import Icon from "@admin/components/core/Icon/Icon";
-import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
+import AuthLayout from "@admin/layouts/AuthLayout";
+import PageHeader from "@admin/components/layout/PageHeader";
+import TableRefreshButton from "@admin/components/Table/TableRefreshButton";
 import React, {
   Suspense,
   useRef,
@@ -31,7 +33,6 @@ import {
   IProductsResponse,
 } from "@admin/@interfaces/productReport/allProduct.interface";
 import { useGlobalContext } from "@admin/context/GlobalContext";
-import PageSearch from "@admin/components/core/Search/PageSearch";
 import AllFilter from "@admin/components/pages/AllFilter/AllFilter";
 
 export const ProductsContext = createContext({} as IProductsContext);
@@ -506,76 +507,91 @@ const ProductsPageContent: React.FC = () => {
         </div>
       </Alert>
 
-      <NoScrollLayout>
-        <div className="md:flex flex-wrap items-center  gap-3 items-center 2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 md:pb-0 mb-2">
-          <div className="flex flex-wrap items-center items-center 4xl:gap-4 gap-2">
-            <h2 className="2xl:text-2xl lg:text-xl text-lg font-semibold text-app text-nowrap">
-              All Product
-            </h2>
-              <AllFilter
-              isCategoryOptionFilter={true}
-              categoryOptions={categoryOptions || []}
-              selectedCategory={selectedCategory}
-              setSelectedCategory={setSelectedCategory}
-              isBrandOptionFilter={false}
-              brandOptions={brandOptions || []}
-              selectedBrand={selectedBrand}
-              setSelectedBrand={setSelectedBrand}
-              isStatusOptionFilter={true}
-              stockStatusOptions={stockStatusOptions}
-              selectedStatus={selectedStatus}
-              setSelectedStatus={setSelectedStatus}
-              cardLoading={cardLoading}
-              setCurrentPage={setCurrentPage}
-            />
-
-            <div className="">
-              {permissionList.includes("product_create") && (
-                <Button
-                  className="flex items-center bg-green-200 !text-green-600 !px-4 !py-1.5"
-                  onClick={handleAddClick}
-                >
-                  <span className="ml-1 text-nowrap">Add Product</span>
-                </Button>
-              )}
-            </div>
-            {!!selectedProductIds.length && (
+      <div className="2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 pb-4 relative w-full">
+        <PageHeader
+          title="All Products"
+          action={
+            permissionList.includes("product_create") ? (
               <Button
-                className="flex items-center !bg-blue-600 !text-white !px-4 !py-1.5"
-                onClick={() => setIsBulkSeoModalOpen(true)}
+                onClick={handleAddClick}
+                className="btn-primary btn-primary-inline inline-flex items-center gap-2"
               >
-                <span className="ml-1 text-nowrap">Update Seo</span>
+                <Icon name="add" variant="outlined" size={16} />
+                Add Product
               </Button>
-            )}
-          </div>
-          <div className="4xl:w-72 md:w-64 w-full md:mt-0 mt-2">
-            <PageSearch
-              value={searchTerm}
-              onChange={handleSearchChange}
-              wrapperClass="w-full"
-            />
-          </div>
-        </div>
-        
-      </NoScrollLayout>
+            ) : undefined
+          }
+        />
 
-      <ProductsContext.Provider
-        value={{
-          productData,
-          tableLoading,
-          handleImageClick,
-          togglePopup,
-          popupIndex,
-          popupRef,
-          handleDelete,
-          setSortOrder,
-          sortOrder,
-          selectedProductIds,
-          setSelectedProductIds,
-        }}
-      >
-        <div className="min-h-[70vh] 2xl:px-4 px-3">
-          <div className="xl:mt-3 mt-2">
+        <ProductsContext.Provider
+          value={{
+            productData,
+            tableLoading,
+            handleImageClick,
+            togglePopup,
+            popupIndex,
+            popupRef,
+            handleDelete,
+            setSortOrder,
+            sortOrder,
+            selectedProductIds,
+            setSelectedProductIds,
+          }}
+        >
+          <div className="data-table-card glass-card rounded-2xl orders-table-shell">
+            <div className="premium-table-toolbar">
+              <p className="premium-table-toolbar-title">Product records</p>
+              <p className="premium-table-toolbar-meta">
+                {totalProduct.toLocaleString()}{" "}
+                {totalProduct === 1 ? "product" : "products"}
+              </p>
+            </div>
+
+            <div className="data-table-toolbar">
+              <div className="data-table-toolbar-start">
+                <label className="data-table-search">
+                  <Icon name="search" variant="outlined" size={18} />
+                  <input
+                    type="search"
+                    value={searchTerm}
+                    onChange={handleSearchChange}
+                    placeholder="Search..."
+                  />
+                </label>
+                <AllFilter
+                  isCategoryOptionFilter={true}
+                  categoryOptions={categoryOptions || []}
+                  selectedCategory={selectedCategory}
+                  setSelectedCategory={setSelectedCategory}
+                  isBrandOptionFilter={false}
+                  brandOptions={brandOptions || []}
+                  selectedBrand={selectedBrand}
+                  setSelectedBrand={setSelectedBrand}
+                  isStatusOptionFilter={true}
+                  stockStatusOptions={stockStatusOptions}
+                  selectedStatus={selectedStatus}
+                  setSelectedStatus={setSelectedStatus}
+                  cardLoading={cardLoading}
+                  setCurrentPage={setCurrentPage}
+                />
+                {!!selectedProductIds.length && (
+                  <Button
+                    className="flex items-center !bg-blue-600 !text-white !px-4 !py-1.5"
+                    onClick={() => setIsBulkSeoModalOpen(true)}
+                  >
+                    <span className="ml-1 text-nowrap">Update Seo</span>
+                  </Button>
+                )}
+              </div>
+              <div className="data-table-toolbar-end">
+                <TableRefreshButton
+                  onRefresh={fetchProduct}
+                  isLoading={tableLoading}
+                  className="!h-9"
+                />
+              </div>
+            </div>
+
             <ProductTable />
 
             <PaginationComponent
@@ -584,6 +600,12 @@ const ProductsPageContent: React.FC = () => {
               currentPage={currentPage}
               setCurrentPage={setCurrentPage}
               totalPages={totalPages}
+              totalData={totalProduct}
+              isShowText={true}
+              onRefresh={fetchProduct}
+              isLoading={tableLoading}
+              showRefresh={false}
+              className="orders-table-pagination !mt-0 !rounded-none !border-x-0 !border-b-0 !shadow-none"
             />
 
             {isImageOpen && selectedImage && (
@@ -593,8 +615,8 @@ const ProductsPageContent: React.FC = () => {
               />
             )}
           </div>
-        </div>
-      </ProductsContext.Provider>
+        </ProductsContext.Provider>
+      </div>
 
       <Alert
         isOpen={isBulkSeoModalOpen}

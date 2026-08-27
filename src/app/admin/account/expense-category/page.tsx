@@ -1,7 +1,7 @@
 "use client";
 import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import Icon from "@admin/components/core/Icon/Icon";
-import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
+import AuthLayout from "@admin/layouts/AuthLayout";
 import React, { useState, useEffect, createContext } from "react";
 import PaginationComponent from "@admin/components/core/Pazination/Pazination";
 import useDebounce from "@admin/components/core/UseDebounece/UseDebouence";
@@ -17,7 +17,8 @@ import {
 import ExpensesCategoryTable from "@admin/components/pages/ExpensesCategory/ExpensesCategoryTable";
 import { useGlobalContext } from "@admin/context/GlobalContext";
 import { hasPermission } from "@admin/utils";
-import PageSearch from "@admin/components/core/Search/PageSearch";
+import PageHeader from "@admin/components/layout/PageHeader";
+import TableRefreshButton from "@admin/components/Table/TableRefreshButton";
 
 export const ExpensesCategoryContext = createContext(
   {} as ExpensesCategoryContextType
@@ -269,34 +270,32 @@ const Page: React.FC = () => {
         </div>
       </Alert>
 
-      <NoScrollLayout>
-        <div className="md:flex items-center gap-3 2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 md:pb-0 mb-2">
-          <div className="flex items-center gap-3">
-            <h2 className="2xl:text-2xl lg:text-xl text-lg font-semibold text-app text-nowrap">
-              Expenses Category
-            </h2>
-            <div className="flex items-center gap-2">
+      <div className="2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 pb-4 relative w-full">
+        <PageHeader
+          title="Expenses Category"
+          action={
+            <div className="flex items-center gap-2 flex-wrap">
               {hasPermission(permissionList, "account_expense_category_create") &&
                 !isPriorityEditMode && (
                   <Button
                     className="btn-primary btn-primary-inline inline-flex items-center gap-2"
                     onClick={handleAddClick}
                   >
-                    <span className="ml-1">Add Category</span>
+                    <Icon name="add" variant="outlined" size={16} />
+                    Add Category
                   </Button>
                 )}
-
               {permissionList.includes("setting_priority_edit") && (
                 <Button
-                  className={`flex items-center !py-1.5 !px-4 ${isPriorityEditMode ? "bg-orange-500" : "bg-indigo-500"
-                    }`}
+                  className={`flex items-center !py-1.5 !px-4 ${
+                    isPriorityEditMode ? "bg-orange-500" : "bg-indigo-500"
+                  }`}
                   onClick={handleTogglePriorityEditMode}
                 >
                   <Icon name="filter_list" />
-                  <span className="">{isPriorityEditMode ? "Cancel" : ""}</span>
+                  <span>{isPriorityEditMode ? "Cancel" : ""}</span>
                 </Button>
               )}
-
               {isPriorityEditMode && (
                 <Button
                   className="flex items-center bg-green-600 !px-4 !py-1.5"
@@ -308,22 +307,38 @@ const Page: React.FC = () => {
                 </Button>
               )}
             </div>
+          }
+        />
+        <div className="data-table-card glass-card rounded-2xl orders-table-shell">
+          <div className="premium-table-toolbar">
+            <p className="premium-table-toolbar-title">Expense category records</p>
+            <p className="premium-table-toolbar-meta">
+              {totalExpenses.toLocaleString()}{" "}
+              {totalExpenses === 1 ? "category" : "categories"}
+            </p>
           </div>
-          {!isPriorityEditMode && (
-            <div className="md:w-80 w-full md:mt-0 mt-2">
-              <PageSearch
-                value={searchTerm}
-                onChange={handleSearchChange}
-                wrapperClass="w-full"
+          <div className="data-table-toolbar">
+            <div className="data-table-toolbar-start">
+              {!isPriorityEditMode && (
+                <label className="data-table-search">
+                  <Icon name="search" variant="outlined" size={18} />
+                  <input
+                    type="search"
+                    value={searchTerm}
+                    onChange={handleSearchChange}
+                    placeholder="Search..."
+                  />
+                </label>
+              )}
+            </div>
+            <div className="data-table-toolbar-end">
+              <TableRefreshButton
+                onRefresh={getExpensesCategory}
+                isLoading={tableLoading}
+                className="!h-9"
               />
             </div>
-          )}
-
-        </div>
-      </NoScrollLayout>
-
-      <div className="min-h-[75vh] 2xl:px-4 px-3">
-        <div className="xl:mt-3 mt-2">
+          </div>
           <ExpensesCategoryContext.Provider
             value={{
               expensesData: isPriorityEditMode
@@ -346,7 +361,6 @@ const Page: React.FC = () => {
             <ExpensesCategoryTable />
             <ExpensesCategoryModal />
           </ExpensesCategoryContext.Provider>
-
           {!isPriorityEditMode && (
             <PaginationComponent
               ordersPerPage={productPerPage}
@@ -355,6 +369,11 @@ const Page: React.FC = () => {
               setCurrentPage={setCurrentPage}
               totalPages={totalPages}
               totalData={totalExpenses}
+              isShowText={true}
+              onRefresh={getExpensesCategory}
+              isLoading={tableLoading}
+              showRefresh={false}
+              className="orders-table-pagination !mt-0 !rounded-none !border-x-0 !border-b-0 !shadow-none"
             />
           )}
         </div>

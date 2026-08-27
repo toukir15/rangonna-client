@@ -1,11 +1,13 @@
 "use client";
 import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 
-import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
+import AuthLayout from "@admin/layouts/AuthLayout";
+import PageHeader from "@admin/components/layout/PageHeader";
 import { ToastService } from "@admin/utils/toastr.service";
 import React, { useEffect, useState } from "react";
 import Icon from "@admin/components/core/Icon/Icon";
 import TableWrapper from "@admin/components/Table/TableWrapper";
+import TableRefreshButton from "@admin/components/Table/TableRefreshButton";
 import { Tbody, Td, Th, Thead, Tr } from "@admin/components/Table/Table";
 import PaginationComponent from "@admin/components/core/Pazination/Pazination";
 import { CampaignReportService } from "@admin/@services/apis/Marketing/CampaignReport/CampaignReport.service";
@@ -187,17 +189,32 @@ const Page: React.FC = () => {
 
   return (
     <AuthLayout>
-      <NoScrollLayout>
-        <div className="2xl:pt-4 pt-2 2xl:px-4 px-3 w-full">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <h1 className="text-xl font-semibold text-gray-800 dark:text-gray-300">
-                Search By Order
-              </h1>
-              <CalendarRange range={range} setRange={setRange} />
-            </div>
+      <div className="2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 pb-4 relative w-full">
+        <PageHeader title="Search By Order" />
+        
+        <div className="mb-4">
+          {cardLoading ? (
+              <EmployeeReport />
+            ) : (
+              <div className="grid md:grid-cols-5 grid-cols-1 md:gap-4 gap-3 w-full">
+                {CardData?.map((data: ICardData, index: number) => {
+                  return <ShopCart data={data} key={index} />;
+                })}
+              </div>
+            )}
+        </div>
 
-            <div className="relative md:w-[400px] w-full">
+        <div className="data-table-card glass-card rounded-2xl orders-table-shell">
+          <div className="premium-table-toolbar">
+            <p className="premium-table-toolbar-title">Search By Order records</p>
+            <p className="premium-table-toolbar-meta">
+              {totalOrders.toLocaleString()} records
+            </p>
+          </div>
+          <div className="data-table-toolbar">
+            <div className="data-table-toolbar-start">
+                <CalendarRange range={range} setRange={setRange} />
+                <div className="relative md:w-[400px] w-full">
               <input
                 type="text"
                 value={productSearch}
@@ -214,27 +231,20 @@ const Page: React.FC = () => {
                 <Icon name="search" variant="outlined" />
               </button>
             </div>
+            </div>
+            <div className="data-table-toolbar-end">
+              <TableRefreshButton
+                onRefresh={fetchCampaignData}
+                isLoading={tableLoading}
+                className="!h-9"
+              />
+            </div>
           </div>
-          <div className="mt-4 w-full">
-            {cardLoading ? (
-              <EmployeeReport />
-            ) : (
-              <div className="grid md:grid-cols-5 grid-cols-1 md:gap-4 gap-3 w-full">
-                {CardData?.map((data: ICardData, index: number) => {
-                  return <ShopCart data={data} key={index} />;
-                })}
-              </div>
-            )}
-          </div>
-        </div>
-      </NoScrollLayout>
-
-      <div className="2xl:px-4 px-3 relative w-full mt-3">
-        <TableWrapper
+          <TableWrapper
           data={singleProduct}
           showCheckbox={false}
           isLoading={tableLoading}
-          className="min-h-[650px]"
+          className="orders-table-nested !mt-0 min-h-[560px] !flex-1"
           colValue={6}
           isSwitchOn={true}
           noDataViewCondition={
@@ -242,21 +252,18 @@ const Page: React.FC = () => {
           }
         >
           <Thead>
-            <Tr className="dark:bg-gray-700 h-[50px]">
+            <Tr>
               <Th className="min-w-28">Date</Th>
               <Th className="min-w-28">Order ID</Th>
               <Th>Campaign</Th>
             </Tr>
           </Thead>
 
-          <Tbody className="dark:bg-gray-800 bg-white">
+          <Tbody>
             {singleProduct.map((data: any, index: number) => {
               return (
-                <Tr
-                  key={index}
-                  className="hover:bg-gray-100 dark:hover:bg-gray-700"
-                >
-                  <Td>{formatDate(data.createdAt)}</Td>
+                <Tr key={index}>
+                  <Td><span className="data-table-primary">{formatDate(data.createdAt)}</span></Td>
                   <Td>
                     <div className="flex items-center">
                       <p>{data.sysid}</p>
@@ -294,15 +301,19 @@ const Page: React.FC = () => {
             })}
           </Tbody>
         </TableWrapper>
-
-        <PaginationComponent
+          <PaginationComponent
           ordersPerPage={ordersPerPage}
           handleOrdersPerPageChange={handleLogsPerPageChange}
           currentPage={currentPage}
           setCurrentPage={setCurrentPage}
           totalPages={totalPages}
           totalData={totalOrders}
-        />
+            isShowText={true}
+            showRefresh={false}
+            className="orders-table-pagination !mt-0 !rounded-none !border-x-0 !border-b-0 !shadow-none"
+          />
+        </div>
+        
       </div>
     </AuthLayout>
   );

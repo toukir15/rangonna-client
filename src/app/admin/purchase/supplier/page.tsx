@@ -2,7 +2,9 @@
 import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 
 import Icon from "@admin/components/core/Icon/Icon";
-import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
+import AuthLayout from "@admin/layouts/AuthLayout";
+import PageHeader from "@admin/components/layout/PageHeader";
+import TableRefreshButton from "@admin/components/Table/TableRefreshButton";
 import React, { useRef, useState, useEffect } from "react";
 import PaginationComponent from "@admin/components/core/Pazination/Pazination";
 import useDebounce from "@admin/components/core/UseDebounece/UseDebouence";
@@ -16,8 +18,7 @@ import { IAccount } from "@admin/@interfaces/account/account-list/account-list.i
 import SupplierModal from "@admin/components/pages/Team/Supplier/SupplierModal";
 import { SupplierService } from "@admin/@services/apis/TeamService/SupplierService/supplier.service";
 import { useGlobalContext } from "@admin/context/GlobalContext";
-import { hasPermission } from "@admin/utils";
-import PageSearch from "@admin/components/core/Search/PageSearch";
+import { hasPermission, noData } from "@admin/utils";
 
 type IPriorityPayload = {
   _id: string;
@@ -310,34 +311,34 @@ const Page: React.FC = () => {
         </div>
       </Alert>
 
-      <NoScrollLayout>
-        <div className="md:flex gap-3 items-center 2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 md:pb-0 mb-2">
-          <div className="flex items-center gap-3">
-            <h2 className="2xl:text-2xl lg:text-xl text-lg font-semibold text-app">
-              Supplier
-            </h2>
-            <div className="flex gap-2">
+      <div className="2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 pb-4 relative w-full">
+        <PageHeader
+          title="Supplier"
+          action={
+            <div className="flex flex-wrap items-center gap-2">
               {permissionList.includes("purchase_supplier_create") &&
                 !isPriorityEditMode && (
                   <Button
-                    className="btn-primary btn-primary-inline inline-flex items-center gap-2"
                     onClick={handleAddClick}
+                    className="btn-primary btn-primary-inline inline-flex items-center gap-2"
                   >
+                    <Icon name="add" variant="outlined" size={16} />
                     Add Supplier
                   </Button>
                 )}
-
               {permissionList.includes("setting_priority_edit") && (
                 <Button
-                  className={`flex items-center !px-3 !py-1.5 ${isPriorityEditMode ? "bg-orange-500 !py-1.5" : "bg-indigo-500 !py-1.5"
-                    }`}
+                  className={`flex items-center !px-3 !py-1.5 ${
+                    isPriorityEditMode
+                      ? "bg-orange-500 !py-1.5"
+                      : "bg-indigo-500 !py-1.5"
+                  }`}
                   onClick={handleTogglePriorityEditMode}
                 >
                   <Icon name="filter_list" />
-                  <span className="">{isPriorityEditMode ? "Cancel" : ""}</span>
+                  <span>{isPriorityEditMode ? "Cancel" : ""}</span>
                 </Button>
               )}
-
               {isPriorityEditMode && (
                 <Button
                   className="flex items-center bg-green-600 !px-4 !py-1.5"
@@ -349,25 +350,45 @@ const Page: React.FC = () => {
                 </Button>
               )}
             </div>
+          }
+        />
+
+        <div className="data-table-card glass-card rounded-2xl orders-table-shell">
+          <div className="premium-table-toolbar">
+            <p className="premium-table-toolbar-title">Supplier records</p>
+            <p className="premium-table-toolbar-meta">
+              {totalProduct.toLocaleString()}{" "}
+              {totalProduct === 1 ? "supplier" : "suppliers"}
+            </p>
           </div>
 
-          {!isPriorityEditMode && (
-            <div className="md:w-80 w-full md:my-0 my-2">
-              <PageSearch
-                value={searchTerm}
-                onChange={handleSearchChange}
-                wrapperClass="w-full"
+          <div className="data-table-toolbar">
+            <div className="data-table-toolbar-start">
+              {!isPriorityEditMode && (
+                <label className="data-table-search">
+                  <Icon name="search" variant="outlined" size={18} />
+                  <input
+                    type="search"
+                    value={searchTerm}
+                    onChange={handleSearchChange}
+                    placeholder="Search..."
+                  />
+                </label>
+              )}
+            </div>
+            <div className="data-table-toolbar-end">
+              <TableRefreshButton
+                onRefresh={getAllSupplier}
+                isLoading={tableLoading}
+                className="!h-9"
               />
             </div>
-          )}
-        </div>
-      </NoScrollLayout>
+          </div>
 
-      <div className="min-h-[75vh] 2xl:px-4 px-3">
-        <div className="xl:mt-3 mt-2">
           <TableWrapper
+            showCheckbox={false}
             isSwitchOn={true}
-            className="min-h-[650px]"
+            className="orders-table-nested !mt-0 min-h-[560px] !flex-1"
             data={tableData}
             isLoading={tableLoading}
             noDataViewCondition={
@@ -376,58 +397,27 @@ const Page: React.FC = () => {
             colValue={7}
           >
             <Thead>
-              <Tr className="dark:bg-gray-700 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
-                <Th className="dark:text-gray-300 2xl:min-w-20 lg:min-w-16 min-w-20">
-                  #
-                </Th>
-                <Th className="dark:text-gray-300 2xl:min-w-40 lg:min-w-32 min-w-40">
-                  <div className="flex items-center">
-                    <div>
-                      <p>Name</p>
-                    </div>
-                    {!isPriorityEditMode && (
-                      <div className="mt-2">
-                        <div className="h-1.5">
-                          <Icon
-                            name={"arrow_drop_up"}
-                            className="cursor-pointer"
-                          />
-                        </div>
-                        <div className="">
-                          <Icon
-                            name={"arrow_drop_down"}
-                            className="cursor-pointer"
-                          />
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </Th>
-                <Th className="dark:text-gray-300 2xl:min-w-40 lg:min-w-32 min-w-40">
+              <Tr>
+                <Th className="2xl:min-w-20 lg:min-w-16 min-w-20">#</Th>
+                <Th className="2xl:min-w-40 lg:min-w-32 min-w-40">Name</Th>
+                <Th className="2xl:min-w-40 lg:min-w-32 min-w-40">
                   Company Name
                 </Th>
-                <Th className="dark:text-gray-300 2xl:min-w-40 lg:min-w-32 min-w-40">
-                  Phone
-                </Th>
-                <Th className="dark:text-gray-300 min-w-44">Address</Th>
-                <Th className="dark:text-gray-300 2xl:min-w-40 lg:min-w-32 min-w-40">
-                  Email
-                </Th>
-                <Th className="dark:text-gray-300 2xl:min-w-40 lg:min-w-32 min-w-40">
-                  Active
-                </Th>
-                <Th className="dark:text-gray-300 2xl:min-w-40 lg:min-w-32 min-w-40">
-                  Action
-                </Th>
+                <Th className="2xl:min-w-40 lg:min-w-32 min-w-40">Phone</Th>
+                <Th className="min-w-44">Address</Th>
+                <Th className="2xl:min-w-40 lg:min-w-32 min-w-40">Email</Th>
+                <Th className="2xl:min-w-40 lg:min-w-32 min-w-40">Active</Th>
+                <Th className="is-right">Actions</Th>
               </Tr>
             </Thead>
 
-            <Tbody className="dark:bg-gray-800 bg-white">
+            <Tbody>
               {tableData?.map((item: any, index: number) => {
                 return (
                   <Tr
-                    className={`h-14 transition ${isPriorityEditMode ? "cursor-move" : ""
-                      } ${draggedIndex === index ? "opacity-50" : ""}`}
+                    className={`transition ${
+                      isPriorityEditMode ? "cursor-move" : ""
+                    } ${draggedIndex === index ? "opacity-50" : ""}`}
                     key={item._id || index}
                     draggable={isPriorityEditMode}
                     onDragStart={() => handleDragStart(index)}
@@ -442,18 +432,34 @@ const Page: React.FC = () => {
                             className="text-gray-500 cursor-grab"
                           />
                         )}
-                        <span>{index + 1}</span>
+                        <span className="data-table-muted">{index + 1}</span>
                       </div>
                     </Td>
-
-                    <Td>{item?.name}</Td>
-                    <Td className="text-base font-bold">
-                      {item?.company_name}
+                    <Td>
+                      <span className="data-table-primary">
+                        {item?.name || noData}
+                      </span>
                     </Td>
-                    <Td>{item?.phone}</Td>
-                    <Td>{item?.address}</Td>
-                    <Td>{item?.email}</Td>
-
+                    <Td>
+                      <span className="data-table-primary">
+                        {item?.company_name || noData}
+                      </span>
+                    </Td>
+                    <Td>
+                      <span className="data-table-muted">
+                        {item?.phone || noData}
+                      </span>
+                    </Td>
+                    <Td>
+                      <span className="data-table-muted">
+                        {item?.address || noData}
+                      </span>
+                    </Td>
+                    <Td>
+                      <span className="data-table-muted">
+                        {item?.email || noData}
+                      </span>
+                    </Td>
                     <Td>
                       {activeToggleLoading[item._id] ? (
                         <Icon
@@ -472,43 +478,48 @@ const Page: React.FC = () => {
                             activeToggleLoading[item?._id] ||
                             !hasPermission(
                               permissionList,
-                              "purchase_supplier_edit"
+                              "purchase_supplier_edit",
                             )
                           }
                         />
                       )}
                     </Td>
-
-                    <Td>
+                    <Td className="is-right">
                       {!isPriorityEditMode &&
                         hasPermission(
                           permissionList,
-                          "purchase_supplier_edit"
+                          "purchase_supplier_edit",
                         ) && (
-                          <div className="relative">
-                            <Icon
-                              name={"more_horiz"}
-                              variant="outlined"
+                          <div className="relative max-w-40">
+                            <button
+                              type="button"
+                              className="data-table-action-btn"
+                              aria-expanded={popupIndex === index}
                               onClick={() => togglePopup(index)}
-                              className="cursor-pointer"
-                            />
-
+                            >
+                              <Icon
+                                name="more_vert"
+                                variant="outlined"
+                                size={18}
+                              />
+                            </button>
                             {popupIndex === index && (
                               <div
                                 ref={popupRef}
-                                className="absolute top-8 right-0 bg-white dark:bg-gray-700 dark:border-gray-500 border shadow-md rounded-lg p-4 z-20 min-w-40"
+                                className="absolute top-9 right-0 z-20 min-w-40 rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-1.5 shadow-[var(--shadow-soft)]"
                               >
                                 {hasPermission(
                                   permissionList,
-                                  "purchase_supplier_edit"
+                                  "purchase_supplier_edit",
                                 ) && (
-                                    <button
-                                      className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg"
-                                      onClick={() => handleEditClick(item)}
-                                    >
-                                      Edit
-                                    </button>
-                                  )}
+                                  <button
+                                    type="button"
+                                    className="block w-full rounded-lg px-3 py-2 text-left text-sm text-app hover:bg-[var(--bg-hover)]"
+                                    onClick={() => handleEditClick(item)}
+                                  >
+                                    Edit
+                                  </button>
+                                )}
                               </div>
                             )}
                           </div>
@@ -528,6 +539,11 @@ const Page: React.FC = () => {
               setCurrentPage={setCurrentPage}
               totalPages={totalPages}
               totalData={totalProduct}
+              isShowText={true}
+              onRefresh={getAllSupplier}
+              isLoading={tableLoading}
+              showRefresh={false}
+              className="orders-table-pagination !mt-0 !rounded-none !border-x-0 !border-b-0 !shadow-none"
             />
           )}
 

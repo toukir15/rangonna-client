@@ -54,7 +54,7 @@ const FulfillmentTable: React.FC = () => {
                 isSelect={selectedOrders?.length > 0}
                 handleListPrintSelected={handleListPrintSelected}
                 handleOrderPrintSelected={handleOrderPrintSelected}
-                className="min-h-[700px]"
+                className="orders-table-nested !mt-0 min-h-[560px] !flex-1"
                 colValue={11}
                 printLabel="Label Print"
                 selectedAction={selectedAction}
@@ -68,81 +68,79 @@ const FulfillmentTable: React.FC = () => {
                 handleBulkAction={handleBalkUpdate}
             >
                 <Thead>
-                    <Tr className="dark:bg-gray-700 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
-                        <Th className="2xl:min-w-32 lg:min-w-14 min-w-32 dark:text-gray-200">
+                    <Tr>
+                        <Th className="2xl:min-w-32 lg:min-w-14 min-w-32">
                             Order ID
                         </Th>
-
-                        <Th className="2xl:min-w-32 lg:min-w-28 min-w-32 dark:text-gray-200">
+                        <Th className="2xl:min-w-32 lg:min-w-28 min-w-32">
                             Products
                         </Th>
-
-                        <Th className="2xl:min-w-36 lg:min-w-28 min-w-36 dark:text-gray-200 ps-10">
+                        <Th className="2xl:min-w-36 lg:min-w-28 min-w-36">
                             Status
                         </Th>
-
-                        <Th className="2xl:min-w-36 lg:min-w-28 min-w-36 dark:text-gray-200">
+                        <Th className="2xl:min-w-36 lg:min-w-28 min-w-36">
                             Total
                         </Th>
-
-                        <Th className="2xl:min-w-36 lg:min-w-28 min-w-36 dark:text-gray-200">
+                        <Th className="2xl:min-w-36 lg:min-w-28 min-w-36">
                             Paid
                         </Th>
-
-                        <Th className="2xl:min-w-36 lg:min-w-28 min-w-36 dark:text-gray-200">
+                        <Th className="2xl:min-w-36 lg:min-w-28 min-w-36">
                             Due
                         </Th>
-
-                        <Th className="2xl:min-w-32 lg:min-w-28 min-w-32 dark:text-gray-200 !text-nowrap">
+                        <Th className="2xl:min-w-32 lg:min-w-28 min-w-32 !text-nowrap">
                             Last Note
                         </Th>
-
-                        <Th className="dark:text-gray-200 min-w-40 ps-8">
-                            View
-                        </Th>
-
-                        <Th className="dark:text-gray-200">Actions</Th>
+                        <Th className="is-center min-w-40">View</Th>
+                        <Th className="is-right">Actions</Th>
                     </Tr>
                 </Thead>
 
-                <Tbody className="dark:bg-gray-800 bg-white">
+                <Tbody>
                     {orderList?.map((order: any, index: number) => {
                         return (
-                            <Tr
-                                className="hover:bg-gray-100 dark:hover:bg-gray-800"
-                                key={index}
-                            >
+                            <Tr key={index}>
                                 <Td>
-                                    <div className="flex text-base font-bold items-center text-nowrap">
-                                        <span>{order?.sysid || noData}</span>
-
-                                        <Icon
-                                            size={16}
-                                            name="content_copy"
-                                            variant="outlined"
-                                            className="ml-2 cursor-pointer"
-                                            onClick={() => {
-                                                navigator.clipboard.writeText(String(order?.sysid ?? ""));
-                                                ToastService.success("Order ID copied to clipboard!");
-                                            }}
-                                        />
-                                    </div>
-
-                                    <div className="mt-2 flex items-center">
-                                        <a href={`tel:${order?.customer?.phone}`}>
-                                            {order?.customer?.phone}
-                                        </a>
-                                        <Icon
-                                            onClick={() => copyToClipboard(order?.customer?.phone)}
-                                            name="content_copy"
-                                            size={16}
-                                            className="ml-2 cursor-pointer"
-                                        />
-                                    </div>
-
-                                    <div className="mt-1 flex items-center gap-1 text-nowrap min-w-32">
-                                        <Icon name="calendar_month" size={20} variant="outlined" />
-                                        <span>{formatTimeAgo(order?.createdAt) || noData}</span>
+                                    <div className="table-user-info">
+                                        <div className="table-id-row">
+                                            <span className="table-id-chip">
+                                                {order?.sysid || noData}
+                                            </span>
+                                            <button
+                                                type="button"
+                                                className="table-copy-btn"
+                                                aria-label="Copy order ID"
+                                                title="Copy order ID"
+                                                onClick={() => {
+                                                    navigator.clipboard.writeText(String(order?.sysid ?? ""));
+                                                    ToastService.success("Order ID copied to clipboard!");
+                                                }}
+                                            >
+                                                <Icon
+                                                    size={13}
+                                                    name="content_copy"
+                                                    variant="outlined"
+                                                />
+                                            </button>
+                                        </div>
+                                        <span className="table-contact-line">
+                                            <Icon name="call" size={14} variant="outlined" />
+                                            <a href={`tel:${order?.customer?.phone}`}>
+                                                {order?.customer?.phone}
+                                            </a>
+                                            <button
+                                                type="button"
+                                                className="table-copy-btn"
+                                                aria-label="Copy phone number"
+                                                title="Copy phone number"
+                                                onClick={() => copyToClipboard(order?.customer?.phone)}
+                                            >
+                                                <Icon name="content_copy" size={13} variant="outlined" />
+                                            </button>
+                                        </span>
+                                        <span className="table-date-cell">
+                                            <Icon name="calendar_today" size={13} variant="outlined" />
+                                            {formatTimeAgo(order?.createdAt) || noData}
+                                        </span>
                                     </div>
                                 </Td>
 
@@ -190,27 +188,21 @@ const FulfillmentTable: React.FC = () => {
                                 </Td>
 
                                 <Td>
-                                    <div className="flex flex-wrap">
-                                        <span className="text-md font-semibold text-gray-600 dark:text-gray-300">
-                                            ৳ {order?.total || 0}
-                                        </span>
-                                    </div>
+                                    <span className="table-amount">
+                                        ৳ {order?.total || 0}
+                                    </span>
                                 </Td>
 
                                 <Td>
-                                    <div className="flex flex-wrap">
-                                        <span className={`${paidColor}`}>
-                                            ৳ {order?.paid || 0}
-                                        </span>
-                                    </div>
+                                    <span className={`${paidColor} table-amount`}>
+                                        ৳ {order?.paid || 0}
+                                    </span>
                                 </Td>
 
                                 <Td>
-                                    <div className="flex flex-wrap">
-                                        <span className={`${dueColor}`}>
-                                            ৳ {order?.due || 0}
-                                        </span>
-                                    </div>
+                                    <span className={`${dueColor} table-amount`}>
+                                        ৳ {order?.due || 0}
+                                    </span>
                                 </Td>
 
                                 <Td>
@@ -246,8 +238,7 @@ const FulfillmentTable: React.FC = () => {
                                     </Link>
                                 </Td>
 
-                                <Td>
-                                    <Button
+                                <Td className="is-right">
                                         onClick={() => handleAddAdvance(order?._id)}
                                         disabled={payLoadingId === order?._id}
                                         className="!px-4 !py-0.5 rounded-lg !text-blue-600 text-center cursor-pointer inline-block text-nowrap !text-sm min-w-[90px]"

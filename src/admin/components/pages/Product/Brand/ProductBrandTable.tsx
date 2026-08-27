@@ -5,7 +5,7 @@ import Icon from "@admin/components/core/Icon/Icon";
 import { IProductCategoryData } from "@admin/@interfaces/product/productCategory.interface";
 import { ProductBrandContext } from "@/app/admin/product/brand/page";
 import { useGlobalContext } from "@admin/context/GlobalContext";
-import { hasPermission } from "@admin/utils";
+import { hasPermission, noData } from "@admin/utils";
 
 const ProductBrandTable: React.FC = () => {
   const { permissionList } = useGlobalContext();
@@ -39,8 +39,9 @@ const ProductBrandTable: React.FC = () => {
   }, [popupIndex]);
   return (
     <TableWrapper
+      showCheckbox={false}
       isSwitchOn={true}
-      className="min-h-[650px]"
+      className="orders-table-nested !mt-0 min-h-[560px] !flex-1"
       data={productBrandData}
       isLoading={tableLoading}
       noDataViewCondition={
@@ -49,55 +50,61 @@ const ProductBrandTable: React.FC = () => {
       colValue={10}
     >
       <Thead>
-        <Tr className="dark:bg-gray-700 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
-          <Th className="dark:text-gray-300">Title</Th>
-          <Th className="dark:text-gray-300">Slug</Th>
-          <Th className="dark:text-gray-300">Action</Th>
+        <Tr>
+          <Th>Title</Th>
+          <Th>Slug</Th>
+          <Th className="is-right">Actions</Th>
         </Tr>
       </Thead>
-      <Tbody className="dark:bg-gray-800 bg-white">
+      <Tbody>
         {productBrandData?.map((data: IProductCategoryData, index: number) => {
           return (
-            <Tr className="h-14" key={index}>
-              <Td className="">{data?.key}</Td>
-              <Td>{data?.value}</Td>
-              <Td className="">
+            <Tr key={index}>
+              <Td>
+                <span className="data-table-primary">
+                  {data?.key || noData}
+                </span>
+              </Td>
+              <Td>
+                <span className="data-table-muted">{data?.value || noData}</span>
+              </Td>
+              <Td className="is-right">
                 {hasPermission(
                   permissionList,
                   "product_brand_edit",
-                  "product_brand_delete"
+                  "product_brand_delete",
                 ) && (
-                  <div className="relative">
-                    <Icon
-                      name={"more_horiz"}
-                      variant="outlined"
+                  <div className="relative max-w-40">
+                    <button
+                      type="button"
+                      className="data-table-action-btn"
+                      aria-expanded={popupIndex === index}
                       onClick={() => togglePopup(index)}
-                      className="cursor-pointer"
-                    />
+                    >
+                      <Icon name="more_vert" variant="outlined" size={18} />
+                    </button>
                     {popupIndex === index && (
                       <div
                         ref={popupRef}
-                        className="absolute top-8 -left-14 bg-white dark:bg-gray-700 dark:border-gray-500 border shadow-md rounded-lg p-4 z-20 min-w-40"
+                        className="absolute top-9 right-0 z-20 min-w-40 rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-1.5 shadow-[var(--shadow-soft)]"
                       >
-                        {hasPermission(
-                          permissionList,
-                          "product_brand_edit"
-                        ) && (
+                        {hasPermission(permissionList, "product_brand_edit") && (
                           <button
-                            className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg"
+                            type="button"
+                            className="block w-full rounded-lg px-3 py-2 text-left text-sm text-app hover:bg-[var(--bg-hover)]"
                             onClick={() => handleEditClick(data)}
                           >
                             Edit
                           </button>
                         )}
-
                         {hasPermission(
                           permissionList,
-                          "product_brand_delete"
+                          "product_brand_delete",
                         ) && (
                           <button
+                            type="button"
                             onClick={() => handleRemove(data._id)}
-                            className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg"
+                            className="block w-full rounded-lg px-3 py-2 text-left text-sm text-app hover:bg-[var(--bg-hover)]"
                           >
                             Delete
                           </button>

@@ -6,7 +6,7 @@ import { formatDateTime } from "@admin/utils/hook.utils";
 import { DepositCategoryContext } from "@/app/admin/account/deposit-category/page";
 // import { IDepositCategoryData } from "@admin/@interfaces/account/deposit-category/deposit-category";
 import { useGlobalContext } from "@admin/context/GlobalContext";
-import { hasPermission } from "@admin/utils";
+import { hasPermission, noData } from "@admin/utils";
 import ToggleSwitch from "@admin/components/core/SwitchButton/ToggleSwitch";
 
 const DepositCategoryTable: React.FC = () => {
@@ -86,8 +86,9 @@ const DepositCategoryTable: React.FC = () => {
 
   return (
     <TableWrapper
+      showCheckbox={false}
       isSwitchOn={true}
-      className="min-h-[600px]"
+      className="orders-table-nested !mt-0 min-h-[560px] !flex-1"
       data={depositCategoryData}
       isLoading={tableLoading}
       noDataViewCondition={
@@ -96,17 +97,11 @@ const DepositCategoryTable: React.FC = () => {
       colValue={10}
     >
       <Thead>
-        <Tr className="dark:bg-gray-700 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
-          <Th className="dark:text-gray-300 2xl:min-w-16 lg:min-w-16 min-w-16">
-            #
-          </Th>
-          <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-14 min-w-28">
-            Title
-          </Th>
-          <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-14 min-w-28">
-            Note
-          </Th>
-          <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-14 min-w-40">
+        <Tr>
+          <Th className="2xl:min-w-16 lg:min-w-16 min-w-16">#</Th>
+          <Th className="2xl:min-w-32 lg:min-w-14 min-w-28">Title</Th>
+          <Th className="2xl:min-w-32 lg:min-w-14 min-w-28">Note</Th>
+          <Th className="2xl:min-w-32 lg:min-w-14 min-w-40">
             <div className="flex items-center">
               <div>
                 <p>Date</p>
@@ -126,16 +121,12 @@ const DepositCategoryTable: React.FC = () => {
               )}
             </div>
           </Th>
-          <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-14 min-w-32">
-            Active
-          </Th>
-          <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-14 min-w-32">
-            Action
-          </Th>
+          <Th className="2xl:min-w-32 lg:min-w-14 min-w-32">Active</Th>
+          <Th className="is-right">Actions</Th>
         </Tr>
       </Thead>
 
-      <Tbody className="dark:bg-gray-800 bg-white">
+      <Tbody>
         {depositCategoryData?.map((data: any, index: number) => {
           return (
             <Tr
@@ -160,9 +151,17 @@ const DepositCategoryTable: React.FC = () => {
                 </div>
               </Td>
 
-              <Td>{data?.title}</Td>
-              <Td>{data?.note}</Td>
-              <Td>{formatDateTime(data.createdAt)}</Td>
+              <Td>
+                <span className="data-table-primary">{data?.title || noData}</span>
+              </Td>
+              <Td>
+                <span className="data-table-muted">{data?.note || noData}</span>
+              </Td>
+              <Td>
+                <span className="data-table-muted">
+                  {formatDateTime(data.createdAt)}
+                </span>
+              </Td>
               <Td>
                 {activeToggleLoading[data._id] ? (
                   <Icon
@@ -185,44 +184,38 @@ const DepositCategoryTable: React.FC = () => {
                 )}
               </Td>
 
-              <Td>
+              <Td className="is-right">
                 {!isPriorityEditMode &&
                   hasPermission(
                     permissionList,
                     "account_deposit_category_edit"
                   ) && (
-                    <div className="relative">
-                      <Icon
-                        name={"more_horiz"}
-                        variant="outlined"
+                    <div className="relative max-w-40">
+                      <button
+                        type="button"
+                        className="data-table-action-btn"
+                        aria-expanded={popupIndex === index}
                         onClick={() => togglePopup(index)}
-                        className="cursor-pointer"
-                      />
+                      >
+                        <Icon name="more_vert" variant="outlined" size={18} />
+                      </button>
                       {popupIndex === index && (
                         <div
                           ref={popupRef}
-                          className="absolute top-8 -left-14 bg-white dark:bg-gray-700 dark:border-gray-500 border shadow-md rounded-lg p-4 z-20 min-w-40"
+                          className="absolute top-9 right-0 z-20 min-w-40 rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-1.5 shadow-[var(--shadow-soft)]"
                         >
                           {hasPermission(
                             permissionList,
                             "account_deposit_category_edit"
                           ) && (
                             <button
-                              className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg"
+                              type="button"
+                              className="block w-full rounded-lg px-3 py-2 text-left text-sm text-app hover:bg-[var(--bg-hover)]"
                               onClick={() => handleEditClick(data)}
                             >
                               Edit
                             </button>
                           )}
-
-                          {/* {hasPermission(permissionList, "depo_cate_d") && (
-                            <button
-                              onClick={() => handleRemove(data._id)}
-                              className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg"
-                            >
-                              Delete
-                            </button>
-                          )} */}
                         </div>
                       )}
                     </div>

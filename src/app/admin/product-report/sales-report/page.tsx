@@ -3,7 +3,9 @@ import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegi
 import Icon from "@admin/components/core/Icon/Icon";
 import { Tbody, Td, Th, Thead, Tr } from "@admin/components/Table/Table";
 import TableWrapper from "@admin/components/Table/TableWrapper";
-import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
+import TableRefreshButton from "@admin/components/Table/TableRefreshButton";
+import AuthLayout from "@admin/layouts/AuthLayout";
+import PageHeader from "@admin/components/layout/PageHeader";
 import { formatDateRange, useDebounce } from "@admin/utils/hook.utils";
 import { ToastService } from "@admin/utils/toastr.service";
 import React, { useEffect, useState } from "react";
@@ -81,83 +83,82 @@ const Page: React.FC = () => {
 
   return (
     <AuthLayout>
-      <NoScrollLayout>
-        <div className="2xl:pt-4 pt-2 2xl:px-4 px-3 w-full">
-          <div className="lg:flex lg:flex-wrap items-center md:justify-between pb-2">
-            <div className="md:flex items-center md:space-x-4 w-full">
-              <div className="">
-                <h1 className="2xl:text-2xl lg:text-xl text-lg font-semibold dark:text-gray-300 text-gray-800 md:mb-0 mb-2 flex text-nowrap">
-                  Product Sale Report
-                </h1>
-              </div>
-              <div className="md:flex items-center w-full md:justify-between">
+      <div className="2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 pb-4 relative w-full">
+        <PageHeader title="Product Sale Report" />
+        
+        <div className="data-table-card glass-card rounded-2xl orders-table-shell">
+          <div className="premium-table-toolbar">
+            <p className="premium-table-toolbar-title">Product Sale records</p>
+            <p className="premium-table-toolbar-meta">
+              {totalOrders.toLocaleString()} records
+            </p>
+          </div>
+          <div className="data-table-toolbar">
+            <div className="data-table-toolbar-start">
                 <CalendarRange range={range} setRange={setRange} />
-
-                <div className="md:w-80 w-full md:mt-0 mt-4">
-                  <div className="flex items-center flex-grow">
-                    <input
-                      type="text"
-                      placeholder="Search groups"
-                      className="px-2 py-1.5 pr-10 w-full dark:text-gray-300 dark:bg-gray-700 dark:border-gray-500 border border-gray-300 rounded-lg shadow-sm focus:ring-1 focus:ring-blue-400 focus:outline-none"
-                      value={searchTerm}
-                      onChange={handleSearchChange}
-                    />
-                    <Icon name="search" className="text-gray-400 -ml-9 mt-1" />
-                  </div>
-                </div>
-              </div>
+                <label className="data-table-search">
+                  <Icon name="search" variant="outlined" size={18} />
+                  <input
+                    type="search"
+                    value={searchTerm}
+                    onChange={handleSearchChange}
+                    placeholder="Search groups"
+                    aria-label="Search groups"
+                  />
+                </label>
+            </div>
+            <div className="data-table-toolbar-end">
+              <TableRefreshButton
+                onRefresh={fetchMonthlyProfit}
+                isLoading={tableLoading}
+                className="!h-9"
+              />
             </div>
           </div>
-        </div>
-      </NoScrollLayout>
-
-      <div className="2xl:px-4 px-3 relative md:min-h-[84%] w-full">
-        <TableWrapper
+          <TableWrapper
           showCheckbox={true}
           data={salesData}
           noDataViewCondition={
             salesData?.length < 1 ? "No data available" : null
           }
           isSwitchOn={true}
-          className="min-h-[700px]"
+          className="orders-table-nested !mt-0 min-h-[560px] !flex-1"
           isLoading={tableLoading}
           colValue={7}
         >
           <Thead>
-            <Tr className="dark:bg-gray-700 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
-              <Th className="2xl:min-w-32 lg:min-w-14 min-w-64 dark:text-gray-200">
+            <Tr>
+              <Th className="2xl:min-w-32 lg:min-w-14 min-w-64">
                 Title
               </Th>
-              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40 dark:text-gray-200">
+              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40">
                 Total Order
               </Th>
-              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40 dark:text-gray-200">
+              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40">
                 In Transit
               </Th>
-              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40 dark:text-gray-200">
+              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40">
                 Delivery
               </Th>
-              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40 dark:text-gray-200">
+              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40">
                 Cancelled
               </Th>
-              <Th className="2xl:min-w-32 lg:min-w-28 min-w-32 dark:text-gray-200">
+              <Th className="2xl:min-w-32 lg:min-w-28 min-w-32">
                 Returned
               </Th>
-              <Th className="2xl:min-w-32 lg:min-w-28 min-w-32 dark:text-gray-200">
+              <Th className="2xl:min-w-32 lg:min-w-28 min-w-32">
                 Refunded
               </Th>
             </Tr>
           </Thead>
-          <Tbody className="dark:bg-gray-800 bg-white">
+          <Tbody>
             {salesData?.map((sales: IProductOrderReport) => {
               return (
-                <Tr
-                  className="hover:bg-gray-100 dark:hover:bg-gray-800"
-                  key={sales?.product_id}
+                <Tr key={sales?.product_id}
                 >
-                  <Td>{sales?.product_title}</Td>
-                  <Td>{sales?.total_order}</Td>
-                  <Td>{sales?.in_transit}</Td>
+                  <Td><span className="data-table-primary">{sales?.product_title}</span></Td>
+                  <Td><span className="table-amount">{sales?.total_order}</span></Td>
+                  <Td><span className="table-amount">{sales?.in_transit}</span></Td>
                   <Td>
                     {sales?.delivery}
                     <span className="ml-2 text-xs text-gray-500">
@@ -207,15 +208,19 @@ const Page: React.FC = () => {
             })}
           </Tbody>
         </TableWrapper>
-
-        <PaginationComponent
+          <PaginationComponent
           ordersPerPage={ordersPerPage}
           handleOrdersPerPageChange={handleLogsPerPageChange}
           currentPage={currentPage}
           setCurrentPage={setCurrentPage}
           totalPages={totalPages}
           totalData={totalOrders}
-        />
+            isShowText={true}
+            showRefresh={false}
+            className="orders-table-pagination !mt-0 !rounded-none !border-x-0 !border-b-0 !shadow-none"
+          />
+        </div>
+        
       </div>
     </AuthLayout>
   );

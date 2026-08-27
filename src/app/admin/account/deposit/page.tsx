@@ -189,21 +189,23 @@ const Page: React.FC = () => {
             range={range}
             setRange={setRange}
             onRefresh={getDeposit}
-          />
+          >
+            <PaginationComponent
+              ordersPerPage={productPerPage}
+              handleOrdersPerPageChange={handleProductPerPageChange}
+              currentPage={currentPage}
+              setCurrentPage={setCurrentPage}
+              totalPages={totalPages}
+              totalData={totalProduct}
+              isShowText={true}
+              onRefresh={getDeposit}
+              isLoading={tableLoading}
+              showRefresh={false}
+              className="orders-table-pagination !mt-0 !rounded-none !border-x-0 !border-b-0 !shadow-none"
+            />
+          </DepositTable>
           <CourierDeposit />
         </DepositContext.Provider>
-
-        <PaginationComponent
-          ordersPerPage={productPerPage}
-          handleOrdersPerPageChange={handleProductPerPageChange}
-          currentPage={currentPage}
-          setCurrentPage={setCurrentPage}
-          totalPages={totalPages}
-          totalData={totalProduct}
-          onRefresh={getDeposit}
-          isLoading={tableLoading}
-          className="!mt-3"
-        />
       </div>
     </AuthLayout>
   );

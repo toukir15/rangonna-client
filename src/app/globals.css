@@ -5576,6 +5576,24 @@ input[type=number] {
   background: #1a1512;
 }
 
+.rongonaa-hero--desktop {
+  display: none;
+}
+
+.rongonaa-hero--mobile {
+  display: block;
+}
+
+@media (min-width: 769px) {
+  .rongonaa-hero--mobile {
+    display: none;
+  }
+
+  .rongonaa-hero--desktop {
+    display: block;
+  }
+}
+
 @media (min-width: 1024px) {
   .rongonaa-hero {
     height: clamp(440px, 55svh, 560px);

@@ -5,18 +5,13 @@ import Icon from "@admin/components/core/Icon/Icon";
 import { AllExpensesContext } from "@/app/admin/account/expense/page";
 import { IExpense } from "@admin/@interfaces/account/all-expenses/all-expenses";
 import { useGlobalContext } from "@admin/context/GlobalContext";
-import { hasPermission } from "@admin/utils";
+import { hasPermission, noData } from "@admin/utils";
 import { formatTimeAgo } from "@admin/utils/hook.utils";
 
 const AllExpensesTable: React.FC = () => {
   const { permissionList } = useGlobalContext();
-  const {
-    expensesData,
-    tableLoading,
-    // formatDateTime,
-    handleEditClick,
-    // handleRemove,
-  } = useContext(AllExpensesContext);
+  const { expensesData, tableLoading, handleEditClick } =
+    useContext(AllExpensesContext);
 
   const [popupIndex, setPopupIndex] = useState<number | null>(null);
   const popupRef = useRef<HTMLDivElement | null>(null);
@@ -45,105 +40,99 @@ const AllExpensesTable: React.FC = () => {
   }, [popupIndex]);
   return (
     <TableWrapper
+      showCheckbox={false}
       isSwitchOn={true}
-      className="min-h-[650px]"
+      className="orders-table-nested !mt-0 min-h-[560px] !flex-1"
       data={expensesData}
       isLoading={tableLoading}
       noDataViewCondition={expensesData.length < 1 ? "No data available" : null}
       colValue={7}
     >
       <Thead>
-        <Tr className="dark:bg-gray-700 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
-          <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-14 min-w-48">
-            Date
-          </Th>
-          <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-14 min-w-32">
-            Amount
-          </Th>
-          <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-14 min-w-24">
-            Account
-          </Th>
-          <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-14 min-w-24">
-            Method
-          </Th>
-          <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-14 min-w-40">
-            Expense Category
-          </Th>
-
-          <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-14 min-w-40">
-            Note
-          </Th>
-          <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-14 min-w-40">
-            Source
-          </Th>
-          <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-14 min-w-40">
-            User
-          </Th>
-          <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-14 min-w-40">
-            Action
-          </Th>
+        <Tr>
+          <Th className="2xl:min-w-32 lg:min-w-14 min-w-48">Date</Th>
+          <Th className="2xl:min-w-32 lg:min-w-14 min-w-32">Amount</Th>
+          <Th className="2xl:min-w-32 lg:min-w-14 min-w-24">Account</Th>
+          <Th className="2xl:min-w-32 lg:min-w-14 min-w-24">Method</Th>
+          <Th className="2xl:min-w-32 lg:min-w-14 min-w-40">Expense Category</Th>
+          <Th className="2xl:min-w-32 lg:min-w-14 min-w-40">Note</Th>
+          <Th className="2xl:min-w-32 lg:min-w-14 min-w-40">Source</Th>
+          <Th className="2xl:min-w-32 lg:min-w-14 min-w-40">User</Th>
+          <Th className="is-right">Actions</Th>
         </Tr>
       </Thead>
-      <Tbody className="dark:bg-gray-800 bg-white">
+      <Tbody>
         {expensesData?.map((item: IExpense, index: number) => {
           return (
-            <Tr className="h-14" key={index}>
+            <Tr key={index}>
               <Td>
-                <p>{item?.updatedAt && formatTimeAgo(item?.updatedAt)}</p>
-                <p>{formatTimeAgo(item?.createdAt)}</p>
+                <span className="data-table-muted">
+                  {item?.updatedAt && formatTimeAgo(item?.updatedAt)}
+                </span>
+                <p className="data-table-muted">
+                  {formatTimeAgo(item?.createdAt)}
+                </p>
               </Td>
-              <Td className="">{item?.amount}</Td>
-              {/* <Td>{item?.warehouse?.title}</Td> */}
-              <Td className="text-base font-bold">
-                {item?.account?.account_name}
+              <Td>
+                <span className="table-amount">{item?.amount}</span>
               </Td>
-              <Td className="text-base font-bold">{item?.payment_method}</Td>
-              <Td className="">
-                {item?.expense_category?.title} - {item?.expense_sub_title}
+              <Td>
+                <span className="data-table-primary">
+                  {item?.account?.account_name || noData}
+                </span>
               </Td>
-
-              <Td>{item?.note}</Td>
-              <Td>{item?.source}</Td>
-              <Td>{item?.user?.name}</Td>
-
-              <Td className="">
+              <Td>
+                <span className="table-role-badge is-neutral">
+                  {item?.payment_method || noData}
+                </span>
+              </Td>
+              <Td>
+                <span className="data-table-muted">
+                  {item?.expense_category?.title} - {item?.expense_sub_title}
+                </span>
+              </Td>
+              <Td>
+                <span className="data-table-muted">{item?.note || noData}</span>
+              </Td>
+              <Td>
+                <span className="table-role-badge is-neutral">
+                  {item?.source || noData}
+                </span>
+              </Td>
+              <Td>
+                <span className="data-table-muted">
+                  {item?.user?.name || noData}
+                </span>
+              </Td>
+              <Td className="is-right">
                 {hasPermission(permissionList, "account_expense_edit") &&
                   item?.source === "manual" && (
-                    <div className="relative">
-                      <Icon
-                        name={"more_horiz"}
-                        variant="outlined"
+                    <div className="relative max-w-40">
+                      <button
+                        type="button"
+                        className="data-table-action-btn"
+                        aria-expanded={popupIndex === index}
                         onClick={() => togglePopup(index)}
-                        className="cursor-pointer"
-                      />
+                      >
+                        <Icon name="more_vert" variant="outlined" size={18} />
+                      </button>
                       {popupIndex === index && (
                         <div
                           ref={popupRef}
-                          className="absolute top-8 right-0 bg-white border shadow-md rounded-lg p-4 z-20 min-w-40 dark:bg-gray-700 dark:border-gray-500"
+                          className="absolute top-9 right-0 z-20 min-w-40 rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-1.5 shadow-[var(--shadow-soft)]"
                         >
                           {hasPermission(
                             permissionList,
                             "account_expense_edit"
                           ) && (
-                              <button
-                                className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg rounded-lg"
-                                onClick={() => handleEditClick(item)}
-                              >
-                                Edit
-                              </button>
-                            )}
-                          {/* {hasPermission(
-                          permissionList,
-
-                          "expe_d"
-                        ) && (
-                          <button
-                            className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg rounded-lg"
-                            onClick={() => handleRemove(item?._id)}
-                          >
-                            Delete
-                          </button>
-                        )} */}
+                            <button
+                              type="button"
+                              className="block w-full rounded-lg px-3 py-2 text-left text-sm text-app hover:bg-[var(--bg-hover)]"
+                              onClick={() => handleEditClick(item)}
+                            >
+                              Edit
+                            </button>
+                          )}
                         </div>
                       )}
                     </div>

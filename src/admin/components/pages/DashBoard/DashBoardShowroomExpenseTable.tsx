@@ -74,7 +74,8 @@ const DashBoardShowroomExpenseTable: React.FC = () => {
 
   return (
     <TableWrapper
-      className="min-h-40"
+      showCheckbox={false}
+      className="orders-table-nested !mt-0 min-h-[560px] !flex-1"
       isSwitchOn
       data={expenseListData}
       isLoading={tableExLoading}
@@ -84,28 +85,40 @@ const DashBoardShowroomExpenseTable: React.FC = () => {
       colValue={7}
     >
       <Thead>
-        <Tr className="dark:bg-gray-700 h-[40px]">
-          <Th className="dark:text-gray-300 min-w-40">Date</Th>
-          <Th className="dark:text-gray-300 min-w-40">Title</Th>
-          <Th className="dark:text-gray-300 min-w-32">Amount</Th>
-          <Th className="dark:text-gray-300 min-w-52">Note</Th>
-          <Th className="dark:text-gray-300 min-w-40">User</Th>
-          <Th className="dark:text-gray-300 min-w-32">Status</Th>
-          <Th className="dark:text-gray-300 min-w-24">Action</Th>
+        <Tr>
+          <Th className="min-w-40">Date</Th>
+          <Th className="min-w-40">Title</Th>
+          <Th className="min-w-32">Amount</Th>
+          <Th className="min-w-52">Note</Th>
+          <Th className="min-w-40">User</Th>
+          <Th className="min-w-32">Status</Th>
+          <Th className="is-right">Actions</Th>
         </Tr>
       </Thead>
 
-      <Tbody className="bg-white dark:bg-gray-800">
+      <Tbody>
         {expenseListData?.map((item: any, index: number) => {
           const isStatusLoading = statusLoadingId === item?._id;
 
           return (
-            <Tr key={item?._id || index} className="h-8 align-top">
-              <Td>{formatTimeAgo(item?.createdAt)}</Td>
-              <Td>{item?.title || "-"}</Td>
-              <Td>{item?.amount ?? 0}</Td>
-              <Td>{item?.note || "-"}</Td>
-              <Td>{item?.user?.name || "-"}</Td>
+            <Tr key={item?._id || index}>
+              <Td>
+                <span className="data-table-muted">
+                  {formatTimeAgo(item?.createdAt)}
+                </span>
+              </Td>
+              <Td>
+                <span className="data-table-primary">{item?.title || "-"}</span>
+              </Td>
+              <Td>
+                <span className="table-amount">{item?.amount ?? 0}</span>
+              </Td>
+              <Td>
+                <span className="data-table-muted">{item?.note || "-"}</span>
+              </Td>
+              <Td>
+                <span className="data-table-muted">{item?.user?.name || "-"}</span>
+              </Td>
 
               <Td>
                 <div className="flex items-center gap-3">
@@ -138,8 +151,9 @@ const DashBoardShowroomExpenseTable: React.FC = () => {
                   )}
 
                   <span
-                    className={`text-xs font-medium px-2 py-1 rounded-full ${item?.status ? "bg-green-100 text-green-700" : ""
-                      }`}
+                    className={`table-role-badge ${
+                      item?.status ? "is-approved" : "is-pending"
+                    }`}
                   >
                     {isStatusLoading ? (
                       <Icon
@@ -156,37 +170,39 @@ const DashBoardShowroomExpenseTable: React.FC = () => {
                 </div>
               </Td>
 
-              <Td>
+              <Td className="is-right">
                 {hasPermission(
                   permissionList,
                   "showroom_expense_report_edit"
                 ) && (
-                    <div className="relative">
-                      <Icon
-                        name={"more_horiz"}
-                        variant="outlined"
-                        onClick={() => togglePopup(index)}
-                        className="cursor-pointer"
-                      />
-
-                      {popupIndex === index && (
-                        <div
-                          ref={popupRef}
-                          className="absolute top-8 right-0 bg-white dark:bg-gray-700 dark:border-gray-500 border shadow-md rounded-lg p-2 z-20 min-w-32"
+                  <div className="relative max-w-40">
+                    <button
+                      type="button"
+                      className="data-table-action-btn"
+                      aria-expanded={popupIndex === index}
+                      onClick={() => togglePopup(index)}
+                    >
+                      <Icon name="more_vert" variant="outlined" size={18} />
+                    </button>
+                    {popupIndex === index && (
+                      <div
+                        ref={popupRef}
+                        className="absolute top-9 right-0 z-20 min-w-40 rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-1.5 shadow-[var(--shadow-soft)]"
+                      >
+                        <button
+                          type="button"
+                          className="block w-full rounded-lg px-3 py-2 text-left text-sm text-app hover:bg-[var(--bg-hover)]"
+                          onClick={() => {
+                            handleEditClick(item);
+                            setPopupIndex(null);
+                          }}
                         >
-                          <button
-                            className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg"
-                            onClick={() => {
-                              handleEditClick(item);
-                              setPopupIndex(null);
-                            }}
-                          >
-                            Edit
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  )}
+                          Edit
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
               </Td>
             </Tr>
           );

@@ -4,19 +4,17 @@ import TableWrapper from "@admin/components/Table/TableWrapper";
 import { Tbody, Td, Th, Thead, Tr } from "@admin/components/Table/Table";
 import { DashboardShowroomContext } from "@/app/admin/dashboard/showroom/page";
 import { formatTimeAgo } from "@admin/utils/hook.utils";
-import PageSearch from "@admin/components/core/Search/PageSearch";
+import { noData } from "@admin/utils";
 
 const DashboardQuickReportTable: React.FC = () => {
-  const {
-    expenseQuickData,
-    tableQuickLoading,
-    searchTerm,
-    handleSearchChange,
-  } = useContext(DashboardShowroomContext);
+  const { expenseQuickData, tableQuickLoading } = useContext(
+    DashboardShowroomContext
+  );
 
   return (
     <TableWrapper
-      className="min-h-40"
+      showCheckbox={false}
+      className="orders-table-nested !mt-0 min-h-[560px] !flex-1"
       isSwitchOn
       data={expenseQuickData}
       isLoading={tableQuickLoading}
@@ -26,37 +24,45 @@ const DashboardQuickReportTable: React.FC = () => {
       colValue={3}
     >
       <Thead>
-        <Tr className="dark:bg-gray-700 h-[40px]">
-          <Th className="dark:text-gray-300 min-w-40">
-            <div className="flex items-center gap-2">
-              <p>Date</p>
-              <PageSearch
-                value={searchTerm}
-                onChange={handleSearchChange}
-                placeholder="Search Orders"
-                wrapperClass="w-full"
-              />
-            </div>
-          </Th>
-          <Th className="dark:text-gray-300 min-w-40">Order Id</Th>
-          <Th className="dark:text-gray-300 min-w-40">Amount</Th>
-          <Th className="dark:text-gray-300 min-w-40">Payment Method</Th>
-          <Th className="dark:text-gray-300 min-w-40">Note</Th>
-          <Th className="dark:text-gray-300 min-w-40">User</Th>
+        <Tr>
+          <Th className="min-w-40">Date</Th>
+          <Th className="min-w-40">Order Id</Th>
+          <Th className="min-w-40">Amount</Th>
+          <Th className="min-w-40">Payment Method</Th>
+          <Th className="min-w-40">Note</Th>
+          <Th className="min-w-40">User</Th>
         </Tr>
       </Thead>
-
-      <Tbody className="bg-white dark:bg-gray-800">
+      <Tbody>
         {expenseQuickData?.map((item: any, index: number) => {
           return (
-            <Tr key={index} className="h-8 align-top">
-              <Td>{formatTimeAgo(item?.createdAt)}</Td>
-
-              <Td>{item?.reference_no}</Td>
-              <Td>{item?.amount}</Td>
-              <Td>{item?.payment_method}</Td>
-              <Td>{item?.note}</Td>
-              <Td>{item?.user?.name}</Td>
+            <Tr key={index}>
+              <Td>
+                <span className="data-table-muted">
+                  {formatTimeAgo(item?.createdAt)}
+                </span>
+              </Td>
+              <Td>
+                <span className="data-table-primary">
+                  {item?.reference_no || noData}
+                </span>
+              </Td>
+              <Td>
+                <span className="table-amount">{item?.amount}</span>
+              </Td>
+              <Td>
+                <span className="table-role-badge is-neutral">
+                  {item?.payment_method || noData}
+                </span>
+              </Td>
+              <Td>
+                <span className="data-table-muted">{item?.note || noData}</span>
+              </Td>
+              <Td>
+                <span className="data-table-muted">
+                  {item?.user?.name || noData}
+                </span>
+              </Td>
             </Tr>
           );
         })}

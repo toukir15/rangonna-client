@@ -2,7 +2,9 @@
 import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import { Tbody, Td, Th, Thead, Tr } from "@admin/components/Table/Table";
 import TableWrapper from "@admin/components/Table/TableWrapper";
-import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
+import TableRefreshButton from "@admin/components/Table/TableRefreshButton";
+import AuthLayout from "@admin/layouts/AuthLayout";
+import PageHeader from "@admin/components/layout/PageHeader";
 import { ToastService } from "@admin/utils/toastr.service";
 import React, { useEffect, useState } from "react";
 import PaginationComponent from "@admin/components/core/Pazination/Pazination";
@@ -60,63 +62,70 @@ const Page: React.FC = () => {
 
   return (
     <AuthLayout>
-      <NoScrollLayout>
-        <div className="2xl:pt-4 pt-2 2xl:px-4 px-3 w-full">
-          <div className="lg:flex lg:flex-wrap items-center md:justify-between pb-2">
-            <div className="md:flex items-center md:space-x-4 w-full">
-              <div className="">
-                <h1 className="2xl:text-2xl lg:text-xl text-lg font-semibold dark:text-gray-300 text-gray-800 md:mb-0 mb-2 flex text-nowrap">
-                  Monthly Report
-                </h1>
-              </div>
+      <div className="2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 pb-4 relative w-full">
+        <PageHeader title="Monthly Report" />
+        
+        <div className="data-table-card glass-card rounded-2xl orders-table-shell">
+          <div className="premium-table-toolbar">
+            <p className="premium-table-toolbar-title">Monthly records</p>
+            <p className="premium-table-toolbar-meta">
+              {totalOrders.toLocaleString()} records
+            </p>
+          </div>
+          <div className="data-table-toolbar">
+            <div className="data-table-toolbar-start">
+                
+            </div>
+            <div className="data-table-toolbar-end">
+              <TableRefreshButton
+                onRefresh={fetchMarketingReport}
+                isLoading={tableLoading}
+                className="!h-9"
+              />
             </div>
           </div>
-        </div>
-      </NoScrollLayout>
-
-      <div className="2xl:px-4 px-3 relative md:min-h-[84%] w-full">
-        <TableWrapper
+          <TableWrapper
           showCheckbox={true}
           data={marketingData}
           noDataViewCondition={
             marketingData?.length < 1 ? "No data available" : null
           }
           isSwitchOn={true}
-          className="min-h-[700px]"
+          className="orders-table-nested !mt-0 min-h-[560px] !flex-1"
           isLoading={tableLoading}
           colValue={9}
         >
           <Thead>
-            <Tr className="dark:bg-gray-700 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
-              <Th className="2xl:min-w-32 lg:min-w-14 min-w-40 dark:text-gray-200">
+            <Tr>
+              <Th className="2xl:min-w-32 lg:min-w-14 min-w-40">
                 Date
               </Th>
-              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40 dark:text-gray-200">
+              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40">
                 Total Order
               </Th>
 
-              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40 dark:text-gray-200">
+              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40">
                 Delivery
               </Th>
-              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40 dark:text-gray-200">
+              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40">
                 Delivery Total
               </Th>
-              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40 dark:text-gray-200">
+              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40">
                 ROI
               </Th>
 
-              <Th className="2xl:min-w-32 lg:min-w-28 min-w-32 dark:text-gray-200">
+              <Th className="2xl:min-w-32 lg:min-w-28 min-w-32">
                 Active Order
               </Th>
-              <Th className="2xl:min-w-32 lg:min-w-28 min-w-32 dark:text-gray-200">
+              <Th className="2xl:min-w-32 lg:min-w-28 min-w-32">
                 BDT
               </Th>
-              <Th className="2xl:min-w-32 lg:min-w-28 min-w-32 dark:text-gray-200">
+              <Th className="2xl:min-w-32 lg:min-w-28 min-w-32">
                 USD
               </Th>
             </Tr>
           </Thead>
-          <Tbody className="dark:bg-gray-800 bg-white">
+          <Tbody>
             {marketingData?.map(
               (marketing: IMonthlyMarketingReport, index: number) => {
                 const deliveryPerMarketing =
@@ -129,12 +138,10 @@ const Page: React.FC = () => {
                     : 0;
 
                 return (
-                  <Tr
-                    className="hover:bg-gray-100 dark:hover:bg-gray-800"
-                    key={index}
+                  <Tr key={index}
                   >
-                    <Td>{formatMonthYear(marketing?.date)}</Td>
-                    <Td>{marketing?.total_order}</Td>
+                    <Td><span className="data-table-primary">{formatMonthYear(marketing?.date)}</span></Td>
+                    <Td><span className="table-amount">{marketing?.total_order}</span></Td>
                     <Td>
                       {marketing?.delivered}
                       <span className="ml-2 text-xs text-gray-500">
@@ -147,10 +154,10 @@ const Page: React.FC = () => {
                         %)
                       </span>
                     </Td>
-                    <Td>{marketing?.delivery_total}</Td>
-                    <Td>{deliveryPerMarketing}</Td>
+                    <Td><span className="table-amount">{marketing?.delivery_total}</span></Td>
+                    <Td><span className="data-table-muted">{deliveryPerMarketing}</span></Td>
 
-                    <Td>{marketing?.active_order}</Td>
+                    <Td><span className="table-amount">{marketing?.active_order}</span></Td>
                     <Td>
                       {marketing?.total_marketing_bdt} (
                       {marketing?.delivered && marketing.delivered > 0
@@ -177,15 +184,19 @@ const Page: React.FC = () => {
             )}
           </Tbody>
         </TableWrapper>
-
-        <PaginationComponent
+          <PaginationComponent
           ordersPerPage={ordersPerPage}
           handleOrdersPerPageChange={handleLogsPerPageChange}
           currentPage={currentPage}
           setCurrentPage={setCurrentPage}
           totalPages={totalPages}
           totalData={totalOrders}
-        />
+            isShowText={true}
+            showRefresh={false}
+            className="orders-table-pagination !mt-0 !rounded-none !border-x-0 !border-b-0 !shadow-none"
+          />
+        </div>
+        
       </div>
     </AuthLayout>
   );

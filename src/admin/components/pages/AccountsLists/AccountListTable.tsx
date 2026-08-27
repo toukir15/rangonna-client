@@ -6,7 +6,7 @@ import { IAccount } from "@admin/@interfaces/account/account-list/account-list.i
 import ToggleSwitch from "@admin/components/core/SwitchButton/ToggleSwitch";
 import { AccountListContext } from "@admin/context/AccountListContext";
 import { useGlobalContext } from "@admin/context/GlobalContext";
-import { hasPermission } from "@admin/utils";
+import { hasPermission, noData } from "@admin/utils";
 
 const AccountListTable: React.FC = () => {
   const { permissionList } = useGlobalContext();
@@ -88,28 +88,29 @@ const AccountListTable: React.FC = () => {
 
   return (
     <TableWrapper
+      showCheckbox={false}
       isSwitchOn={true}
-      className="min-h-[600px]"
+      className="orders-table-nested !mt-0 min-h-[560px] !flex-1"
       data={localRows}
       isLoading={tableLoading}
       noDataViewCondition={localRows.length < 1 ? "No data available" : null}
       colValue={8}
     >
       <Thead>
-        <Tr className="dark:bg-gray-700 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
-          <Th className="dark:text-gray-300 min-w-16">#</Th>
-          <Th className="dark:text-gray-300 min-w-40">Account Name</Th>
-          <Th className="dark:text-gray-300 min-w-32">Account No</Th>
-          <Th className="dark:text-gray-300 min-w-32">Balance</Th>
-          <Th className="dark:text-gray-300 min-w-32">Notes</Th>
-          <Th className="dark:text-gray-300 min-w-32">Type</Th>
-          <Th className="dark:text-gray-300 min-w-32">Active</Th>
-          <Th className="dark:text-gray-300 min-w-32">Default</Th>
-          <Th className="dark:text-gray-300 min-w-32">Action</Th>
+        <Tr>
+          <Th className="min-w-16">#</Th>
+          <Th className="min-w-40">Account Name</Th>
+          <Th className="min-w-32">Account No</Th>
+          <Th className="min-w-32">Balance</Th>
+          <Th className="min-w-32">Notes</Th>
+          <Th className="min-w-32">Type</Th>
+          <Th className="min-w-32">Active</Th>
+          <Th className="min-w-32">Default</Th>
+          <Th className="is-right">Actions</Th>
         </Tr>
       </Thead>
 
-      <Tbody className="dark:bg-gray-800 bg-white">
+      <Tbody>
         {localRows?.map((item: IAccount, index: number) => (
           <Tr
             key={item._id}
@@ -133,21 +134,36 @@ const AccountListTable: React.FC = () => {
               </div>
             </Td>
 
-            <Td>{item?.account_name}</Td>
-            <Td className="text-base font-bold">{item?.account_no}</Td>
-
-            <Td className={item?.balance < 0 ? "text-red-600 font-bold" : ""}>
-              {item?.balance}
-            </Td>
-
-            <Td>{item?.notes}</Td>
-
             <Td>
-              {item?.type === "mobile_banking"
-                ? "Mobile Banking"
-                : item?.type === "bank"
-                ? "Bank"
-                : "Cash"}
+              <span className="data-table-primary">
+                {item?.account_name || noData}
+              </span>
+            </Td>
+            <Td>
+              <span className="data-table-muted">
+                {item?.account_no || noData}
+              </span>
+            </Td>
+            <Td>
+              <span
+                className={`table-amount ${
+                  item?.balance < 0 ? "text-red-600" : ""
+                }`}
+              >
+                {item?.balance}
+              </span>
+            </Td>
+            <Td>
+              <span className="data-table-muted">{item?.notes || noData}</span>
+            </Td>
+            <Td>
+              <span className="table-role-badge is-neutral">
+                {item?.type === "mobile_banking"
+                  ? "Mobile Banking"
+                  : item?.type === "bank"
+                    ? "Bank"
+                    : "Cash"}
+              </span>
             </Td>
 
             <Td>
@@ -190,24 +206,26 @@ const AccountListTable: React.FC = () => {
               )}
             </Td>
 
-            <Td>
+            <Td className="is-right">
               {!isPriorityEditMode &&
                 hasPermission(permissionList, "account_edit") && (
-                  <div className="relative">
-                    <Icon
-                      name={"more_horiz"}
-                      variant="outlined"
+                  <div className="relative max-w-40">
+                    <button
+                      type="button"
+                      className="data-table-action-btn"
+                      aria-expanded={popupIndex === index}
                       onClick={() => togglePopup(index)}
-                      className="cursor-pointer"
-                    />
-
+                    >
+                      <Icon name="more_vert" variant="outlined" size={18} />
+                    </button>
                     {popupIndex === index && (
                       <div
                         ref={popupRef}
-                        className="absolute top-8 right-0 bg-white border shadow-md rounded-lg p-4 z-20 min-w-40 dark:bg-gray-700 dark:border-gray-500"
+                        className="absolute top-9 right-0 z-20 min-w-40 rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-1.5 shadow-[var(--shadow-soft)]"
                       >
                         <button
-                          className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg"
+                          type="button"
+                          className="block w-full rounded-lg px-3 py-2 text-left text-sm text-app hover:bg-[var(--bg-hover)]"
                           onClick={() => {
                             handleEditClick();
                             setItems(item);

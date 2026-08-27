@@ -7,19 +7,21 @@ import {
 } from "@admin/@interfaces/incompleateOrder/incompleateOrder.interface";
 import { IncompleteOrdersService } from "@admin/@services/apis/OrdersService/Incompleate.service";
 import Alert from "@admin/components/core/Aleart/Aleart";
-import Button from "@admin/components/core/Button/Button";
 import Icon from "@admin/components/core/Icon/Icon";
 import PaginationComponent from "@admin/components/core/Pazination/Pazination";
-import PageSearch from "@admin/components/core/Search/PageSearch";
 import useDebounce from "@admin/components/core/UseDebounece/UseDebouence";
 import IncompleteNote from "@admin/components/pages/Orders/InCompleateOrders/IncompompleateDrawer";
 import IncompleateProgress from "@admin/components/pages/Orders/ViewOrder/IncompleateProgress";
 import { Tbody, Td, Th, Thead, Tr } from "@admin/components/Table/Table";
 import { TableCheckbox } from "@admin/components/Table/TableCheckbox";
 import TableWrapper from "@admin/components/Table/TableWrapper";
+import TableRefreshButton from "@admin/components/Table/TableRefreshButton";
+import PageHeader from "@admin/components/layout/PageHeader";
 import { useGlobalContext } from "@admin/context/GlobalContext";
-import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
-import { getWebName, noData } from "@admin/utils";
+import AuthLayout from "@admin/layouts/AuthLayout";
+import { getWebName, noData, trimString } from "@admin/utils";
+import Image from "next/image";
+import notFoundImage from "@admin/assets/images/Image-not-found.png";
 import { noPermission } from "@admin/utils/constant";
 import { formatTimeAgo } from "@admin/utils/hook.utils";
 import { ToastService } from "@admin/utils/toastr.service";
@@ -72,6 +74,8 @@ const Page: React.FC = () => {
   const [isAlertOpen, setIsAlertOpen] = useState<boolean>(false);
   const [selectedOrders, setSelectedOrders] = useState<string[]>([]);
   const [fraudStats, setFraudStats] = useState<FraudStats>({});
+  const [popupIndex, setPopupIndex] = useState<number | null>(null);
+  const popupRef = useRef<HTMLDivElement | null>(null);
   const debouncedSearchTerm = useDebounce<string>(searchTerm, 300);
   const abortRef = useRef<AbortController | null>(null);
   const baseApi = process.env.NEXT_PUBLIC_FRAUD_BASE_URL;
@@ -279,6 +283,24 @@ const Page: React.FC = () => {
 
   useTableRefreshRegister(fetchInCompleat);
 
+  const togglePopup = (index: number) => {
+    setPopupIndex(popupIndex === index ? null : index);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        popupRef.current &&
+        !popupRef.current.contains(event.target as Node)
+      ) {
+        setPopupIndex(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
 
   return (
     <AuthLayout>
@@ -304,233 +326,285 @@ const Page: React.FC = () => {
         </div>
       </Alert>
 
-      <NoScrollLayout>
-        <div className="2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 md:flex flex-wrap items-center items-center gap-3 mb-2">
-          <div className="flex flex-wrap items-center items-center gap-3">
-            <h2 className="2xl:text-2xl font-poppins dark:text-gray-300 font-semibold text-nowrap">
-              Incomplete Orders
-            </h2>
+      <div className="2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 pb-4 relative w-full">
+        <PageHeader title="Incomplete Orders" />
+
+        <div className="data-table-card glass-card rounded-2xl orders-table-shell">
+          <div className="premium-table-toolbar">
+            <p className="premium-table-toolbar-title">Incomplete records</p>
+            <p className="premium-table-toolbar-meta">
+              {totalProduct.toLocaleString()}{" "}
+              {totalProduct === 1 ? "order" : "orders"}
+            </p>
           </div>
-          <div className="md:w-80 w-full md:mt-0 mt-2">
-            <PageSearch
-              value={searchTerm}
-              onChange={handleSearchChange}
-              placeholder="Search Orders"
-              wrapperClass="w-full"
-            />
+
+          <div className="data-table-toolbar">
+            <div className="data-table-toolbar-start">
+              <label className="data-table-search">
+                <Icon name="search" variant="outlined" size={18} />
+                <input
+                  type="search"
+                  value={searchTerm}
+                  onChange={handleSearchChange}
+                  placeholder="Search orders..."
+                  aria-label="Search incomplete orders"
+                />
+              </label>
+            </div>
+            <div className="data-table-toolbar-end">
+              <TableRefreshButton
+                onRefresh={fetchInCompleat}
+                isLoading={isLoading}
+                className="!h-9"
+              />
+            </div>
           </div>
-        </div>
-        
-      </NoScrollLayout>
 
-      <div className="2xl:px-4 px-3 min-h-[83%] relative">
-        <TableWrapper
-          showCheckbox={true}
-          isSwitchOn
-          data={incompleteOrder}
-          isLoading={isLoading}
-          colValue={9}
-          className="min-h-[700px]"
-        >
-          <Thead>
-            <Tr className="dark:bg-gray-700 h-[50px] shadow-sm border-b border-gray-300 p-20">
-              <Th>
-                <TableCheckbox checked={isCheck} onChange={handleSelectAll} />
-              </Th>
-              <Th className="min-w-20 dark:text-gray-300">ID</Th>
-              <Th className="min-w-32 dark:text-gray-300">
-                Customer Info
-              </Th>
-              <Th className="min-w-44 dark:text-gray-300">
-                Created / Updated
-              </Th>
-              <Th className="min-w-52 dark:text-gray-300">
-                Products
-              </Th>
-              <Th className="min-w-44 dark:text-gray-300">
-                Address
-              </Th>
-              <Th className="min-w-36 dark:text-gray-300">
-                Ratio
-              </Th>
-              <Th className="min-w-44 dark:text-gray-300">
-                Note
-              </Th>
-              <Th className="dark:text-gray-300">Action</Th>
-            </Tr>
-          </Thead>
+          <TableWrapper
+            showCheckbox={true}
+            isSwitchOn
+            data={incompleteOrder}
+            isLoading={isLoading}
+            colValue={8}
+            className="orders-table-nested !mt-0 min-h-[560px] !flex-1"
+          >
+            <Thead>
+              <Tr>
+                <Th className="is-center">
+                  <TableCheckbox checked={isCheck} onChange={handleSelectAll} />
+                </Th>
+                <Th className="2xl:min-w-32 lg:min-w-14 min-w-32">ID</Th>
+                <Th className="2xl:min-w-40 lg:min-w-32 min-w-40">
+                  Customer Info
+                </Th>
+                <Th className="2xl:min-w-32 lg:min-w-28 min-w-32">Products</Th>
+                <Th className="2xl:min-w-36 lg:min-w-28 min-w-36">Address</Th>
+                <Th className="min-w-28">Ratio</Th>
+                <Th className="2xl:min-w-32 lg:min-w-28 min-w-32">Note</Th>
+                <Th className="is-right">Actions</Th>
+              </Tr>
+            </Thead>
 
-          <Tbody className="bg-white dark:bg-gray-800 border">
-            {incompleteOrder?.map((order, index) => {
-              const rowId = String(order._id);
-              const phone = sanitizePhone(order?.customer?.phone);
-              const fraudData = phone ? fraudStats[phone] : undefined;
+            <Tbody>
+              {incompleteOrder?.map((order, index) => {
+                const rowId = String(order._id);
+                const phone = sanitizePhone(order?.customer?.phone);
+                const fraudData = phone ? fraudStats[phone] : undefined;
+                const totalParcel = fraudData?.total || 0;
+                const totalDelivery = fraudData?.delivered || 0;
+                const latestNote =
+                  Array.isArray(order?.notes) && order.notes.length > 0
+                    ? order.notes[order.notes.length - 1]
+                    : null;
 
-              const totalParcel = fraudData?.total || 0;
-              const totalDelivery = fraudData?.delivered || 0;
-
-              return (
-                <Tr
-                  className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
-                  key={rowId}
-                >
-                  <Td>
-                    <TableCheckbox
-                      checked={selectedOrders.includes(rowId)}
-                      onClick={(e) => e.stopPropagation()}
-                      onChange={() => handleSelectOrder(rowId)}
-                    />
-                  </Td>
-
-                  <Td>
-                    <div className="flex flex-wrap text-base font-bold">
-                      <span>{index + 1}</span>
-                    </div>
-                  </Td>
-
-                  <Td>
-                    <div className="flex flex-wrap text-base">
-                      <span>{order?.customer?.first_name || noData}</span>
-                    </div>
-
-                    <div className="mt-2 flex flex-wrap items-center items-center">
-                      {order?.customer?.phone ? (
-                        <>
-                          <a href={`tel:${order.customer.phone}`}>
-                            {order.customer.phone}
-                          </a>
-                          <Icon
-                            onClick={() =>
-                              copyToClipboard(order?.customer?.phone)
-                            }
-                            name="content_copy"
-                            size={16}
-                            className="ml-2 cursor-pointer"
-                          />
-                        </>
-                      ) : (
-                        <span className="text-gray-400">{noData}</span>
-                      )}
-                    </div>
-
-                    <div>
-                      <p>{getWebName(order?.domain) || noData}</p>
-                    </div>
-                  </Td>
-
-                  <Td>
-                    <p>
-                      {order?.createdAt
-                        ? formatTimeAgo(order.createdAt)
-                        : noData}
-                    </p>
-                    <p>
-                      {order?.updatedAt
-                        ? formatTimeAgo(order.updatedAt)
-                        : noData}
-                    </p>
-                  </Td>
-
-                  <Td>
-                    {order?.line_items?.length ? (
-                      order.line_items.map((li, i) => (
-                        <div key={i} className="mb-2">
-                          <p className="font-semibold text-md">
-                            {li?.title || noData}
-                          </p>
-                          <div className="flex flex-wrap items-center items-center mt-1">
-                            <p>{li?.price ?? noData}</p>
-                            <Icon
-                              name="production_quantity_limits"
-                              size={14}
-                              className="ml-5"
-                            />
-                            <p className="font-semibold ml-1">
-                              {li?.quantity ?? 0}
-                            </p>
-                          </div>
-                        </div>
-                      ))
-                    ) : (
-                      <span className="text-gray-400">{noData}</span>
-                    )}
-                  </Td>
-
-                  <Td>
-                    <div className="flex flex-wrap mt-1.5">
-                      {order?.customer?.address || (
-                        <span className="text-gray-400">{noData}</span>
-                      )}
-                    </div>
-                  </Td>
-
-                  <Td>
-                    <div className="min-w-[130px]">
-                      <IncompleateProgress
-                        isOption={false}
-                        totalParcel={totalParcel}
-                        totalDelivery={totalDelivery}
+                return (
+                  <Tr key={rowId}>
+                    <Td>
+                      <TableCheckbox
+                        checked={selectedOrders.includes(rowId)}
+                        onClick={(e) => e.stopPropagation()}
+                        onChange={() => handleSelectOrder(rowId)}
                       />
-                    </div>
-                  </Td>
+                    </Td>
 
-                  <Td>
-                    {order?.notes?.length ? (
-                      order.notes.map((n, i) => (
-                        <div key={i}>
-                          <p>
-                            {n?.text} - {n?.user?.name}
-                          </p>
+                    <Td>
+                      <div className="table-user-info">
+                        <div className="table-id-row">
+                          <span className="table-id-chip">{index + 1}</span>
                         </div>
-                      ))
-                    ) : (
-                      <span className="text-gray-400">{noData}</span>
-                    )}
-                  </Td>
-
-                  <Td className="action-button p-3 relative group">
-                    {permissionList.includes("order_incomplete_edit") ||
-                    permissionList.includes("order_incomplete_delete") ? (
-                      <div>
-                        <Icon variant="outlined" name="more_horiz" />
-                        <div className="dropdown absolute right-0 bg-white dark:bg-gray-700 dark:border-gray-500 shadow-lg p-2 rounded-lg z-10 hidden group-hover:block min-w-40">
-                          {permissionList.includes("order_incomplete_edit") && (
-                            <span
-                              onClick={() => handleAddNote(order)}
-                              className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600"
-                            >
-                              Add Note
-                            </span>
-                          )}
-
-                          {permissionList.includes(
-                            "order_incomplete_delete",
-                          ) && (
-                            <span
-                              onClick={() => handleRemoveProduct(order?._id)}
-                              className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600"
-                            >
-                              Delete Order
-                            </span>
-                          )}
-                        </div>
+                        <p className="data-table-muted">
+                          {getWebName(order?.domain) || noData}
+                        </p>
+                        <span className="table-date-cell">
+                          <Icon
+                            name="calendar_today"
+                            size={13}
+                            variant="outlined"
+                          />
+                          {order?.createdAt
+                            ? formatTimeAgo(order.createdAt)
+                            : noData}
+                        </span>
+                        {order?.updatedAt ? (
+                          <span className="table-date-cell">
+                            <Icon name="update" size={13} variant="outlined" />
+                            {formatTimeAgo(order.updatedAt)}
+                          </span>
+                        ) : null}
                       </div>
-                    ) : null}
-                  </Td>
-                </Tr>
-              );
-            })}
-          </Tbody>
-        </TableWrapper>
+                    </Td>
 
-        <PaginationComponent
-          ordersPerPage={productPerPage}
-          handleOrdersPerPageChange={handleProductPerPageChange}
-          currentPage={currentPage}
-          setCurrentPage={setCurrentPage}
-          totalPages={totalPages}
-          totalData={totalProduct}
-        />
+                    <Td>
+                      <div className="table-contact-stack">
+                        <span className="data-table-primary">
+                          {trimString(order?.customer?.first_name, 50)}
+                          {order?.customer?.last_name
+                            ? ` ${order.customer.last_name}`
+                            : ""}
+                        </span>
+                        {order?.customer?.phone ? (
+                          <span className="table-contact-line">
+                            <Icon name="call" size={14} variant="outlined" />
+                            <a href={`tel:${order.customer.phone}`}>
+                              {order.customer.phone}
+                            </a>
+                            <button
+                              type="button"
+                              className="table-copy-btn"
+                              aria-label="Copy phone number"
+                              title="Copy phone number"
+                              onClick={() =>
+                                copyToClipboard(order?.customer?.phone)
+                              }
+                            >
+                              <Icon
+                                name="content_copy"
+                                size={13}
+                                variant="outlined"
+                              />
+                            </button>
+                          </span>
+                        ) : (
+                          <span className="data-table-muted">{noData}</span>
+                        )}
+                      </div>
+                    </Td>
+
+                    <Td>
+                      <div className="table-product-thumbs">
+                        {order?.line_items?.length ? (
+                          order.line_items.slice(0, 3).map((item, itemIndex) => {
+                            const src =
+                              item?.product_id?.featured_image?.src ||
+                              item?.image ||
+                              notFoundImage;
+
+                            return (
+                              <span
+                                key={itemIndex}
+                                className="table-product-thumb"
+                                title={`${item?.title || "Product"} × ${
+                                  item?.quantity ?? 0
+                                }`}
+                              >
+                                <Image
+                                  src={src}
+                                  quality={70}
+                                  alt={item?.title || "Product Image"}
+                                  width={120}
+                                  height={108}
+                                />
+                              </span>
+                            );
+                          })
+                        ) : (
+                          <span className="data-table-muted">{noData}</span>
+                        )}
+                      </div>
+                    </Td>
+
+                    <Td>
+                      <span className="data-table-muted">
+                        {trimString(order?.customer?.address, 80) || noData}
+                      </span>
+                    </Td>
+
+                    <Td>
+                      <div className="min-w-[130px]">
+                        <IncompleateProgress
+                          isOption={false}
+                          totalParcel={totalParcel}
+                          totalDelivery={totalDelivery}
+                        />
+                      </div>
+                    </Td>
+
+                    <Td>
+                      <div className="data-table-muted">
+                        {latestNote?.text
+                          ? trimString(
+                              `${latestNote.text}${
+                                latestNote.user?.name
+                                  ? ` — ${latestNote.user.name}`
+                                  : ""
+                              }`,
+                              100,
+                            )
+                          : noData}
+                      </div>
+                    </Td>
+
+                    <Td className="is-right">
+                      {permissionList.includes("order_incomplete_edit") ||
+                      permissionList.includes("order_incomplete_delete") ? (
+                        <div className="relative max-w-40">
+                          <button
+                            type="button"
+                            className="data-table-action-btn"
+                            aria-expanded={popupIndex === index}
+                            onClick={() => togglePopup(index)}
+                          >
+                            <Icon name="more_vert" variant="outlined" size={18} />
+                          </button>
+
+                          {popupIndex === index && (
+                            <div
+                              ref={popupRef}
+                              className="absolute top-9 right-0 z-20 min-w-40 rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-1.5 shadow-[var(--shadow-soft)]"
+                            >
+                              {permissionList.includes(
+                                "order_incomplete_edit",
+                              ) && (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    handleAddNote(order);
+                                    setPopupIndex(null);
+                                  }}
+                                  className="block w-full rounded-lg px-3 py-2 text-left text-sm text-app hover:bg-[var(--bg-hover)]"
+                                >
+                                  Add Note
+                                </button>
+                              )}
+                              {permissionList.includes(
+                                "order_incomplete_delete",
+                              ) && (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    handleRemoveProduct(order?._id);
+                                    setPopupIndex(null);
+                                  }}
+                                  className="block w-full rounded-lg px-3 py-2 text-left text-sm text-app hover:bg-[var(--bg-hover)]"
+                                >
+                                  Delete Order
+                                </button>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      ) : null}
+                    </Td>
+                  </Tr>
+                );
+              })}
+            </Tbody>
+          </TableWrapper>
+
+          <PaginationComponent
+            ordersPerPage={productPerPage}
+            handleOrdersPerPageChange={handleProductPerPageChange}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+            totalPages={totalPages}
+            totalData={totalProduct}
+            isShowText={true}
+            onRefresh={fetchInCompleat}
+            isLoading={isLoading}
+            showRefresh={false}
+            className="orders-table-pagination !mt-0 !rounded-none !border-x-0 !border-b-0 !shadow-none"
+          />
+        </div>
 
         <IncompleteNote
           itemsId={items}

@@ -1,7 +1,7 @@
 "use client";
 import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
+import AuthLayout from "@admin/layouts/AuthLayout";
 import React, { useState, useEffect, createContext } from "react";
 import { ToastService } from "@admin/utils/toastr.service";
 import { hasPermission } from "@admin/utils";
@@ -23,6 +23,8 @@ import DashboardQuickReportTable from "@admin/components/pages/DashBoard/Dashboa
 import useDebounce from "@admin/components/core/UseDebounece/UseDebouence";
 import { noPermission } from "@admin/utils/constant";
 import AllFilter from "@admin/components/pages/AllFilter/AllFilter";
+import PageHeader from "@admin/components/layout/PageHeader";
+import TableRefreshButton from "@admin/components/Table/TableRefreshButton";
 
 export const DashboardShowroomContext = createContext({} as any);
 
@@ -333,145 +335,196 @@ const Page: React.FC = () => {
 
   return (
     <AuthLayout>
-      <NoScrollLayout>
-        <div className="md:flex flex-wrap items-center items-center justify-between 2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2">
-          <div className="flex flex-wrap items-center items-center gap-4">
-            <h2 className="2xl:text-2xl lg:text-xl text-lg font-semibold text-app text-nowrap">
-              Sales Report
-            </h2>
-              <AllFilter
-              isCalendarFilter={true}
-              range={range}
-              setRange={setRange}
-            />
-
-            <div className="">
-              {hasPermission(
-                permissionList,
-                "showroom_expense_report_create"
-              ) && (
-                  <Button
-                    className="btn-primary btn-primary-inline inline-flex items-center gap-2"
-                    onClick={handleAddClick}
-                  >
-
-                    <span className="ml-1">Add Expense</span>
-                  </Button>
-                )}
-            </div>
-
-          </div>
-
-
+      <div className="2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 pb-4 relative w-full">
+        <PageHeader
+          title="Sales Report"
+          action={
+            hasPermission(permissionList, "showroom_expense_report_create") ? (
+              <Button
+                className="btn-primary btn-primary-inline inline-flex items-center gap-2"
+                onClick={handleAddClick}
+              >
+                <Icon name="add" variant="outlined" size={16} />
+                Add Expense
+              </Button>
+            ) : undefined
+          }
+        />
+        <div className="mb-4">
+          <AllFilter
+            isCalendarFilter={true}
+            range={range}
+            setRange={setRange}
+          />
         </div>
-        
-      </NoScrollLayout>
-
-      <div>
         {
-          hasPermission(permissionList, "showroom_payment_history_view") && <div className="pt-2 px-4 w-full">
-            {cardLoading ? (
-              <EmployeeReport />
-            ) : (
-              <div className="grid 2xl:grid-cols-5 lg:grid-cols-3 md:grid-cols-2 grid-cols-1 md:gap-4 gap-3 w-full">
-                {CardData?.map((data: ICardData, index: number) => {
-                  return <ShopCart data={data} key={index} />;
-                })}
-              </div>
-            )}
-          </div>
-        }
-
-      </div>
-
-      <div className="min-h-[75vh] 2xl:px-4 px-3">
-        <div className="xl:mt-3 mt-2">
-          <DashboardShowroomContext.Provider
-            value={{
-              returnListData,
-              tableLoading,
-              setIsModalOpen,
-              isModalOpen,
-              fetchReturnList,
-              setModalOpen,
-              modalOpen,
-              setItems,
-              expenseListData,
-              tableExLoading,
-              modalMode,
-              items,
-              setIsExModalOpen,
-              isExModalOpen,
-              handleEditClick,
-              fetchExpensesReportList,
-              expenseQuickData,
-              setSearchTerm,
-              searchTerm,
-              handleSearchChange,
-              tableQuickLoading,
-              expenseOrdersPerPage,
-              expenseTotalOrders,
-              expenseCurrentPage,
-              setExpenseCurrentPage,
-              expenseTotalPages,
-              quickOrdersPerPage,
-              quickTotalOrders,
-              quickCurrentPage,
-              setQuickCurrentPage,
-              quickTotalPages,
-            }}
-          >
-            {hasPermission(permissionList, "showroom_payment_history_view") && <DashBoardShowroomTable />}
-
-
-            <>{
-              hasPermission(permissionList, "showroom_expense_report_view") &&
-              expenseListData?.length > 0 && (
-                <div className="mt-4 bg-white rounded-lg p-2">
-                  <DashBoardShowroomExpenseTable />
-                  <PaginationComponent
-                    ordersPerPage={expenseOrdersPerPage}
-                    handleOrdersPerPageChange={handleExpenseOrdersPerPageChange}
-                    currentPage={expenseCurrentPage}
-                    setCurrentPage={setExpenseCurrentPage}
-                    totalPages={expenseTotalPages}
-                    totalData={expenseTotalOrders}
-                  />
-                </div>
-              )
-            }
-              <DashboardExpenseModal />
-            </>
-
-
-            {hasPermission(
-              permissionList,
-              "showroom_payment_history_quick_view"
-            ) &&
-              expenseQuickData.length > 0 && (
-                <div className="mt-4 bg-white rounded-lg p-2">
-                  <DashboardQuickReportTable />
-
-                  <PaginationComponent
-                    ordersPerPage={quickOrdersPerPage}
-                    handleOrdersPerPageChange={handleQuickOrdersPerPageChange}
-                    currentPage={quickCurrentPage}
-                    setCurrentPage={setQuickCurrentPage}
-                    totalPages={quickTotalPages}
-                    totalData={quickTotalOrders}
-                  />
+          hasPermission(permissionList, "showroom_payment_history_view") && (
+            <div className="pt-2 w-full mb-4">
+              {cardLoading ? (
+                <EmployeeReport />
+              ) : (
+                <div className="grid 2xl:grid-cols-5 lg:grid-cols-3 md:grid-cols-2 grid-cols-1 md:gap-4 gap-3 w-full">
+                  {CardData?.map((data: ICardData, index: number) => {
+                    return <ShopCart data={data} key={index} />;
+                  })}
                 </div>
               )}
+            </div>
+          )
+        }
 
-            <ShowroomQuickViewModal
-              isModalOpen={modalOpen}
-              setIsModalOpen={setModalOpen}
-              items={items}
-              startDate={formattedFrom}
-              endDate={formattedTo}
-            />
-          </DashboardShowroomContext.Provider>
-        </div>
+        <DashboardShowroomContext.Provider
+          value={{
+            returnListData,
+            tableLoading,
+            setIsModalOpen,
+            isModalOpen,
+            fetchReturnList,
+            setModalOpen,
+            modalOpen,
+            setItems,
+            expenseListData,
+            tableExLoading,
+            modalMode,
+            items,
+            setIsExModalOpen,
+            isExModalOpen,
+            handleEditClick,
+            fetchExpensesReportList,
+            expenseQuickData,
+            setSearchTerm,
+            searchTerm,
+            handleSearchChange,
+            tableQuickLoading,
+            expenseOrdersPerPage,
+            expenseTotalOrders,
+            expenseCurrentPage,
+            setExpenseCurrentPage,
+            expenseTotalPages,
+            quickOrdersPerPage,
+            quickTotalOrders,
+            quickCurrentPage,
+            setQuickCurrentPage,
+            quickTotalPages,
+          }}
+        >
+          {hasPermission(permissionList, "showroom_payment_history_view") && (
+            <div className="data-table-card glass-card rounded-2xl orders-table-shell mb-4">
+              <div className="premium-table-toolbar">
+                <p className="premium-table-toolbar-title">Payment history</p>
+                <p className="premium-table-toolbar-meta">
+                  {returnListData.length.toLocaleString()}{" "}
+                  {returnListData.length === 1 ? "record" : "records"}
+                </p>
+              </div>
+              <div className="data-table-toolbar">
+                <div className="data-table-toolbar-start" />
+                <div className="data-table-toolbar-end">
+                  <TableRefreshButton
+                    onRefresh={fetchReturnList}
+                    isLoading={tableLoading}
+                    className="!h-9"
+                  />
+                </div>
+              </div>
+              <DashBoardShowroomTable />
+            </div>
+          )}
+
+          {hasPermission(permissionList, "showroom_expense_report_view") &&
+            expenseListData?.length > 0 && (
+              <div className="data-table-card glass-card rounded-2xl orders-table-shell mb-4">
+                <div className="premium-table-toolbar">
+                  <p className="premium-table-toolbar-title">Expense reports</p>
+                  <p className="premium-table-toolbar-meta">
+                    {expenseTotalOrders.toLocaleString()}{" "}
+                    {expenseTotalOrders === 1 ? "expense" : "expenses"}
+                  </p>
+                </div>
+                <div className="data-table-toolbar">
+                  <div className="data-table-toolbar-start" />
+                  <div className="data-table-toolbar-end">
+                    <TableRefreshButton
+                      onRefresh={fetchExpensesReportList}
+                      isLoading={tableExLoading}
+                      className="!h-9"
+                    />
+                  </div>
+                </div>
+                <DashBoardShowroomExpenseTable />
+                <PaginationComponent
+                  ordersPerPage={expenseOrdersPerPage}
+                  handleOrdersPerPageChange={handleExpenseOrdersPerPageChange}
+                  currentPage={expenseCurrentPage}
+                  setCurrentPage={setExpenseCurrentPage}
+                  totalPages={expenseTotalPages}
+                  totalData={expenseTotalOrders}
+                  isShowText={true}
+                  onRefresh={fetchExpensesReportList}
+                  isLoading={tableExLoading}
+                  showRefresh={false}
+                  className="orders-table-pagination !mt-0 !rounded-none !border-x-0 !border-b-0 !shadow-none"
+                />
+              </div>
+            )}
+          <DashboardExpenseModal />
+
+          {hasPermission(
+            permissionList,
+            "showroom_payment_history_quick_view"
+          ) &&
+            expenseQuickData.length > 0 && (
+              <div className="data-table-card glass-card rounded-2xl orders-table-shell">
+                <div className="premium-table-toolbar">
+                  <p className="premium-table-toolbar-title">Quick report</p>
+                  <p className="premium-table-toolbar-meta">
+                    {quickTotalOrders.toLocaleString()}{" "}
+                    {quickTotalOrders === 1 ? "record" : "records"}
+                  </p>
+                </div>
+                <div className="data-table-toolbar">
+                  <div className="data-table-toolbar-start">
+                    <label className="data-table-search">
+                      <Icon name="search" variant="outlined" size={18} />
+                      <input
+                        type="search"
+                        value={searchTerm}
+                        onChange={handleSearchChange}
+                        placeholder="Search..."
+                      />
+                    </label>
+                  </div>
+                  <div className="data-table-toolbar-end">
+                    <TableRefreshButton
+                      onRefresh={fetchListQuick}
+                      isLoading={tableQuickLoading}
+                      className="!h-9"
+                    />
+                  </div>
+                </div>
+                <DashboardQuickReportTable />
+                <PaginationComponent
+                  ordersPerPage={quickOrdersPerPage}
+                  handleOrdersPerPageChange={handleQuickOrdersPerPageChange}
+                  currentPage={quickCurrentPage}
+                  setCurrentPage={setQuickCurrentPage}
+                  totalPages={quickTotalPages}
+                  totalData={quickTotalOrders}
+                  isShowText={true}
+                  showRefresh={false}
+                  className="orders-table-pagination !mt-0 !rounded-none !border-x-0 !border-b-0 !shadow-none"
+                />
+              </div>
+            )}
+
+          <ShowroomQuickViewModal
+            isModalOpen={modalOpen}
+            setIsModalOpen={setModalOpen}
+            items={items}
+            startDate={formattedFrom}
+            endDate={formattedTo}
+          />
+        </DashboardShowroomContext.Provider>
       </div>
     </AuthLayout>
   );

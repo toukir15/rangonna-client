@@ -6,7 +6,7 @@ import ToggleSwitch from "@admin/components/core/SwitchButton/ToggleSwitch";
 import { Tbody, Td, Th, Thead, Tr } from "@admin/components/Table/Table";
 import TableWrapper from "@admin/components/Table/TableWrapper";
 import { useGlobalContext } from "@admin/context/GlobalContext";
-import { hasPermission } from "@admin/utils";
+import { hasPermission, noData } from "@admin/utils";
 import { useContext, useEffect, useRef, useState } from "react";
 
 const WarehouseTable = () => {
@@ -17,7 +17,6 @@ const WarehouseTable = () => {
     toggleIsActive,
     activeToggleLoading,
     handleEditClick,
-    // handleRemove,
   } = useContext(WareHouseContext);
   const [popupIndex, setPopupIndex] = useState<number | null>(null);
   const popupRef = useRef<HTMLDivElement | null>(null);
@@ -46,8 +45,9 @@ const WarehouseTable = () => {
   }, [popupIndex]);
   return (
     <TableWrapper
+      showCheckbox={false}
       isSwitchOn={true}
-      className="min-h-[650px]"
+      className="orders-table-nested !mt-0 min-h-[560px] !flex-1"
       data={warehouseData}
       isLoading={tableLoading}
       noDataViewCondition={
@@ -56,45 +56,45 @@ const WarehouseTable = () => {
       colValue={7}
     >
       <Thead>
-        <Tr className="dark:bg-gray-700 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
-          <Th className="dark:text-gray-300">
-            <div className="flex items-center">
-              <div>
-                <p>Title</p>
-              </div>
-              <div className="mt-2">
-                {" "}
-                <div className="h-1.5">
-                  <Icon name={"arrow_drop_up"} className="cursor-pointer" />
-                </div>
-                <div className="">
-                  <Icon name={"arrow_drop_down"} className="cursor-pointer" />{" "}
-                </div>
-              </div>
-            </div>
-          </Th>
-          <Th className="dark:text-gray-300">Phone No</Th>
-          <Th className="dark:text-gray-300">Address</Th>
-          <Th className="dark:text-gray-300">Email</Th>
-          <Th className="dark:text-gray-300">Active</Th>
-          <Th className="dark:text-gray-300">Action</Th>
+        <Tr>
+          <Th>Title</Th>
+          <Th>Phone No</Th>
+          <Th>Address</Th>
+          <Th>Email</Th>
+          <Th>Active</Th>
+          <Th className="is-right">Actions</Th>
         </Tr>
       </Thead>
-      <Tbody className="dark:bg-gray-800 bg-white">
+      <Tbody>
         {warehouseData?.map((warehouse: IWarehouse, index: number) => {
           return (
-            <Tr className="h-14" key={index}>
-              <Td>{warehouse?.title}</Td>
-              <Td className="text-base font-bold">{warehouse?.phone}</Td>
-              <Td className="">{warehouse?.address}</Td>
-              <Td>{warehouse?.email}</Td>
-
+            <Tr key={index}>
+              <Td>
+                <span className="data-table-primary">
+                  {warehouse?.title || noData}
+                </span>
+              </Td>
+              <Td>
+                <span className="data-table-muted">
+                  {warehouse?.phone || noData}
+                </span>
+              </Td>
+              <Td>
+                <span className="data-table-muted">
+                  {warehouse?.address || noData}
+                </span>
+              </Td>
+              <Td>
+                <span className="data-table-muted">
+                  {warehouse?.email || noData}
+                </span>
+              </Td>
               <Td>
                 {activeToggleLoading[warehouse._id] ? (
                   <Icon
                     name="restart_alt"
                     size={28}
-                    className={`text-green-600 animate-spin ml-5`}
+                    className="text-green-600 animate-spin ml-5"
                   />
                 ) : (
                   <ToggleSwitch
@@ -109,38 +109,31 @@ const WarehouseTable = () => {
                   />
                 )}
               </Td>
-
-              <Td className="">
+              <Td className="is-right">
                 {hasPermission(permissionList, "warehouse_edit") && (
-                  <div className="relative">
-                    <Icon
-                      name={"more_horiz"}
-                      variant="outlined"
+                  <div className="relative max-w-40">
+                    <button
+                      type="button"
+                      className="data-table-action-btn"
+                      aria-expanded={popupIndex === index}
                       onClick={() => togglePopup(index)}
-                      className="cursor-pointer"
-                    />
+                    >
+                      <Icon name="more_vert" variant="outlined" size={18} />
+                    </button>
                     {popupIndex === index && (
                       <div
                         ref={popupRef}
-                        className="absolute top-8 right-0 bg-white border shadow-md rounded-lg p-4 z-20 min-w-40 dark:bg-gray-700 dark:border-gray-500"
+                        className="absolute top-9 right-0 z-20 min-w-40 rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-1.5 shadow-[var(--shadow-soft)]"
                       >
                         {hasPermission(permissionList, "warehouse_edit") && (
                           <button
-                            className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg"
+                            type="button"
+                            className="block w-full rounded-lg px-3 py-2 text-left text-sm text-app hover:bg-[var(--bg-hover)]"
                             onClick={() => handleEditClick(warehouse)}
                           >
                             Edit
                           </button>
                         )}
-
-                        {/* {hasPermission(permissionList, "ware_d") && (
-                          <button
-                            className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg"
-                            onClick={() => handleRemove(warehouse?._id)}
-                          >
-                            Delete
-                          </button>
-                        )} */}
                       </div>
                     )}
                   </div>

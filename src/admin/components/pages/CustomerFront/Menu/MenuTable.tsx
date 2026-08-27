@@ -38,136 +38,129 @@ const MenuTable = () => {
     }, [popupIndex]);
 
     return (
-        <div>
-            <TableWrapper
-                isSwitchOn={true}
-                className="min-h-[650px]"
-                data={menuData}
-                isLoading={tableLoading}
-                noDataViewCondition={menuData?.length < 1 ? "No data available" : null}
-                colValue={4}
-            >
-                <Thead>
-                    <Tr className="dark:bg-gray-700 h-[52px] shadow-sm border-b dark:border-gray-700 border-gray-300">
-                        <Th className="dark:text-gray-300 min-w-[520px]">Menu Structure</Th>
-                        <Th className="dark:text-gray-300 min-w-[90px]">Action</Th>
-                    </Tr>
-                </Thead>
+        <TableWrapper
+            showCheckbox={false}
+            isSwitchOn={true}
+            className="orders-table-nested !mt-0 min-h-[560px] !flex-1"
+            data={menuData}
+            isLoading={tableLoading}
+            noDataViewCondition={menuData?.length < 1 ? "No data available" : null}
+            colValue={4}
+        >
+            <Thead>
+                <Tr>
+                    <Th className="min-w-[520px]">Menu Structure</Th>
+                    <Th className="is-right">Actions</Th>
+                </Tr>
+            </Thead>
 
-                <Tbody className="dark:bg-gray-800 bg-white">
-                    {menuData?.map((item: any, index: number) => {
-                        const navItems = item?.navBarItems || [];
+            <Tbody>
+                {menuData?.map((item: any, index: number) => {
+                    const navItems = item?.navBarItems || [];
 
-                        return (
-                            <Tr
-                                className="align-top border-b border-gray-200 dark:border-gray-700"
-                                key={item?._id || index}
-                            >
-                                <Td className="py-4">
-                                    <div className="space-y-3">
-                                        {navItems.length > 0 ? (
-                                            navItems.map((nav: any) => (
-                                                <div
-                                                    key={nav?.id}
-                                                    className="rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-900/50 p-4"
-                                                >
-                                                    <div className="flex items-start justify-between gap-4">
-                                                        <div className="flex items-start gap-3 min-w-0">
-                                                            <div className="min-w-0">
-                                                                <p className="font-semibold text-gray-800 dark:text-white">
-                                                                    {nav?.name}
-                                                                </p>
-                                                                <p className="text-xs text-gray-500 break-all mt-1">
-                                                                    Route: {nav?.route || "-"}
-                                                                </p>
-                                                            </div>
-                                                        </div>
-
-                                                        <span className="text-xs whitespace-nowrap px-2 py-1 rounded-full bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-200">
-                                                            {nav?.submenu?.length || 0} submenu
-                                                        </span>
+                    return (
+                        <Tr key={item?._id || index}>
+                            <Td className="py-4">
+                                <div className="space-y-3">
+                                    {navItems.length > 0 ? (
+                                        navItems.map((nav: any) => (
+                                            <div
+                                                key={nav?.id}
+                                                className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-4"
+                                            >
+                                                <div className="flex items-start justify-between gap-4">
+                                                    <div className="min-w-0">
+                                                        <p className="data-table-primary">
+                                                            {nav?.name}
+                                                        </p>
+                                                        <p className="data-table-muted break-all mt-1 text-xs">
+                                                            Route: {nav?.route || "-"}
+                                                        </p>
                                                     </div>
 
-                                                    {nav?.submenu?.length > 0 && (
-                                                        <div className="mt-4 pl-4 border-l-2 border-blue-100 dark:border-gray-700 space-y-2">
-                                                            {nav?.submenu?.map((sub: any) => (
-                                                                <div
-                                                                    key={sub?.id}
-                                                                    className="rounded-lg bg-gray-50 dark:bg-gray-800 px-3 py-2"
-                                                                >
-                                                                    <div className="flex items-center gap-2">
-                                                                        <Icon
-                                                                            name={sub?.icon || "chevron_right"}
-                                                                            className="text-gray-500"
-                                                                        />
-                                                                        <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                                                                            {sub?.name}
-                                                                        </p>
-                                                                    </div>
-                                                                    <p className="text-xs text-gray-500 mt-1 pl-6 break-all">
-                                                                        {sub?.route || "-"}
+                                                    <span className="table-role-badge is-neutral whitespace-nowrap">
+                                                        {nav?.submenu?.length || 0} submenu
+                                                    </span>
+                                                </div>
+
+                                                {nav?.submenu?.length > 0 && (
+                                                    <div className="mt-4 pl-4 border-l-2 border-[var(--border)] space-y-2">
+                                                        {nav?.submenu?.map((sub: any) => (
+                                                            <div
+                                                                key={sub?.id}
+                                                                className="rounded-lg bg-[var(--bg-hover)] px-3 py-2"
+                                                            >
+                                                                <div className="flex items-center gap-2">
+                                                                    <Icon
+                                                                        name={sub?.icon || "chevron_right"}
+                                                                        className="data-table-muted"
+                                                                    />
+                                                                    <p className="data-table-primary text-sm">
+                                                                        {sub?.name}
                                                                     </p>
                                                                 </div>
-                                                            ))}
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            ))
-                                        ) : (
-                                            <div className="rounded-xl border border-dashed border-gray-300 dark:border-gray-600 p-6 text-center text-sm text-gray-500">
-                                                No menu found
+                                                                <p className="data-table-muted mt-1 pl-6 break-all text-xs">
+                                                                    {sub?.route || "-"}
+                                                                </p>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
                                             </div>
-                                        )}
-                                    </div>
-                                </Td>
+                                        ))
+                                    ) : (
+                                        <div className="rounded-xl border border-dashed border-[var(--border)] p-6 text-center data-table-muted">
+                                            No menu found
+                                        </div>
+                                    )}
+                                </div>
+                            </Td>
 
-                                <Td className="py-4">
-                                    <div className="relative flex justify-center">
-                                        <button
-                                            type="button"
-                                            onClick={() => togglePopup(index)}
-                                            className="w-10 h-10 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center justify-center transition"
+                            <Td className="is-right py-4">
+                                <div className="relative max-w-40">
+                                    <button
+                                        type="button"
+                                        className="data-table-action-btn"
+                                        aria-expanded={popupIndex === index}
+                                        onClick={() => togglePopup(index)}
+                                    >
+                                        <Icon name="more_vert" variant="outlined" size={18} />
+                                    </button>
+
+                                    {popupIndex === index && (
+                                        <div
+                                            ref={popupRef}
+                                            className="absolute top-9 right-0 z-20 min-w-40 rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-1.5 shadow-[var(--shadow-soft)]"
                                         >
-                                            <Icon
-                                                name="more_horiz"
-                                                variant="outlined"
-                                                className="cursor-pointer"
-                                            />
-                                        </button>
-
-                                        {popupIndex === index && (
-                                            <div
-                                                ref={popupRef}
-                                                className="absolute top-11 right-0 bg-white border shadow-lg rounded-xl p-2 z-20 min-w-40 dark:bg-gray-700 dark:border-gray-500"
+                                            <button
+                                                type="button"
+                                                className="block w-full rounded-lg px-3 py-2 text-left text-sm text-app hover:bg-[var(--bg-hover)]"
+                                                onClick={() => {
+                                                    router.push(`/admin/customer-front/menu/edit-menu/${item?._id}`);
+                                                }}
                                             >
-                                                <button
-                                                    className="block w-full text-left px-4 py-2.5 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg"
-                                                    onClick={() => {
-                                                        router.push(`/admin/customer-front/menu/edit-menu/${item?._id}`);
-                                                    }}
-                                                >
-                                                    Edit
-                                                </button>
+                                                Edit
+                                            </button>
 
-                                                <button
-                                                    className="block w-full text-left px-4 py-2.5 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg text-red-500"
-                                                    onClick={() => {
-                                                        handleRemove(item?._id);
-                                                        setPopupIndex(null);
-                                                    }}
-                                                >
-                                                    Delete
-                                                </button>
-                                            </div>
-                                        )}
-                                    </div>
-                                </Td>
-                            </Tr>
-                        );
-                    })}
-                </Tbody>
-            </TableWrapper>
-        </div>
+                                            <button
+                                                type="button"
+                                                className="block w-full rounded-lg px-3 py-2 text-left text-sm text-app hover:bg-[var(--bg-hover)]"
+                                                onClick={() => {
+                                                    handleRemove(item?._id);
+                                                    setPopupIndex(null);
+                                                }}
+                                            >
+                                                Delete
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
+                            </Td>
+                        </Tr>
+                    );
+                })}
+            </Tbody>
+        </TableWrapper>
     );
 };
 

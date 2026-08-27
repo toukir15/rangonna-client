@@ -9,6 +9,7 @@ import {
 } from "@/app/admin/product/pricing/page";
 import { ProductPrice } from "@admin/@interfaces/productReport/product.interface";
 import Icon from "@admin/components/core/Icon/Icon";
+import { noData } from "@admin/utils";
 
 const ProductPriceTable: React.FC = () => {
   const {
@@ -28,7 +29,7 @@ const ProductPriceTable: React.FC = () => {
 
       if (existing.direction === "asc") {
         return prev.map((s: any) =>
-          s.field === field ? { ...s, direction: "desc" } : s
+          s.field === field ? { ...s, direction: "desc" } : s,
         );
       }
 
@@ -70,23 +71,19 @@ const ProductPriceTable: React.FC = () => {
   return (
     <div>
       <TableWrapper
+        showCheckbox={false}
         isSwitchOn={true}
-        className="min-h-[700px]"
+        className="orders-table-nested !mt-0 min-h-[560px] !flex-1"
         data={productData}
         isLoading={tableLoading}
         noDataViewCondition={productData?.length < 1 && "No data available"}
         colValue={9}
       >
         <Thead>
-          <Tr className="dark:bg-gray-700 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
-            <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-24 min-w-20">
-              Image
-            </Th>
-            <Th className="dark:text-gray-300 2xl:min-w-52 lg:min-w-44 min-w-48">
-              Name
-            </Th>
-
-            <Th className="dark:text-gray-300 2xl:min-w-52 lg:min-w-44 min-w-48">
+          <Tr>
+            <Th className="2xl:min-w-32 lg:min-w-24 min-w-20">Image</Th>
+            <Th className="2xl:min-w-52 lg:min-w-44 min-w-48">Name</Th>
+            <Th className="2xl:min-w-52 lg:min-w-44 min-w-48">
               <div
                 className="flex items-center cursor-pointer"
                 onClick={() => handleSort("pricing.sale_price")}
@@ -95,8 +92,7 @@ const ProductPriceTable: React.FC = () => {
                 <SortIcons field="pricing.sale_price" sortOrders={sortOrders} />
               </div>
             </Th>
-
-            <Th className="dark:text-gray-300 2xl:min-w-52 lg:min-w-44 min-w-48">
+            <Th className="2xl:min-w-52 lg:min-w-44 min-w-48">
               <div
                 className="flex items-center cursor-pointer"
                 onClick={() => handleSort("pricing.purchase_price")}
@@ -108,7 +104,7 @@ const ProductPriceTable: React.FC = () => {
                 />
               </div>
             </Th>
-            <Th className="dark:text-gray-300 2xl:min-w-52 lg:min-w-44 min-w-48">
+            <Th className="2xl:min-w-52 lg:min-w-44 min-w-48">
               <div
                 className="flex items-center cursor-pointer"
                 onClick={() =>
@@ -122,7 +118,7 @@ const ProductPriceTable: React.FC = () => {
                 />
               </div>
             </Th>
-            <Th className="dark:text-gray-300 2xl:min-w-52 lg:min-w-44 min-w-48">
+            <Th className="2xl:min-w-52 lg:min-w-44 min-w-48">
               <div
                 className="flex items-center cursor-pointer"
                 onClick={() => handleSort("wholesale_pricing.wholesale_price")}
@@ -134,8 +130,7 @@ const ProductPriceTable: React.FC = () => {
                 />
               </div>
             </Th>
-
-            <Th className="dark:text-gray-300 2xl:min-w-52 lg:min-w-44 min-w-48">
+            <Th className="2xl:min-w-52 lg:min-w-44 min-w-48">
               <div
                 className="flex items-center cursor-pointer"
                 onClick={() => handleSort("wholesale_pricing.resale_price")}
@@ -149,10 +144,10 @@ const ProductPriceTable: React.FC = () => {
             </Th>
           </Tr>
         </Thead>
-        <Tbody className="dark:bg-gray-800 bg-white">
+        <Tbody>
           {productData?.map((item: ProductPrice, index: number) => {
             return (
-              <Tr key={index} className="h-14">
+              <Tr key={index}>
                 <Td>
                   <Image
                     key={index}
@@ -167,14 +162,36 @@ const ProductPriceTable: React.FC = () => {
                     }}
                   />
                 </Td>
-                <Td className="text-base font-bold">{item?.title}</Td>
-
-                <Td>{item?.pricing?.sale_price}</Td>
-
-                <Td>{item?.pricing?.purchase_price}</Td>
-                <Td>{item?.wholesale_pricing?.wholesale_vip_price}</Td>
-                <Td>{item?.wholesale_pricing?.wholesale_price}</Td>
-                <Td>{item?.wholesale_pricing?.resale_price}</Td>
+                <Td>
+                  <span className="data-table-primary">
+                    {item?.title || noData}
+                  </span>
+                </Td>
+                <Td>
+                  <span className="table-amount">
+                    {item?.pricing?.sale_price}
+                  </span>
+                </Td>
+                <Td>
+                  <span className="table-amount">
+                    {item?.pricing?.purchase_price}
+                  </span>
+                </Td>
+                <Td>
+                  <span className="table-amount">
+                    {item?.wholesale_pricing?.wholesale_vip_price}
+                  </span>
+                </Td>
+                <Td>
+                  <span className="table-amount">
+                    {item?.wholesale_pricing?.wholesale_price}
+                  </span>
+                </Td>
+                <Td>
+                  <span className="table-amount">
+                    {item?.wholesale_pricing?.resale_price}
+                  </span>
+                </Td>
               </Tr>
             );
           })}

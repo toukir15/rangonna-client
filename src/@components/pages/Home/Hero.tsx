@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import type { TBannerSlide } from "./getBannerData";
@@ -14,24 +14,14 @@ function isExternal(href: string) {
   return /^https?:\/\//i.test(href);
 }
 
-export default function Hero({ desktopSlides, mobileSlides }: HeroProps) {
+function HeroCarousel({
+  slides,
+  variant,
+}: {
+  slides: TBannerSlide[];
+  variant: "mobile" | "desktop";
+}) {
   const [index, setIndex] = useState(0);
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth <= 768);
-    check();
-    window.addEventListener("resize", check);
-    return () => window.removeEventListener("resize", check);
-  }, []);
-
-  const slides = useMemo(() => {
-    if (isMobile && mobileSlides.length) return mobileSlides;
-    if (desktopSlides.length) return desktopSlides;
-    return mobileSlides;
-  }, [isMobile, desktopSlides, mobileSlides]);
-
-  const slide = slides[index] ?? slides[0];
 
   const go = useCallback((i: number) => setIndex(i), []);
   const next = useCallback(() => {
@@ -40,7 +30,7 @@ export default function Hero({ desktopSlides, mobileSlides }: HeroProps) {
 
   useEffect(() => {
     setIndex(0);
-  }, [isMobile, slides.length]);
+  }, [slides.length]);
 
   useEffect(() => {
     if (slides.length < 2) return;
@@ -48,16 +38,20 @@ export default function Hero({ desktopSlides, mobileSlides }: HeroProps) {
     return () => clearInterval(id);
   }, [next, slides.length]);
 
+  const slide = slides[index] ?? slides[0];
   if (!slide) return null;
 
   const ctaHref = slide.link || "/churi";
   const ctaClass = "rongonaa-hero__cta rongonaa-hero__cta--primary";
 
   return (
-    <section className="rongonaa-hero" aria-label="Featured collections">
+    <section
+      className={`rongonaa-hero rongonaa-hero--${variant}`}
+      aria-label="Featured collections"
+    >
       {slides.map((s, i) => (
         <div
-          key={`${s.src}-${i}`}
+          key={`${variant}-${s.src}-${i}`}
           className={`rongonaa-hero__slide${i === index ? " is-active" : ""}`}
           aria-hidden={i !== index}
         >
@@ -110,7 +104,7 @@ export default function Hero({ desktopSlides, mobileSlides }: HeroProps) {
               <div className="rongonaa-hero__pager">
                 {slides.map((s, i) => (
                   <button
-                    key={`${s.src}-dot-${i}`}
+                    key={`${variant}-${s.src}-dot-${i}`}
                     type="button"
                     onClick={() => go(i)}
                     aria-label={`Show slide ${i + 1}`}
@@ -127,5 +121,23 @@ export default function Hero({ desktopSlides, mobileSlides }: HeroProps) {
         </div>
       </div>
     </section>
+  );
+}
+
+export default function Hero({ desktopSlides, mobileSlides }: HeroProps) {
+  const mobile = mobileSlides.length ? mobileSlides : desktopSlides;
+  const desktop = desktopSlides.length ? desktopSlides : mobileSlides;
+
+  if (!mobile.length && !desktop.length) return null;
+
+  return (
+    <>
+      {mobile.length ? (
+        <HeroCarousel slides={mobile} variant="mobile" />
+      ) : null}
+      {desktop.length ? (
+        <HeroCarousel slides={desktop} variant="desktop" />
+      ) : null}
+    </>
   );
 }

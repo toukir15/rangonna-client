@@ -2,7 +2,7 @@
 import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import React, { useState, useEffect, createContext } from "react";
 import Icon from "@admin/components/core/Icon/Icon";
-import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
+import AuthLayout from "@admin/layouts/AuthLayout";
 import {
   FormValues,
   IItems,
@@ -19,11 +19,12 @@ import UsersTable from "@admin/components/pages/Team/Users/UsersTable";
 import TeamModal from "@admin/components/pages/Team/Users/TeamDrawer";
 import { useGlobalContext } from "@admin/context/GlobalContext";
 import useDebounce from "@admin/components/core/UseDebounece/UseDebouence";
-import PageSearch from "@admin/components/core/Search/PageSearch";
 import { useRouter } from "next/navigation";
 import { userStatusOptions } from "@admin/components/pages/Utilities/paymentData";
 import { SelectOption } from "@admin/@interfaces/common.interface";
 import AllFilter from "@admin/components/pages/AllFilter/AllFilter";
+import PageHeader from "@admin/components/layout/PageHeader";
+import TableRefreshButton from "@admin/components/Table/TableRefreshButton";
 
 export const TeamContext = createContext({} as any);
 
@@ -215,45 +216,57 @@ const Page: React.FC = () => {
 
   return (
     <AuthLayout>
-      <NoScrollLayout>
-        {" "}
-        <div className="2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 md:pb-0 mb-1">
-          <div className="sm:flex flex-wrap items-center items-center gap-3">
-            <div className="flex flex-wrap items-center items-center gap-3">
-              <h2 className="2xl:text-2xl lg:text-xl text-lg font-semibold text-app text-nowrap">
-                All Member
-              </h2>
+      <div className="2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 pb-4 relative w-full">
+        <PageHeader
+          title="All Member"
+          action={
+            permissionList.includes("team_user_create") ? (
+              <Button
+                className="btn-primary btn-primary-inline inline-flex items-center gap-2"
+                onClick={() => router.push("/admin/team/member/add-member")}
+              >
+                <Icon name="add" variant="outlined" size={16} />
+                Add Member
+              </Button>
+            ) : undefined
+          }
+        />
+
+        <div className="data-table-card glass-card rounded-2xl orders-table-shell">
+          <div className="premium-table-toolbar">
+            <p className="premium-table-toolbar-title">Member records</p>
+            <p className="premium-table-toolbar-meta">
+              {totalTeam.toLocaleString()} items
+            </p>
+          </div>
+
+          <div className="data-table-toolbar">
+            <div className="data-table-toolbar-start">
+              <label className="data-table-search">
+                <Icon name="search" variant="outlined" size={18} />
+                <input
+                  type="search"
+                  value={searchTerm}
+                  onChange={handleSearchChange}
+                  placeholder="Search..."
+                />
+              </label>
               <AllFilter
                 isStatusFilter={true}
                 statusOption={userStatusOptions}
                 selectedStatus={selectedStatus}
                 setSelectedStatus={setSelectedStatus}
               />
-              {permissionList.includes("team_user_create") && (
-                <Button
-                  className="btn-primary btn-primary-inline inline-flex items-center gap-2"
-                  onClick={() => router.push("/admin/team/member/add-member")}
-                >
-                  Add Member
-                </Button>
-              )}
             </div>
-            <div className="sm:w-80 w-full md:my-0 my-2">
-              <PageSearch
-                value={searchTerm}
-                onChange={handleSearchChange}
-                wrapperClass="w-full"
+            <div className="data-table-toolbar-end">
+              <TableRefreshButton
+                onRefresh={fetchTeamList}
+                isLoading={isLoading}
+                className="!h-9"
               />
             </div>
-
           </div>
 
-          
-        </div>
-      </NoScrollLayout>
-
-      <div className="min-h-[70vh] 2xl:px-4 px-3">
-        <div className="xl:mt-3 mt-2">
           <TeamContext.Provider
             value={{
               isLoading,
@@ -294,6 +307,9 @@ const Page: React.FC = () => {
             setCurrentPage={setCurrentPage}
             totalPages={totalPages}
             totalData={totalTeam}
+            showRefresh={false}
+            isShowText={true}
+            className="orders-table-pagination !mt-0 !rounded-none !border-x-0 !border-b-0 !shadow-none"
           />
         </div>
       </div>

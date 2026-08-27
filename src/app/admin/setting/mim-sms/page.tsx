@@ -2,14 +2,15 @@
 import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import Icon from "@admin/components/core/Icon/Icon";
 import React, { useState, useEffect, createContext } from "react";
-import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
+import AuthLayout from "@admin/layouts/AuthLayout";
 import PaginationComponent from "@admin/components/core/Pazination/Pazination";
 import useDebounce from "@admin/components/core/UseDebounece/UseDebouence";
 import Button from "@admin/components/core/Button/Button";
 import { ToastService } from "@admin/utils/toastr.service";
 import Alert from "@admin/components/core/Aleart/Aleart";
 import { useGlobalContext } from "@admin/context/GlobalContext";
-import PageSearch from "@admin/components/core/Search/PageSearch";
+import PageHeader from "@admin/components/layout/PageHeader";
+import TableRefreshButton from "@admin/components/Table/TableRefreshButton";
 import { IMimSms, MimSmsContextType } from "@admin/@interfaces/setting/mimSms/mimSms.interface";
 import MimSmsTable from "@admin/components/pages/Settings/MimSms/MimSmsTable";
 import MimSmsModal from "@admin/components/pages/Settings/MimSms/MimSmsModal";
@@ -147,35 +148,49 @@ const Page: React.FC = () => {
           />
         </div>
       </Alert>
-      <NoScrollLayout>
-        <div className="2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 ">
-          <div className="sm:flex sm:items-center gap-4">
-            <div className="flex items-center gap-3">
-              <h2 className="2xl:text-2xl lg:text-xl text-lg font-semibold text-app">
-                MiM SMS Settings
-              </h2>
-              {permissionList.includes("mim_sms_template_create") && (
-                <Button
-                  className="btn-primary btn-primary-inline inline-flex items-center gap-2"
-                  onClick={handleAddClick}
-                >
-                  Create SMS
-                </Button>
-              )}
+      <div className="2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 pb-4 relative w-full">
+        <PageHeader
+          title="MiM SMS Settings"
+          action={
+            permissionList.includes("mim_sms_template_create") ? (
+              <Button
+                className="btn-primary btn-primary-inline inline-flex items-center gap-2"
+                onClick={handleAddClick}
+              >
+                <Icon name="add" variant="outlined" size={16} />
+                Create SMS
+              </Button>
+            ) : undefined
+          }
+        />
+        <div className="data-table-card glass-card rounded-2xl orders-table-shell">
+          <div className="premium-table-toolbar">
+            <p className="premium-table-toolbar-title">SMS templates</p>
+            <p className="premium-table-toolbar-meta">
+              {totalProduct.toLocaleString()}{" "}
+              {totalProduct === 1 ? "template" : "templates"}
+            </p>
+          </div>
+          <div className="data-table-toolbar">
+            <div className="data-table-toolbar-start">
+              <label className="data-table-search">
+                <Icon name="search" variant="outlined" size={18} />
+                <input
+                  type="search"
+                  value={searchTerm}
+                  onChange={handleSearchChange}
+                  placeholder="Search..."
+                />
+              </label>
             </div>
-            <div className="sm:w-80 w-full sm:mt-0 mt-2">
-              <PageSearch
-                value={searchTerm}
-                onChange={handleSearchChange}
-                wrapperClass="w-full"
+            <div className="data-table-toolbar-end">
+              <TableRefreshButton
+                onRefresh={getMimSms}
+                isLoading={tableLoading}
+                className="!h-9"
               />
             </div>
           </div>
-        </div>
-      </NoScrollLayout>
-
-      <div className="min-h-[75vh] 2xl:px-4 px-3">
-        <div className="xl:mt-3 mt-2">
           <MimSmsContext.Provider
             value={{
               mimSmsData,
@@ -199,6 +214,11 @@ const Page: React.FC = () => {
             setCurrentPage={setCurrentPage}
             totalPages={totalPages}
             totalData={totalProduct}
+            isShowText={true}
+            onRefresh={getMimSms}
+            isLoading={tableLoading}
+            showRefresh={false}
+            className="orders-table-pagination !mt-0 !rounded-none !border-x-0 !border-b-0 !shadow-none"
           />
         </div>
       </div>

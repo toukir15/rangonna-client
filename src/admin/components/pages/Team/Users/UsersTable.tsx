@@ -7,9 +7,10 @@ import { TeamContext } from "@/app/admin/team/member/page";
 import Icon from "@admin/components/core/Icon/Icon";
 import Alert from "@admin/components/core/Aleart/Aleart";
 import { useGlobalContext } from "@admin/context/GlobalContext";
-import { hasPermission } from "@admin/utils";
+import { hasPermission, noData } from "@admin/utils";
 import { useRouter } from "next/navigation";
 import ToggleSwitch from "@admin/components/core/SwitchButton/ToggleSwitch";
+import { ToastService } from "@admin/utils/toastr.service";
 
 const UsersTable: React.FC = () => {
   const router = useRouter();
@@ -17,7 +18,6 @@ const UsersTable: React.FC = () => {
   const {
     isLoading,
     teamData,
-    // handleEditClick,
     handleRemove,
     isAlertOpen,
     confirmRemove,
@@ -31,6 +31,17 @@ const UsersTable: React.FC = () => {
     setPopupIndex(popupIndex === index ? null : index);
   };
 
+  const copyToClipboard = async (text?: string) => {
+    if (!text) return;
+    try {
+      await navigator.clipboard.writeText(text);
+      ToastService.success("Number copied to clipboard!");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        ToastService.error(err.message);
+      }
+    }
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -72,42 +83,28 @@ const UsersTable: React.FC = () => {
       </Alert>
 
       <TableWrapper
-        showCheckbox={true}
+        showCheckbox={false}
         isLoading={isLoading}
         isSwitchOn
         data={teamData}
-        className="min-h-[700px]"
+        className="orders-table-nested !mt-0 min-h-[560px] !flex-1"
         colValue={7}
       >
         <Thead>
-          <Tr className="dark:bg-gray-700 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
-            <Th className="xl:min-w-24 min-w-20 dark:text-gray-200">
-              Image
-            </Th>
-            <Th className="min-w-40 dark:text-gray-200">Name</Th>
-            <Th className="xl:min-w-40 min-w-20 dark:text-gray-200">
-              Phone No
-            </Th>
-            <Th className="xl:min-w-32 min-w-24 dark:text-gray-200">
-              Email
-            </Th>
-            <Th className="xl:min-w-28 dark:text-gray-200">
-              Role
-            </Th>
-            <Th className="xl:min-w-36 dark:text-gray-200">
-              Status
-            </Th>
-            <Th className="xl:min-w-36 dark:text-gray-200">
-              Active
-            </Th>
-            <Th className="xl:min-w-20 dark:text-gray-200">
-              Action
-            </Th>
+          <Tr>
+            <Th className="xl:min-w-24 min-w-20">Image</Th>
+            <Th className="min-w-40">Name</Th>
+            <Th className="xl:min-w-40 min-w-20">Phone No</Th>
+            <Th className="xl:min-w-32 min-w-24">Email</Th>
+            <Th className="xl:min-w-28">Role</Th>
+            <Th className="xl:min-w-36">Status</Th>
+            <Th className="xl:min-w-36">Active</Th>
+            <Th className="is-right">Actions</Th>
           </Tr>
         </Thead>
-        <Tbody className="dark:bg-gray-800 bg-white">
+        <Tbody>
           {teamData?.data?.map((item: any, index: number) => (
-            <Tr key={index} className="h-14">
+            <Tr key={index}>
               <Td>
                 <Image
                   src={item?.image ? item.image : logo}
@@ -118,16 +115,41 @@ const UsersTable: React.FC = () => {
                 />
               </Td>
 
-              <Td>{item.name}</Td>
-              <Td>{item.phone}</Td>
-              <Td>{item.email}</Td>
-              <Td>{item.role}</Td>
+              <Td>
+                <span className="data-table-primary">{item.name}</span>
+              </Td>
+              <Td>
+                {item?.phone ? (
+                  <span className="table-contact-line">
+                    <Icon name="call" size={14} variant="outlined" />
+                    <a href={`tel:${item.phone}`}>{item.phone}</a>
+                    <button
+                      type="button"
+                      className="table-copy-btn"
+                      aria-label="Copy phone number"
+                      title="Copy phone number"
+                      onClick={() => copyToClipboard(item.phone)}
+                    >
+                      <Icon name="content_copy" size={13} variant="outlined" />
+                    </button>
+                  </span>
+                ) : (
+                  <span className="data-table-muted">{noData}</span>
+                )}
+              </Td>
+              <Td>
+                <span className="data-table-muted">{item.email || noData}</span>
+              </Td>
+              <Td>
+                <span className="table-role-badge is-neutral">
+                  {item.role || noData}
+                </span>
+              </Td>
               <Td>
                 <span
-                  className={`font-bold uppercase py-1.5  px-6 rounded-lg ${item?.status
-                    ? "bg-green-100 text-green-600 "
-                    : "bg-gray-100 text-gray-600"
-                    }`}
+                  className={`table-role-badge ${
+                    item?.status ? "is-approved" : "is-rejected"
+                  }`}
                 >
                   {item.status ? "Active" : "Inactive"}
                 </span>
@@ -146,38 +168,39 @@ const UsersTable: React.FC = () => {
                       toggleIsActive(item);
                     }}
                     disabled={
-
                       activeToggleLoading[item?._id] ||
                       !hasPermission(permissionList, "team_user_edit")
                     }
                   />
                 )}
               </Td>
-              <Td>
+              <Td className="is-right">
                 {hasPermission(
                   permissionList,
                   "team_user_edit",
                   "team_user_delete"
                 ) && (
-                    <div className="relative">
-                      <Icon
-                        name={"more_horiz"}
-                        variant="outlined"
+                    <div className="relative max-w-40">
+                      <button
+                        type="button"
+                        className="data-table-action-btn"
+                        aria-expanded={popupIndex === index}
                         onClick={() => togglePopup(index)}
-                        className="cursor-pointer"
-                      />
+                      >
+                        <Icon name="more_vert" variant="outlined" size={18} />
+                      </button>
                       {popupIndex === index && (
                         <div
                           ref={popupRef}
-                          className="absolute top-8 right-0 bg-white dark:bg-gray-700 dark:border-gray-500 border shadow-md rounded-lg p-2 z-20 min-w-40"
+                          className="absolute top-9 right-0 z-20 min-w-40 rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-1.5 shadow-[var(--shadow-soft)]"
                         >
                           {hasPermission(permissionList, "team_user_edit") && (
                             <button
-
+                              type="button"
                               onClick={() => {
                                 router.push(`/admin/team/member/edit/${item?._id}`);
                               }}
-                              className="block w-full text-left px-4 py-2 hover:bg-gray-100 rounded-lg dark:hover:bg-gray-600"
+                              className="block w-full rounded-lg px-3 py-2 text-left text-sm text-app hover:bg-[var(--bg-hover)]"
                             >
                               Edit
                             </button>
@@ -185,13 +208,13 @@ const UsersTable: React.FC = () => {
 
                           {hasPermission(permissionList, "team_user_delete") && (
                             <button
+                              type="button"
                               onClick={() => handleRemove(item?._id)}
-                              className="block w-full text-left px-4 py-2 hover:bg-gray-100 rounded-lg dark:hover:bg-gray-600"
+                              className="block w-full rounded-lg px-3 py-2 text-left text-sm text-app hover:bg-[var(--bg-hover)]"
                             >
                               Delete
                             </button>
                           )}
-
                         </div>
                       )}
                     </div>

@@ -1,7 +1,7 @@
 "use client";
 import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import Icon from "@admin/components/core/Icon/Icon";
-import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
+import AuthLayout from "@admin/layouts/AuthLayout";
 import React, { useState, useEffect, createContext } from "react";
 import PaginationComponent from "@admin/components/core/Pazination/Pazination";
 import useDebounce from "@admin/components/core/UseDebounece/UseDebouence";
@@ -17,7 +17,8 @@ import {
   IReportIssueCategoryResponse,
 } from "@admin/@interfaces/setting/reportIssueCategory/reporIssueCategory.interface";
 import { useGlobalContext } from "@admin/context/GlobalContext";
-import PageSearch from "@admin/components/core/Search/PageSearch";
+import PageHeader from "@admin/components/layout/PageHeader";
+import TableRefreshButton from "@admin/components/Table/TableRefreshButton";
 
 export const ReportIssueCategoryContext =
   createContext<IReportIssueCategoryContextType>(
@@ -153,37 +154,49 @@ const Page: React.FC = () => {
           />
         </div>
       </Alert>
-      <NoScrollLayout>
-        <div className="2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 md:pb-0 mb-2">
-          <div className="md:flex items-center gap-3">
-            <div className="flex items-center gap-3">
-              <h2 className="2xl:text-2xl lg:text-xl text-lg font-semibold text-app">
-                Report Issue Category
-              </h2>
-              {permissionList.includes(
-                "setting_report_issue_category_create"
-              ) && (
-                  <Button
-                    className="btn-primary btn-primary-inline inline-flex items-center gap-2"
-                    onClick={handleAddClick}
-                  >
-                    Add Report Issue
-                  </Button>
-                )}
+      <div className="2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 pb-4 relative w-full">
+        <PageHeader
+          title="Report Issue Category"
+          action={
+            permissionList.includes("setting_report_issue_category_create") ? (
+              <Button
+                className="btn-primary btn-primary-inline inline-flex items-center gap-2"
+                onClick={handleAddClick}
+              >
+                <Icon name="add" variant="outlined" size={16} />
+                Add Report Issue
+              </Button>
+            ) : undefined
+          }
+        />
+        <div className="data-table-card glass-card rounded-2xl orders-table-shell">
+          <div className="premium-table-toolbar">
+            <p className="premium-table-toolbar-title">Issue category records</p>
+            <p className="premium-table-toolbar-meta">
+              {totalProduct.toLocaleString()}{" "}
+              {totalProduct === 1 ? "category" : "categories"}
+            </p>
+          </div>
+          <div className="data-table-toolbar">
+            <div className="data-table-toolbar-start">
+              <label className="data-table-search">
+                <Icon name="search" variant="outlined" size={18} />
+                <input
+                  type="search"
+                  value={searchTerm}
+                  onChange={handleSearchChange}
+                  placeholder="Search..."
+                />
+              </label>
             </div>
-            <div className="md:w-80 w-full md:mt-0 mt-4">
-              <PageSearch
-                value={searchTerm}
-                onChange={handleSearchChange}
-                wrapperClass="w-full"
+            <div className="data-table-toolbar-end">
+              <TableRefreshButton
+                onRefresh={getReportCategory}
+                isLoading={tableLoading}
+                className="!h-9"
               />
             </div>
           </div>
-        </div>
-      </NoScrollLayout>
-
-      <div className="min-h-[75vh] 2xl:px-4 px-3">
-        <div className="xl:mt-3 mt-2">
           <ReportIssueCategoryContext.Provider
             value={{
               reportIssueData,
@@ -200,7 +213,6 @@ const Page: React.FC = () => {
             <ReportIssueCategoryTable />
             <ReportIssueCategoryModal />
           </ReportIssueCategoryContext.Provider>
-
           <PaginationComponent
             ordersPerPage={productPerPage}
             handleOrdersPerPageChange={handleProductPerPageChange}
@@ -208,6 +220,11 @@ const Page: React.FC = () => {
             setCurrentPage={setCurrentPage}
             totalPages={totalPages}
             totalData={totalProduct}
+            isShowText={true}
+            onRefresh={getReportCategory}
+            isLoading={tableLoading}
+            showRefresh={false}
+            className="orders-table-pagination !mt-0 !rounded-none !border-x-0 !border-b-0 !shadow-none"
           />
         </div>
       </div>

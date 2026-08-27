@@ -85,23 +85,21 @@ const WebsiteTable = () => {
   };
 
   return (
-    <div>
-      <TableWrapper
-        isSwitchOn={true}
-        className="min-h-[650px]"
-        data={websiteData}
-        isLoading={tableLoading}
-        noDataViewCondition={
-          websiteData?.length < 1 ? "No data available" : null
-        }
-        colValue={7}
-      >
-        <Thead>
-          <Tr className="dark:bg-gray-700 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
-            <Th className="dark:text-gray-300 2xl:min-w-16 lg:min-w-16 min-w-16">
-              #
-            </Th>
-            <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-28 min-w-40">
+    <TableWrapper
+      showCheckbox={false}
+      isSwitchOn={true}
+      className="orders-table-nested !mt-0 min-h-[560px] !flex-1"
+      data={websiteData}
+      isLoading={tableLoading}
+      noDataViewCondition={
+        websiteData?.length < 1 ? "No data available" : null
+      }
+      colValue={7}
+    >
+      <Thead>
+        <Tr>
+          <Th className="2xl:min-w-16 lg:min-w-16 min-w-16">#</Th>
+          <Th className="2xl:min-w-32 lg:min-w-28 min-w-40">
               <div className="flex items-center">
                 <div>
                   <p>Website Name</p>
@@ -124,22 +122,14 @@ const WebsiteTable = () => {
                 )}
               </div>
             </Th>
-            <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-28 min-w-36">
-              Website Url
-            </Th>
-            <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-28 min-w-40">
-              Date
-            </Th>
-            <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-28 min-w-40">
-              Active
-            </Th>
-            <Th className="dark:text-gray-300 2xl:min-w-10 lg:min-w-28 min-w-32">
-              Action
-            </Th>
+            <Th className="2xl:min-w-32 lg:min-w-28 min-w-36">Website Url</Th>
+            <Th className="2xl:min-w-32 lg:min-w-28 min-w-40">Date</Th>
+            <Th className="2xl:min-w-32 lg:min-w-28 min-w-40">Active</Th>
+            <Th className="is-right">Actions</Th>
           </Tr>
         </Thead>
 
-        <Tbody className="dark:bg-gray-800 bg-white">
+        <Tbody>
           {websiteData?.map((item: any, index: number) => {
             return (
               <Tr
@@ -163,9 +153,19 @@ const WebsiteTable = () => {
                   </div>
                 </Td>
 
-                <Td>{item?.web_name}</Td>
-                <Td className="text-base font-bold">{item.web_url}</Td>
-                <Td>{formatTimeAgo(item?.createdAt)}</Td>
+                <Td>
+                  <span className="data-table-primary">
+                    {item?.web_name}
+                  </span>
+                </Td>
+                <Td>
+                  <span className="data-table-muted">{item.web_url}</span>
+                </Td>
+                <Td>
+                  <span className="data-table-muted">
+                    {formatTimeAgo(item?.createdAt)}
+                  </span>
+                </Td>
                 <Td>
                   {activeToggleLoading[item._id] ? (
                     <Icon
@@ -188,48 +188,51 @@ const WebsiteTable = () => {
                   )}
                 </Td>
 
-                <Td>
+                <Td className="is-right">
                   {!isPriorityEditMode &&
                     hasPermission(
                       permissionList,
                       "setting_website_edit",
                       "setting_website_delete"
                     ) && (
-                      <div className="relative">
-                        <Icon
-                          name={"more_horiz"}
-                          variant="outlined"
+                      <div className="relative max-w-40">
+                        <button
+                          type="button"
+                          className="data-table-action-btn"
+                          aria-expanded={popupIndex === index}
                           onClick={() => togglePopup(index)}
-                          className="cursor-pointer"
-                        />
+                        >
+                          <Icon name="more_vert" variant="outlined" size={18} />
+                        </button>
                         {popupIndex === index && (
                           <div
                             ref={popupRef}
-                            className="absolute top-8 right-0 bg-white border shadow-md rounded-lg p-4 z-20 min-w-40 dark:bg-gray-700 dark:border-gray-500"
+                            className="absolute top-9 right-0 z-20 min-w-40 rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-1.5 shadow-[var(--shadow-soft)]"
                           >
                             {hasPermission(
                               permissionList,
                               "setting_website_edit"
                             ) && (
-                                <button
-                                  className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg"
-                                  onClick={() => handleEditClick(item)}
-                                >
-                                  Edit
-                                </button>
-                              )}
-
+                              <button
+                                type="button"
+                                className="block w-full rounded-lg px-3 py-2 text-left text-sm text-app hover:bg-[var(--bg-hover)]"
+                                onClick={() => handleEditClick(item)}
+                              >
+                                Edit
+                              </button>
+                            )}
                             {hasPermission(
                               permissionList,
                               "setting_website_delete"
                             ) && (
-                                <button
-                                  className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg"
-                                  onClick={() => handleRemove(item?._id)}
-                                >
-                                  Delete
-                                </button>
-                              )}
+                              <button
+                                type="button"
+                                className="block w-full rounded-lg px-3 py-2 text-left text-sm text-app hover:bg-[var(--bg-hover)]"
+                                onClick={() => handleRemove(item?._id)}
+                              >
+                                Delete
+                              </button>
+                            )}
                           </div>
                         )}
                       </div>
@@ -239,8 +242,7 @@ const WebsiteTable = () => {
             );
           })}
         </Tbody>
-      </TableWrapper>
-    </div>
+    </TableWrapper>
   );
 };
 

@@ -2,11 +2,13 @@
 import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import { Tbody, Td, Th, Thead, Tr } from "@admin/components/Table/Table";
 import TableWrapper from "@admin/components/Table/TableWrapper";
-import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
+import TableRefreshButton from "@admin/components/Table/TableRefreshButton";
+import Icon from "@admin/components/core/Icon/Icon";
+import AuthLayout from "@admin/layouts/AuthLayout";
+import PageHeader from "@admin/components/layout/PageHeader";
 import { ToastService } from "@admin/utils/toastr.service";
 import React, { useEffect, useState } from "react";
 import PaginationComponent from "@admin/components/core/Pazination/Pazination";
-import PageSearch from "@admin/components/core/Search/PageSearch";
 import useDebounce from "@admin/components/core/UseDebounece/UseDebouence";
 import { formatTimeAgo } from "@admin/utils/hook.utils";
 import { StockLogsService } from "@admin/@services/apis/ProductService/StockLogs/StockLog.service";
@@ -80,82 +82,89 @@ const Page: React.FC = () => {
 
   return (
     <AuthLayout>
-      <NoScrollLayout>
-        <div className="2xl:pt-4 pt-2 2xl:px-4 px-3 w-full">
-          <div className="lg:flex lg:flex-wrap items-center md:justify-between pb-2">
-            <div className="md:flex items-center md:space-x-4 w-full">
-              <div className="">
-                <h1 className="2xl:text-2xl lg:text-xl text-lg font-semibold dark:text-gray-300 text-gray-800 md:mb-0 mb-2 flex text-nowrap">
-                  Stock Logs
-                </h1>
-              </div>
-              <div className="md:w-80 w-full md:mt-0 mt-1">
-                <PageSearch
-                  value={searchTerm}
-                  onChange={handleSearchChange}
-                  wrapperClass="w-full"
-                />
-              </div>
+      <div className="2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 pb-4 relative w-full">
+        <PageHeader title="Stock Logs" />
+        
+        <div className="data-table-card glass-card rounded-2xl orders-table-shell">
+          <div className="premium-table-toolbar">
+            <p className="premium-table-toolbar-title">Stock Logs records</p>
+            <p className="premium-table-toolbar-meta">
+              {totalOrders.toLocaleString()} records
+            </p>
+          </div>
+          <div className="data-table-toolbar">
+            <div className="data-table-toolbar-start">
+                <label className="data-table-search">
+                  <Icon name="search" variant="outlined" size={18} />
+                  <input
+                    type="search"
+                    value={searchTerm}
+                    onChange={handleSearchChange}
+                    placeholder="Search records..."
+                    aria-label="Search records"
+                  />
+                </label>
+            </div>
+            <div className="data-table-toolbar-end">
+              <TableRefreshButton
+                onRefresh={fetchUserLogs}
+                isLoading={tableLoading}
+                className="!h-9"
+              />
             </div>
           </div>
-        </div>
-      </NoScrollLayout>
-
-      <div className="2xl:px-4 px-3 relative md:min-h-[84%] w-full">
-        <TableWrapper
+          <TableWrapper
           showCheckbox={true}
           data={stockLogs}
           noDataViewCondition={
             stockLogs?.length < 1 ? "No data available" : null
           }
           isSwitchOn={true}
-          className="min-h-[700px]"
+          className="orders-table-nested !mt-0 min-h-[560px] !flex-1"
           isLoading={tableLoading}
           colValue={9}
         >
           <Thead>
-            <Tr className="dark:bg-gray-700 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
-              <Th className="2xl:min-w-32 lg:min-w-14 min-w-40 dark:text-gray-200">
+            <Tr>
+              <Th className="2xl:min-w-32 lg:min-w-14 min-w-40">
                 Product
               </Th>
-              <Th className="2xl:min-w-32 lg:min-w-14 min-w-40 dark:text-gray-200">
+              <Th className="2xl:min-w-32 lg:min-w-14 min-w-40">
                 Image
               </Th>
-              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40 dark:text-gray-200">
+              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40">
                 Action
               </Th>
-              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40 dark:text-gray-200">
+              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40">
                 Direction
               </Th>
-              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40 dark:text-gray-200">
+              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40">
                 Stock Location
               </Th>
-              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40 dark:text-gray-200">
+              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40">
                 Quantity
               </Th>
-              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40 dark:text-gray-200">
+              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40">
                 Previous Stock
               </Th>
-              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40 dark:text-gray-200">
+              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40">
                 New Stock
               </Th>
 
-              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40 dark:text-gray-200">
+              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40">
                 Create
               </Th>
-              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40 dark:text-gray-200">
+              <Th className="2xl:min-w-40 lg:min-w-32 min-w-40">
                 Update
               </Th>
             </Tr>
           </Thead>
-          <Tbody className="dark:bg-gray-800 bg-white">
+          <Tbody>
             {stockLogs?.map((LogsData: IStockFlowItem, index: number) => {
               return (
-                <Tr
-                  className="hover:bg-gray-100 dark:hover:bg-gray-800"
-                  key={index}
+                <Tr key={index}
                 >
-                  <Td>{LogsData?.product_title}</Td>
+                  <Td><span className="data-table-primary">{LogsData?.product_title}</span></Td>
                   <Td>
                     {" "}
                     {
@@ -174,7 +183,7 @@ const Page: React.FC = () => {
                       />
                     }
                   </Td>
-                  <Td>{LogsData?.action}</Td>
+                  <Td><span className="data-table-primary">{LogsData?.action}</span></Td>
                   <Td>
                     <div
                       className={`text-center rounded-lg py-1 uppercase font-bold ${
@@ -186,27 +195,29 @@ const Page: React.FC = () => {
                       {LogsData?.direction}
                     </div>
                   </Td>
-                  <Td>{LogsData?.stock_location}</Td>
-                  <Td>{LogsData?.quantity}</Td>
-                  <Td>{LogsData?.previous_stock}</Td>
-                  <Td>{LogsData?.new_stock}</Td>
-                  <Td>{formatTimeAgo(LogsData?.createdAt)}</Td>
-                  <Td>{formatTimeAgo(LogsData?.updatedAt)}</Td>
+                  <Td><span className="table-amount">{LogsData?.stock_location}</span></Td>
+                  <Td><span className="table-amount">{LogsData?.quantity}</span></Td>
+                  <Td><span className="table-amount">{LogsData?.previous_stock}</span></Td>
+                  <Td><span className="table-amount">{LogsData?.new_stock}</span></Td>
+                  <Td><span className="table-amount">{formatTimeAgo(LogsData?.createdAt)}</span></Td>
+                  <Td><span className="data-table-muted">{formatTimeAgo(LogsData?.updatedAt)}</span></Td>
                 </Tr>
               );
             })}
           </Tbody>
         </TableWrapper>
-
-        <PaginationComponent
+          <PaginationComponent
           ordersPerPage={ordersPerPage}
           handleOrdersPerPageChange={handleLogsPerPageChange}
           currentPage={currentPage}
           setCurrentPage={setCurrentPage}
           totalPages={totalPages}
           totalData={totalOrders}
-        />
-
+            isShowText={true}
+            showRefresh={false}
+            className="orders-table-pagination !mt-0 !rounded-none !border-x-0 !border-b-0 !shadow-none"
+          />
+        </div>
         {isImageOpen && selectedImage && (
           <ImagePreviewModal
             selectedImage={selectedImage}

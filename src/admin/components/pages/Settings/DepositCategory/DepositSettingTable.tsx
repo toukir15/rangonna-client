@@ -3,7 +3,7 @@ import Icon from "@admin/components/core/Icon/Icon";
 import { Tbody, Td, Th, Thead, Tr } from "@admin/components/Table/Table";
 import TableWrapper from "@admin/components/Table/TableWrapper";
 import { useGlobalContext } from "@admin/context/GlobalContext";
-import { hasPermission } from "@admin/utils";
+import { hasPermission, noData } from "@admin/utils";
 
 import { useContext, useEffect, useRef, useState } from "react";
 const DepositSettingTable = () => {
@@ -42,111 +42,88 @@ const DepositSettingTable = () => {
   }, [popupIndex]);
 
   return (
-    <div>
-      <TableWrapper
-        isSwitchOn={true}
-        className="min-h-[650px]"
-        data={reportIssueData}
-        isLoading={tableLoading}
-        noDataViewCondition={
-          reportIssueData?.length < 1 ? "No data available" : null
-        }
-        colValue={7}
-      >
-        <Thead>
-          <Tr className="dark:bg-gray-700 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
-            <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-28 min-w-32">
-              <div className="flex items-center">
-                <div>
-                  <p>Payment Method</p>
-                </div>
-              </div>
-            </Th>
-            <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-28 min-w-36">
-              Source & Category
-            </Th>
-
-            <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-28 min-w-44">
-              Account
-            </Th>
-            <Th className="dark:text-gray-300">Action</Th>
-          </Tr>
-        </Thead>
-        <Tbody className="dark:bg-gray-800 bg-white">
-          {reportIssueData?.map((item: any, index: number) => {
-            return (
-              <Tr className="h-14" key={index}>
-                <Td>{item?.payment_method}</Td>
-                <Td className="text-base font-bold">
-                  {item?.deposit_categories.map(
-                    (source: any, index: number) => {
-                      return (
-                        <p key={index}>
-                          {source?.source} - {source?.deposit_category?.title}
-                        </p>
-                      );
-                    }
-                  )}
-                </Td>
-                {/* <Td className="">
-                  {item?.deposit_categories.map(
-                    (source: any, index: number) => {
-                      return (
-                        <p key={index}>{source?.deposit_category?.title}</p>
-                      );
-                    }
-                  )}
-                </Td> */}
-                <Td>{item?.account?.account_name}</Td>
-
-                <Td className="">
-                  {
-                    <div className="relative">
-                      <Icon
-                        name={"more_horiz"}
-                        variant="outlined"
-                        onClick={() => togglePopup(index)}
-                        className="cursor-pointer"
-                      />
-                      {popupIndex === index && (
-                        <div
-                          ref={popupRef}
-                          className="absolute top-8 right-0 bg-white border shadow-md rounded-lg p-4 z-20 min-w-40 dark:bg-gray-700 dark:border-gray-500"
+    <TableWrapper
+      showCheckbox={false}
+      isSwitchOn={true}
+      className="orders-table-nested !mt-0 min-h-[560px] !flex-1"
+      data={reportIssueData}
+      isLoading={tableLoading}
+      noDataViewCondition={
+        reportIssueData?.length < 1 ? "No data available" : null
+      }
+      colValue={7}
+    >
+      <Thead>
+        <Tr>
+          <Th className="2xl:min-w-32 lg:min-w-28 min-w-32">Payment Method</Th>
+          <Th className="2xl:min-w-32 lg:min-w-28 min-w-36">
+            Source & Category
+          </Th>
+          <Th className="2xl:min-w-32 lg:min-w-28 min-w-44">Account</Th>
+          <Th className="is-right">Actions</Th>
+        </Tr>
+      </Thead>
+      <Tbody>
+        {reportIssueData?.map((item: any, index: number) => {
+          return (
+            <Tr key={index}>
+              <Td>
+                <span className="data-table-primary">
+                  {item?.payment_method || noData}
+                </span>
+              </Td>
+              <Td>
+                {item?.deposit_categories?.length ? (
+                  item.deposit_categories.map((source: any, i: number) => (
+                    <p key={i} className="data-table-muted">
+                      {source?.source} - {source?.deposit_category?.title}
+                    </p>
+                  ))
+                ) : (
+                  <span className="data-table-muted">{noData}</span>
+                )}
+              </Td>
+              <Td>
+                <span className="data-table-muted">
+                  {item?.account?.account_name || noData}
+                </span>
+              </Td>
+              <Td className="is-right">
+                <div className="relative max-w-40">
+                  <button
+                    type="button"
+                    className="data-table-action-btn"
+                    aria-expanded={popupIndex === index}
+                    onClick={() => togglePopup(index)}
+                  >
+                    <Icon name="more_vert" variant="outlined" size={18} />
+                  </button>
+                  {popupIndex === index && (
+                    <div
+                      ref={popupRef}
+                      className="absolute top-9 right-0 z-20 min-w-40 rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-1.5 shadow-[var(--shadow-soft)]"
+                    >
+                      {hasPermission(
+                        permissionList,
+                        "account_settings_edit"
+                      ) && (
+                        <button
+                          type="button"
+                          className="block w-full rounded-lg px-3 py-2 text-left text-sm text-app hover:bg-[var(--bg-hover)]"
+                          onClick={() => handleEditClick(item)}
                         >
-                          {hasPermission(
-                            permissionList,
-                            "account_settings_edit"
-                          ) && (
-                            <button
-                              className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg"
-                              onClick={() => handleEditClick(item)}
-                            >
-                              Edit
-                            </button>
-                          )}
-
-                          {/* {hasPermission(
-                            permissionList,
-                            "setting_report_issue_category_delete"
-                          ) && (
-                            <button
-                              className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg"
-                              onClick={() => handleRemove(item?._id)}
-                            >
-                              Delete
-                            </button>
-                          )} */}
-                        </div>
+                          Edit
+                        </button>
                       )}
                     </div>
-                  }
-                </Td>
-              </Tr>
-            );
-          })}
-        </Tbody>
-      </TableWrapper>
-    </div>
+                  )}
+                </div>
+              </Td>
+            </Tr>
+          );
+        })}
+      </Tbody>
+    </TableWrapper>
   );
 };
 

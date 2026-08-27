@@ -17,6 +17,7 @@ type DepositTableProps = {
   range: any;
   setRange: any;
   onRefresh: () => void;
+  children?: React.ReactNode;
 };
 
 const formatAmount = (value: unknown) => {
@@ -31,6 +32,7 @@ const DepositTable: React.FC<DepositTableProps> = ({
   range,
   setRange,
   onRefresh,
+  children,
 }) => {
   const { permissionList } = useGlobalContext();
   const { deposit, tableLoading, handleEditClick } = useContext(DepositContext);
@@ -63,7 +65,7 @@ const DepositTable: React.FC<DepositTableProps> = ({
   const totalCount = deposit?.length ?? 0;
 
   return (
-    <div className="data-table-card glass-card rounded-2xl overflow-hidden flex flex-col">
+    <div className="data-table-card glass-card rounded-2xl orders-table-shell">
       <div className="premium-table-toolbar">
         <p className="premium-table-toolbar-title">Deposit records</p>
         <p className="premium-table-toolbar-meta">
@@ -95,8 +97,9 @@ const DepositTable: React.FC<DepositTableProps> = ({
       </div>
 
       <TableWrapper
+        showCheckbox={false}
         isSwitchOn={true}
-        className="!mt-0 !min-h-[420px] !flex-1 !rounded-none !border-0 !shadow-none !bg-transparent [backdrop-filter:none]"
+        className="orders-table-nested !mt-0 min-h-[560px] !flex-1"
         data={deposit}
         isLoading={tableLoading}
         noDataViewCondition={deposit?.length < 1 ? "No data available" : null}
@@ -226,6 +229,7 @@ const DepositTable: React.FC<DepositTableProps> = ({
           })}
         </Tbody>
       </TableWrapper>
+      {children}
     </div>
   );
 };

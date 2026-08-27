@@ -2,7 +2,9 @@
 import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Icon from "@admin/components/core/Icon/Icon";
-import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
+import AuthLayout from "@admin/layouts/AuthLayout";
+import PageHeader from "@admin/components/layout/PageHeader";
+import TableRefreshButton from "@admin/components/Table/TableRefreshButton";
 import React, { useState, useEffect, createContext } from "react";
 import PaginationComponent from "@admin/components/core/Pazination/Pazination";
 import useDebounce from "@admin/components/core/UseDebounece/UseDebouence";
@@ -18,7 +20,6 @@ import ProductBrandModal from "@admin/components/pages/Product/Brand/ProductBran
 import ProductBrandTable from "@admin/components/pages/Product/Brand/ProductBrandTable";
 import { ProductBrandService } from "@admin/@services/apis/ProductService/ProductBrand.service";
 import { useGlobalContext } from "@admin/context/GlobalContext";
-import PageSearch from "@admin/components/core/Search/PageSearch";
 
 export const ProductBrandContext = createContext({} as ProductBrandContextType);
 
@@ -147,35 +148,52 @@ const Page: React.FC = () => {
           />
         </div>
       </Alert>
-      <NoScrollLayout>
-        <div className="2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 md:pb-0 mb-2">
-          <div className="md:flex items-center gap-3">
-            <div className="flex items-center gap-3">
-              <h2 className="2xl:text-2xl lg:text-xl text-lg font-semibold text-app text-nowrap">
-                Product Brand
-              </h2>
-              {permissionList.includes("product_brand_create") && (
-                <Button
-                  className="btn-primary btn-primary-inline inline-flex items-center gap-2"
-                  onClick={handleAddClick}
-                >
-                  <span className="ml-1">Add Brand</span>
-                </Button>
-              )}
+      <div className="2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 pb-4 relative w-full">
+        <PageHeader
+          title="Product Brand"
+          action={
+            permissionList.includes("product_brand_create") ? (
+              <Button
+                onClick={handleAddClick}
+                className="btn-primary btn-primary-inline inline-flex items-center gap-2"
+              >
+                <Icon name="add" variant="outlined" size={16} />
+                Add Brand
+              </Button>
+            ) : undefined
+          }
+        />
+
+        <div className="data-table-card glass-card rounded-2xl orders-table-shell">
+          <div className="premium-table-toolbar">
+            <p className="premium-table-toolbar-title">Brand records</p>
+            <p className="premium-table-toolbar-meta">
+              {totalExpenses.toLocaleString()}{" "}
+              {totalExpenses === 1 ? "brand" : "brands"}
+            </p>
+          </div>
+
+          <div className="data-table-toolbar">
+            <div className="data-table-toolbar-start">
+              <label className="data-table-search">
+                <Icon name="search" variant="outlined" size={18} />
+                <input
+                  type="search"
+                  value={searchTerm}
+                  onChange={handleSearchChange}
+                  placeholder="Search..."
+                />
+              </label>
             </div>
-            <div className="md:w-80 w-full md:my-0 my-2">
-              <PageSearch
-                value={searchTerm}
-                onChange={handleSearchChange}
-                wrapperClass="w-full"
+            <div className="data-table-toolbar-end">
+              <TableRefreshButton
+                onRefresh={fetchProductBrand}
+                isLoading={tableLoading}
+                className="!h-9"
               />
             </div>
           </div>
-        </div>
-      </NoScrollLayout>
 
-      <div className="min-h-[75vh] 2xl:px-4 px-3">
-        <div className="xl:mt-3 mt-2">
           <ProductBrandContext.Provider
             value={{
               productBrandData,
@@ -200,6 +218,11 @@ const Page: React.FC = () => {
             setCurrentPage={setCurrentPage}
             totalPages={totalPages}
             totalData={totalExpenses}
+            isShowText={true}
+            onRefresh={fetchProductBrand}
+            isLoading={tableLoading}
+            showRefresh={false}
+            className="orders-table-pagination !mt-0 !rounded-none !border-x-0 !border-b-0 !shadow-none"
           />
         </div>
       </div>

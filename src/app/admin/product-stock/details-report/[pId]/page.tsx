@@ -2,7 +2,9 @@
 import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import { Tbody, Td, Th, Thead, Tr } from "@admin/components/Table/Table";
 import TableWrapper from "@admin/components/Table/TableWrapper";
-import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
+import TableRefreshButton from "@admin/components/Table/TableRefreshButton";
+import AuthLayout from "@admin/layouts/AuthLayout";
+import PageHeader from "@admin/components/layout/PageHeader";
 import { ToastService } from "@admin/utils/toastr.service";
 import React, { useEffect, useState } from "react";
 import { maxRange } from "@admin/utils/helper";
@@ -168,48 +170,13 @@ const Page: React.FC = () => {
   useTableRefreshRegister(fetchInReport);
 
 
-
     return (
         <AuthLayout>
-            <NoScrollLayout>
-                <div className="2xl:pt-4 pt-2 2xl:px-4 px-3 w-full">
-                    <div className="lg:flex lg:flex-wrap items-center md:justify-between pb-2">
-                        <div className="md:flex items-center md:space-x-4 w-full">
-
-
-                            <div className="items-center w-full gap-4">
-                                <div>
-                                    <p className="text-2xl font-bold text-center pb-3">{myWarehouse?.product_name}</p>
-                                </div>
-                                <div className="flex items-center justify-center gap-4">
-                                    <div className="sm:w-80 w-full sm:mt-0 mt-2 flex gap-3">
-                                        <Button
-                                            onClick={handleInClick}
-                                            className={`w-full text-white ${activeType === "in"
-                                                ? "bg-green-600 hover:bg-green-700"
-                                                : "bg-green-500 hover:bg-green-600"
-                                                }`}
-                                        >
-                                            In
-                                        </Button>
-
-                                        <Button
-                                            onClick={handleOutClick}
-                                            className={`w-full text-white ${activeType === "out"
-                                                ? "bg-red-600 hover:bg-red-700"
-                                                : "bg-red-500 hover:bg-red-600"
-                                                }`}
-                                        >
-                                            Out
-                                        </Button>
-                                    </div>
-
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="pt-4 w-full items-center justify-center flex">
-                            {tableLoading ? (
+      <div className="2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 pb-4 relative w-full">
+        <PageHeader title="Details Report" />
+        
+        <div className="mb-4">
+          {tableLoading ? (
                                 <EmployeeReport />
                             ) : activeType ? (
                                 <div className="flex items-center justify-center gap-6 mb-4">
@@ -225,13 +192,47 @@ const Page: React.FC = () => {
                                     </p>
                                 </div>
                             )}
-                        </div>
-                    </div>
-                </div>
-            </NoScrollLayout>
+        </div>
 
-            <div className="2xl:px-4 px-3 relative md:min-h-[74%] w-full">
-                <TableWrapper
+        <div className="data-table-card glass-card rounded-2xl orders-table-shell">
+          <div className="premium-table-toolbar">
+            <p className="premium-table-toolbar-title">Details records</p>
+            <p className="premium-table-toolbar-meta">
+              {totalOrders.toLocaleString()} records
+            </p>
+          </div>
+          <div className="data-table-toolbar">
+            <div className="data-table-toolbar-start">
+                <p className="text-2xl font-bold text-center pb-3">{myWarehouse?.product_name}</p>
+                <Button
+                                            onClick={handleInClick}
+                                            className={`w-full text-white ${activeType === "in"
+                                                ? "bg-green-600 hover:bg-green-700"
+                                                : "bg-green-500 hover:bg-green-600"
+                                                }`}
+                                        >
+                                            In
+                                        </Button>
+                <Button
+                                            onClick={handleOutClick}
+                                            className={`w-full text-white ${activeType === "out"
+                                                ? "bg-red-600 hover:bg-red-700"
+                                                : "bg-red-500 hover:bg-red-600"
+                                                }`}
+                                        >
+                                            Out
+                                        </Button>
+            </div>
+            <div className="data-table-toolbar-end">
+              <TableRefreshButton
+                onRefresh={fetchInReport}
+                isLoading={tableLoading}
+                className="!h-9"
+              />
+            </div>
+          </div>
+          <TableWrapper
+            className="orders-table-nested !mt-0 min-h-[560px] !flex-1"
                     showCheckbox={true}
                     data={myWarehouse?.data}
                     noDataViewCondition={
@@ -246,54 +247,53 @@ const Page: React.FC = () => {
                     colValue={4}
                 >
                     <Thead>
-                        <Tr className="dark:bg-gray-700 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
-                            <Th className="2xl:min-w-32 lg:min-w-14 min-w-32 dark:text-gray-200">
+                        <Tr>
+                            <Th className="2xl:min-w-32 lg:min-w-14 min-w-32">
                                 Date
                             </Th>
-                            <Th className="2xl:min-w-40 lg:min-w-32 min-w-40 dark:text-gray-200">
+                            <Th className="2xl:min-w-40 lg:min-w-32 min-w-40">
                                 Reference
                             </Th>
-                            <Th className="2xl:min-w-40 lg:min-w-32 min-w-40 dark:text-gray-200">
+                            <Th className="2xl:min-w-40 lg:min-w-32 min-w-40">
                                 Quantity
                             </Th>
-                            <Th className="2xl:min-w-40 lg:min-w-32 min-w-40 dark:text-gray-200">
+                            <Th className="2xl:min-w-40 lg:min-w-32 min-w-40">
                                 Source
                             </Th>
                         </Tr>
                     </Thead>
 
-                    <Tbody className="dark:bg-gray-800 bg-white">
+                    <Tbody>
                         {myWarehouse?.data?.map((reportData: any, index: number) => {
                             return (
-                                <Tr
-                                    className="hover:bg-gray-100 dark:hover:bg-gray-800"
-                                    key={index}
+                                <Tr key={index}
                                 >
-                                    <Td>{formatTimeAgo(reportData?.createdAt) || "-"}</Td>
-                                    <Td>{reportData?.reference || "-"}</Td>
-                                    <Td>
-                                        {activeType === "in"
+                                    <Td><span className="data-table-primary">{formatTimeAgo(reportData?.createdAt) || "-"}</span></Td>
+                                    <Td><span className="data-table-primary">{reportData?.reference || "-"}</span></Td>
+                                    <Td><span className="table-amount">{activeType === "in"
                                             ? reportData?.quantity || 0
-                                            : reportData?.quantity || 0}
-                                    </Td>
-                                    <Td>{reportData?.source || "-"}</Td>
+                                            : reportData?.quantity || 0}</span></Td>
+                                    <Td><span className="data-table-muted">{reportData?.source || "-"}</span></Td>
                                 </Tr>
                             );
                         })}
                     </Tbody>
                 </TableWrapper>
-                <PaginationComponent
+          <PaginationComponent
                     ordersPerPage={ordersPerPage}
                     handleOrdersPerPageChange={handleLogsPerPageChange}
                     currentPage={currentPage}
                     setCurrentPage={setCurrentPage}
                     totalPages={totalPages}
                     totalData={totalOrders}
-                />
-
-            </div>
-
-        </AuthLayout>
+            isShowText={true}
+            showRefresh={false}
+            className="orders-table-pagination !mt-0 !rounded-none !border-x-0 !border-b-0 !shadow-none"
+          />
+        </div>
+        
+      </div>
+    </AuthLayout>
     );
 };
 

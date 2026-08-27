@@ -1,117 +1,102 @@
 "use client";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext } from "react";
 import TableWrapper from "@admin/components/Table/TableWrapper";
 import { Tbody, Td, Th, Thead, Tr } from "@admin/components/Table/Table";
-
-import { priorityStyle, taskStatusStyle } from "@admin/utils/system.utils";
 import { ITask } from "@admin/@interfaces/taskManager/task/task.interface";
-// import { useRouter } from "next/navigation";
-
 import Link from "next/link";
 import { MyTaskContext } from "@/app/admin/task-manager/my-task/page";
+import { noData } from "@admin/utils";
+
+const taskBadgeClass = (status?: string) => {
+  const s = String(status || "").toLowerCase();
+  if (s === "completed" || s === "done") return "is-approved";
+  if (s === "cancelled" || s === "rejected") return "is-rejected";
+  if (s === "pending" || s === "in-progress") return "is-pending";
+  return "is-neutral";
+};
+
+const priorityBadgeClass = (priority?: string) => {
+  const s = String(priority || "").toLowerCase();
+  if (s === "high" || s === "urgent") return "is-rejected";
+  if (s === "medium") return "is-pending";
+  return "is-neutral";
+};
 
 const MyTaskTable: React.FC = () => {
-  // const router = useRouter();
   const { taskData, tableLoading } = useContext(MyTaskContext);
-  const [popupIndex, setPopupIndex] = useState<number | null>(null);
-  const popupRef = useRef<HTMLDivElement | null>(null);
-  // const togglePopup = (index: number) => {
-  //   setPopupIndex(popupIndex === index ? null : index);
-  // };
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        popupRef.current &&
-        !popupRef.current.contains(event.target as Node)
-      ) {
-        setPopupIndex(null);
-      }
-    };
-
-    if (popupIndex !== null) {
-      document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [popupIndex]);
   return (
     <TableWrapper
+      showCheckbox={false}
       isSwitchOn={true}
-      className="min-h-[650px]"
+      className="orders-table-nested !mt-0 min-h-[560px] !flex-1"
       data={taskData}
       isLoading={tableLoading}
       noDataViewCondition={taskData?.length < 1 ? "No data available" : null}
       colValue={10}
     >
       <Thead>
-        <Tr className="dark:bg-gray-700 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
-          <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-28 min-w-40">
-            Task No
-          </Th>
-          <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-28 min-w-40">
-            Title
-          </Th>
-          <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-28 min-w-40">
-            Project
-          </Th>
-          <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-28 min-w-28">
-            Start Date{" "}
-          </Th>
-          <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-28 min-w-28">
-            End Date
-          </Th>
-          <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-28 min-w-40">
-            Status
-          </Th>
-          <Th className="dark:text-gray-300">Assign</Th>
-          <Th className="dark:text-gray-300">Priority</Th>
-          <Th className="dark:text-gray-300">View</Th>
-          {/* <Th className="dark:text-gray-300">Action</Th> */}
+        <Tr>
+          <Th className="2xl:min-w-32 lg:min-w-28 min-w-40">Task No</Th>
+          <Th className="2xl:min-w-32 lg:min-w-28 min-w-40">Title</Th>
+          <Th className="2xl:min-w-32 lg:min-w-28 min-w-40">Project</Th>
+          <Th className="2xl:min-w-32 lg:min-w-28 min-w-28">Start Date</Th>
+          <Th className="2xl:min-w-32 lg:min-w-28 min-w-28">End Date</Th>
+          <Th className="2xl:min-w-32 lg:min-w-28 min-w-40">Status</Th>
+          <Th>Assign</Th>
+          <Th>Priority</Th>
+          <Th>View</Th>
         </Tr>
       </Thead>
-      <Tbody className="dark:bg-gray-800 bg-white">
+      <Tbody>
         {taskData?.map((data: ITask, index: number) => {
           return (
-            <Tr className="h-14" key={index}>
-              <Td className="">{data?.task_no}</Td>
-              <Td className="">{data?.title}</Td>
-              <Td className="">{data?.project?.title}</Td>
-              <Td className="">{data?.start_date}</Td>
-              <Td className="">{data?.end_date}</Td>
+            <Tr key={index}>
               <Td>
-                <div className={`${taskStatusStyle(data.status)} text-center`}>
-                  {data?.status}
-                </div>
+                <span className="data-table-primary">
+                  {data?.task_no || noData}
+                </span>
               </Td>
-
-              <Td className="">
-                <div className="flex flex-col w-40 text-center gap-1">
-                  {data?.assign_employee?.map((emp: any, index: number) => (
-                    <span
-                      key={index}
-                      className="px-2 py-1 text-blue-700 rounded text-xs"
-                    >
+              <Td>
+                <span className="data-table-primary">
+                  {data?.title || noData}
+                </span>
+              </Td>
+              <Td>
+                <span className="data-table-muted">
+                  {data?.project?.title || noData}
+                </span>
+              </Td>
+              <Td>
+                <span className="data-table-muted">
+                  {data?.start_date || noData}
+                </span>
+              </Td>
+              <Td>
+                <span className="data-table-muted">
+                  {data?.end_date || noData}
+                </span>
+              </Td>
+              <Td>
+                <span className={`table-role-badge ${taskBadgeClass(data.status)}`}>
+                  {data?.status || noData}
+                </span>
+              </Td>
+              <Td>
+                <div className="flex flex-col w-40 gap-1">
+                  {data?.assign_employee?.map((emp: any, empIndex: number) => (
+                    <span key={empIndex} className="data-table-muted">
                       {emp.name}
                     </span>
                   ))}
                 </div>
               </Td>
-
-              {/* <Td className="">{data?.priority}</Td> */}
               <Td>
                 <span
-                  className={`px-3 py-1 rounded-lg text-xs uppercase ${priorityStyle(
-                    data?.priority
-                  )}`}
+                  className={`table-role-badge ${priorityBadgeClass(data?.priority)}`}
                 >
-                  {data?.priority}
+                  {data?.priority || noData}
                 </span>
               </Td>
-
               <Td>
                 <Link
                   href={`/admin/task-manager/my-task/view/${data?._id}`}

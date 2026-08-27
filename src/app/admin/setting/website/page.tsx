@@ -1,7 +1,7 @@
 "use client";
 import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import Icon from "@admin/components/core/Icon/Icon";
-import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
+import AuthLayout from "@admin/layouts/AuthLayout";
 import React, { useState, useEffect, createContext } from "react";
 import PaginationComponent from "@admin/components/core/Pazination/Pazination";
 import useDebounce from "@admin/components/core/UseDebounece/UseDebouence";
@@ -14,7 +14,8 @@ import { GlobalService } from "@admin/@services/apis/GlobalService/Global.servic
 import { IWebsiteResponse } from "@admin/@interfaces/common.interface";
 import { IWebsiteContext } from "@admin/@interfaces/website/website.interface";
 import { useGlobalContext } from "@admin/context/GlobalContext";
-import PageSearch from "@admin/components/core/Search/PageSearch";
+import PageHeader from "@admin/components/layout/PageHeader";
+import TableRefreshButton from "@admin/components/Table/TableRefreshButton";
 
 export const WebsiteContext = createContext<IWebsiteContext>(
   {} as IWebsiteContext
@@ -268,31 +269,30 @@ const Page: React.FC = () => {
         </div>
       </Alert>
 
-      <NoScrollLayout>
-        <div className="sm:flex items-center justify-between 2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 md:pb-0 mb-2">
-          <div className="sm:flex items-center sm:gap-3">
-            <div className="flex items-center gap-3">
-              <h2 className="2xl:text-2xl lg:text-xl text-lg font-semibold text-app">
-                Website
-              </h2>
+      <div className="2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 pb-4 relative w-full">
+        <PageHeader
+          title="Website"
+          action={
+            <div className="flex items-center gap-2 flex-wrap">
               {permissionList.includes("setting_website_create") &&
                 !isPriorityEditMode && (
                   <Button
                     className="btn-primary btn-primary-inline inline-flex items-center gap-2"
                     onClick={handleAddClick}
                   >
+                    <Icon name="add" variant="outlined" size={16} />
                     Add Website
                   </Button>
                 )}
-
               {permissionList.includes("setting_priority_edit") && (
                 <Button
-                  className={`flex items-center !px-3 !py-1.5 ${isPriorityEditMode ? "bg-orange-500" : "bg-indigo-500"
-                    }`}
+                  className={`flex items-center !px-3 !py-1.5 ${
+                    isPriorityEditMode ? "bg-orange-500" : "bg-indigo-500"
+                  }`}
                   onClick={handleTogglePriorityEditMode}
                 >
                   <Icon name="filter_list" />
-                  <span className="">{isPriorityEditMode ? "Cancel" : ""}</span>
+                  <span>{isPriorityEditMode ? "Cancel" : ""}</span>
                 </Button>
               )}
               {isPriorityEditMode && (
@@ -306,22 +306,40 @@ const Page: React.FC = () => {
                 </Button>
               )}
             </div>
+          }
+        />
 
-            {!isPriorityEditMode && (
-              <div className="md:w-80 w-full md:mt-0 mt-1">
-                <PageSearch
-                  value={searchTerm}
-                  onChange={handleSearchChange}
-                  wrapperClass="w-full"
-                />
-              </div>
-            )}
+        <div className="data-table-card glass-card rounded-2xl orders-table-shell">
+          <div className="premium-table-toolbar">
+            <p className="premium-table-toolbar-title">Website records</p>
+            <p className="premium-table-toolbar-meta">
+              {totalProduct.toLocaleString()}{" "}
+              {totalProduct === 1 ? "website" : "websites"}
+            </p>
           </div>
-        </div>
-      </NoScrollLayout>
+          <div className="data-table-toolbar">
+            <div className="data-table-toolbar-start">
+              {!isPriorityEditMode && (
+                <label className="data-table-search">
+                  <Icon name="search" variant="outlined" size={18} />
+                  <input
+                    type="search"
+                    value={searchTerm}
+                    onChange={handleSearchChange}
+                    placeholder="Search..."
+                  />
+                </label>
+              )}
+            </div>
+            <div className="data-table-toolbar-end">
+              <TableRefreshButton
+                onRefresh={fetchWebsite}
+                isLoading={tableLoading}
+                className="!h-9"
+              />
+            </div>
+          </div>
 
-      <div className="min-h-[75vh] 2xl:px-4 px-3">
-        <div className="xl:mt-3 mt-2">
           <WebsiteContext.Provider
             value={{
               websiteData: isPriorityEditMode
@@ -353,6 +371,11 @@ const Page: React.FC = () => {
               setCurrentPage={setCurrentPage}
               totalPages={totalPages}
               totalData={totalProduct}
+              isShowText={true}
+              onRefresh={fetchWebsite}
+              isLoading={tableLoading}
+              showRefresh={false}
+              className="orders-table-pagination !mt-0 !rounded-none !border-x-0 !border-b-0 !shadow-none"
             />
           )}
         </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
-import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
+import AuthLayout from "@admin/layouts/AuthLayout";
 import { useEffect, useRef, useState } from "react";
 import { ToastService } from "@admin/utils/toastr.service";
 import TableWrapper from "@admin/components/Table/TableWrapper";
@@ -11,6 +11,8 @@ import PaymentModal from "@admin/components/pages/Settings/Payment/PaymentModal"
 import { PaymentSettingService } from "@admin/@services/apis/SettingsService/PaymentSetting/Payment.service";
 import Alert from "@admin/components/core/Aleart/Aleart";
 import Button from "@admin/components/core/Button/Button";
+import PageHeader from "@admin/components/layout/PageHeader";
+import TableRefreshButton from "@admin/components/Table/TableRefreshButton";
 
 const Page = () => {
   const [paymentSettingData, setPaymentSettingData] = useState<any[]>([]);
@@ -128,28 +130,41 @@ const Page = () => {
           />
         </div>
       </Alert>
-      <NoScrollLayout>
-        <div className="p-4 flex items-center justify-between">
-          <h2 className="text-xl font-semibold dark:text-gray-300">
-            Payment Setting
-          </h2>
-          <div className="mt-2 lg:mt-0 flex justify-end">
+      <div className="2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 pb-4 relative w-full">
+        <PageHeader
+          title="Payment Setting"
+          action={
             <Button
               className="btn-primary btn-primary-inline inline-flex items-center gap-2"
               onClick={handleAddClick}
             >
-              <Icon name={"add"} />
-              <span className="ml-1 text-nowrap">Add Payment</span>
+              <Icon name="add" variant="outlined" size={16} />
+              Add Payment
             </Button>
+          }
+        />
+        <div className="data-table-card glass-card rounded-2xl orders-table-shell">
+          <div className="premium-table-toolbar">
+            <p className="premium-table-toolbar-title">Payment records</p>
+            <p className="premium-table-toolbar-meta">
+              {paymentSettingData.length.toLocaleString()}{" "}
+              {paymentSettingData.length === 1 ? "record" : "records"}
+            </p>
           </div>
-        </div>
-      </NoScrollLayout>
-
-      <div className="px-4 min-h-[85%]">
-        <div className="bg-white dark:bg-gray-700 rounded-lg">
+          <div className="data-table-toolbar">
+            <div className="data-table-toolbar-start" />
+            <div className="data-table-toolbar-end">
+              <TableRefreshButton
+                onRefresh={fetchPaymentSetting}
+                isLoading={tableLoading}
+                className="!h-9"
+              />
+            </div>
+          </div>
           <TableWrapper
+            showCheckbox={false}
             isSwitchOn={true}
-            className="min-h-[650px]"
+            className="orders-table-nested !mt-0 min-h-[560px] !flex-1"
             data={paymentSettingData}
             isLoading={tableLoading}
             noDataViewCondition={
@@ -158,44 +173,59 @@ const Page = () => {
             colValue={10}
           >
             <Thead>
-              <Tr className="dark:bg-gray-700 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
-                <Th className="dark:text-gray-300">Source</Th>
-                <Th className="dark:text-gray-300">Title</Th>
-                <Th className="dark:text-gray-300">Category</Th>
-                <Th className="dark:text-gray-300">Account</Th>
-                <Th className="dark:text-gray-300">Action</Th>
+              <Tr>
+                <Th>Source</Th>
+                <Th>Title</Th>
+                <Th>Category</Th>
+                <Th>Account</Th>
+                <Th className="is-right">Actions</Th>
               </Tr>
             </Thead>
-            <Tbody className="dark:bg-gray-800 bg-white">
+            <Tbody>
               {paymentSettingData?.map((data: any, index: number) => {
                 return (
-                  <Tr className="h-14" key={index}>
-                    <Td className="">{data?.source}</Td>
-                    <Td className="">{data?.title}</Td>
-
-                    <Td>{data?.deposit_category?.title}</Td>
-                    <Td className="">{data?.account?.account_name}</Td>
-                    <Td className="">
-                      <div className="relative">
-                        <Icon
-                          name={"more_horiz"}
-                          variant="outlined"
+                  <Tr key={index}>
+                    <Td>
+                      <span className="data-table-primary">{data?.source}</span>
+                    </Td>
+                    <Td>
+                      <span className="data-table-muted">{data?.title}</span>
+                    </Td>
+                    <Td>
+                      <span className="data-table-muted">
+                        {data?.deposit_category?.title}
+                      </span>
+                    </Td>
+                    <Td>
+                      <span className="data-table-muted">
+                        {data?.account?.account_name}
+                      </span>
+                    </Td>
+                    <Td className="is-right">
+                      <div className="relative max-w-40">
+                        <button
+                          type="button"
+                          className="data-table-action-btn"
+                          aria-expanded={popupIndex === index}
                           onClick={() => togglePopup(index)}
-                          className="cursor-pointer"
-                        />
+                        >
+                          <Icon name="more_vert" variant="outlined" size={18} />
+                        </button>
                         {popupIndex === index && (
                           <div
                             ref={popupRef}
-                            className="absolute top-8 -left-14 bg-white dark:bg-gray-700 dark:border-gray-500 border shadow-md rounded-lg p-4 z-20 min-w-40"
+                            className="absolute top-9 right-0 z-20 min-w-40 rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-1.5 shadow-[var(--shadow-soft)]"
                           >
                             <button
-                              className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg"
+                              type="button"
+                              className="block w-full rounded-lg px-3 py-2 text-left text-sm text-app hover:bg-[var(--bg-hover)]"
                               onClick={() => handleEditClick(data)}
                             >
                               Edit
                             </button>
                             <button
-                              className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg"
+                              type="button"
+                              className="block w-full rounded-lg px-3 py-2 text-left text-sm text-app hover:bg-[var(--bg-hover)]"
                               onClick={() => handleRemove(data?.source)}
                             >
                               Delete

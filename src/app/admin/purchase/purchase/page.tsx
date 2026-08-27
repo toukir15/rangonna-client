@@ -1,7 +1,9 @@
 "use client";
 import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import Icon from "@admin/components/core/Icon/Icon";
-import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
+import AuthLayout from "@admin/layouts/AuthLayout";
+import PageHeader from "@admin/components/layout/PageHeader";
+import TableRefreshButton from "@admin/components/Table/TableRefreshButton";
 import React, { useRef, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import PaginationComponent from "@admin/components/core/Pazination/Pazination";
@@ -14,10 +16,10 @@ import { ToastService } from "@admin/utils/toastr.service";
 import Alert from "@admin/components/core/Aleart/Aleart";
 import CreatePaymentModal from "@admin/components/pages/Purchases/CreatePaymentModal";
 import { useGlobalContext } from "@admin/context/GlobalContext";
-import PageSearch from "@admin/components/core/Search/PageSearch";
 import Link from "next/link";
 import { formatTimeAgo } from "@admin/utils/hook.utils";
 import { dueColor, paidColor } from "@admin/utils/constant";
+import { noData } from "@admin/utils";
 
 const Page: React.FC = () => {
   const { permissionList } = useGlobalContext();
@@ -161,42 +163,56 @@ const Page: React.FC = () => {
           />
         </div>
       </Alert>
-      <NoScrollLayout>
-        <div className="sm:flex items-center justify-between 2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 md:pb-0 mb-2">
-          <div className="sm:flex items-center gap-4">
-            <div className="flex items-center gap-3">
-              <h2 className="2xl:text-2xl lg:text-xl text-lg font-semibold text-app">
-                Purchases
-              </h2>
-              <div className="">
-                {permissionList.includes("purchase_create") && (
-                  <Button
-                    className="btn-primary btn-primary-inline inline-flex items-center gap-2"
-                    onClick={handleAddClick}
-                  >
+      <div className="2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 pb-4 relative w-full">
+        <PageHeader
+          title="Purchases"
+          action={
+            permissionList.includes("purchase_create") ? (
+              <Button
+                onClick={handleAddClick}
+                className="btn-primary btn-primary-inline inline-flex items-center gap-2"
+              >
+                <Icon name="add" variant="outlined" size={16} />
+                Add Purchase
+              </Button>
+            ) : undefined
+          }
+        />
 
-                    Add Purchase
-                  </Button>
-                )}
-              </div>
+        <div className="data-table-card glass-card rounded-2xl orders-table-shell">
+          <div className="premium-table-toolbar">
+            <p className="premium-table-toolbar-title">Purchase records</p>
+            <p className="premium-table-toolbar-meta">
+              {totalProduct.toLocaleString()}{" "}
+              {totalProduct === 1 ? "purchase" : "purchases"}
+            </p>
+          </div>
+
+          <div className="data-table-toolbar">
+            <div className="data-table-toolbar-start">
+              <label className="data-table-search">
+                <Icon name="search" variant="outlined" size={18} />
+                <input
+                  type="search"
+                  value={searchTerm}
+                  onChange={handleSearchChange}
+                  placeholder="Search..."
+                />
+              </label>
             </div>
-            <div className="md:w-80 sm:w-72 w-full md:my-0 my-2">
-              <PageSearch
-                value={searchTerm}
-                onChange={handleSearchChange}
-                wrapperClass="w-full"
+            <div className="data-table-toolbar-end">
+              <TableRefreshButton
+                onRefresh={getPurchases}
+                isLoading={tableLoading}
+                className="!h-9"
               />
             </div>
           </div>
 
-        </div>
-      </NoScrollLayout>
-
-      <div className="min-h-[75vh] 2xl:px-4 px-3">
-        <div className="xl:mt-3 mt-2">
           <TableWrapper
+            showCheckbox={false}
             isSwitchOn={true}
-            className="min-h-[650px]"
+            className="orders-table-nested !mt-0 min-h-[560px] !flex-1"
             data={purchasesData}
             isLoading={tableLoading}
             noDataViewCondition={
@@ -205,91 +221,80 @@ const Page: React.FC = () => {
             colValue={12}
           >
             <Thead>
-              <Tr className="dark:bg-gray-700 h-[50px] shadow-sm border-b dark:border-gray-700 border-gray-300 p-20">
-                <Th className="dark:text-gray-300 2xl:min-w-20 lg:min-w-28 min-w-28">
-                  <p>Date</p>
-                </Th>
-                <Th className="dark:text-gray-300 2xl:min-w-28 lg:min-w-28 min-w-28">
-                  <div className="flex items-center">
-                    <div>
-                      <p>Invoice</p>
-                    </div>
-                    <div className="mt-2">
-                      {" "}
-                      <div className="h-1.5">
-                        <Icon
-                          name={"arrow_drop_up"}
-                          className="cursor-pointer"
-                        />
-                      </div>
-                      <div className="">
-                        <Icon
-                          name={"arrow_drop_down"}
-                          className="cursor-pointer"
-                        />{" "}
-                      </div>
-                    </div>
-                  </div>
-                </Th>
-                <Th className="dark:text-gray-300 2xl:min-w-32 lg:min-w-32 min-w-40">
-                  Supplier
-                </Th>
-
-                <Th className="dark:text-gray-300 2xl:min-w-28 lg:min-w-28 min-w-28">
-                  Grand Total
-                </Th>
-                <Th className="dark:text-gray-300 2xl:min-w-24 lg:min-w-24 min-w-28">
-                  Shipping
-                </Th>
-                <Th className="dark:text-gray-300 2xl:min-w-14 lg:min-w-20 min-w-20">
-                  Discount
-                </Th>
-                <Th className="dark:text-gray-300 2xl:min-w-24 lg:min-w-24 min-w-20">
-                  Paid
-                </Th>
-
-                <Th className="dark:text-gray-300 2xl:min-w-20 lg:min-w-24 min-w-20">
-                  Due
-                </Th>
-
-                <Th className="dark:text-gray-300 2xl:min-w-20 lg:min-w-20 min-w-28">
-                  Status
-                </Th>
-                <Th className="dark:text-gray-300 2xl:min-w-28 lg:min-w-20 min-w-20">
-                  View
-                </Th>
-                <Th className="dark:text-gray-300 2xl:min-w-28 lg:min-w-20 min-w-40">
-                  Note
-                </Th>
-                <Th className="dark:text-gray-300 2xl:min-w-28 lg:min-w-20 min-w-32">
-                  Action
-                </Th>
+              <Tr>
+                <Th className="2xl:min-w-20 lg:min-w-28 min-w-28">Date</Th>
+                <Th className="2xl:min-w-28 lg:min-w-28 min-w-28">Invoice</Th>
+                <Th className="2xl:min-w-32 lg:min-w-32 min-w-40">Supplier</Th>
+                <Th className="2xl:min-w-28 lg:min-w-28 min-w-28">Grand Total</Th>
+                <Th className="2xl:min-w-24 lg:min-w-24 min-w-28">Shipping</Th>
+                <Th className="2xl:min-w-14 lg:min-w-20 min-w-20">Discount</Th>
+                <Th className="2xl:min-w-24 lg:min-w-24 min-w-20">Paid</Th>
+                <Th className="2xl:min-w-20 lg:min-w-24 min-w-20">Due</Th>
+                <Th className="2xl:min-w-20 lg:min-w-20 min-w-28">Status</Th>
+                <Th className="2xl:min-w-28 lg:min-w-20 min-w-20">View</Th>
+                <Th className="2xl:min-w-28 lg:min-w-20 min-w-40">Note</Th>
+                <Th className="is-right">Actions</Th>
               </Tr>
             </Thead>
-            <Tbody className="dark:bg-gray-800 bg-white">
+            <Tbody>
               {purchasesData?.map((item: any, index: number) => {
-                return (
-                  <Tr className="h-14" key={index}>
-                    <Td>
-                      <p>{formatTimeAgo(item?.updatedAt)}</p>
-                      <p>{formatTimeAgo(item?.createdAt)}</p>
-                    </Td>
-                    <Td>
-                      <p>{item?.invoice}</p>
-                      <p>{item?.date}</p>
-                    </Td>
-                    <Td className="text-base font-bold">
-                      {item?.supplier?.name}
-                    </Td>
+                const status = String(item?.status || "").toLowerCase();
+                const statusClass =
+                  status === "paid" || status === "completed"
+                    ? "is-approved"
+                    : status === "due" ||
+                        status === "unpaid" ||
+                        status === "cancelled"
+                      ? "is-rejected"
+                      : status === "pending" || status === "partial"
+                        ? "is-pending"
+                        : "is-neutral";
 
-                    <Td>{item?.grand_total}</Td>
-                    <Td>{item?.shipping}</Td>
-                    <Td>{item?.discount}</Td>
-                    <Td >
-                      <p className={`${paidColor}`}>{item?.paid}</p>
+                return (
+                  <Tr key={index}>
+                    <Td>
+                      <span className="data-table-muted">
+                        {formatTimeAgo(item?.updatedAt)}
+                      </span>
+                      <p className="data-table-muted">
+                        {formatTimeAgo(item?.createdAt)}
+                      </p>
                     </Td>
-                    <Td><p className={`${dueColor}`}>{item?.due}</p></Td>
-                    <Td className="uppercase">{item?.status}</Td>
+                    <Td>
+                      <span className="data-table-primary">
+                        {item?.invoice || noData}
+                      </span>
+                      <p className="data-table-muted">{item?.date || noData}</p>
+                    </Td>
+                    <Td>
+                      <span className="data-table-primary">
+                        {item?.supplier?.name || noData}
+                      </span>
+                    </Td>
+                    <Td>
+                      <span className="table-amount">{item?.grand_total}</span>
+                    </Td>
+                    <Td>
+                      <span className="table-amount">{item?.shipping}</span>
+                    </Td>
+                    <Td>
+                      <span className="table-amount">{item?.discount}</span>
+                    </Td>
+                    <Td>
+                      <span className={`${paidColor} table-amount`}>
+                        {item?.paid}
+                      </span>
+                    </Td>
+                    <Td>
+                      <span className={`${dueColor} table-amount`}>
+                        {item?.due}
+                      </span>
+                    </Td>
+                    <Td>
+                      <span className={`table-role-badge ${statusClass}`}>
+                        {item?.status || noData}
+                      </span>
+                    </Td>
                     <Td>
                       <Link
                         href={`/admin/purchase/purchase/view/${item?._id}`}
@@ -299,46 +304,53 @@ const Page: React.FC = () => {
                       </Link>
                     </Td>
                     <Td>
-                      <p>Note: {item?.note}</p>
-                      <p>Name: {item?.user?.name}</p>
+                      <p className="data-table-muted">
+                        Note: {item?.note || noData}
+                      </p>
+                      <p className="data-table-muted">
+                        Name: {item?.user?.name || noData}
+                      </p>
                     </Td>
-                    <Td className="">
-                      <div className="relative">
-                        <Icon
-                          name={"more_horiz"}
-                          variant="outlined"
+                    <Td className="is-right">
+                      <div className="relative max-w-40">
+                        <button
+                          type="button"
+                          className="data-table-action-btn"
+                          aria-expanded={popupIndex === index}
                           onClick={() => togglePopup(index)}
-                          className="cursor-pointer"
-                        />
+                        >
+                          <Icon name="more_vert" variant="outlined" size={18} />
+                        </button>
                         {popupIndex === index && (
                           <div
                             ref={popupRef}
-                            className="absolute top-8 -right-2 bg-white dark:bg-gray-700 dark:border-gray-500 border shadow-md rounded-lg p-4 z-20 min-w-44"
+                            className="absolute top-9 right-0 z-20 min-w-40 rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-1.5 shadow-[var(--shadow-soft)]"
                           >
                             {permissionList.includes("purchase_edit") && (
                               <>
                                 <button
-                                  className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg"
+                                  type="button"
+                                  className="block w-full rounded-lg px-3 py-2 text-left text-sm text-app hover:bg-[var(--bg-hover)]"
                                   onClick={() =>
                                     router.push(
-                                      `/admin/purchase/purchase/edit-purchases/${item?._id}`
+                                      `/admin/purchase/purchase/edit-purchases/${item?._id}`,
                                     )
                                   }
                                 >
                                   Edit
                                 </button>
                                 <button
-                                  className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg"
+                                  type="button"
+                                  className="block w-full rounded-lg px-3 py-2 text-left text-sm text-app hover:bg-[var(--bg-hover)]"
                                   onClick={() => handleCreatePayment(item)}
                                 >
                                   Create Payment
                                 </button>
                               </>
                             )}
-
-
                             <button
-                              className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg"
+                              type="button"
+                              className="block w-full rounded-lg px-3 py-2 text-left text-sm text-app hover:bg-[var(--bg-hover)]"
                               onClick={() => handleShowPayments(item)}
                             >
                               Payment History
@@ -368,6 +380,11 @@ const Page: React.FC = () => {
             setCurrentPage={setCurrentPage}
             totalPages={totalPages}
             totalData={totalProduct}
+            isShowText={true}
+            onRefresh={getPurchases}
+            isLoading={tableLoading}
+            showRefresh={false}
+            className="orders-table-pagination !mt-0 !rounded-none !border-x-0 !border-b-0 !shadow-none"
           />
         </div>
       </div>
