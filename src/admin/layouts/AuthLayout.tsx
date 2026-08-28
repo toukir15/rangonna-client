@@ -130,8 +130,20 @@ export default function AuthLayout({ children, className }: AuthLayoutProps) {
     <NoPermissionView />
   );
 
+  const isolateSidebarWheel = (event: React.WheelEvent<HTMLDivElement>) => {
+    const element = event.currentTarget;
+    const atTop = element.scrollTop <= 0;
+    const atBottom =
+      element.scrollTop + element.clientHeight >= element.scrollHeight - 1;
+
+    if ((atTop && event.deltaY < 0) || (atBottom && event.deltaY > 0)) {
+      event.preventDefault();
+    }
+    event.stopPropagation();
+  };
+
   return (
-    <div className="flex h-[calc(100vh-60px)] overflow-hidden">
+    <div className="flex h-full min-h-0 overflow-hidden">
       {/* Mobile Sidebar */}
       <div
         className={`xl:hidden fixed inset-x-0 bottom-0 top-[60px] z-40 ${
@@ -154,7 +166,10 @@ export default function AuthLayout({ children, className }: AuthLayoutProps) {
                 <p className="admin-sidebar-brand-sub">Management</p>
               </div>
             </div>
-            <div className="flex-1 overflow-y-auto overscroll-contain px-3 py-2 scrollbar-hide [-webkit-overflow-scrolling:touch]">
+            <div
+              className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-2 scrollbar-hide [-webkit-overflow-scrolling:touch]"
+              onWheel={isolateSidebarWheel}
+            >
               {sidebarContent}
             </div>
           </div>
@@ -175,7 +190,7 @@ export default function AuthLayout({ children, className }: AuthLayoutProps) {
 
       {/* Desktop Sidebar */}
       <aside
-        className={`admin-sidebar relative hidden xl:flex shrink-0 flex-col transition-[width] duration-200 ${
+        className={`admin-sidebar fixed bottom-0 left-0 top-[60px] z-30 hidden min-h-0 flex-col overscroll-none transition-[width] duration-200 xl:flex ${
           isSidebarOpen ? "w-[68px]" : "w-64"
         }`}
       >
@@ -197,20 +212,27 @@ export default function AuthLayout({ children, className }: AuthLayoutProps) {
             </span>
           </div>
         )}
-        <div className="flex-1 overflow-y-auto overflow-x-hidden px-3 py-2 scrollbar-hide">
+        <div
+          className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-contain px-3 py-2 scrollbar-hide"
+          onWheel={isolateSidebarWheel}
+        >
           <div className="space-y-0.5">{sidebarContent}</div>
         </div>
       </aside>
 
       {/* Main Content */}
-      <div className="flex w-full flex-1 flex-col overflow-hidden bg-app-main">
+      <div
+        className={`flex min-h-0 w-full flex-1 flex-col overflow-hidden bg-app-main ${
+          isSidebarOpen ? "xl:ml-[68px]" : "xl:ml-64"
+        }`}
+      >
         {isRouteAllowed && noScrollContent && (
           <div className="sticky top-0 z-20 bg-app-main/80 backdrop-blur-sm">
             {noScrollContent}
           </div>
         )}
 
-        <div className="flex-1 overflow-y-auto">
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
           <div className={`min-h-full ${className ?? ""}`}>{mainContent}</div>
         </div>
       </div>

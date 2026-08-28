@@ -10,7 +10,6 @@ import { SuggestionList } from "./SuggestionList";
 import { GlobalContext } from "../Context/GlobalContext";
 import { ProductService } from "@/@services/apis/Product/Product.service";
 import { ToastService } from "@/utils/toaster.service";
-import { trimString } from "@/utils";
 import { useRouter } from "next/navigation";
 import { useContext, useEffect, useRef, useState, useMemo } from "react";
 import { getCookie } from "cookies-next";
@@ -37,8 +36,6 @@ const Header: React.FC<HeaderProps> = ({ navItems }) => {
     setIsMenuDrawer,
     realTimeCartItems,
     setRealTimeCartItems,
-    userInfo,
-    setIsProfile,
     setTotalCount,
   } = useContext(GlobalContext);
 
@@ -86,12 +83,6 @@ const Header: React.FC<HeaderProps> = ({ navItems }) => {
   useEffect(() => {
     setTotalCount(totalQuantity);
   }, [totalQuantity, setTotalCount]);
-
-  const handleSignUpClick = () => {
-    setIsProfile(true);
-    if (userInfo) router.push("/my-account");
-    else setIsSignUpDrawer(true);
-  };
 
   const handleShapingCart = () => setIsCartDrawer(true);
   const handleMenuClick = () => setIsMenuDrawer(true);
@@ -268,18 +259,19 @@ const Header: React.FC<HeaderProps> = ({ navItems }) => {
               </a>
 
               <div className="rongonaa-action-rail">
-                <button
+                {/* Account button temporarily disabled. */}
+                {/* <button
                   type="button"
                   className="rongonaa-icon-action hidden lg:inline-flex"
                   onClick={handleSignUpClick}
                 >
-                  <Icon name="person" size={18} variant="outlined" />
+                  <UserRound size={17} strokeWidth={1.8} aria-hidden="true" />
                   <span>
                     {userInfo
                       ? trimString(userInfo.first_name, 8, true)
                       : "Account"}
                   </span>
-                </button>
+                </button> */}
 
                 <button
                   type="button"

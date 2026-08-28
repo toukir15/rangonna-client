@@ -542,7 +542,7 @@ export default function Header() {
           </div>
         </div>
       </Alert>
-      <header className="admin-header sticky top-0 z-50 flex h-[60px] items-center gap-3 px-3 no-print md:px-4">
+      <header className="admin-header fixed inset-x-0 top-0 z-50 flex h-[60px] items-center gap-3 px-3 no-print md:px-4">
         <div className="flex min-w-0 shrink-0 items-center gap-2">
           {isAuthenticated && (
             <button

@@ -1,26 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import Icon from "@/@components/core/Icon/Icon";
+import { getBrandStoryData } from "./getBrandStoryData";
 
-const values = [
-  {
-    icon: "auto_awesome",
-    label: "Handcrafted",
-    text: "Every set finished by hand",
-  },
-  {
-    icon: "favorite",
-    label: "For Her",
-    text: "Women's bangles only",
-  },
-  {
-    icon: "diamond",
-    label: "Boutique",
-    text: "Premium curated quality",
-  },
-] as const;
+export default async function BrandStoryTeaser() {
+  const story = await getBrandStoryData();
+  if (!story) return null;
 
-export default function BrandStoryTeaser() {
   return (
     <section className="rongonaa-home-section">
       <div className="rongonaa-home-section__inner rongonaa-brand-story">
@@ -31,35 +17,36 @@ export default function BrandStoryTeaser() {
 
           <div className="rongonaa-brand-story__media">
             <Image
-              src="/hero-bridal.png"
-              alt="Rangonaa craftsmanship"
+              src={story.mobileImage}
+              alt={story.imageAlt}
               fill
-              className="object-cover"
+              className="rongonaa-brand-story__media-img rongonaa-brand-story__media-img--mobile object-cover"
+              sizes="(max-width: 1024px) 100vw, 42vw"
+            />
+            <Image
+              src={story.desktopImage}
+              alt={story.imageAlt}
+              fill
+              className="rongonaa-brand-story__media-img rongonaa-brand-story__media-img--desktop object-cover"
               sizes="(max-width: 1024px) 100vw, 42vw"
             />
             <div className="rongonaa-brand-story__media-shade" />
           </div>
 
           <div className="rongonaa-brand-story__badge">
-            <p className="rongonaa-brand-story__badge-eyebrow">Est. with care</p>
-            <p className="rongonaa-brand-story__badge-title">Tradition, refined</p>
+            <p className="rongonaa-brand-story__badge-eyebrow">{story.badgeEyebrow}</p>
+            <p className="rongonaa-brand-story__badge-title">{story.badgeTitle}</p>
           </div>
         </div>
 
         <div className="rongonaa-brand-story__copy">
-          <p className="rongonaa-brand-story__eyebrow">Our Story</p>
-          <h2 className="rongonaa-brand-story__title">
-            Modern Bengali elegance, handcrafted for her
-          </h2>
+          <p className="rongonaa-brand-story__eyebrow">{story.eyebrow}</p>
+          <h2 className="rongonaa-brand-story__title">{story.heading}</h2>
           <span className="rongonaa-brand-story__rule" aria-hidden />
-          <p className="rongonaa-brand-story__text">
-            Rangonaa is devoted solely to women&apos;s bangles — glass, bridal,
-            daily, and luxury collections that honor tradition with a refined,
-            contemporary finish.
-          </p>
+          <p className="rongonaa-brand-story__text">{story.description}</p>
 
           <ul className="rongonaa-brand-story__values">
-            {values.map((v, i) => (
+            {story.values.map((v, i) => (
               <li
                 key={v.label}
                 className={`rongonaa-brand-story__value${
@@ -77,8 +64,8 @@ export default function BrandStoryTeaser() {
             ))}
           </ul>
 
-          <Link href="/about" className="rongonaa-brand-story__cta">
-            About Rangonaa
+          <Link href={story.ctaHref} className="rongonaa-brand-story__cta">
+            {story.ctaLabel}
             <span aria-hidden>→</span>
           </Link>
         </div>

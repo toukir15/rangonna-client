@@ -65,7 +65,7 @@ const ShapingCartDrawer: React.FC<IShapingCartDrawer> = ({
       isOpen={isCartDrawer}
       onClose={() => setIsCartDrawer(false)}
       overlayClassName="rongonaa-cart-drawer-overlay"
-      className="rongonaa-cart-drawer px-0 py-0"
+      className="rongonaa-cart-drawer !z-[60] px-0 py-0"
     >
       <Drawer.Header className="rongonaa-cart-drawer-header">
         <div>

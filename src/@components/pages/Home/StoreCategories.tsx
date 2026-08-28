@@ -14,7 +14,7 @@ export default async function StoreCategories() {
     >
       <div className="rongonaa-feat-collections__inner">
         <SectionHeader
-          className="rongonaa-feat-collections__header"
+          className="rongonaa-feat-collections__header rongonaa-feat-collections__header--hide-mobile-description"
           eyebrow={data.eyebrow}
           title={data.heading}
           description={data.description}

@@ -13,6 +13,12 @@ export const ShopOccasionService = {
   updateShopOccasion: async (id: string, payload: any): Promise<any> =>
     await apiIns.patch("/shop-occasion/" + id, payload),
 
+  updateShopOccasionImage: async (
+    id: string,
+    payload: { type: "mobile" | "desktop"; index: number; image: string }
+  ): Promise<any> =>
+    await apiIns.patch("/shop-occasion/" + id + "/item-image", payload),
+
   getSingleShopOccasion: async (id: any): Promise<any> =>
     await apiIns.get("/shop-occasion/" + id),
 

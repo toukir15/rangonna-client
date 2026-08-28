@@ -36,7 +36,7 @@ function CollectionTile({
             ? "(max-width: 1023px) 100vw, 50vw"
             : "(max-width: 1023px) 50vw, 25vw"
         }
-        style={{ objectFit: "cover", objectPosition: "center" }}
+        style={{ objectFit: "contain", objectPosition: "center" }}
         unoptimized
       />
 

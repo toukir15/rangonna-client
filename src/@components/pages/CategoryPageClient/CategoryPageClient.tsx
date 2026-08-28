@@ -239,7 +239,7 @@ export default function CategoryPageClient({
 
                 <div className="xl:w-4/5 w-full">
                     <div className="flex items-center justify-between">
-                        <div className="text-lg flex flex-wrap items-center gap-1">
+                        <div className="text-sm md:text-base flex flex-wrap items-center gap-1">
                             <Link href="/">Home</Link> /{" "}
                             <Link href="/churi">Churi</Link> /{" "}
                             <span>{formattedCategoryName}</span>

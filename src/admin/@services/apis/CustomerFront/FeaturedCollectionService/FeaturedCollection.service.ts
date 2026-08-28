@@ -13,6 +13,12 @@ export const FeaturedCollectionService = {
   updateFeaturedCollection: async (id: string, payload: any): Promise<any> =>
     await apiIns.patch("/featured-collection/" + id, payload),
 
+  updateFeaturedCollectionImage: async (
+    id: string,
+    payload: { type: "mobile" | "desktop"; index: number; image: string }
+  ): Promise<any> =>
+    await apiIns.patch(`/featured-collection/${id}/item-image`, payload),
+
   getSingleFeaturedCollection: async (id: any): Promise<any> =>
     await apiIns.get("/featured-collection/" + id),
 

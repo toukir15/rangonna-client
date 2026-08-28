@@ -23,6 +23,7 @@ type TBannerItemForm = {
     link: string;
     title: string;
     description: string;
+    prompt: string;
     priority: number | string;
 };
 
@@ -36,6 +37,7 @@ type TBannerItem = {
     link?: string;
     title?: string;
     description?: string;
+    prompt?: string;
     priority?: number;
 };
 
@@ -57,12 +59,30 @@ const defaultBannerItem: TBannerItemForm = {
     link: "",
     title: "",
     description: "",
+    prompt: "",
     priority: "",
 };
 
+const bannerImagePrompts = {
+    mobile: [
+        "Premium bridal jewelry banner, elegant gold bangles and traditional churi on rich maroon silk, warm luxury lighting, no text, vertical 900x1200px.",
+        "Colorful glass bangles arranged on soft ivory fabric, refined studio jewelry photography, vibrant but premium, no text, vertical 900x1200px.",
+        "Luxury gold churi with subtle gemstone details on deep burgundy velvet, editorial product photography, no text, vertical 900x1200px.",
+        "Festive red and gold bangles with delicate flowers and warm celebratory light, elegant premium composition, no text, vertical 900x1200px.",
+        "Minimal gold and rose-gold bangles on a warm neutral background, clean luxury product photography, no text, vertical 900x1200px.",
+    ],
+    desktop: [
+        "Premium bridal jewelry banner, elegant gold bangles and traditional churi on rich maroon silk, warm luxury lighting, wide composition, no text, 1920x700px.",
+        "Colorful glass bangles arranged on soft ivory fabric, refined studio jewelry photography, vibrant but premium, wide composition, no text, 1920x700px.",
+        "Luxury gold churi with subtle gemstone details on deep burgundy velvet, editorial product photography, wide composition, no text, 1920x700px.",
+        "Festive red and gold bangles with delicate flowers and warm celebratory light, elegant wide composition, no text, 1920x700px.",
+        "Minimal gold and rose-gold bangles on a warm neutral background, clean luxury product photography, wide composition, no text, 1920x700px.",
+    ],
+} as const;
+
 const defaultValue: FormValues = {
-    mobile: [{ ...defaultBannerItem }],
-    desktop: [{ ...defaultBannerItem }],
+    mobile: [{ ...defaultBannerItem, prompt: bannerImagePrompts.mobile[0] }],
+    desktop: [{ ...defaultBannerItem, prompt: bannerImagePrompts.desktop[0] }],
 };
 
 const bannerItemSchema: yup.ObjectSchema<TBannerItemForm> = yup.object({
@@ -70,6 +90,7 @@ const bannerItemSchema: yup.ObjectSchema<TBannerItemForm> = yup.object({
     link: yup.string().trim().required("Link is required"),
     title: yup.string().trim().required("Title is required"),
     description: yup.string().trim().required("Description is required"),
+    prompt: yup.string().trim().required("Image prompt is required"),
     priority: yup
         .number()
         .typeError("Priority is required")
@@ -201,7 +222,12 @@ const BannerFields: React.FC<BannerFieldsProps> = ({
                 <Button
                     type="button"
                     className="!px-3 !py-1.5 text-sm bg-[#7f1d1d] text-white"
-                    onClick={() => append({ ...defaultBannerItem })}
+                    onClick={() =>
+                        append({
+                            ...defaultBannerItem,
+                            prompt: bannerImagePrompts[type][fields.length] || "",
+                        })
+                    }
                 >
                     + Add slide
                 </Button>
@@ -348,6 +374,22 @@ const BannerFields: React.FC<BannerFieldsProps> = ({
                                             </p>
                                         )}
                                     </div>
+                                    <div className="sm:col-span-6">
+                                        <label className="block text-sm font-medium mb-1.5 text-gray-700 dark:text-gray-300">
+                                            Image Prompt
+                                        </label>
+                                        <textarea
+                                            {...register(`${type}.${index}.prompt`)}
+                                            placeholder="Describe the banner image you want to generate..."
+                                            rows={4}
+                                            className="w-full rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-950 px-3 py-2 text-sm text-gray-900 dark:text-white outline-none focus:border-[#7f1d1d] focus:ring-1 focus:ring-[#7f1d1d]/20"
+                                        />
+                                        {itemError?.prompt?.message && (
+                                            <p className="text-red-500 text-xs mt-1">
+                                                {itemError.prompt.message}
+                                            </p>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         </article>
@@ -393,25 +435,27 @@ const BannerForm: React.FC<BannerFormProps> = ({
         if (mode === "edit" && initialData) {
             const mappedMobile =
                 initialData?.mobile && initialData.mobile.length > 0
-                    ? initialData.mobile.map((banner) => ({
+                    ? initialData.mobile.map((banner, index) => ({
                         image: banner?.image || "",
                         link: banner?.link || "",
                         title: banner?.title || "",
                         description: banner?.description || "",
+                        prompt: banner?.prompt || bannerImagePrompts.mobile[index] || "",
                         priority: banner?.priority ?? "",
                     }))
-                    : [{ ...defaultBannerItem }];
+                    : [{ ...defaultBannerItem, prompt: bannerImagePrompts.mobile[0] }];
 
             const mappedDesktop =
                 initialData?.desktop && initialData.desktop.length > 0
-                    ? initialData.desktop.map((banner) => ({
+                    ? initialData.desktop.map((banner, index) => ({
                         image: banner?.image || "",
                         link: banner?.link || "",
                         title: banner?.title || "",
                         description: banner?.description || "",
+                        prompt: banner?.prompt || bannerImagePrompts.desktop[index] || "",
                         priority: banner?.priority ?? "",
                     }))
-                    : [{ ...defaultBannerItem }];
+                    : [{ ...defaultBannerItem, prompt: bannerImagePrompts.desktop[0] }];
 
             reset({
                 mobile: mappedMobile,
@@ -436,6 +480,7 @@ const BannerForm: React.FC<BannerFormProps> = ({
                 link: item.link,
                 title: item.title,
                 description: item.description,
+                prompt: item.prompt,
                 priority: Number(item.priority),
             })),
             desktop: (data?.desktop || []).map((item) => ({
@@ -443,6 +488,7 @@ const BannerForm: React.FC<BannerFormProps> = ({
                 link: item.link,
                 title: item.title,
                 description: item.description,
+                prompt: item.prompt,
                 priority: Number(item.priority),
             })),
         };

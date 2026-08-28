@@ -642,6 +642,21 @@ export const sideBarItems: ISideBarItems[] = [
         label: "Customer Review",
         icon: "reviews",
       },
+      {
+        href: "/admin/customer-front/girls-emotion",
+        label: "Girls Emotion",
+        icon: "photo_library",
+      },
+      {
+        href: "/admin/customer-front/instagram-gallery",
+        label: "Instagram Gallery",
+        icon: "photo_library",
+      },
+      {
+        href: "/admin/customer-front/brand-story",
+        label: "Brand Story",
+        icon: "auto_awesome",
+      },
     ],
     mainSubLink: true,
   },

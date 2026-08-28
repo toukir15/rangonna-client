@@ -14,9 +14,9 @@ export default function AdminShell({ children }: { children: ReactNode }) {
   }
 
   return (
-    <div className="admin-shell">
+    <div className="admin-shell flex h-screen flex-col overflow-hidden">
       <Header />
-      <div className="h-[calc(100vh-60px)] flex-1 overflow-auto bg-app-main">
+      <div className="min-h-0 flex-1 overflow-hidden bg-app-main pt-[60px]">
         {children}
       </div>
     </div>

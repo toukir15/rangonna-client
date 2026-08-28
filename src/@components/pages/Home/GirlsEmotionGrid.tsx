@@ -12,11 +12,18 @@ export type TEmotionItem = {
   image: string;
 };
 
-export default function GirlsEmotionGrid({ items }: { items: TEmotionItem[] }) {
+export default function GirlsEmotionGrid({
+  mobileItems,
+  desktopItems,
+}: {
+  mobileItems: TEmotionItem[];
+  desktopItems: TEmotionItem[];
+}) {
   const [isMobile, setIsMobile] = useState(false);
   const [active, setActive] = useState(0);
   const trackRef = useRef<HTMLDivElement>(null);
   const pauseRef = useRef(false);
+  const items = isMobile ? mobileItems : desktopItems;
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth <= 768);

@@ -100,11 +100,30 @@ const MenuDrawer: React.FC<IShapingCartDrawer> = ({
         isOpen={isCartDrawer}
         onClose={() => setIsCartDrawer(false)}
         side="left"
-        className="xs:pl-3 py-5 lg:pl-4"
+        className="rongonaa-mobile-menu !z-[60] !w-[86vw] max-w-[380px] !p-0"
       >
-        <Drawer.Header className="pr-2 flex items-center justify-between border-b pb-3 border-gray-200">
-          <div className="relative w-full">
-            <div>
+        <Drawer.Header className="rongonaa-mobile-menu-header border-b border-[var(--brand-primary-border)] px-4 pb-4 pt-4">
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--brand-primary)]">
+                  Explore
+                </p>
+                <p className="mt-0.5 text-base font-bold text-[var(--brand-secondary)]">
+                  Rangonaa
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsCartDrawer(false)}
+                className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--brand-primary-border)] bg-white text-[var(--brand-primary-dark)] transition hover:bg-[var(--brand-primary-lighter)]"
+                aria-label="Close menu"
+              >
+                <Icon name="close" size={18} />
+              </button>
+            </div>
+
+            <div className="relative">
               <input
                 ref={searchInputRef}
                 value={searchId}
@@ -112,9 +131,9 @@ const MenuDrawer: React.FC<IShapingCartDrawer> = ({
                 onKeyDown={handleKeyPress}
                 type="text"
                 placeholder="Search for products"
-                className="p-2 w-full pr-10 border-none focus:ring-0 focus:outline-none text-xl"
+                className="h-11 w-full rounded-xl border border-[var(--brand-primary-border)] bg-white px-3 pr-10 text-sm text-[var(--brand-secondary)] shadow-sm outline-none transition placeholder:text-gray-400 focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/10"
               />
-              <span className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-400 mt-1">
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--brand-primary)]">
                 <Icon name="search" variant="outlined" />
               </span>
             </div>
@@ -160,23 +179,36 @@ const MenuDrawer: React.FC<IShapingCartDrawer> = ({
           </div>
         </Drawer.Header>
 
-        <Drawer.Body className="mt-2 mb-5 overflow-y-auto">
-          <nav className="flex flex-col space-y-2">
+        <Drawer.Body className="rongonaa-mobile-menu-body !p-3 overflow-y-auto">
+          <nav className="flex flex-col gap-1" aria-label="Mobile menu">
             {navItems?.map((item: IMenuItem) => {
               const parentActive = isParentActive(item);
 
               return (
-                <div key={item.id} className="border-b border-gray-100 pb-2">
+                <div key={item.id} className="border-b border-[var(--brand-neutral-border)] pb-1 last:border-b-0">
                   {item.submenu?.length ? (
                     <div>
                       <button
+                        type="button"
                         onClick={() => toggleSubmenu(item.id)}
-                        className={`w-full flex justify-between items-center px-3 py-1 rounded-md transition-colors ${parentActive
-                          ? "bg-primary text-white !font-bold"
-                          : "hover:bg-gray-50"
+                        aria-expanded={activeSubmenu === item.id}
+                        className={`flex min-h-11 w-full items-center justify-between rounded-lg px-3 text-left text-sm font-semibold transition-colors ${
+                          parentActive
+                            ? "bg-[var(--brand-primary)] text-white shadow-sm"
+                            : "text-[var(--brand-secondary)] hover:bg-[var(--brand-primary-lighter)]"
                           }`}
                       >
-                        <span className="text-lg font-medium">{item.name}</span>
+                        <span className="flex items-center gap-2">
+                          {item.icon ? (
+                            <Icon
+                              name={item.icon}
+                              size={18}
+                              className={parentActive ? "text-white" : "text-[var(--brand-primary)]"}
+                              style={{ color: parentActive ? undefined : item.color }}
+                            />
+                          ) : null}
+                          {item.name}
+                        </span>
 
                         <Icon
                           name={
@@ -184,15 +216,14 @@ const MenuDrawer: React.FC<IShapingCartDrawer> = ({
                               ? "keyboard_arrow_up"
                               : "keyboard_arrow_down"
                           }
-                          size={30}
+                          size={20}
                           variant="outlined"
-                          className={`${parentActive ? "text-white" : "text-gray-300"
-                            }`}
+                          className={parentActive ? "text-white" : "text-gray-400"}
                         />
                       </button>
 
                       {activeSubmenu === item.id && (
-                        <div className="pl-6 animate-slideDown mt-2">
+                        <div className="mt-1 space-y-1 border-l-2 border-[var(--brand-primary-border)] pl-3">
                           {item.submenu.map((subItem) => {
                             const isActive = pathname === subItem.route;
 
@@ -200,9 +231,10 @@ const MenuDrawer: React.FC<IShapingCartDrawer> = ({
                               <Link
                                 key={subItem.id}
                                 href={subItem.route}
-                                className={`block px-2 py-1.5 rounded-md transition-all duration-200 hover:bg-gray-50 hover:translate-x-1 hover:scale-[1.02] ${isActive
-                                  ? "bg-primary-lighter text-primary border border-primary-border font-semibold"
-                                  : "text-gray-700"
+                                className={`flex min-h-10 items-center rounded-lg px-3 text-sm transition-colors ${
+                                  isActive
+                                    ? "bg-[var(--brand-primary-lighter)] font-semibold text-[var(--brand-primary-dark)]"
+                                    : "text-[var(--brand-secondary)] hover:bg-[var(--brand-primary-lighter)]"
                                   }`}
                                 onClick={() => setIsCartDrawer(false)}
                               >
@@ -216,20 +248,22 @@ const MenuDrawer: React.FC<IShapingCartDrawer> = ({
                   ) : (
                     <Link
                       href={item.route}
-                      className={`block px-3 py-1 text-lg font-medium rounded-md transition-colors gap-1 flex items-center ${parentActive
-                        ? "bg-primary text-white font-semibold"
-                        : "hover:bg-gray-50"
+                      className={`flex min-h-11 items-center gap-2 rounded-lg px-3 text-sm font-semibold transition-colors ${
+                        parentActive
+                          ? "bg-[var(--brand-primary)] text-white shadow-sm"
+                          : "text-[var(--brand-secondary)] hover:bg-[var(--brand-primary-lighter)]"
                         }`}
                       onClick={() => setIsCartDrawer(false)}
                     >
-                      <span> {item?.icon ? (
+                      {item?.icon ? (
                         <Icon
                           name={item.icon}
-                          className="text-gray-300  fire-flicker"
-                          style={{ color: item?.color }}
+                          size={18}
+                          className={parentActive ? "text-white" : "text-[var(--brand-primary)]"}
+                          style={{ color: parentActive ? undefined : item.color }}
                         />
-                      ) : null}</span>
-                      <span className={`${item?.icon ? "-mt-2" : ""}`}>{item.name}</span>
+                      ) : null}
+                      <span>{item.name}</span>
                     </Link>
                   )}
                 </div>
