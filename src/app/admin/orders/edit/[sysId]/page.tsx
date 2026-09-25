@@ -15,6 +15,7 @@ import NodataImage from "@admin/assets/images/Image-not-found.png";
 import { ProductsInfoTable } from "@admin/components/pages/Orders/EditOrder/ProductsInfoTable";
 import { useGlobalContext } from "@admin/context/GlobalContext";
 import PageHeader from "@admin/components/layout/PageHeader";
+import { hasCategory } from "@/utils/productCategory";
 
 const Page: React.FC = () => {
   const { sysId } = useParams();
@@ -328,7 +329,7 @@ const Page: React.FC = () => {
     }, 0) || 0;
 
   const hasFlashSale = (orderDetails?.line_items || []).some((item: any) =>
-    item?.product_id?.categories?.includes("flash-sale"),
+    hasCategory(item?.product_id?.categories, "flash-sale"),
   );
 
   useTableRefreshRegister(fetchOrdersDetails);

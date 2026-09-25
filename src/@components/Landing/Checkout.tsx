@@ -18,6 +18,7 @@ import { pushToDataLayer } from "@/utils/gtm";
 import { trimString } from "@/utils";
 import Modal, { ModalType } from "@/@components/core/Modal/Modal";
 import { inferShippingFromAddress } from "@/utils/data";
+import { categoryLabel, hasCategory } from "@/utils/productCategory";
 import { Gift, ShieldCheck, RefreshCw, Wallet } from "lucide-react";
 import { ToastService } from "@/utils/toaster.service";
 import { EMI_THRESHOLD } from "@/@components/pages/ProductDetails/emiData";
@@ -523,7 +524,7 @@ const Checkout = ({ landingData }: any) => {
     }
 
     const hasFlashSale = cartItems.some((item) =>
-      item.categories.includes("flash-sale"),
+      hasCategory(item.categories, "flash-sale"),
     );
 
     if (hasFlashSale) {
@@ -632,7 +633,7 @@ const Checkout = ({ landingData }: any) => {
             const categoryData: Record<string, string> = {};
             item.categories?.forEach((cat: any, index: number) => {
               categoryData[`item_category${index === 0 ? "" : index + 1}`] =
-                cat;
+                categoryLabel(cat);
             });
             return {
               item_id: item.id,

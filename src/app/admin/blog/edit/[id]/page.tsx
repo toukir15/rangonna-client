@@ -18,6 +18,7 @@ import { useParams, useRouter } from "next/navigation";
 import React, { useEffect, useMemo, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import * as yup from "yup";
+import { categoryMatchesOption } from "@/utils/productCategory";
 
 const SingleImageUpload = dynamic(
   () => import("@admin/components/core/Input/SingleImageUpload"),
@@ -68,7 +69,7 @@ const Page: React.FC = () => {
     () =>
       productCategoryData?.map((item) => ({
         label: item.key,
-        value: item.value,
+        value: item._id,
       })) ?? [],
     [productCategoryData],
   );
@@ -173,8 +174,8 @@ const Page: React.FC = () => {
         ? blogDetails.categories
         : [];
 
-    const selectedCategories = categoryOptions.filter(
-      (c) => catValue.includes(c.value) || catValue.includes(c.label),
+    const selectedCategories = categoryOptions.filter((c) =>
+      catValue.some((raw: any) => categoryMatchesOption(raw, c.value)),
     );
 
     const selectedBrand = brandOptions.find(

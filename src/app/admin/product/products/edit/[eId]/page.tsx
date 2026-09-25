@@ -18,6 +18,7 @@ import Switch from "@admin/components/core/SwitchButton/SingleSwitch";
 import { useGlobalContext } from "@admin/context/GlobalContext";
 import AuthLayout from "@admin/layouts/AuthLayout";
 import { hasPermission } from "@admin/utils";
+import { categoryMatchesOption } from "@/utils/productCategory";
 import { processDescriptionDesImages } from "@admin/utils/processDescriptionImage";
 import { stripTrailingEmptyQuillParagraphs } from "@admin/utils/stripTrailingEmptyQuillParagraphs";
 import { ToastService } from "@admin/utils/toastr.service";
@@ -167,7 +168,7 @@ const Page: React.FC = () => {
     () =>
       (productCategoryData ?? []).map((item) => ({
         label: item.key,
-        value: item.value,
+        value: item._id,
       })),
     [productCategoryData],
   );
@@ -247,7 +248,7 @@ const Page: React.FC = () => {
       ? productDetails.categories
       : [];
     const selectedCategories = categoryOptions.filter((c) =>
-      catValue.includes(c.value),
+      catValue.some((raw: any) => categoryMatchesOption(raw, c.value)),
     );
     const selectedBrand =
       brandOptions.find((b) => b.value === productDetails.brand) ?? null;

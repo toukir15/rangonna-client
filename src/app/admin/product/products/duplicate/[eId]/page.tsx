@@ -30,6 +30,7 @@ import {
 import { processDescriptionDesImages } from "@admin/utils/processDescriptionImage";
 import { stripTrailingEmptyQuillParagraphs } from "@admin/utils/stripTrailingEmptyQuillParagraphs";
 import { ToastService } from "@admin/utils/toastr.service";
+import { categoryMatchesOption } from "@/utils/productCategory";
 import { yupResolver } from "@hookform/resolvers/yup";
 import ElementorLikeEditor from "@admin/components/core/Editor/CustomEditor";
 import dynamic from "next/dynamic";
@@ -161,7 +162,7 @@ const Page: React.FC = () => {
     () =>
       (productCategoryData ?? []).map((item) => ({
         label: item.key,
-        value: item.value,
+        value: item._id,
       })),
     [productCategoryData],
   );
@@ -284,7 +285,7 @@ const Page: React.FC = () => {
         ? productDetails.categories
         : [];
     const selectedCategories = categoryOptions.filter((c) =>
-      catValue.includes(c.value),
+      catValue.some((raw: any) => categoryMatchesOption(raw, c.value)),
     );
 
     const selectedBrand = brandOptions.find(

@@ -13,6 +13,7 @@ import {
   getTotalStockQuantity,
   isProductInStock,
 } from "@/utils/productStock";
+import { categoryLabels } from "@/utils/productCategory";
 
 interface ProductCardProps {
   data: IProduct;
@@ -165,9 +166,7 @@ const WatchCard: React.FC<ProductCardProps> = ({
             item_id: product._id,
             item_name: product.title,
             item_brand: product.brand,
-            item_category: Array.isArray(product.categories)
-              ? product.categories.join(", ")
-              : product.categories || "",
+            item_category: categoryLabels(product.categories),
             price: product.pricing?.sale_price || 0,
             quantity: 1,
           })),

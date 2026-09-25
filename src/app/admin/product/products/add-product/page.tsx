@@ -123,7 +123,7 @@ const Page: React.FC = () => {
 
   const categoryOptions = productCategoryData?.map((item) => ({
     label: item.key,
-    value: item.value,
+    value: item._id,
   }));
   const brandOptions = productBrandData?.map((item) => ({
     label: item.key,

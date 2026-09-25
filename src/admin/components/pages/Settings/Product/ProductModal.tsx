@@ -14,6 +14,7 @@ import { ToastService } from "@admin/utils/toastr.service";
 import { ProductBrandService } from "@admin/@services/apis/ProductService/ProductBrand.service";
 import { ProductCategoryService } from "@admin/@services/apis/ProductService/ProductCategory.service";
 import { CompanyService } from "@admin/@services/apis/SettingsService/CompanySettings/company.service";
+import { categoryObjectId } from "@/utils/productCategory";
 
 interface FormValues {
   brand_names: string[];
@@ -39,7 +40,7 @@ const ProductModal = ({
   const [isSubmit, setIsSubmit] = useState(false);
   const [brands, setBrands] = useState<{ key: string; value: string }[]>([]);
   const [categories, setCategories] = useState<
-    { key: string; value: string }[]
+    { _id: string; key: string; value: string }[]
   >([]);
 
   const { handleSubmit, watch, setValue, reset } = useForm<any>({
@@ -93,7 +94,7 @@ const ProductModal = ({
     if (!isModalOpen) return;
     reset({
       brand_names: items?.brand_names?.map((b: any) => b.value || b) || [],
-      categories: items?.categories?.map((c: any) => c.value || c) || [],
+      categories: items?.categories?.map((c: any) => categoryObjectId(c) || c.value || c) || [],
     });
   }, [items, isModalOpen, reset]);
 
@@ -169,14 +170,14 @@ const ProductModal = ({
             <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
               {categories.map((cat) => (
                 <label
-                  key={cat.value}
+                  key={cat._id}
                   className="flex items-center gap-2 cursor-pointer"
                 >
                   <input
                     type="checkbox"
-                    checked={categoryValues?.includes(cat.value)}
+                    checked={categoryValues?.includes(cat._id)}
                     onChange={() =>
-                      handleCheckboxChange("categories", cat.value)
+                      handleCheckboxChange("categories", cat._id)
                     }
                   />
                   <span>{cat.key}</span>

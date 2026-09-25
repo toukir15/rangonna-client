@@ -23,6 +23,7 @@ import CheckOutSignUp from "../SignUp/CheckOutSignUp";
 import { ShieldCheck, Truck, Banknote, PackageCheck } from "lucide-react";
 import { ToastService } from "@/utils/toaster.service";
 import { EMI_THRESHOLD } from "@/@components/pages/ProductDetails/emiData";
+import { categoryLabel, hasCategory } from "@/utils/productCategory";
 
 export type ModalState = {
   open: boolean;
@@ -525,7 +526,7 @@ const Checkout: React.FC = () => {
     }
 
     const hasFlashSale = cartItems.some((item) =>
-      item.categories.includes("flash-sale"),
+      hasCategory(item.categories, "flash-sale"),
     );
 
     if (hasFlashSale) {
@@ -645,7 +646,7 @@ const Checkout: React.FC = () => {
             const categoryData: Record<string, string> = {};
             item.categories?.forEach((cat: any, index: number) => {
               categoryData[`item_category${index === 0 ? "" : index + 1}`] =
-                cat;
+                categoryLabel(cat);
             });
             return {
               item_id: item.id,

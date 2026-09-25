@@ -75,6 +75,11 @@ function extractTags(raw: Record<string, unknown>): string[] {
   if (Array.isArray(cats)) {
     for (const c of cats) {
       if (typeof c === "string") push(c);
+      else if (c && typeof c === "object") {
+        const o = c as Record<string, unknown>;
+        const label = o.key ?? o.value ?? o.name ?? o.title ?? o.slug;
+        if (label != null && String(label).trim()) push(String(label));
+      }
     }
   }
 

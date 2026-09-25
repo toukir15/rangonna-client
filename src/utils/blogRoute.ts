@@ -37,7 +37,7 @@ export function pickBlogCategory(raw: Record<string, unknown>): string {
     if (typeof first === "string" && first.trim()) return first.trim();
     if (first && typeof first === "object") {
       const o = first as Record<string, unknown>;
-      const label = o.name ?? o.title ?? o.slug;
+      const label = o.key ?? o.name ?? o.title ?? o.value ?? o.slug;
       if (label != null && String(label).trim()) return String(label).trim();
     }
   }

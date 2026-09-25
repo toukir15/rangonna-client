@@ -10,6 +10,7 @@ import ProductReportModal from "../../Report/ProductReport/ProductReportModal";
 import { IProduct } from "@admin/@interfaces/productReport/allProduct.interface";
 import { useGlobalContext } from "@admin/context/GlobalContext";
 import Link from "next/link";
+import { categoryLabels } from "@/utils/productCategory";
 
 const getTotalStock = (item: IProduct) => {
   if (Array.isArray(item?.variants) && item.variants.length > 0) {
@@ -216,7 +217,7 @@ const ProductTable: React.FC = () => {
                 </Td>
                 <Td>
                   <span className="data-table-muted">
-                    {item?.categories?.join(", ") || noData}
+                    {categoryLabels(item?.categories) || noData}
                   </span>
                 </Td>
                 <Td>

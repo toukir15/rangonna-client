@@ -7,6 +7,7 @@ import Icon from "@admin/components/core/Icon/Icon";
 import { useRouter } from "next/navigation";
 import { useGlobalContext } from "@admin/context/GlobalContext";
 import { BlogContext } from "@/app/admin/blog/page";
+import { categoryLabels } from "@/utils/productCategory";
 
 const BlogTable: React.FC = () => {
   const { permissionList } = useGlobalContext();
@@ -77,7 +78,7 @@ const BlogTable: React.FC = () => {
 
             <Td>
               <span className="data-table-muted">
-                {item?.categories?.length ? item.categories.join(", ") : noData}
+                {categoryLabels(item?.categories) || noData}
               </span>
             </Td>
             <Td>

@@ -9,6 +9,7 @@ import Link from "next/link";
 import Button from "@/@components/core/Button/Button";
 import Image from "next/image";
 import { pushToDataLayer } from "@/utils/gtm";
+import { categoryLabel } from "@/utils/productCategory";
 
 const COOKIE_ORDER = {
   maxAge: 30 * 24 * 60 * 60,
@@ -133,7 +134,8 @@ const ReceivedOrder: React.FC<ReceivedOrderProps> = ({
         items: orderedItems.line_items.map((item: any) => {
           const categoryData: Record<string, string> = {};
           item.categories?.forEach((cat: any, index: number) => {
-            categoryData[`item_category${index === 0 ? "" : index + 1}`] = cat;
+            categoryData[`item_category${index === 0 ? "" : index + 1}`] =
+              categoryLabel(cat);
           });
 
           return {

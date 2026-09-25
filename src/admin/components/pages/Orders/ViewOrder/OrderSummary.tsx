@@ -8,6 +8,7 @@ import NodataImage from "@admin/assets/images/noDataFound.png";
 import CouponModal from "./CouponModal/CouponModal";
 import { useGlobalContext } from "@admin/context/GlobalContext";
 import Button from "@admin/components/core/Button/Button";
+import { hasCategory } from "@/utils/productCategory";
 
 
 
@@ -63,7 +64,7 @@ const OrderSummary: React.FC<any> = ({
   }, [sumary?.line_items]);
 
   const hasFlashSale = (sumary?.line_items || []).some((item: any) =>
-    item?.product_id?.categories?.includes("flash-sale")
+    hasCategory(item?.product_id?.categories, "flash-sale")
   );
 
   if (isLoading) return <OrderSumarySkeleton />;

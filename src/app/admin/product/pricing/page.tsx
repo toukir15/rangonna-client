@@ -204,7 +204,7 @@ const Page: React.FC = () => {
         if (res?.success) {
           const options = res.data.map((item: IProductCategory) => ({
             label: item.key,
-            value: item.value,
+            value: item._id,
           }));
           setCategoryOptions([{ value: "all", label: "All" }, ...options]);
         } else {

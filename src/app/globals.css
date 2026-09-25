@@ -2478,9 +2478,7 @@ input[type=number] {
   justify-content: center;
   overflow: hidden;
   isolation: isolate;
-  background:
-    radial-gradient(ellipse 80% 55% at 50% -10%, color-mix(in oklab, var(--brand-cta) 18%, transparent), transparent 70%),
-    linear-gradient(168deg, #fffaf8 0%, var(--brand-ivory) 48%, #f3ebe6 100%);
+  background: var(--brand-ivory);
 }
 
 .rongonaa-global-loading__atmosphere {
@@ -2541,9 +2539,8 @@ input[type=number] {
   width: min(92vw, 340px);
   flex-direction: column;
   align-items: center;
-  padding: 2rem 1.5rem 1.6rem;
+  padding: 1.5rem;
   text-align: center;
-  animation: rongonaa-loader-rise 0.7s ease-out both;
 }
 
 .rongonaa-global-loading__bangles {
@@ -2626,15 +2623,23 @@ input[type=number] {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 0.85rem;
+  margin-bottom: 1.1rem;
 }
 
 .rongonaa-global-loading__logo {
   width: auto;
-  height: 2.1rem;
+  height: 1.8rem;
   max-width: 11rem;
   object-fit: contain;
-  filter: drop-shadow(0 6px 18px color-mix(in oklab, var(--brand-cta) 18%, transparent));
+}
+
+.rongonaa-global-loading__spinner {
+  width: 1.35rem;
+  height: 1.35rem;
+  border: 2px solid color-mix(in oklab, var(--brand-cta) 18%, transparent);
+  border-top-color: var(--brand-cta);
+  border-radius: 50%;
+  animation: rongonaa-product-spin 0.8s linear infinite;
 }
 
 .rongonaa-global-loading__eyebrow {
@@ -2648,12 +2653,12 @@ input[type=number] {
 }
 
 .rongonaa-global-loading__message {
-  margin: 0.45rem 0 0;
+  margin: 0.7rem 0 0;
   font-family: var(--font-playfair), Georgia, "Times New Roman", serif;
-  font-size: 1.15rem;
+  font-size: 0.9rem;
   font-weight: 500;
   letter-spacing: 0.01em;
-  color: var(--brand-secondary);
+  color: color-mix(in oklab, var(--brand-secondary) 62%, transparent);
 }
 
 .rongonaa-global-loading__dots span {

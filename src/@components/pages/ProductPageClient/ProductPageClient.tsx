@@ -17,6 +17,7 @@ import { ModalState } from "../Checkout/Checkout";
 import Modal from "@/@components/core/Modal/Modal";
 import ProductActions from "../ProductDetails/ProductActions";
 import { ToastService } from "@/utils/toaster.service";
+import { categoryLabel, categoryLabels, hasCategory } from "@/utils/productCategory";
 import ProductReview from "@/@components/core/Carousal/ProductReview";
 import CreateProductReview from "@/@components/core/Carousal/CreateProductReview";
 import ProgressBar from "@/@components/core/ProgressBar/ProgressBar";
@@ -321,9 +322,7 @@ export default function ProductPageClient({
           item_id: p._id,
           item_name: p.title,
           item_brand: p.brand ?? "",
-          item_category: Array.isArray(p.categories)
-            ? p.categories.join(", ")
-            : (p.categories ?? ""),
+          item_category: categoryLabels(p.categories),
           price: p.pricing?.sale_price || 0,
           quantity: productQuantity,
           max_quantity: selectedMaxQty || undefined,
@@ -529,22 +528,14 @@ export default function ProductPageClient({
     return { average: avg, distribution: dist };
   }, [reviewData]);
 
-  const isFlashSale: boolean = Array.isArray(singleWatch?.categories)
-    ? singleWatch.categories.includes("flash-sale")
-    : String(singleWatch?.categories || "").includes("flash-sale");
+  const isFlashSale: boolean = hasCategory(singleWatch?.categories, "flash-sale");
 
-  const categoryLabel = useMemo(() => {
+  const primaryCategoryLabel = useMemo(() => {
     const raw = Array.isArray(singleWatch?.categories)
       ? singleWatch.categories[0]
-      : typeof singleWatch?.categories === "string"
-        ? singleWatch.categories.split(",")[0]
-        : "";
-    if (!raw) return null;
-    return String(raw)
-      .trim()
-      .split("-")
-      .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
+      : singleWatch?.categories;
+    const label = categoryLabel(raw as any);
+    return label || null;
   }, [singleWatch]);
 
   const shortText = useMemo(() => {
@@ -711,8 +702,8 @@ export default function ProductPageClient({
 
         {/* Info */}
         <div className="rongonaa-pdp__info">
-          {categoryLabel ? (
-            <p className="rongonaa-pdp__eyebrow">{categoryLabel}</p>
+          {primaryCategoryLabel ? (
+            <p className="rongonaa-pdp__eyebrow">{primaryCategoryLabel}</p>
           ) : null}
 
           <h1 className="rongonaa-pdp__title">{singleWatch?.title}</h1>

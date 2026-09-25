@@ -7,6 +7,7 @@ import { ToastService } from "@admin/utils/toastr.service";
 import Button from "@admin/components/core/Button/Button";
 import ProductModal from "@admin/components/pages/Settings/Product/ProductModal";
 import { CompanyService } from "@admin/@services/apis/SettingsService/CompanySettings/company.service";
+import { categoryLabels } from "@/utils/productCategory";
 
 const Page = () => {
   const [tableLoading, setTableLoading] = useState<boolean>(true);
@@ -67,7 +68,9 @@ const Page = () => {
               </p>
               <p>
                 <span className="font-semibold">Categories selected:</span>{" "}
-                {companyData?.categories?.length ?? 0}
+                {categoryLabels(companyData?.categories) ||
+                  companyData?.categories?.length ||
+                  0}
               </p>
             </div>
           )}
