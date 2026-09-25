@@ -31,8 +31,8 @@ const toSlug = (s: string) =>
     .toLowerCase()
     .trim()
     .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^_+|_+$/g, "")
-    .replace(/_{2,}/g, "-");
+    .replace(/^-+|-+$/g, "")
+    .replace(/-{2,}/g, "-");
 
 const ProductCategoryModal = () => {
   const {
@@ -111,13 +111,13 @@ const ProductCategoryModal = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit(formSubmit)}>
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         width="w-full md:w-3/4"
         maxWidth="max-w-2xl"
       >
+        <form onSubmit={handleSubmit(formSubmit)}>
         <Modal.Header className="flex items-center justify-between">
           <h3 className="text-lg font-medium leading-6 text-gray-900 dark:text-white">
             {modalMode === "Edit"
@@ -166,8 +166,8 @@ const ProductCategoryModal = () => {
             {isSubmit ? <ButtonLoader /> : "Confirm"}
           </Button>
         </Modal.Footer>
+        </form>
       </Modal>
-    </form>
   );
 };
 
