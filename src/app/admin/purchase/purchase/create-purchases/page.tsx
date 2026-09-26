@@ -1,7 +1,7 @@
 "use client";
 import Input from "@admin/components/core/Input/Input";
 import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
-import React, { useEffect, useRef, useState } from "react";
+import React, { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import * as yup from "yup";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -40,6 +40,11 @@ const webSchema = yup.object({
   note: yup.string(),
   date: yup.date().required("Date is required"),
 });
+
+const sizeRank = (size: string) => {
+  const value = parseFloat(String(size || "").replace(/[^\d.]/g, ""));
+  return Number.isNaN(value) ? Number.POSITIVE_INFINITY : value;
+};
 
 const Page: React.FC = () => {
   const router = useRouter();
@@ -117,6 +122,8 @@ const Page: React.FC = () => {
         product: product.product_id,
         quantity: product.quantity,
         discount: product.discount,
+        size: product.size || "",
+        sku: product.sku || "",
         unit_cost:
           productUnitCosts[product.product_id] !== undefined
             ? productUnitCosts[product.product_id]
@@ -146,7 +153,6 @@ const Page: React.FC = () => {
       .then((res: any) => {
         if (res?.success) {
           ToastService.success(res?.message);
-          setIsModalOpen(false);
           router.push("/admin/purchase/purchase");
         } else {
           ToastService.error(res?.message);
@@ -203,36 +209,53 @@ const Page: React.FC = () => {
   }, [debouncedSearchTerm]);
 
 
-  const isProductAlreadyAdded = (productId: string) => {
-    return orderDetails?.purchase_products?.some(
-      (item: any) => item.product_id === productId
-    );
-  };
+  const lineKey = (item: {
+    product_id?: string;
+    sku?: string;
+    size?: string;
+  }) => `${item.product_id}::${item.sku || item.size || ""}`;
 
-
-
-  const handleProductSelect = (product: any) => {
-    const isAlreadyAdded = isProductAlreadyAdded(product._id);
-    if (isAlreadyAdded) {
-      ToastService.warning("This product is already added to the list");
+  const handleSuggestionClick = (product: any) => {
+    const variants = Array.isArray(product?.variants) ? product.variants : [];
+    if (!variants.length) {
+      ToastService.warning("This product has no variation");
       return;
     }
+
+    const alreadyAdded = orderDetails?.purchase_products?.some(
+      (item: any) => item.product_id === product._id
+    );
+    if (alreadyAdded) {
+      ToastService.warning("This product is already added");
+      setProductSearch("");
+      setFilteredProducts([]);
+      setShowSuggestions(false);
+      return;
+    }
+
+    const storedVariants = variants.map((item: any) => ({
+      sku: item.sku || "",
+      size: item.size || "",
+    }));
+    const sharedCost = product?.pricing?.purchase_price || 0;
 
     setOrderDetails((prev: { purchase_products: any[] }) => ({
       ...prev,
       purchase_products: [
         ...(prev?.purchase_products || []),
-        {
+        ...storedVariants.map((variant: { sku: string; size: string }) => ({
           product_id: product?._id,
           quantity: 1,
-          subtotal: product.subtotal || "0",
-          discount: product.discount || 0,
-          purchase_price: product?.pricing?.purchase_price,
-          unit_cost: product?.pricing?.purchase_price || 0,
+          subtotal: "0",
+          discount: 0,
+          purchase_price: sharedCost,
+          unit_cost: sharedCost,
           image: product?.featured_image?.src || NodataImage,
           title: product.title,
-          sku: product.sku
-        },
+          sku: variant.sku,
+          size: variant.size,
+          variants: storedVariants,
+        })),
       ],
     }));
 
@@ -277,57 +300,84 @@ const Page: React.FC = () => {
     }
   };
 
-  const decrementQuantity = (index: number) => {
-    if (!orderDetails) return;
-
-    const newItems = [...orderDetails.purchase_products];
-    const currentQuantity = Number(newItems[index].quantity) || 0;
-
-    if (currentQuantity > 1) {
-      newItems[index] = {
-        ...newItems[index],
-        quantity: currentQuantity - 1,
-      };
-
-      setOrderDetails((prevDetails: any) => ({
-        ...prevDetails,
-        purchase_products: newItems,
-      }));
-    }
-  };
-
-  const incrementQuantity = (index: number) => {
-    if (!orderDetails) return;
-
-    const newItems = [...orderDetails.purchase_products];
-    const currentQuantity = Number(newItems[index].quantity) || 0;
-
-    newItems[index] = {
-      ...newItems[index],
-      quantity: currentQuantity + 1,
-    };
-
+  const updateLineQuantity = (key: string, quantity: number | "") => {
     setOrderDetails((prevDetails: any) => ({
       ...prevDetails,
-      purchase_products: newItems,
+      purchase_products: (prevDetails?.purchase_products || []).map(
+        (item: any) =>
+          lineKey(item) === key ? { ...item, quantity } : item
+      ),
     }));
   };
 
+  const decrementQuantity = (key: string, current: number) => {
+    if (current > 1) updateLineQuantity(key, current - 1);
+  };
+
+  const incrementQuantity = (key: string, current: number) => {
+    updateLineQuantity(key, current + 1);
+  };
 
 
-  const handleEditClick = (data: any) => {
-    setItems(data);
+
+  const handleEditClick = (product: any, unitCost: number) => {
+    setItems({
+      product_id: product.product_id,
+      title: product.title,
+      unit_cost: unitCost,
+    });
     setModalMode("Edit");
     setIsModalOpen(true);
   };
 
-  const handleRemoveProduct = (productId: string) => {
+  const toggleProductSize = (group: {
+    product_id: string;
+    title: string;
+    image: string;
+    lines: any[];
+  }, variant: { sku?: string; size?: string }) => {
+    const variationKey = variant.sku || variant.size || "";
+    const existing = group.lines.find(
+      (line) => (line.sku || line.size) === variationKey
+    );
+
+    if (existing) {
+      handleRemoveProduct(lineKey(existing));
+      return;
+    }
+
+    const sample = group.lines[0];
+    const sharedCost = productUnitCosts[group.product_id];
+    setOrderDetails((prev: { purchase_products: any[] }) => ({
+      ...prev,
+      purchase_products: [
+        ...(prev?.purchase_products || []),
+        {
+          product_id: group.product_id,
+          quantity: 1,
+          subtotal: "0",
+          discount: 0,
+          purchase_price:
+            sharedCost !== undefined ? sharedCost : sample?.purchase_price || 0,
+          unit_cost:
+            sharedCost !== undefined ? sharedCost : sample?.unit_cost || 0,
+          image: sample?.image || group.image,
+          title: sample?.title || group.title,
+          sku: variant.sku || "",
+          size: variant.size || "",
+          variants: sample?.variants || [],
+        },
+      ],
+    }));
+  };
+
+  const handleRemoveProduct = (key: string) => {
     if (!orderDetails) return;
 
     setOrderDetails((prevDetails: any) => ({
       ...prevDetails,
       purchase_products: prevDetails.purchase_products.filter(
-        (item: any) => item.product_id !== productId
+        (item: any) => lineKey(item) !== key
       ),
     }));
   };
@@ -339,7 +389,7 @@ const Page: React.FC = () => {
       const unitCost =
         productUnitCosts[item.product_id] !== undefined
           ? productUnitCosts[item.product_id]
-          : item.unit_cost || 0;
+          : item.purchase_price || item.unit_cost || 0;
       const quantity = item.quantity || 0;
       const discount = item.discount || 0;
       return total + (unitCost * quantity - discount);
@@ -358,40 +408,53 @@ const Page: React.FC = () => {
     { label: "Received", value: "received" },
   ];
 
-  const handleQuantityChange = (index: number, value: string) => {
-    if (!orderDetails) return;
-
-    const newItems = [...orderDetails.purchase_products];
-
-    // empty input allow করবে
+  const handleQuantityChange = (key: string, value: string) => {
     if (value === "") {
-      newItems[index] = {
-        ...newItems[index],
-        quantity: "",
-      };
-
-      setOrderDetails((prevDetails: any) => ({
-        ...prevDetails,
-        purchase_products: newItems,
-      }));
+      updateLineQuantity(key, "");
       return;
     }
 
     const quantity = parseInt(value, 10);
-
-
     if (isNaN(quantity)) return;
-
-    newItems[index] = {
-      ...newItems[index],
-      quantity: quantity < 1 ? 1 : quantity,
-    };
-
-    setOrderDetails((prevDetails: any) => ({
-      ...prevDetails,
-      purchase_products: newItems,
-    }));
+    updateLineQuantity(key, quantity < 1 ? 1 : quantity);
   };
+
+  const groupedProducts = useMemo(() => {
+    const items = orderDetails?.purchase_products || [];
+    const groups: {
+      product_id: string;
+      title: string;
+      image: string;
+      lines: any[];
+    }[] = [];
+    const byId = new Map<string, (typeof groups)[number]>();
+
+    items.forEach((item: any) => {
+      const id = String(item.product_id);
+      let group = byId.get(id);
+      if (!group) {
+        group = {
+          product_id: id,
+          title: item.title,
+          image: item.image,
+          lines: [],
+        };
+        byId.set(id, group);
+        groups.push(group);
+      }
+      group.lines.push(item);
+    });
+
+    groups.forEach((group) => {
+      group.lines.sort((a, b) => {
+        const diff = sizeRank(a.size) - sizeRank(b.size);
+        if (diff !== 0) return diff;
+        return String(a.size || "").localeCompare(String(b.size || ""));
+      });
+    });
+
+    return groups;
+  }, [orderDetails]);
 
   const totalQuantity =
     orderDetails?.purchase_products?.reduce(
@@ -417,7 +480,7 @@ const Page: React.FC = () => {
         className="edit-order-page !pt-0 min-h-[75vh]"
       >
         <div className="edit-order-shell data-table-card glass-card">
-          <div className="edit-order-form-grid">
+          <div className="edit-order-form-grid is-pair">
             <div className="edit-order-field">
               <Controller
                 name="date"
@@ -451,7 +514,6 @@ const Page: React.FC = () => {
                     onChange={field.onChange}
                     placeholder="Select Supplier"
                     isRequired
-                    size="sm"
                   />
                 )}
               />
@@ -490,13 +552,17 @@ const Page: React.FC = () => {
                     className="edit-order-suggestions"
                   >
                     {filteredProducts.length > 0 ? (
-                      filteredProducts.map((product: any, index: number) => (
+                      filteredProducts.map((product: any, index: number) => {
+                        const variants = Array.isArray(product?.variants)
+                          ? product.variants
+                          : [];
+                        return (
                         <div
                           key={index}
-                          className="edit-order-suggestion-item"
-                          onClick={() => handleProductSelect(product)}
+                          className="edit-order-suggestion-item !items-start"
+                          onClick={() => handleSuggestionClick(product)}
                         >
-                          <div className="flex min-w-0 items-center gap-3">
+                          <div className="flex min-w-0 flex-1 items-center gap-3">
                             <Image
                               src={
                                 product?.featured_image?.src || NodataImage
@@ -509,9 +575,12 @@ const Page: React.FC = () => {
                               <p className="truncate text-sm font-medium text-app">
                                 {product?.title}
                               </p>
-                              {product?.sku ? (
+                              {variants.length ? (
                                 <p className="truncate text-xs text-app-muted">
-                                  SKU: {product.sku}
+                                  {variants
+                                    .map((variant: any) => variant.size || variant.sku)
+                                    .filter(Boolean)
+                                    .join(", ")}
                                 </p>
                               ) : null}
                             </div>
@@ -520,7 +589,8 @@ const Page: React.FC = () => {
                             ৳ {product?.pricing?.purchase_price}
                           </span>
                         </div>
-                      ))
+                        );
+                      })
                     ) : (
                       <div className="px-3 py-4 text-center text-sm text-app-muted">
                         No products found
@@ -538,7 +608,7 @@ const Page: React.FC = () => {
                     <tr>
                       <th className="is-center">#</th>
                       <th>Product</th>
-                      <th>Name</th>
+                      <th>Size</th>
                       <th>Net Unit Cost</th>
                       <th className="is-center">
                         Quantity ({totalQuantity})
@@ -548,145 +618,216 @@ const Page: React.FC = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {orderDetails?.purchase_products?.length > 0 ? (
-                      [...orderDetails.purchase_products]
-                        .reverse()
-                        .map((product: any, reversedIndex: number) => {
-                          const originalIndex =
-                            orderDetails.purchase_products.length -
-                            1 -
-                            reversedIndex;
-                          const unitCost =
-                            productUnitCosts[product.product_id] !== undefined
-                              ? productUnitCosts[product.product_id]
-                              : product?.purchase_price ||
-                                product?.unit_cost ||
-                                0;
-                          const lineSubtotal = (
-                            Number(unitCost) * Number(product.quantity) -
-                            (product.discount || 0)
-                          ).toFixed(2);
-                          const imageSrc = product?.image || NodataImage;
-
-                          return (
-                            <tr key={originalIndex}>
+                    {groupedProducts.length > 0 ? (
+                      groupedProducts.map((group, groupIndex) => {
+                        const groupQty = group.lines.reduce(
+                          (sum, line) => sum + (Number(line.quantity) || 0),
+                          0
+                        );
+                        const groupCost =
+                          productUnitCosts[group.product_id] !== undefined
+                            ? productUnitCosts[group.product_id]
+                            : group.lines[0]?.purchase_price ||
+                              group.lines[0]?.unit_cost ||
+                              0;
+                        return (
+                          <Fragment key={group.product_id}>
+                            <tr className="edit-order-group-row">
                               <td className="is-center">
-                                <span className="text-sm font-semibold text-app-muted">
-                                  {originalIndex + 1}
+                                <span className="edit-order-index">
+                                  {groupIndex + 1}
                                 </span>
                               </td>
-                              <td>
-                                <button
-                                  type="button"
-                                  className="edit-order-product-thumb"
-                                  title={product?.title || "Product image"}
-                                  onClick={() => {
-                                    if (product?.image) {
-                                      handleImageClick(product.image);
-                                    }
-                                  }}
-                                >
-                                  <Image
-                                    src={imageSrc}
-                                    width={140}
-                                    height={140}
-                                    quality={80}
-                                    alt={product?.title || "Product Image"}
-                                  />
-                                </button>
-                              </td>
-                              <td>
-                                <div className="edit-order-product-meta">
-                                  <p className="edit-order-product-title">
-                                    {product?.title}
-                                  </p>
-                                  {product?.sku ? (
-                                    <p className="edit-order-product-sub">
-                                      SKU: {product.sku}
+                              <td colSpan={2}>
+                                <div className="edit-order-group-product">
+                                  <button
+                                    type="button"
+                                    className="edit-order-product-thumb"
+                                    title={group.title || "Product image"}
+                                    onClick={() => {
+                                      if (group.image) {
+                                        handleImageClick(group.image);
+                                      }
+                                    }}
+                                  >
+                                    <Image
+                                      src={group.image || NodataImage}
+                                      width={80}
+                                      height={80}
+                                      quality={80}
+                                      alt={group.title || "Product Image"}
+                                    />
+                                  </button>
+                                  <div className="edit-order-product-meta">
+                                    <p className="edit-order-product-title">
+                                      {group.title}
                                     </p>
-                                  ) : null}
+                                    <p className="edit-order-product-sub">
+                                      {group.lines.length}{" "}
+                                      {group.lines.length === 1
+                                        ? "size"
+                                        : "sizes"}{" "}
+                                      · {groupQty} pcs
+                                    </p>
+                                    <div className="edit-order-variant-list">
+                                      {(group.lines[0]?.variants || []).map(
+                                        (variant: any) => {
+                                          const selected = group.lines.some(
+                                            (line) =>
+                                              (line.sku || line.size) ===
+                                              (variant.sku || variant.size)
+                                          );
+                                          return (
+                                            <button
+                                              key={variant.sku || variant.size}
+                                              type="button"
+                                              className={`edit-order-variant-chip${
+                                                selected ? " is-on" : ""
+                                              }`}
+                                              onClick={() =>
+                                                toggleProductSize(group, variant)
+                                              }
+                                            >
+                                              {variant.size || variant.sku}
+                                            </button>
+                                          );
+                                        }
+                                      )}
+                                    </div>
+                                  </div>
                                 </div>
                               </td>
                               <td>
-                                <div className="inline-flex items-center gap-2">
+                                <div className="edit-order-cost-group">
                                   <span className="edit-order-money is-strong">
-                                    ৳ {Number(unitCost).toFixed(2)}
+                                    ৳ {Number(groupCost).toFixed(2)}
                                   </span>
                                   <button
                                     type="button"
-                                    className="table-copy-btn !opacity-100"
-                                    aria-label="Edit unit cost"
-                                    title="Edit unit cost"
-                                    onClick={() => handleEditClick(product)}
-                                  >
-                                    <Icon
-                                      name="edit_square"
-                                      variant="outlined"
-                                      size={16}
-                                      className="text-brand"
-                                    />
-                                  </button>
-                                </div>
-                              </td>
-                              <td className="is-center">
-                                <div className="edit-order-qty">
-                                  <button
-                                    type="button"
-                                    aria-label="Decrease quantity"
+                                    className="edit-order-edit-btn"
                                     onClick={() =>
-                                      decrementQuantity(originalIndex)
-                                    }
-                                  >
-                                    <Icon name="remove" size={16} />
-                                  </button>
-                                  <input
-                                    type="number"
-                                    value={product.quantity}
-                                    onChange={(e) =>
-                                      handleQuantityChange(
-                                        originalIndex,
-                                        e.target.value,
+                                      handleEditClick(
+                                        {
+                                          product_id: group.product_id,
+                                          title: group.title,
+                                        },
+                                        Number(groupCost)
                                       )
                                     }
-                                    aria-label="Quantity"
-                                    className="!w-16"
-                                  />
-                                  <button
-                                    type="button"
-                                    aria-label="Increase quantity"
-                                    onClick={() =>
-                                      incrementQuantity(originalIndex)
-                                    }
                                   >
-                                    <Icon name="add" size={16} />
+                                    <Icon
+                                      name="edit"
+                                      variant="outlined"
+                                      size={14}
+                                    />
+                                    Edit
                                   </button>
                                 </div>
                               </td>
-                              <td className="is-right">
-                                <span className="edit-order-money is-strong">
-                                  ৳ {lineSubtotal}
+                              <td className="is-center">
+                                <span className="edit-order-money">
+                                  {groupQty}
                                 </span>
                               </td>
-                              <td className="is-center">
-                                <button
-                                  type="button"
-                                  className="edit-order-remove-btn"
-                                  aria-label="Remove product"
-                                  title="Remove product"
-                                  onClick={() =>
-                                    handleRemoveProduct(product?.product_id)
-                                  }
-                                >
-                                  <Icon
-                                    name="delete"
-                                    variant="outlined"
-                                    size={18}
-                                  />
-                                </button>
-                              </td>
+                              <td />
+                              <td />
                             </tr>
-                          );
-                        })
+                            {group.lines.map((product) => {
+                              const key = lineKey(product);
+                              const unitCost =
+                                productUnitCosts[product.product_id] !==
+                                undefined
+                                  ? productUnitCosts[product.product_id]
+                                  : product?.purchase_price ||
+                                    product?.unit_cost ||
+                                    0;
+                              const lineSubtotal = (
+                                Number(unitCost) * Number(product.quantity) -
+                                (product.discount || 0)
+                              ).toFixed(2);
+                              const quantity = Number(product.quantity) || 0;
+
+                              return (
+                                <tr key={key} className="edit-order-size-row">
+                                  <td />
+                                  <td />
+                                  <td>
+                                    <div className="edit-order-product-tags">
+                                      <span className="edit-order-tag is-size">
+                                        {product.size || "—"}
+                                      </span>
+                                      {product.sku ? (
+                                        <span className="edit-order-tag">
+                                          {product.sku}
+                                        </span>
+                                      ) : null}
+                                    </div>
+                                  </td>
+                                  <td>
+                                    <span className="edit-order-money">
+                                      ৳ {Number(unitCost).toFixed(2)}
+                                    </span>
+                                  </td>
+                                  <td className="is-center">
+                                    <div className="edit-order-qty">
+                                      <button
+                                        type="button"
+                                        aria-label="Decrease quantity"
+                                        onClick={() =>
+                                          decrementQuantity(key, quantity)
+                                        }
+                                      >
+                                        <Icon name="remove" size={16} />
+                                      </button>
+                                      <input
+                                        type="number"
+                                        value={product.quantity}
+                                        onChange={(e) =>
+                                          handleQuantityChange(
+                                            key,
+                                            e.target.value
+                                          )
+                                        }
+                                        aria-label="Quantity"
+                                        className="!w-16"
+                                      />
+                                      <button
+                                        type="button"
+                                        aria-label="Increase quantity"
+                                        onClick={() =>
+                                          incrementQuantity(key, quantity)
+                                        }
+                                      >
+                                        <Icon name="add" size={16} />
+                                      </button>
+                                    </div>
+                                  </td>
+                                  <td className="is-right">
+                                    <span className="edit-order-money is-strong">
+                                      ৳ {lineSubtotal}
+                                    </span>
+                                  </td>
+                                  <td className="is-center">
+                                    <button
+                                      type="button"
+                                      className="edit-order-remove-btn"
+                                      aria-label="Remove size"
+                                      title="Remove size"
+                                      onClick={() => handleRemoveProduct(key)}
+                                    >
+                                      <Icon
+                                        name="delete"
+                                        variant="outlined"
+                                        size={18}
+                                      />
+                                    </button>
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </Fragment>
+                        );
+                      })
                     ) : (
                       <tr>
                         <td colSpan={7} className="edit-order-empty">
@@ -721,7 +862,7 @@ const Page: React.FC = () => {
             </div>
           </div>
 
-          <div className="edit-order-form-grid mt-5">
+          <div className="edit-order-form-grid is-fields">
             <div className="edit-order-field">
               <Input
                 label="Shipping"
@@ -729,6 +870,7 @@ const Page: React.FC = () => {
                 errorText={errors?.shipping?.message}
                 type="number"
                 placeholder="Enter shipping amount"
+                noMargin
               />
             </div>
             <div className="edit-order-field">
@@ -738,6 +880,7 @@ const Page: React.FC = () => {
                 errorText={errors?.discount?.message}
                 type="number"
                 placeholder="Enter discount amount"
+                noMargin
               />
             </div>
             <div className="edit-order-field">
@@ -747,6 +890,7 @@ const Page: React.FC = () => {
                 errorText={errors?.document?.message}
                 type="text"
                 placeholder="Enter document reference"
+                noMargin
               />
             </div>
             <div className="edit-order-field">
@@ -767,18 +911,18 @@ const Page: React.FC = () => {
                     onChange={field.onChange}
                     placeholder="Select Status"
                     isRequired
-                    size="sm"
                   />
                 )}
               />
             </div>
-            <div className="edit-order-field xl:col-span-2">
+            <div className="edit-order-field is-wide">
               <Input
                 label="Note"
                 registerProperty={register("note")}
                 errorText={errors?.note?.message}
                 type="textarea"
                 placeholder="Enter note"
+                noMargin
               />
             </div>
           </div>

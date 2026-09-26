@@ -31,11 +31,6 @@ export const dashBoardService = {
       `/dashboard/olevs` + queryStringMapper(queryParams)
     );
   },
-  getWholesale: async (queryParams?: any): Promise<any> => {
-    return await apiIns.get(
-      `/dashboard/wholesale` + queryStringMapper(queryParams)
-    );
-  },
   getOrderSkipTwentySummary: async (queryParams?: any): Promise<any> => {
     return await apiIns.get(
       `/dashboard/order-skip-twenty-summary` + queryStringMapper(queryParams)

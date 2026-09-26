@@ -7,7 +7,7 @@ import { ToastService } from "@admin/utils/toastr.service";
 import Image from "next/image";
 import Icon from "@admin/components/core/Icon/Icon";
 import userLogo from "@admin/assets/images/user.png";
-import AdminBrandLogo from "@admin/components/core/Brand/AdminBrandLogo";
+import rongonaaLogo from "@/@assets/rongonaLogo/rongonaa.png";
 import UserInfoModal from "./UserInfoModal";
 import LogOutLogo from "@admin/assets/images/logOut.png";
 import { useGlobalContext } from "@admin/context/GlobalContext";
@@ -562,8 +562,16 @@ export default function Header() {
           <Link
             href={isAuthenticated ? "/admin/dashboard/all" : "/admin"}
             className="flex items-center"
+            aria-label="Rangonaa"
           >
-            <AdminBrandLogo size="sm" variant="green" />
+            <Image
+              src={rongonaaLogo}
+              alt="Rangonaa"
+              width={950}
+              height={253}
+              priority
+              className="h-10 w-auto object-contain object-left"
+            />
           </Link>
         </div>
 

@@ -211,12 +211,10 @@ const ProductsPageContent: React.FC = () => {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        popupRef.current &&
-        !popupRef.current.contains(event.target as Node)
-      ) {
-        setPopupIndex(null);
-      }
+      const target = event.target as HTMLElement;
+      if (popupRef.current?.contains(target)) return;
+      if (target.closest?.(".data-table-action-btn")) return;
+      setPopupIndex(null);
     };
 
     if (popupIndex !== null) {

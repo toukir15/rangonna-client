@@ -1,4 +1,5 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { Tbody, Td, Th, Thead, Tr } from "@admin/components/Table/Table";
 import TableWrapper from "@admin/components/Table/TableWrapper";
 import Image from "next/image";
@@ -55,6 +56,39 @@ const ProductTable: React.FC = () => {
   } = useContext(ProductsContext);
   const [modalOpen, setModalOpen] = useState(false);
   const [productId, setProductId] = useState<string>();
+  const actionBtnRefs = useRef<Record<number, HTMLButtonElement | null>>({});
+  const [menuPos, setMenuPos] = useState<{
+    top?: number;
+    bottom?: number;
+    right: number;
+  } | null>(null);
+
+  useEffect(() => {
+    if (popupIndex === null) {
+      setMenuPos(null);
+      return;
+    }
+
+    const place = () => {
+      const button = actionBtnRefs.current[popupIndex];
+      if (!button) return;
+      const rect = button.getBoundingClientRect();
+      const openUp = window.innerHeight - rect.bottom < 160;
+      setMenuPos({
+        top: openUp ? undefined : rect.bottom + 6,
+        bottom: openUp ? window.innerHeight - rect.top + 6 : undefined,
+        right: Math.max(12, window.innerWidth - rect.right),
+      });
+    };
+
+    place();
+    window.addEventListener("resize", place);
+    window.addEventListener("scroll", place, true);
+    return () => {
+      window.removeEventListener("resize", place);
+      window.removeEventListener("scroll", place, true);
+    };
+  }, [popupIndex]);
 
   const allVisibleIds = (productData || [])
     .map((p: IProduct) => p?._id)
@@ -258,56 +292,17 @@ const ProductTable: React.FC = () => {
                   )}
                 </Td>
                 <Td className="is-right">
-                  <div className="relative max-w-40">
-                    <button
-                      type="button"
-                      className="data-table-action-btn"
-                      aria-expanded={popupIndex === index}
-                      onClick={() => togglePopup(index)}
-                    >
-                      <Icon name="more_vert" variant="outlined" size={18} />
-                    </button>
-                    {popupIndex === index && (
-                      <div
-                        ref={popupRef}
-                        className="absolute top-9 right-0 z-20 min-w-40 rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-1.5 shadow-[var(--shadow-soft)]"
-                      >
-                        {hasPermission(permissionList, "product_edit") && (
-                          <button
-                            type="button"
-                            className="block w-full rounded-lg px-3 py-2 text-left text-sm text-app hover:bg-[var(--bg-hover)]"
-                            onClick={() => {
-                              router.push(
-                                `/admin/product/products/edit/${item?._id}`,
-                              );
-                            }}
-                          >
-                            Edit
-                          </button>
-                        )}
-                        {hasPermission(permissionList, "product_delete") && (
-                          <button
-                            type="button"
-                            className="block w-full rounded-lg px-3 py-2 text-left text-sm text-app hover:bg-[var(--bg-hover)]"
-                            onClick={() => handleDelete(item?._id)}
-                          >
-                            Delete
-                          </button>
-                        )}
-                        <button
-                          type="button"
-                          className="block w-full rounded-lg px-3 py-2 text-left text-sm text-app hover:bg-[var(--bg-hover)]"
-                          onClick={() => {
-                            router.push(
-                              `/admin/product/products/duplicate/${item?._id}`,
-                            );
-                          }}
-                        >
-                          Duplicate
-                        </button>
-                      </div>
-                    )}
-                  </div>
+                  <button
+                    ref={(node) => {
+                      actionBtnRefs.current[index] = node;
+                    }}
+                    type="button"
+                    className="data-table-action-btn"
+                    aria-expanded={popupIndex === index}
+                    onClick={() => togglePopup(index)}
+                  >
+                    <Icon name="more_vert" variant="outlined" size={18} />
+                  </button>
                 </Td>
               </Tr>
             );
@@ -319,6 +314,55 @@ const ProductTable: React.FC = () => {
         setIsModalOpen={setModalOpen}
         productId={productId}
       />
+      {popupIndex !== null &&
+        menuPos &&
+        productData?.[popupIndex] &&
+        createPortal(
+          <div
+            ref={popupRef}
+            className="fixed z-[200] min-w-40 rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-1.5 shadow-[var(--shadow-soft)]"
+            style={{
+              top: menuPos.top,
+              bottom: menuPos.bottom,
+              right: menuPos.right,
+            }}
+          >
+            {hasPermission(permissionList, "product_edit") && (
+              <button
+                type="button"
+                className="block w-full rounded-lg px-3 py-2 text-left text-sm text-app hover:bg-[var(--bg-hover)]"
+                onClick={() => {
+                  router.push(
+                    `/admin/product/products/edit/${productData[popupIndex]?._id}`
+                  );
+                }}
+              >
+                Edit
+              </button>
+            )}
+            {hasPermission(permissionList, "product_delete") && (
+              <button
+                type="button"
+                className="block w-full rounded-lg px-3 py-2 text-left text-sm text-app hover:bg-[var(--bg-hover)]"
+                onClick={() => handleDelete(productData[popupIndex]?._id)}
+              >
+                Delete
+              </button>
+            )}
+            <button
+              type="button"
+              className="block w-full rounded-lg px-3 py-2 text-left text-sm text-app hover:bg-[var(--bg-hover)]"
+              onClick={() => {
+                router.push(
+                  `/admin/product/products/duplicate/${productData[popupIndex]?._id}`
+                );
+              }}
+            >
+              Duplicate
+            </button>
+          </div>,
+          document.body
+        )}
     </div>
   );
 };

@@ -40,7 +40,6 @@ const ORDER_LIST_FIELDS =
 
 const ALL_SOURCE_OPTIONS = [
   { value: "all", label: "All Source" },
-  { value: "showroom", label: "Showroom" },
   { value: "facebook", label: "Facebook" },
   { value: "whatsapp", label: "Whatsapp" },
   { value: "incomplete", label: "Incomplete" },

@@ -158,6 +158,8 @@ const Page: React.FC = () => {
             subtotal: item?.subtotal,
             discount: item?.discount,
             unit_cost: item?.unit_cost,
+            size: item?.size || "",
+            sku: item?.sku || "",
             image: item?.product?.featured_image?.src || NodataImage.src,
             title: item?.product?.title,
           };
@@ -227,6 +229,8 @@ const Page: React.FC = () => {
         quantity: product?.quantity,
         discount: product?.discount,
         unit_cost: product?.unit_cost,
+        size: product?.size || "",
+        sku: product?.sku || "",
       })
     );
 
@@ -327,15 +331,26 @@ const Page: React.FC = () => {
       });
   };
 
-  const isProductAlreadyAdded = (productId: string) => {
+  const isProductAlreadyAdded = (productId: string, variationKey: string) => {
     return orderDetails?.purchase_products?.some(
-      (item: any) => item?.product_id === productId
+      (item: any) =>
+        item?.product_id === productId &&
+        (item?.sku || item?.size || "") === variationKey
     );
   };
 
-  const handleProductSelect = (product: any) => {
-    if (isProductAlreadyAdded(product?._id)) {
-      ToastService.warning("This product is already added to the list");
+  const handleProductSelect = (product: any, variant?: any) => {
+    const variants = Array.isArray(product?.variants) ? product.variants : [];
+    const selected = variant || (variants.length === 1 ? variants[0] : null);
+
+    if (!selected?.sku && !selected?.size) {
+      ToastService.warning("Select a variation");
+      return;
+    }
+
+    const variationKey = selected.sku || selected.size;
+    if (isProductAlreadyAdded(product?._id, variationKey)) {
+      ToastService.warning("This variation is already added");
       return;
     }
 
@@ -350,6 +365,8 @@ const Page: React.FC = () => {
           unit_cost: product.pricing.purchase_price,
           image: product.featured_image?.src || NodataImage.src,
           title: product.title,
+          sku: selected.sku || "",
+          size: selected.size || "",
         },
       ],
     }));
@@ -671,10 +688,41 @@ const Page: React.FC = () => {
                         return (
                           <div
                             key={index}
-                            className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer flex justify-between items-center dark:text-gray-300"
-                            onClick={() => handleProductSelect(product)}
+                            className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer flex justify-between items-center gap-3 dark:text-gray-300"
+                            onClick={() => {
+                              const variants = product?.variants || [];
+                              if (variants.length === 1) {
+                                handleProductSelect(product, variants[0]);
+                              } else if (!variants.length) {
+                                ToastService.warning(
+                                  "This product has no variation"
+                                );
+                              }
+                            }}
                           >
-                            <span>{product?.title}</span>
+                            <div className="min-w-0">
+                              <span>{product?.title}</span>
+                              {Array.isArray(product?.variants) &&
+                              product.variants.length > 1 ? (
+                                <div
+                                  className="edit-order-variant-list"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  {product.variants.map((variant: any) => (
+                                    <button
+                                      key={variant.sku || variant.size}
+                                      type="button"
+                                      className="edit-order-variant-chip"
+                                      onClick={() =>
+                                        handleProductSelect(product, variant)
+                                      }
+                                    >
+                                      {variant.size || variant.sku}
+                                    </button>
+                                  ))}
+                                </div>
+                              ) : null}
+                            </div>
                             <span className="font-semibold">
                               BDT {product?.pricing?.purchase_price?.toFixed(2)}
                             </span>
@@ -765,6 +813,7 @@ const Page: React.FC = () => {
                             </td>
                             <td className="border dark:border-gray-600 text-sm font-semibold px-4 py-2 dark:text-gray-400">
                               {product?.title}
+                              {product?.size ? ` (${product.size})` : ""}
                             </td>
                             <td className="border dark:border-gray-600 text-sm font-semibold px-4 py-2 dark:text-gray-400">
                               <span className="flex items-center gap-4">

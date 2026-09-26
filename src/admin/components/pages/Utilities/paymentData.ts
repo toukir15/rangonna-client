@@ -18,7 +18,6 @@ export const depositSourceOptions = [
   { value: "customer-payment", label: "Customer Payment" },
   { value: "purchase-return-payment", label: "Purchase Return Payment" },
   { value: "report-issue-payment", label: "Report Issue Payment" },
-  { value: "wholesale-order-payment", label: "Wholesale Order payment" },
 ];
 
 export const expenseSourceOptions = [

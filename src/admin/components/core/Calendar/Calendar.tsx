@@ -279,6 +279,7 @@ import React, { FC, useState, useEffect, useMemo } from "react";
 import { DateRange, RangeKeyDict } from "react-date-range";
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
+import Icon from "../Icon/Icon";
 
 interface CalendarProps {
   dateRange?: { startDate: Date; endDate: Date; label?: string };
@@ -505,31 +506,29 @@ const Calendar: FC<CalendarProps> = ({
   const currentYear = new Date().getFullYear();
 
   return (
-    <div className="calendar-container md:flex gap-1">
-      <div className="lg:border-r dark:border-r-gray-500 px-4 w-full">
+    <div className="date-filter-body">
+      <div className="date-filter-presets" role="listbox" aria-label="Quick ranges">
         {customRanges.map((opt) => {
           const isSelected = selectedLabel === opt.label;
 
           return (
-            <div
+            <button
               key={opt.label}
+              type="button"
+              role="option"
+              aria-selected={isSelected}
               onClick={() => applyRange(opt.startDate, opt.endDate, opt.label)}
-              className={`w-full mb-1 rounded cursor-pointer transition-colors ${isSelected
-                ? "bg-blue-500 text-white "
-                : "hover:bg-gray-100 text-gray-700 dark:text-gray-300"
-                }`}
+              className={`date-filter-preset ${isSelected ? "is-selected" : ""}`}
             >
-              <p className="text-xs px-3 py-1 text-nowrap md:mt-3 mt-1">
-                {opt.label}
-              </p>
-            </div>
+              <span>{opt.label}</span>
+              {isSelected && <Icon name="check" size={16} />}
+            </button>
           );
         })}
       </div>
 
       <div
-        className={`relative hidden md:block ${!isCalendarEnabled ? "!hidden" : ""
-          }`}
+        className={`date-filter-calendar ${!isCalendarEnabled ? "is-hidden" : ""}`}
       >
         <DateRange
           ranges={[range]}
@@ -540,12 +539,7 @@ const Calendar: FC<CalendarProps> = ({
           initialFocusedRange={[0, 0]}
           minDate={new Date("2020-01-01")}
           maxDate={new Date(`${currentYear}-12-31`)}
-          className="w-[500px] dark:text-white dark:bg-slate-800"
         />
-
-        {!isCalendarEnabled && (
-          <div className="absolute inset-0 z-10 cursor-not-allowed" />
-        )}
       </div>
     </div>
   );

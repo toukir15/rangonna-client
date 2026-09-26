@@ -80,11 +80,6 @@ export const sideBarItems: ISideBarItems[] = [
         icon: "assignment_return",
       },
       {
-        href: "/admin/orders/wholesale-return",
-        label: "Wholesale Return",
-        icon: "low_priority",
-      },
-      {
         href: "/admin/orders/sms",
         label: "SMS",
         icon: "sms",
@@ -1261,7 +1256,6 @@ export const routePermissionMap: { [key: string]: string | string[] } = {
   "/fulfillment": ["order_fulfillment_view"],
   "/orders/return": ["order_return_view"],
   "/orders/refund": ["order_refund_view"],
-  "/orders/wholesale-return": ["order_wholesale_return_view"],
   "/orders/incompleate": ["order_incomplete_view"],
   "/orders/all-order": ["order_all_view"],
 };

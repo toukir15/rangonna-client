@@ -8,7 +8,6 @@ export const labelPermissionMap: Record<string, string[]> = {
     "dashboard_timeverse_view",
     "dashboard_bikreta_view",
     "dashboard_olevs_view",
-    "dashboard_wholesale_view",
     "dashboard_order_skip_twenty_summary_view",
     "dashboard_last_sixty_days_view",
     "showroom_view",
@@ -21,7 +20,6 @@ export const labelPermissionMap: Record<string, string[]> = {
   "dashboard/bikreta": ["dashboard_bikreta_view"],
   "dashboard/showroom": ["showroom_view"],
   "dashboard/olevs": ["dashboard_olevs_view"],
-  "dashboard/wholesale": ["dashboard_wholesale_view"],
   "dashboard/showroomreport": ["showroom_view_admin"],
   "dashboard/report": ["dashboard_order_skip_twenty_summary_view"],
 
@@ -32,14 +30,11 @@ export const labelPermissionMap: Record<string, string[]> = {
     "order_timeverse_view",
     "order_bikreta_view",
     "order_olevs_view",
-    "order_wholesale_view",
     "order_incomplete_view",
     "order_edit",
     "order_view",
     "order_return_view",
     "order_return_create",
-    "order_wholesale_return_view",
-    "order_wholesale_return_create",
     "order_showroom_view",
     "order_refund_view",
     "order_delay_delivery_view",
@@ -59,14 +54,9 @@ export const labelPermissionMap: Record<string, string[]> = {
   "orders/edit": ["order_edit"],
   "orders/showroom": ["order_showroom_view"],
   "orders/sslcommerz": ["sslcommerz_transaction_view"],
-  "orders/wholesaleorders": [
-    "order_wholesale_view",
-    // "order_wholesale_edit"
-  ],
   "orders/incompleate": ["order_incomplete_view"],
   "orders/return": ["order_return_view"],
   "orders/delaydelivery": ["order_delay_delivery_view"],
-  "orders/wholesalereturn": ["order_wholesale_return_view"],
   "orders/refund": ["order_refund_view"],
   "orders/sms": ["team_user_dashboard_view"],
   // ===== Content =====
@@ -143,21 +133,10 @@ export const labelPermissionMap: Record<string, string[]> = {
   // fraud detection
   frauddetection: ["fraud_detection_log_view"],
 
-  // ===== Wholesale =====
-
-  wholesale: [
-    "wholesale_user_view",
-    "wholesale_user_edit",
-    "wholesale_user_report_view",
-  ],
-  "wholesale/user": ["wholesale_user_view", "wholesale_user_edit"],
-  "wholesale/duereport": ["wholesale_user_report_view"],
-
   // ===== Product =====
 
   product: [
     "product_view",
-    "wholesale_product_view",
     "product_pricing_view",
     "product_report_view",
     "product_stock_logs_view",
@@ -170,7 +149,6 @@ export const labelPermissionMap: Record<string, string[]> = {
     "product_category_report_view",
   ],
   "product/products": ["product_view"],
-  "product/wholesale": ["wholesale_product_view"],
   "product/pricing": ["product_pricing_view"],
   "product/report": ["product_report_view"],
   "product/stocklogs": ["product_stock_logs_view"],

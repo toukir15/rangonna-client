@@ -1,6 +1,6 @@
 "use client";
 import React, { useContext, useState } from "react";
-import { ContentsContext } from "@/app/admin/contents/page";
+import { ContentsContext } from "./contents.context";
 import TemplateCard from "./TampleateCard";
 
 const ContentCard = () => {
@@ -48,17 +48,34 @@ const ContentCard = () => {
   };
 
   if (tableLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="px-5 py-10 text-sm font-medium text-[var(--text-muted)]">
+        Loading contents...
+      </div>
+    );
+  }
+
+  if (!contentsData?.length) {
+    return (
+      <div className="px-5 py-16 text-center">
+        <p className="text-sm font-semibold text-[var(--text-primary)]">
+          No contents yet
+        </p>
+        <p className="mt-1 text-sm text-[var(--text-muted)]">
+          Add a content block to show it here.
+        </p>
+      </div>
+    );
   }
 
   return (
-    <div className="grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4">
-      {contentsData?.map((item: any, index: number) => (
+    <div className="grid grid-cols-1 gap-4 p-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      {contentsData.map((item: any, index: number) => (
         <TemplateCard
           key={item?._id || index}
           title={item?.title}
-          subtitle={item?.subtitle}
-          copyText={item?.copyText || item?.description || ""}
+          subtitle={item?.sub_title || item?.subtitle}
+          copyText={item?.description || item?.copyText || ""}
           onEdit={() => handleEditClick(item)}
           draggable={isPriorityEditMode}
           onDragStart={() => handleDragStart(index)}

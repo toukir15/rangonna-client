@@ -101,6 +101,9 @@ export const sortData: ISideBarItems[] = [
 export const categoryData: ISideBarItems[] = [
   { name: "bridal", label: "Bridal", rightLabel: "(1)" },
   { name: "glass-bangles", label: "Glass Bangles", rightLabel: "(1)" },
+  { name: "ghungroo-glass-bangles", label: "Ghungroo Glass Bangles", rightLabel: "(1)" },
+  { name: "metal-bangles", label: "Metal Bangles", rightLabel: "(1)" },
+  { name: "royale-bangles", label: "Royale Bangles", rightLabel: "(1)" },
   { name: "luxury", label: "Luxury", rightLabel: "(1)" },
   { name: "festival", label: "Festival", rightLabel: "(1)" },
   { name: "premium-churi", label: "Premium Churi", rightLabel: "(1)" },

@@ -173,7 +173,6 @@ const PaymentModal = ({
   }, [isModalOpen]);
 
   const depositSourceOptions = [
-    { label: "Wholesale", value: DepositSource.WHOLESALE },
     { label: "Pathao", value: DepositSource.PATHAO },
     { label: "Bkash", value: DepositSource.BKASH },
     { label: "SSL", value: DepositSource.SSL },

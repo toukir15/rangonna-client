@@ -65,7 +65,39 @@ const ProductReportModal = ({
             <ProductReportSkeleton />
           ) : (
             <div className="w-full overflow-x-auto">
-              {productStatus?.data?.length > 0 ? (
+              {productStatus?.sizes?.length > 0 ? (
+                <table className="w-full border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+                  <thead className="bg-gray-100 dark:bg-gray-800">
+                    <tr>
+                      <th className="text-left px-4 py-2 text-sm font-semibold uppercase">
+                        Size
+                      </th>
+                      <th className="text-left px-4 py-2 text-sm font-semibold uppercase">
+                        Quantity
+                      </th>
+                      <th className="text-left px-4 py-2 text-sm font-semibold uppercase">
+                        Active Orders
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {productStatus.sizes.map((item: any, index: number) => (
+                      <tr
+                        key={item?.sku || item?.size || index}
+                        className="border-t border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                      >
+                        <td className="px-4 py-2 font-medium">
+                          {item?.size || "N/A"}
+                        </td>
+                        <td className="px-4 py-2">{item?.quantity || 0}</td>
+                        <td className="px-4 py-2">
+                          {item?.active_orders_quantity || 0}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              ) : productStatus?.data?.length > 0 ? (
                 <table className="w-full border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
                   <thead className="bg-gray-100 dark:bg-gray-800">
                     <tr>

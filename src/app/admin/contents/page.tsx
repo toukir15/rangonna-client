@@ -1,28 +1,19 @@
 "use client";
 import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 
-import dynamic from "next/dynamic";
 import Icon from "@admin/components/core/Icon/Icon";
-import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
-import React, { useState, useEffect, JSX, createContext } from "react";
+import AuthLayout from "@admin/layouts/AuthLayout";
+import React, { useState, useEffect, JSX } from "react";
 import Button from "@admin/components/core/Button/Button";
 import { ToastService } from "@admin/utils/toastr.service";
 import { useGlobalContext } from "@admin/context/GlobalContext";
 import { ContentsService } from "@admin/@services/apis/Contents/Contents";
-
-const Alert = dynamic(() => import("@admin/components/core/Aleart/Aleart"), {
-  ssr: false,
-});
-const ContentsModal = dynamic(
-  () => import("@admin/components/pages/Contents/ContentsModal"),
-  { ssr: false },
-);
-const ContentCard = dynamic(
-  () => import("@admin/components/pages/Contents/ContentCard"),
-  { ssr: false },
-);
-
-export const ContentsContext = createContext<any>({});
+import Alert from "@admin/components/core/Aleart/Aleart";
+import ContentsModal from "@admin/components/pages/Contents/ContentsModal";
+import ContentCard from "@admin/components/pages/Contents/ContentCard";
+import { ContentsContext } from "@admin/components/pages/Contents/contents.context";
+import PageHeader from "@admin/components/layout/PageHeader";
+import TableRefreshButton from "@admin/components/Table/TableRefreshButton";
 
 type IPriorityPayload = {
   _id: string;
@@ -181,6 +172,10 @@ const Page = (): JSX.Element => {
   useTableRefreshRegister(getContentsList);
 
 
+  const visibleContents = isPriorityEditMode
+    ? priorityContentsData
+    : contentsData;
+
   return (
     <AuthLayout>
       <Alert
@@ -205,69 +200,84 @@ const Page = (): JSX.Element => {
         </div>
       </Alert>
 
-      <NoScrollLayout>
-        <div className="flex items-center px-3 pt-3 mb-2 flex-wrap gap-2">
-          <h2 className="text-xl font-semibold dark:text-gray-400">Contents</h2>
-
-          <div className="flex gap-2 flex-wrap">
-            {permissionList.includes("setting_priority_edit") && (
-              <Button
-                className={`flex items-center !py-1.5 !px-2 ${
-                  isPriorityEditMode ? "bg-orange-500" : "bg-indigo-500"
-                }`}
-                onClick={handleTogglePriorityEditMode}
-              >
-                <Icon name="filter_list" />
-                <span className="">{isPriorityEditMode ? "Cancel" : ""}</span>
-              </Button>
-            )}
-
-            {permissionList.includes("content_create") &&
-              !isPriorityEditMode && (
+      <div className="px-3 pt-3 pb-4">
+        <PageHeader
+          title="Contents"
+          action={
+            <div className="flex flex-wrap items-center gap-2">
+              {permissionList.includes("content_create") &&
+                !isPriorityEditMode && (
+                  <Button
+                    className="btn-primary btn-primary-inline inline-flex items-center gap-2"
+                    onClick={handleAddClick}
+                  >
+                    <Icon name="add" variant="outlined" size={16} />
+                    Add Contents
+                  </Button>
+                )}
+              {isPriorityEditMode && (
                 <Button
-                  className="btn-primary flex items-center !py-1.5 !px-4"
-                  onClick={handleAddClick}
+                  className="btn-primary btn-primary-inline inline-flex items-center gap-2"
+                  onClick={handlePriorityUpdate}
+                  disabled={priorityUpdateLoading}
                 >
-                  <span className="ml-1">Add Contents</span>
+                  <Icon name="assignment_turned_in" size={16} />
+                  {priorityUpdateLoading ? "Updating..." : "Update order"}
                 </Button>
               )}
+            </div>
+          }
+        />
 
-            {isPriorityEditMode && (
-              <Button
-                className="btn-primary flex items-center !px-4"
-                onClick={handlePriorityUpdate}
-                disabled={priorityUpdateLoading}
-              >
-                <Icon name="assignment_turned_in" className="me-1" />{" "}
-                {priorityUpdateLoading ? "Updating..." : "Update"}
-              </Button>
-            )}
+        <div className="data-table-card glass-card rounded-2xl">
+          <div className="premium-table-toolbar">
+            <p className="premium-table-toolbar-title">Content records</p>
+            <p className="premium-table-toolbar-meta">
+              {visibleContents.length.toLocaleString()}{" "}
+              {visibleContents.length === 1 ? "item" : "items"}
+            </p>
           </div>
-        </div>
-      </NoScrollLayout>
+          <div className="data-table-toolbar">
+            <div className="data-table-toolbar-start">
+              {permissionList.includes("setting_priority_edit") && (
+                <button
+                  type="button"
+                  className="data-table-refresh"
+                  onClick={handleTogglePriorityEditMode}
+                >
+                  <Icon name={isPriorityEditMode ? "close" : "drag_indicator"} size={16} />
+                  {isPriorityEditMode ? "Cancel reorder" : "Reorder"}
+                </button>
+              )}
+            </div>
+            <div className="data-table-toolbar-end">
+              <TableRefreshButton
+                onRefresh={getContentsList}
+                isLoading={tableLoading}
+              />
+            </div>
+          </div>
 
-      <div className="min-h-[75vh] px-3">
-        <ContentsContext.Provider
-          value={{
-            contentsData: isPriorityEditMode
-              ? priorityContentsData
-              : contentsData,
-            tableLoading,
-            handleEditClick,
-            handleRemove,
-            isModalOpen,
-            setIsModalOpen,
-            modalMode,
-            items,
-            getContentsList,
-            setItems,
-            isPriorityEditMode,
-            setPriorityContentsData,
-          }}
-        >
-          <ContentsModal />
-          <ContentCard />
-        </ContentsContext.Provider>
+          <ContentsContext.Provider
+            value={{
+              contentsData: visibleContents,
+              tableLoading,
+              handleEditClick,
+              handleRemove,
+              isModalOpen,
+              setIsModalOpen,
+              modalMode,
+              items,
+              getContentsList,
+              setItems,
+              isPriorityEditMode,
+              setPriorityContentsData,
+            }}
+          >
+            <ContentsModal />
+            <ContentCard />
+          </ContentsContext.Provider>
+        </div>
       </div>
     </AuthLayout>
   );

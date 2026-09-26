@@ -128,19 +128,19 @@ const Page: React.FC = () => {
     },
     {
       label: "Transit Order",
-      value: `${summaryData?.transit_quantity + summaryData?.wholesale_transit_quantity || 0}`,
+      value: `${summaryData?.transit_quantity || 0}`,
       icon: "local_shipping", // delivery truck
       color: "text-blue-500",
     },
     {
       label: "Total Received",
-      value: `${summaryData?.purchased_quantity + summaryData?.wholesale_returned_quantity + summaryData?.partial_released_quantity + summaryData?.stock_transfer_received_quantity || 0}`,
+      value: `${summaryData?.purchased_quantity + summaryData?.partial_released_quantity || 0}`,
       icon: "download_done", // received items
       color: "text-green-500",
     },
     {
       label: "Release Order",
-      value: `${summaryData?.released_quantity - summaryData?.partial_released_quantity + summaryData?.stock_transfer_released_quantity + summaryData?.wholesale_released_quantity || 0}`,
+      value: `${summaryData?.released_quantity - summaryData?.partial_released_quantity || 0}`,
       icon: "outbound", // outgoing items
       color: "text-red-500",
     },
@@ -262,18 +262,11 @@ const Page: React.FC = () => {
 
                   <Td><span className="table-amount">{report?.remaining_stock}</span></Td>
 
-                  <Td><span className="table-amount">{report?.transit_quantity +
-                      report?.wholesale_transit_quantity}</span></Td>
+                  <Td><span className="table-amount">{report?.transit_quantity}</span></Td>
                   <Td><span className="table-amount">{report?.purchased_quantity +
-                      report?.wholesale_returned_quantity +
-                      report?.partial_released_quantity +
-                      report?.stock_transfer_received_quantity -
-                      report?.stock_transfer_released_quantity}</span></Td>
+                      report?.partial_released_quantity}</span></Td>
                   <Td><span className="table-amount">{report?.released_quantity -
-                      report?.partial_released_quantity +
-                      report?.wholesale_released_quantity +
-                      report?.stock_transfer_received_quantity -
-                      report?.stock_transfer_released_quantity}</span></Td>
+                      report?.partial_released_quantity}</span></Td>
 
                   <Td className="ps-10">
                     <Link

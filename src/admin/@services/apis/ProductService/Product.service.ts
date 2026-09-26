@@ -15,15 +15,6 @@ export const productService = {
     );
   },
 
-  getProductWholesaleGlobalSuggestion: async (
-    queryParams?: any,
-  ): Promise<any> => {
-    return await apiIns.get(
-      `/wholesale-product/wholesale-product-suggestion` +
-        queryStringMapper(queryParams),
-    );
-  },
-
   updateProductItem: async (orderId: any, payload: any): Promise<any> =>
     await apiIns.patch("/order/add-line-item/" + orderId, payload),
 
@@ -71,12 +62,6 @@ export const productService = {
   getAllOrderSuggestion: async (queryParams?: any): Promise<any> => {
     return await apiIns.get(
       `/order/order-suggestion` + queryStringMapper(queryParams),
-    );
-  },
-  getProductWholesaleSuggestion: async (queryParams?: any): Promise<any> => {
-    return await apiIns.get(
-      `/wholesale-product/wholesale-return-product-suggestion` +
-        queryStringMapper(queryParams),
     );
   },
   getProductExternal: async (queryParams?: any): Promise<any> => {

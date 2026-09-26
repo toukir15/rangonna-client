@@ -1,8 +1,8 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import Icon from "../Icon/Icon";
 import Calendar from "./Calendar";
-import Button from "../Button/Button";
 
 interface IDateRange {
   startDate: Date;
@@ -15,10 +15,26 @@ interface IProps {
   className?: string;
 }
 
+const formatRangeDate = (date: Date) =>
+  date.toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+
+const formatRangeSummary = (range: IDateRange) => {
+  const start = formatRangeDate(range.startDate);
+  const end = formatRangeDate(range.endDate);
+  return start === end ? start : `${start} – ${end}`;
+};
+
 const CalendarRange: React.FC<IProps> = ({ range, setRange, className }) => {
   const [isCalendarVisible, setIsCalendarVisible] = useState(false);
   const [tempRange, setTempRange] = useState<IDateRange>(range);
+  const [panelStyle, setPanelStyle] = useState<React.CSSProperties>({});
   const calendarRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     setTempRange(range);
@@ -40,57 +56,112 @@ const CalendarRange: React.FC<IProps> = ({ range, setRange, className }) => {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
       if (
-        calendarRef.current &&
-        !calendarRef.current.contains(event.target as Node)
+        calendarRef.current?.contains(target) ||
+        panelRef.current?.contains(target)
       ) {
-        setIsCalendarVisible(false);
+        return;
       }
+      setIsCalendarVisible(false);
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  return (
-    <div className="relative" ref={calendarRef}>
-      {/* Display box */}
-      <div
-        className={`border rounded-lg px-3 py-[7px] bg-white dark:bg-gray-800 dark:text-white md:w-80 w-full cursor-pointer ${className} ${range.label ? "border-[#22C55E]" : ""
-          }`}
-        onClick={toggleCalendarVisibility}
-      >
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-x-2">
-            <Icon name={"calendar_month"} size={20} variant="outlined" />
-            <p>{range.label || "Loading..."}</p>
-          </div>
-          <Icon
-            name={
-              isCalendarVisible ? "keyboard_arrow_down" : "keyboard_arrow_up"
-            }
-            variant="outlined"
-            className="border-l border-gray-300 px-1 text-gray-400"
-          />
-        </div>
-      </div>
+  useEffect(() => {
+    if (!isCalendarVisible) return;
 
-      {/* Calendar Dropdown */}
-      {isCalendarVisible && (
-        <div className="absolute z-20 bg-white dark:bg-gray-800 dark:text-white dark:border-gray-500 border shadow-lg rounded-lg mt-1 w-full md:w-auto">
-          <Calendar dateRange={tempRange} onChange={handleDateChange} />
-          <div className="flex justify-end gap-2 py-3 px-4 border-t dark:border-t-gray-500">
-            <Button
-              className="bg-gray-400 !py-1.5"
-              onClick={() => setIsCalendarVisible(false)}
-            >
-              Cancel
-            </Button>
-            <Button className="bg-blue-500 !py-1.5" onClick={handleApply}>
-              Apply
-            </Button>
-          </div>
-        </div>
-      )}
+    const updatePosition = () => {
+      const rect = triggerRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      setPanelStyle({
+        top: rect.bottom + 8,
+        left: rect.left,
+      });
+    };
+
+    updatePosition();
+    window.addEventListener("resize", updatePosition);
+    window.addEventListener("scroll", updatePosition, true);
+    return () => {
+      window.removeEventListener("resize", updatePosition);
+      window.removeEventListener("scroll", updatePosition, true);
+    };
+  }, [isCalendarVisible]);
+
+  useEffect(() => {
+    if (!isCalendarVisible) return;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setIsCalendarVisible(false);
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isCalendarVisible]);
+
+  return (
+    <div className={`date-filter ${className ?? ""}`} ref={calendarRef}>
+      <button
+        ref={triggerRef}
+        type="button"
+        className={`date-filter-trigger ${isCalendarVisible ? "is-open" : ""}`}
+        onClick={toggleCalendarVisibility}
+        aria-expanded={isCalendarVisible}
+        aria-haspopup="dialog"
+      >
+        <span className="date-filter-trigger-icon">
+          <Icon name="calendar_month" size={16} />
+        </span>
+        <span className="date-filter-trigger-copy">
+          <span className="date-filter-trigger-kicker">Date range</span>
+          <span className="date-filter-trigger-label">
+            {range.label || "Select range"}
+          </span>
+        </span>
+        <Icon
+          name="expand_more"
+          size={18}
+          className="date-filter-chevron"
+        />
+      </button>
+
+      {isCalendarVisible &&
+        createPortal(
+          <div
+            ref={panelRef}
+            className="date-filter-panel"
+            style={panelStyle}
+            role="dialog"
+            aria-label="Date range"
+          >
+            <div className="date-filter-panel-head">
+              <p className="date-filter-panel-title">
+                {tempRange.label || "Custom range"}
+              </p>
+              <p className="date-filter-panel-meta">
+                {formatRangeSummary(tempRange)}
+              </p>
+            </div>
+            <Calendar dateRange={tempRange} onChange={handleDateChange} />
+            <div className="date-filter-footer">
+              <button
+                type="button"
+                className="date-filter-cancel"
+                onClick={() => setIsCalendarVisible(false)}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="date-filter-apply"
+                onClick={handleApply}
+              >
+                Apply
+              </button>
+            </div>
+          </div>,
+          document.body
+        )}
     </div>
   );
 };

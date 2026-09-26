@@ -9,7 +9,7 @@ import Icon from "@admin/components/core/Icon/Icon";
 import Input from "@admin/components/core/Input/Input";
 import Modal from "@admin/components/core/ModalFrom/ModalFrom";
 import { ToastService } from "@admin/utils/toastr.service";
-import { ContentsContext } from "@/app/admin/contents/page";
+import { ContentsContext } from "./contents.context";
 import { ContentsService } from "@admin/@services/apis/Contents/Contents";
 import RichTextEditor from "@admin/components/core/Editor/RichTextEditor";
 
@@ -97,13 +97,13 @@ const ContentsModal: React.FC = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit(formSubmit)}>
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        width="w-full md:w-3/4"
-        maxWidth="max-w-4xl"
-      >
+    <Modal
+      isOpen={isModalOpen}
+      onClose={() => setIsModalOpen(false)}
+      width="w-full md:w-3/4"
+      maxWidth="max-w-4xl"
+    >
+      <form onSubmit={handleSubmit(formSubmit)}>
         <Modal.Header className="flex items-center justify-between">
           <h3 className="text-lg font-medium text-gray-900 dark:text-white">
             {modalMode === "Edit" ? `Edit Contents` : "Create New Contents"}
@@ -152,11 +152,7 @@ const ContentsModal: React.FC = () => {
           >
             Cancel
           </Button>
-          <Button
-            type="submit"
-            className="btn-primary"
-            disabled={isSubmit}
-          >
+          <Button type="submit" className="btn-primary" disabled={isSubmit}>
             {isSubmit ? (
               <ButtonLoader />
             ) : modalMode === "Edit" ? (
@@ -166,8 +162,8 @@ const ContentsModal: React.FC = () => {
             )}
           </Button>
         </Modal.Footer>
-      </Modal>
-    </form>
+      </form>
+    </Modal>
   );
 };
 

@@ -60,7 +60,7 @@ const TemplateCard: React.FC<TemplateCardProps> = ({
       onDragEnd={onDragEnd}
       className={`${isPriorityEditMode ? "cursor-move" : ""} ${className}`}
     >
-      <div className="h-full rounded-2xl border border-gray-200 dark:border-gray-500 bg-white p-6 shadow-sm hover:shadow-md transition flex flex-col dark:bg-gray-800">
+      <div className="flex h-full flex-col rounded-2xl border border-[var(--border)] bg-[var(--bg-surface)] p-5 shadow-sm transition hover:border-[var(--brand-border-soft)]">
         {(isPriorityEditMode || priorityNumber) && (
           <div className="flex items-center gap-2 mb-3 text-gray-500 dark:text-gray-300">
             {isPriorityEditMode && (
@@ -74,15 +74,17 @@ const TemplateCard: React.FC<TemplateCardProps> = ({
 
         <div className="flex items-start justify-between gap-3 mb-4">
           <div className="flex items-center gap-3">
-            <div className="h-11 w-11 rounded-xl flex items-center justify-center text-xl">
-              ⭐
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--brand-bg-softer)] text-[var(--color-primary)]">
+              <Icon name="article" size={20} />
             </div>
 
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-400">
+              <h3 className="text-base font-semibold text-[var(--text-primary)]">
                 {title}
               </h3>
-              {subtitle && <p className="text-sm text-gray-500">{subtitle}</p>}
+              {subtitle && (
+                <p className="text-sm text-[var(--text-muted)]">{subtitle}</p>
+              )}
             </div>
           </div>
 
@@ -92,21 +94,22 @@ const TemplateCard: React.FC<TemplateCardProps> = ({
               <Icon
                 onClick={onEdit}
                 name="edit_square"
-                className="text-gray-500 cursor-pointer"
+                className="cursor-pointer text-[var(--text-muted)]"
               />
             )}
         </div>
 
-        <div className="rounded-lg bg-gray-50 dark:bg-gray-600 border dark:border-gray-400 p-4 text-sm text-gray-800 whitespace-pre-line leading-relaxed mb-4 dark:text-gray-300">
-          {parse(copyText)}
+        <div className="mb-4 whitespace-pre-line rounded-xl border border-[var(--border)] bg-[var(--bg-main)] p-4 text-sm leading-relaxed text-[var(--text-secondary)]">
+          {copyText ? parse(copyText) : "No description"}
         </div>
 
         {!isPriorityEditMode && (
           <button
+            type="button"
             onClick={handleCopy}
-            className="mt-auto w-full rounded-xl bg-blue-600 text-white py-2.5 text-sm font-semibold hover:bg-blue-700 active:scale-[0.98] transition"
+            className="btn-primary mt-auto w-full rounded-xl py-2.5 text-sm font-semibold"
           >
-            📋 Copy Text
+            Copy text
           </button>
         )}
       </div>

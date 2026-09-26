@@ -157,15 +157,6 @@ export default function AuthLayout({ children, className }: AuthLayoutProps) {
           }`}
         >
           <div className="relative z-10 flex h-full flex-col overflow-hidden">
-            <div className="admin-sidebar-brand">
-              <span className="admin-sidebar-brand-icon">
-                <span className="material-icons-outlined text-[18px]">storefront</span>
-              </span>
-              <div className="min-w-0">
-                <p className="admin-sidebar-brand-title truncate">Rangonaa</p>
-                <p className="admin-sidebar-brand-sub">Management</p>
-              </div>
-            </div>
             <div
               className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-2 scrollbar-hide [-webkit-overflow-scrolling:touch]"
               onWheel={isolateSidebarWheel}
@@ -194,24 +185,6 @@ export default function AuthLayout({ children, className }: AuthLayoutProps) {
           isSidebarOpen ? "w-[68px]" : "w-64"
         }`}
       >
-        {!isSidebarOpen && (
-          <div className="admin-sidebar-brand">
-            <span className="admin-sidebar-brand-icon">
-              <span className="material-icons-outlined text-[18px]">storefront</span>
-            </span>
-            <div className="min-w-0">
-              <p className="admin-sidebar-brand-title truncate">Rangonaa</p>
-              <p className="admin-sidebar-brand-sub">Management</p>
-            </div>
-          </div>
-        )}
-        {isSidebarOpen && (
-          <div className="flex justify-center px-2 py-4">
-            <span className="admin-sidebar-brand-icon">
-              <span className="material-icons-outlined text-[18px]">storefront</span>
-            </span>
-          </div>
-        )}
         <div
           className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-contain px-3 py-2 scrollbar-hide"
           onWheel={isolateSidebarWheel}

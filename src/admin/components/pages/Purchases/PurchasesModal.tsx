@@ -2,10 +2,8 @@ import Button from "@admin/components/core/Button/Button";
 import Icon from "@admin/components/core/Icon/Icon";
 import Input from "@admin/components/core/Input/Input";
 import Modal from "@admin/components/core/ModalFrom/ModalFrom";
-import React from "react";
-import ButtonLoader from "@admin/components/core/Button/ButtonLoader";
+import React, { useEffect } from "react";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { ToastService } from "@admin/utils/toastr.service";
@@ -20,15 +18,21 @@ interface PurchasesModalProps {
     unit_cost?: number;
     title?: string;
   } | null;
-  setProductUnitCosts: (value: Record<string, number>) => void;
+  setProductUnitCosts: React.Dispatch<
+    React.SetStateAction<Record<string, number>>
+  >;
 }
 
 const defaultValue = {
-  purchase_price: "",
+  purchase_price: 0,
 };
 
 const webSchema = yup.object({
-  purchase_price: yup.number().required("Unit Cost is required").min(0),
+  purchase_price: yup
+    .number()
+    .typeError("Unit cost is required")
+    .required("Unit cost is required")
+    .min(0, "Unit cost cannot be negative"),
 });
 
 const PurchasesModal: React.FC<PurchasesModalProps> = ({
@@ -38,8 +42,6 @@ const PurchasesModal: React.FC<PurchasesModalProps> = ({
   items,
   setProductUnitCosts,
 }) => {
-  const [isSubmit, setIsSubmit] = useState<boolean>(false);
-
   const {
     handleSubmit,
     register,
@@ -53,101 +55,83 @@ const PurchasesModal: React.FC<PurchasesModalProps> = ({
   useEffect(() => {
     if (modalMode === "Edit" && items) {
       reset({
-        purchase_price: items?.unit_cost || "",
+        purchase_price: Number(items.unit_cost) || 0,
       });
+    } else {
+      reset(defaultValue);
     }
-  }, [items, modalMode, reset]);
+  }, [items, modalMode, reset, isModalOpen]);
 
   const formSubmit = async (formData: any) => {
-    setIsSubmit(true);
+    if (modalMode !== "Edit" || !items?.product_id) return;
+
+    const nextCost = Number(formData.purchase_price);
+    setProductUnitCosts((prev) => ({
+      ...prev,
+      [items.product_id]: nextCost,
+    }));
 
     try {
-      if (modalMode === "Edit" && items) {
-        // Update the specific product's unit cost in the state
-        setProductUnitCosts((prev: any) => ({
-          ...prev,
-          [items.product_id]: Number(formData.purchase_price),
-        }));
-
-        // If you need to make an API call to save the change:
-        const res = await PurchasesService.updatePurchasesProduct(
-          items.product_id,
-          { purchase_price: formData.purchase_price }
-        );
-
-        if (res?.success) {
-          ToastService.success(res?.message);
-          setIsModalOpen(false);
-        } else {
-          ToastService.error(res?.message);
-        }
+      const res = await PurchasesService.updatePurchasesProduct(
+        items.product_id,
+        { purchase_price: nextCost }
+      );
+      if (res?.success) {
+        ToastService.success(res?.message || "Purchase price updated");
+      } else {
+        ToastService.error(res?.message || "Could not update purchase price");
       }
     } catch (err: any) {
-      ToastService.error(err.message || "Failed to update unit cost");
+      ToastService.error(err?.message || "Could not update purchase price");
     } finally {
-      setIsSubmit(false);
+      setIsModalOpen(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit(formSubmit)}>
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        width="w-full md:w-3/4"
-        maxWidth="max-w-2xl"
-      >
+    <Modal
+      isOpen={isModalOpen}
+      onClose={() => setIsModalOpen(false)}
+      width="w-full md:w-3/4"
+      maxWidth="max-w-lg"
+    >
+      <form onSubmit={handleSubmit(formSubmit)}>
         <Modal.Header className="flex items-center justify-between">
           <h3 className="text-lg font-medium leading-6 text-gray-900 dark:text-white">
-            {modalMode === "Edit" && items
-              ? `Update Unit Cost: ${items.title || "Product"}`
-              : "Create New Account"}
+            {items?.title ? `Edit unit cost: ${items.title}` : "Edit unit cost"}
           </h3>
           <Icon
-            name={"close"}
+            name="close"
             onClick={() => setIsModalOpen(false)}
             className="text-gray-600 cursor-pointer"
           />
         </Modal.Header>
         <Modal.Body>
-          <div className="w-full gap-5">
-            <div className="">
-              <Input
-                label={"Unit Cost"}
-                registerProperty={register("purchase_price", {
-                  valueAsNumber: true,
-                })}
-                errorText={errors?.purchase_price?.message}
-                type="number"
-                isRequired
-                placeholder="Enter unit cost"
-              />
-            </div>
-          </div>
+          <Input
+            label="Unit Cost"
+            registerProperty={register("purchase_price", {
+              valueAsNumber: true,
+            })}
+            errorText={errors?.purchase_price?.message}
+            type="number"
+            isRequired
+            placeholder="Enter unit cost"
+          />
         </Modal.Body>
         <Modal.Footer className="flex justify-end space-x-2">
           <Button
+            type="button"
             onClick={() => setIsModalOpen(false)}
             className="px-4 py-2 text-sm text-gray-700 dark:text-gray-300"
           >
             Cancel
           </Button>
-          <Button
-            type="submit"
-            className="btn-primary"
-            disabled={isSubmit}
-          >
-            {isSubmit ? (
-              <ButtonLoader />
-            ) : modalMode === "Edit" ? (
-              "Update"
-            ) : (
-              "Create"
-            )}
+          <Button type="submit" className="btn-primary">
+            Update
           </Button>
         </Modal.Footer>
-      </Modal>
-    </form>
+      </form>
+    </Modal>
   );
 };
 

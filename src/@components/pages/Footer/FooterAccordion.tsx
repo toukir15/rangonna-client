@@ -28,6 +28,9 @@ const FooterAccordion: React.FC = () => {
           <li><Link className={linkClass} href="/churi">All Churi</Link></li>
           <li><Link className={linkClass} href="/churi/bridal">Bridal</Link></li>
           <li><Link className={linkClass} href="/churi/glass-bangles">Glass Bangles</Link></li>
+          <li><Link className={linkClass} href="/churi/ghungroo-glass-bangles">Ghungroo Glass Bangles</Link></li>
+          <li><Link className={linkClass} href="/churi/metal-bangles">Metal Bangles</Link></li>
+          <li><Link className={linkClass} href="/churi/royale-bangles">Royale Bangles</Link></li>
           <li><Link className={linkClass} href="/churi/luxury">Luxury</Link></li>
           <li><Link className={linkClass} href="/churi/festival">Festival</Link></li>
           <li><Link className={linkClass} href="/churi/premium-churi">Premium Churi</Link></li>
