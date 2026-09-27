@@ -6,7 +6,7 @@ import {
   FilterSideBarProps,
   ISideBarItems,
 } from "@/@interfaces/common.interface";
-import { categoryData, sortData } from "@/utils/data";
+import { sortData } from "@/utils/data";
 import { ProductService } from "@/@services/apis/Product/Product.service";
 import { ToastService } from "@/utils/toaster.service";
 
@@ -67,52 +67,49 @@ export default function FilterSideBar({
   };
 
   useEffect(() => {
-    if (!filterCategories) return;
+    let cancelled = false;
 
     const fetchPriceRangeData = async () => {
       try {
-        const res = await ProductService.getPriceRange({
-          category: filterCategories,
-        });
-        if (res.data) {
-          const minVal = res.data.min_price ?? 0;
-          const maxVal = res.data.max_price ?? 10000;
-          setDefaultMin(minVal);
-          setDefaultMax(maxVal);
-          setTempMin(minVal);
-          setTempMax(maxVal);
-        }
-      } catch (err: any) {
-        ToastService.error(err?.message || "Failed to load price range");
-      }
-    };
-    fetchPriceRangeData();
-  }, [priceClear, filterCategories]);
-  useEffect(() => {
-    if (!filterBrand) return;
+        const selected = [filterCategories, ...(categories ?? [])]
+          .map((value) => String(value || "").trim())
+          .filter((value) => value && value.toLowerCase() !== "all");
+        const params: Record<string, string> = {};
+        if (selected.length) params.category = selected.join(",");
+        if (filterBrand) params.brand = filterBrand;
 
-    const fetchPriceRangeData = async () => {
-      try {
-        const res = await ProductService.getPriceRange({
-          brand: filterBrand,
-        });
-        if (res.data) {
-          const minVal = res.data.min_price ?? 0;
-          const maxVal = res.data.max_price ?? 10000;
-          setDefaultMin(minVal);
-          setDefaultMax(maxVal);
-          setTempMin(minVal);
-          setTempMax(maxVal);
+        const res = await ProductService.getPriceRange(params);
+        const minVal = Number(res?.data?.min ?? res?.data?.min_price);
+        const maxVal = Number(res?.data?.max ?? res?.data?.max_price);
+        if (
+          cancelled ||
+          !Number.isFinite(minVal) ||
+          !Number.isFinite(maxVal)
+        ) {
+          return;
         }
+        const nextMax = maxVal < minVal ? minVal : maxVal;
+        setDefaultMin(minVal);
+        setDefaultMax(nextMax);
+        setTempMin(minVal);
+        setTempMax(nextMax);
       } catch (err: any) {
-        ToastService.error(err?.message || "Failed to load price range");
+        if (!cancelled) {
+          ToastService.error(err?.message || "Failed to load price range");
+        }
       }
     };
+
     fetchPriceRangeData();
-  }, [priceClear, filterBrand]);
+    return () => {
+      cancelled = true;
+    };
+  }, [priceClear, filterCategories, filterBrand, categories]);
   // 🔹 slider math
   const range =
-    defaultMin !== null && defaultMax !== null ? defaultMax - defaultMin : 0;
+    defaultMin !== null && defaultMax !== null
+      ? Math.max(defaultMax - defaultMin, 0)
+      : 0;
 
   const clampToSlider = (clientX: number) => {
     if (!sliderRef.current || defaultMin === null || defaultMax === null)
@@ -123,12 +120,12 @@ export default function FilterSideBar({
   };
 
   const minPosition =
-    defaultMin !== null && tempMin !== null
+    range > 0 && defaultMin !== null && tempMin !== null
       ? ((tempMin - defaultMin) / range) * 100
       : 0;
   const maxPosition =
-    defaultMax !== null && tempMax !== null
-      ? ((tempMax - defaultMin!) / range) * 100
+    range > 0 && defaultMax !== null && tempMax !== null && defaultMin !== null
+      ? ((tempMax - defaultMin) / range) * 100
       : 100;
 
   const startDrag = (thumb: "min" | "max") => {
@@ -236,7 +233,48 @@ export default function FilterSideBar({
   const isBrandChecked = (name: string) => (brands ?? []).includes(name);
   const isSortChecked = (name: string) => (sort ?? []).includes(name);
 
-  const filteredCategories = categoryData;
+  const [categoryItems, setCategoryItems] = useState<ISideBarItems[]>([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadCategories = async () => {
+      try {
+        const res = await ProductService.getProductCategories({
+          limit: 100,
+          sort: "key",
+        });
+        const rows = Array.isArray(res?.data) ? res.data : [];
+        if (cancelled) return;
+        setCategoryItems(
+          rows
+            .filter((row: { key?: string; value?: string }) =>
+              Boolean(row?.key && row?.value)
+            )
+            .map((row: { key: string; value: string }) => ({
+              name: row.value,
+              label: row.key,
+              rightLabel: "",
+            }))
+            .sort((a: ISideBarItems, b: ISideBarItems) =>
+              a.label.localeCompare(b.label, undefined, { sensitivity: "base" })
+            )
+        );
+      } catch (err: any) {
+        if (!cancelled) {
+          ToastService.error(err?.message || "Failed to load categories");
+        }
+      } finally {
+        if (!cancelled) setCategoriesLoading(false);
+      }
+    };
+
+    loadCategories();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   return (
     <aside className="rongonaa-filter select-none">
@@ -334,22 +372,27 @@ export default function FilterSideBar({
       {/* Categories */}
       <section className="rongonaa-filter__panel">
         <h3 className="rongonaa-filter__title">Filter by categories</h3>
-        <div className="rongonaa-filter__list">
-          {filteredCategories.map((item: ISideBarItems, index) => (
-            <TermsCheckbox
-              key={`category-${index}`}
-              name={`category:${item.name}`}
-              label={item.label}
-              rightLabel={item.rightLabel}
-              checked={(categories ?? []).includes(item.name)}
-              onChange={(_ignored, checked) =>
-                handleCheckboxChange("category", item.name, checked)
-              }
-              className="rongonaa-filter__check"
-              labelClassName="rongonaa-filter__check-label"
-            />
-          ))}
-        </div>
+        {categoriesLoading ? (
+          <p className="rongonaa-filter__hint">Loading categories…</p>
+        ) : categoryItems.length === 0 ? (
+          <p className="rongonaa-filter__hint">No categories found.</p>
+        ) : (
+          <div className="rongonaa-filter__list">
+            {categoryItems.map((item: ISideBarItems) => (
+              <TermsCheckbox
+                key={item.name}
+                name={`category:${item.name}`}
+                label={item.label}
+                checked={(categories ?? []).includes(item.name)}
+                onChange={(_ignored, checked) =>
+                  handleCheckboxChange("category", item.name, checked)
+                }
+                className="rongonaa-filter__check"
+                labelClassName="rongonaa-filter__check-label"
+              />
+            ))}
+          </div>
+        )}
       </section>
     </aside>
   );

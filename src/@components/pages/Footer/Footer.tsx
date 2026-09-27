@@ -15,7 +15,7 @@ const shopLinks = [
   { href: "/churi/royale-bangles", label: "Royale Bangles" },
   { href: "/churi/festival", label: "Festival" },
   { href: "/churi/premium-churi", label: "Premium Churi" },
-  { href: "/churi/luxury", label: "Luxury" },
+  { href: "/churi/hand-craft", label: "Hand Craft" },
 ];
 
 const helpLinks = [

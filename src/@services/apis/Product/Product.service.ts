@@ -91,6 +91,12 @@ export const ProductService = {
     );
   },
 
+  getProductCategories: async (queryParams?: any): Promise<any> => {
+    return await apiIns.get(
+      "/product-category" + queryStringMapper(queryParams),
+    );
+  },
+
   logOut: async (): Promise<any> => {
     return await apiIns.post("/auth/logout");
   },

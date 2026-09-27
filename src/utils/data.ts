@@ -104,7 +104,7 @@ export const categoryData: ISideBarItems[] = [
   { name: "ghungroo-glass-bangles", label: "Ghungroo Glass Bangles", rightLabel: "(1)" },
   { name: "metal-bangles", label: "Metal Bangles", rightLabel: "(1)" },
   { name: "royale-bangles", label: "Royale Bangles", rightLabel: "(1)" },
-  { name: "luxury", label: "Luxury", rightLabel: "(1)" },
+  { name: "hand-craft", label: "Hand Craft", rightLabel: "(1)" },
   { name: "festival", label: "Festival", rightLabel: "(1)" },
   { name: "premium-churi", label: "Premium Churi", rightLabel: "(1)" },
 ];

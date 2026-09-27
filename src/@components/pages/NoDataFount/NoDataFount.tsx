@@ -8,13 +8,13 @@ const NoDataFound = (): JSX.Element => {
   const [productData, setProductData] = useState<any>();
   useEffect(() => {
     ProductService.getProduct({
-      limit: "5",
+      limit: "4",
       category: "all",
       sort: "best-selling",
     })
       .then((res: any) => {
         if (res?.success) {
-          setProductData((res.data.data || []).slice(0, 5));
+          setProductData((res.data.data || []).slice(0, 4));
         } else {
           ToastService.error(res?.message);
         }

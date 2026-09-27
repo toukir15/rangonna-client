@@ -93,7 +93,7 @@ const defaultItem: TItemForm = {
 const defaultValue: FormValues = {
     eyebrow: "Curated for you",
     heading: "Featured Collections",
-    description: "Five signature edits — bridal, glass, luxury, festival, and premium churi.",
+    description: "Five signature edits — bridal, glass, hand craft, festival, and premium churi.",
     href: "/churi",
     linkLabel: "View all collections",
     mobile: [{ ...defaultItem, prompt: featuredImagePrompts.mobile[0] }],

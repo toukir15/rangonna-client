@@ -5,7 +5,7 @@ import SectionHeader from "../Home/SectionHeader";
 import { IProduct } from "@/@interfaces/common.interface";
 
 const PapularProduct: React.FC<{ products: IProduct[] }> = ({ products }) => {
-  const items = (products || []).slice(0, 5);
+  const items = (products || []).slice(0, 4);
 
   if (!items.length) return null;
 

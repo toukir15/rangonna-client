@@ -58,7 +58,7 @@ const makeItems = (size: string): Emotion[] =>
       "Statement crystal she can’t ignore",
       "Couture gold for nights that linger",
     ][index],
-    href: ["/churi/festival", "/churi/glass-bangles", "/churi/bridal", "/churi/premium-churi", "/churi/luxury"][index],
+    href: ["/churi/festival", "/churi/glass-bangles", "/churi/bridal", "/churi/premium-churi", "/churi/hand-craft"][index],
     image: "",
     prompt: `${basePrompts[index]}, ${size}`,
     priority: index + 1,
