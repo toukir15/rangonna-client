@@ -11,7 +11,12 @@ import Modal from "@admin/components/core/ModalFrom/ModalFrom";
 import { ToastService } from "@admin/utils/toastr.service";
 import { ContentsContext } from "./contents.context";
 import { ContentsService } from "@admin/@services/apis/Contents/Contents";
-import RichTextEditor from "@admin/components/core/Editor/RichTextEditor";
+import dynamic from "next/dynamic";
+
+const RichTextEditor = dynamic(
+  () => import("@admin/components/core/Editor/RichTextEditor"),
+  { ssr: false },
+);
 
 export interface IContentsFormValues {
   title: string;
