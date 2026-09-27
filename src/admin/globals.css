@@ -247,6 +247,12 @@ html:not(.dark) .admin-table-shell {
   position: relative;
 }
 
+.data-table-viewport.is-loading {
+  flex: none;
+  height: 36rem;
+  min-height: 36rem;
+}
+
 .data-table-scroll {
   overflow: auto;
   width: 100%;
@@ -262,6 +268,34 @@ html:not(.dark) .admin-table-shell {
   align-items: center;
   justify-content: center;
   background: var(--bg-surface);
+}
+
+.page-loader-spin {
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 999px;
+  border: 2px solid
+    color-mix(
+      in srgb,
+      var(--dashboard-primary, var(--brand-primary)) 22%,
+      transparent
+    );
+  border-top-color: var(--dashboard-primary, var(--brand-primary));
+  animation: page-loader-spin 0.7s linear infinite;
+}
+
+.theme-spin {
+  color: var(--dashboard-primary, var(--brand-primary));
+}
+
+.theme-loader-arc {
+  border-color: var(--dashboard-primary, var(--brand-primary));
+}
+
+@keyframes page-loader-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .data-table-loading {
@@ -767,6 +801,12 @@ html:not(.dark) .admin-table-shell {
   border-color: var(--brand-border-soft);
 }
 
+.table-role-badge.is-in-stock {
+  color: #047857;
+  background: #ecfdf5;
+  border-color: #a7f3d0;
+}
+
 .table-role-badge.is-neutral {
   color: #475569;
   background: rgba(148, 163, 184, 0.12);
@@ -1024,6 +1064,13 @@ html:not(.dark) .admin-table-shell {
 @media print {
 	body {
 		margin: 0 !important;
+	}
+
+	.admin-sidebar,
+	.admin-header,
+	.page-header-action,
+	.no-print {
+		display: none !important;
 	}
 }
 
@@ -1991,9 +2038,9 @@ html.dark .ov-summary__due td {
   --color-primary-hover: #059669;
   --color-secondary: #14b8a6;
   --color-accent: #f59e0b;
-  --color-primary-soft: rgba(16, 185, 129, 0.15);
-  --color-primary-glow: rgba(16, 185, 129, 0.35);
-  --color-secondary-soft: rgba(20, 184, 166, 0.15);
+  --color-primary-soft: color-mix(in srgb, var(--color-primary) 15%, transparent);
+  --color-primary-glow: color-mix(in srgb, var(--color-primary) 35%, transparent);
+  --color-secondary-soft: color-mix(in srgb, var(--color-secondary) 15%, transparent);
   --color-accent-soft: rgba(245, 158, 11, 0.15);
   --brand-border-soft: color-mix(in srgb, var(--color-primary) 22%, transparent);
   --brand-border-medium: color-mix(in srgb, var(--color-primary) 35%, transparent);
@@ -2008,7 +2055,7 @@ html.dark .ov-summary__due td {
   --brand-text: var(--color-primary-hover);
   --brand-text-bright: color-mix(in srgb, var(--color-primary) 75%, white);
 
-  --bg-deep: #ecfdf5;
+  --bg-deep: color-mix(in srgb, var(--color-primary) 8%, #f8fafc);
   --bg-main: #f8fafc;
   --bg-panel: #ffffff;
   --bg-surface: #ffffff;
@@ -4026,6 +4073,255 @@ html.dark .app-toast-default .app-toast-message { color: #9ca3af; }
   border-radius: 0.55rem;
   object-fit: cover;
   border: 1px solid var(--border);
+}
+
+.purchase-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+
+.purchase-detail-card {
+  border-radius: 1rem;
+  border: 1px solid var(--brand-border-soft);
+  background: var(--bg-surface);
+  padding: 1rem 1.1rem;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.purchase-detail-card h3 {
+  margin: 0 0 0.55rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.purchase-detail-name {
+  margin: 0;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.purchase-detail-meta {
+  margin: 0.15rem 0 0;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  line-height: 1.45;
+  word-break: break-word;
+}
+
+.purchase-detail-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 0.35rem;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.purchase-detail-totals {
+  margin-left: auto;
+  width: min(100%, 22rem);
+  padding: 0.25rem 1rem 0.9rem;
+}
+
+.purchase-detail-total-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--brand-border-soft);
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.purchase-detail-total-row strong {
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.purchase-detail-total-row.is-due strong {
+  color: var(--color-primary);
+}
+
+.purchase-size-tag {
+  display: inline-flex;
+  margin-top: 0.25rem;
+  border: 1px solid var(--brand-border-soft);
+  background: var(--brand-bg-softer);
+  color: var(--brand-text, var(--color-primary-hover));
+  border-radius: 999px;
+  padding: 0.05rem 0.55rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.purchase-size-tag.is-row {
+  margin-top: 0;
+  margin-left: 3.4rem;
+}
+
+.purchase-size-tag.is-report {
+  margin: 0;
+  justify-self: start;
+  width: fit-content;
+  max-width: 100%;
+  padding: 0.18rem 0.6rem;
+  line-height: 1.2;
+}
+
+.stock-report-modal .stock-report-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--color-primary) 10%, transparent) 0%,
+      transparent 55%
+    ),
+    var(--bg-surface);
+}
+
+.stock-report-kicker {
+  margin: 0;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--brand-text, var(--color-primary-hover));
+}
+
+.stock-report-title {
+  margin: 0.2rem 0 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--text-primary);
+}
+
+.stock-report-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  flex-shrink: 0;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.stock-report-close:hover {
+  border-color: var(--brand-border-soft);
+  color: var(--brand-text, var(--color-primary-hover));
+  background: var(--brand-bg-softer);
+}
+
+.stock-report-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.65rem;
+  margin-bottom: 0.9rem;
+}
+
+.stock-report-stats div {
+  padding: 0.7rem 0.8rem;
+  border-radius: 0.9rem;
+  border: 1px solid var(--brand-border-soft);
+  background: var(--brand-bg-softer);
+}
+
+.stock-report-stats span {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.stock-report-stats strong {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 1.15rem;
+  color: var(--text-primary);
+}
+
+.stock-report-table {
+  overflow: hidden;
+  border-radius: 1rem;
+  border: 1px solid var(--border);
+}
+
+.stock-report-row {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr 0.9fr;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0.9rem;
+  border-top: 1px solid var(--border);
+  color: var(--text-primary);
+}
+
+.stock-report-row.is-head {
+  border-top: 0;
+  background: color-mix(in srgb, var(--color-primary) 6%, var(--bg-main));
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.stock-report-row strong {
+  font-size: 0.95rem;
+}
+
+.stock-report-row .is-quiet,
+.stock-report-row .is-active {
+  width: fit-content;
+  min-width: 1.6rem;
+  text-align: center;
+  border-radius: 999px;
+  padding: 0.1rem 0.5rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.stock-report-row .is-quiet {
+  color: var(--text-muted);
+  background: var(--bg-hover);
+}
+
+.stock-report-row .is-active {
+  color: #047857;
+  background: #ecfdf5;
+}
+
+.stock-report-loading,
+.stock-report-empty {
+  display: flex;
+  min-height: 16rem;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+@media (max-width: 960px) {
+  .purchase-detail-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .edit-order-products-card {

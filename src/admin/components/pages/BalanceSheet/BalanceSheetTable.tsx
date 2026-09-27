@@ -85,7 +85,7 @@ const BalanceSheetTable: React.FC = () => {
                           name="sync"
                           size={20}
                           className={
-                            isLoading ? "text-gray-400" : "text-green-600"
+                            isLoading ? "theme-spin" : "text-green-600"
                           }
                         />
                       </div>

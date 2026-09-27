@@ -20,9 +20,7 @@ import Modal, { ModalType } from "@/@components/core/Modal/Modal";
 import { inferShippingFromAddress } from "@/utils/data";
 // import OtpModal from "../SignUp/OtpModal";
 import CheckOutSignUp from "../SignUp/CheckOutSignUp";
-import { ShieldCheck, Truck, Banknote, PackageCheck } from "lucide-react";
 import { ToastService } from "@/utils/toaster.service";
-import { EMI_THRESHOLD } from "@/@components/pages/ProductDetails/emiData";
 import { categoryLabel, hasCategory } from "@/utils/productCategory";
 
 export type ModalState = {
@@ -726,33 +724,6 @@ const Checkout: React.FC = () => {
       ? `Pay With Bkash - ৳${calculateDue().toFixed(2)}`
       : `Confirm Order - ৳${calculateDue().toFixed(2)}`;
 
-  const renderTrustBenefits = (variant: "strip" | "grid" = "grid") => (
-    <div
-      className={
-        variant === "strip"
-          ? "rongonaa-checkout-trust-strip"
-          : "rongonaa-checkout-trust-grid"
-      }
-    >
-      <span className="rongonaa-checkout-trust-chip">
-        <ShieldCheck aria-hidden />
-        ১০০% অরিজিনাল
-      </span>
-      <span className="rongonaa-checkout-trust-chip">
-        <Banknote aria-hidden />
-        ক্যাশ অন ডেলিভারি
-      </span>
-      <span className="rongonaa-checkout-trust-chip">
-        <Truck aria-hidden />
-        দ্রুত ডেলিভারি
-      </span>
-      <span className="rongonaa-checkout-trust-chip">
-        <PackageCheck aria-hidden />
-        হাতে চেক করে নেওয়া
-      </span>
-    </div>
-  );
-
   const renderSubmitButton = (className = "") => (
     <Button
       type="submit"
@@ -784,20 +755,6 @@ const Checkout: React.FC = () => {
         secondaryActionText={modal.type === "warning" ? "Cancel" : undefined}
         onSecondaryAction={() => setModal((s) => ({ ...s, open: false }))}
       />
-      <header className="rongonaa-checkout-top">
-        <h1 className="rongonaa-checkout-title">Checkout</h1>
-        <p className="rongonaa-checkout-subtitle">
-          ডেলিভারি তথ্য দিন — Cash on Delivery available
-        </p>
-        <nav className="rongonaa-checkout-progress" aria-label="Checkout progress">
-          <span className="rongonaa-checkout-progress-step is-done">Bag</span>
-          <span className="rongonaa-checkout-progress-line" aria-hidden />
-          <span className="rongonaa-checkout-progress-step is-active">Details</span>
-          <span className="rongonaa-checkout-progress-line" aria-hidden />
-          <span className="rongonaa-checkout-progress-step">Confirm</span>
-        </nav>
-      </header>
-
       <form
         className="rongonaa-checkout-layout"
         onSubmit={handleSubmit(formSubmit)}
@@ -806,8 +763,9 @@ const Checkout: React.FC = () => {
           <section className="rongonaa-checkout-section">
             <h2 className="rongonaa-checkout-section-title">Your details</h2>
             <div className="rongonaa-checkout-fields">
+            <div className="rongonaa-checkout-field-pair">
             <Input
-              label="Full Name (আপনার নাম)"
+              label="Full Name"
               registerProperty={register("first_name")}
               errorText={errors?.first_name?.message}
               type="text"
@@ -816,7 +774,7 @@ const Checkout: React.FC = () => {
             />
 
             <Input
-              label="Mobile Number (মোবাইল নাম্বার)"
+              label="Mobile Number"
               registerProperty={register("phone")}
               errorText={errors.phone?.message}
               type="text"
@@ -840,9 +798,10 @@ const Checkout: React.FC = () => {
                 }
               }}
             />
+            </div>
 
             <Input
-              label="Delivery Address (ঠিকানা)"
+              label="Delivery Address"
               registerProperty={register("address")}
               errorText={errors?.address?.message}
               type="textarea"
@@ -886,7 +845,7 @@ const Checkout: React.FC = () => {
             />
           </section>
 
-          <section className="rongonaa-checkout-section">
+          <section className="rongonaa-checkout-section rongonaa-checkout-payment">
             <h2 className="rongonaa-checkout-section-title">Payment</h2>
             <Controller
               name="payment"
@@ -926,39 +885,44 @@ const Checkout: React.FC = () => {
               <h2 className="rongonaa-checkout-order-title">Order</h2>
               {totalItemCount > 0 ? (
                 <span className="rongonaa-checkout-order-count">
-                  {totalItemCount} items
+                  {totalItemCount} {totalItemCount === 1 ? "item" : "items"}
                 </span>
               ) : null}
             </div>
 
             {cartItems?.map((item: any, index: number) => (
               <div className="rongonaa-checkout-item" key={index}>
-                <div className="rongonaa-checkout-item-left">
+                <div className="rongonaa-checkout-item-media">
+                  <div className="rongonaa-checkout-item-thumb">
+                    <Image
+                      className="object-cover"
+                      fill
+                      sizes="72px"
+                      src={item.image}
+                      alt={item.title}
+                    />
+                  </div>
                   <button
                     type="button"
                     className="rongonaa-checkout-item-remove"
                     onClick={() => removeItem(index)}
                     aria-label="Remove item"
                   >
-                    <Icon name="delete" size={14} />
+                    <Icon name="delete" size={12} />
                   </button>
-                  <div className="rongonaa-checkout-item-thumb">
-                    <Image
-                      className="object-cover"
-                      fill
-                      sizes="56px"
-                      src={item.image}
-                      alt={item.title}
-                    />
-                  </div>
-                  <div className="rongonaa-checkout-item-body">
+                </div>
+                <div className="rongonaa-checkout-item-body">
                     <p className="rongonaa-checkout-item-title">
-                      {trimString(item.title, 40)}
-                      {item.size ? ` (${item.size})` : ""}
+                      {trimString(item.title, 42)}
                     </p>
                     <p className="rongonaa-checkout-item-price">
                       ৳{(item.price * item.quantity).toFixed(0)}
                     </p>
+                    {item.size ? (
+                      <span className="rongonaa-checkout-item-size">
+                        Size {item.size}
+                      </span>
+                    ) : null}
                     <div className="rongonaa-checkout-qty">
                       <button
                         type="button"
@@ -991,7 +955,6 @@ const Checkout: React.FC = () => {
                         +
                       </button>
                     </div>
-                  </div>
                 </div>
               </div>
             ))}
@@ -1025,27 +988,28 @@ const Checkout: React.FC = () => {
                       errorText={couponError}
                     />
                   </div>
-                  <Button
-                    className={`rongonaa-checkout-coupon-btn${
-                      !couponCode ? " is-disabled" : ""
-                    }`}
+                  <button
+                    className="rongonaa-checkout-coupon-btn"
                     onClick={handleCoupon}
                     type="button"
-                    disabled={!couponCode}
+                    disabled={!couponCode || couponLoading}
                   >
                     {couponLoading ? (
                       <ButtonLoader size="sm" className="!px-4" />
                     ) : (
                       "Apply"
                     )}
-                  </Button>
+                  </button>
                 </div>
               </div>
             )}
 
             <div className="rongonaa-checkout-totals">
               <div className="rongonaa-checkout-total-row">
-                <span>Subtotal ({cartItems?.length} items)</span>
+                <span>
+                  Subtotal ({cartItems?.length}{" "}
+                  {cartItems?.length === 1 ? "item" : "items"})
+                </span>
                 <span>৳{calculateSubtotal().toFixed(0)}</span>
               </div>
               <div className="rongonaa-checkout-total-row">
@@ -1053,30 +1017,16 @@ const Checkout: React.FC = () => {
                 <span>৳{shippingPrice.toFixed(0)}</span>
               </div>
               <div className="rongonaa-checkout-total-row rongonaa-checkout-total-row--grand">
-                <span>
-                  Total
-                  {calculateDue() > EMI_THRESHOLD && (
-                    <span className="rongonaa-checkout-emi-badge">
-                      EMI Available
-                    </span>
-                  )}
-                </span>
+                <span>Total</span>
                 <span>৳{calculateDue().toFixed(0)}</span>
               </div>
             </div>
           </div>
 
-          <div className="rongonaa-checkout-trust hidden lg:block">
-            {renderTrustBenefits("strip")}
-          </div>
         </aside>
 
         <div className="rongonaa-checkout-submit-wrap rongonaa-checkout-submit-wrap--mobile">
           {renderSubmitButton()}
-        </div>
-
-        <div className="rongonaa-checkout-trust lg:hidden">
-          {renderTrustBenefits()}
         </div>
       </form>
 

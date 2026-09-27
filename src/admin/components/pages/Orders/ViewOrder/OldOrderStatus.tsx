@@ -118,7 +118,7 @@ const OrderStatus: React.FC<OrderStatusProps> = ({
                   {(statusLoading || loading) &&
                     loadingName === step?.label && (
                       <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="animate-spin rounded-full h-11 w-11 border-b-4 border-[var(--color-primary)]"></div>
+                        <div className="animate-spin rounded-full h-11 w-11 border-b-4 theme-loader-arc"></div>
                       </div>
                     )}
                 </div>

@@ -8,7 +8,6 @@ import {
   filterSidebarByPermissions,
   getSidebarMainKey,
 } from "@admin/utils/routePermission";
-import GlobalLoading from "@admin/components/pages/GlobalLoading/GlobalLoading";
 import NoPermissionView from "@admin/components/pages/NoPermission/NoPermissionView";
 import SidebarSkeleton from "@admin/components/Skeleton/SidebarSkeleton";
 
@@ -122,13 +121,12 @@ export default function AuthLayout({ children, className }: AuthLayoutProps) {
     ))
   );
 
-  const mainContent = isBootstrapLoading ? (
-    <GlobalLoading />
-  ) : isRouteAllowed ? (
-    scrollableContent
-  ) : (
-    <NoPermissionView />
-  );
+  const mainContent =
+    isBootstrapLoading || isRouteAllowed ? (
+      scrollableContent
+    ) : (
+      <NoPermissionView />
+    );
 
   const isolateSidebarWheel = (event: React.WheelEvent<HTMLDivElement>) => {
     const element = event.currentTarget;

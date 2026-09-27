@@ -171,7 +171,7 @@ const WebsiteTable = () => {
                     <Icon
                       name="restart_alt"
                       size={28}
-                      className="text-green-600 animate-spin ml-5"
+                      className="theme-spin animate-spin ml-5"
                     />
                   ) : (
                     <ToggleSwitch

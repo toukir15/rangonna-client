@@ -454,7 +454,7 @@ const CreateReturnPaymentModal = ({
                           <Icon
                             name="autorenew"
                             variant="outlined"
-                            className="animate-spin"
+                            className="theme-spin animate-spin"
                           />
                           <span>Loading payments...</span>
                         </div>

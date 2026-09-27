@@ -267,7 +267,7 @@ const ProductTable: React.FC = () => {
                 </Td>
                 <Td>
                   <Link
-                    href={`https://naviforce.com.bd/product/${item?.slug}`}
+                    href={`https://rangonaa.com/product/${item?.slug}`}
                     target="_blank"
                     className="data-table-view-btn"
                   >
@@ -277,7 +277,7 @@ const ProductTable: React.FC = () => {
                 <Td>
                   <span
                     className={`table-role-badge ${
-                      outOfStock ? "is-rejected" : "is-approved"
+                      outOfStock ? "is-rejected" : "is-in-stock"
                     }`}
                   >
                     {outOfStock ? "Out Of Stock" : "In Stock"}

@@ -2165,6 +2165,12 @@ input[type=number] {
   padding: 1rem 1rem 1.25rem;
 }
 
+@media (min-width: 1024px) {
+  .rongonaa-product-related .rongonaa-shop-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
 .rongonaa-product-seo {
   padding: 1.15rem 1.25rem;
   background: linear-gradient(135deg, #fff, rgba(250, 245, 242, 0.92));
@@ -3352,9 +3358,9 @@ input[type=number] {
 }
 
 .rongonaa-checkout-page {
-  max-width: 56rem;
+  max-width: 62rem;
   margin: 0 auto;
-  padding: 1.5rem 1.25rem 3rem;
+  padding: 1.25rem 1rem 3rem;
 }
 
 @media (min-width: 768px) {
@@ -3364,15 +3370,13 @@ input[type=number] {
 }
 
 .rongonaa-checkout-top {
-  margin-bottom: 2rem;
-  padding-bottom: 1.25rem;
-  border-bottom: 1px solid var(--brand-primary-border);
+  margin-bottom: 1.15rem;
 }
 
 .rongonaa-checkout-title {
   margin: 0;
   font-family: var(--font-display);
-  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-size: clamp(1.85rem, 3vw, 2.35rem);
   font-weight: 500;
   letter-spacing: -0.02em;
   color: var(--brand-secondary);
@@ -3417,43 +3421,71 @@ input[type=number] {
 .rongonaa-checkout-layout {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 2rem;
+  gap: 1rem;
 }
 
 @media (min-width: 1024px) {
   .rongonaa-checkout-layout {
-    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
-    gap: 3rem;
+    grid-template-columns: minmax(0, 1.2fr) minmax(18rem, 0.8fr);
+    gap: 1.15rem;
     align-items: start;
   }
 }
 
-.rongonaa-checkout-form {
+.rongonaa-checkout-form,
+.rongonaa-checkout-aside {
   min-width: 0;
+  border-radius: 1.4rem;
+  border: 1px solid color-mix(in srgb, var(--brand-primary) 9%, #eadfd6);
+  background:
+    linear-gradient(
+      180deg,
+      #fff 0%,
+      color-mix(in srgb, var(--brand-ivory, #faf7f2) 35%, white) 100%
+    );
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.8) inset,
+    0 18px 40px rgba(92, 21, 21, 0.06);
+}
+
+.rongonaa-checkout-form {
+  padding: 0.5rem 1.35rem 1.35rem;
 }
 
 .rongonaa-checkout-section {
-  padding: 1.5rem 0;
-  border-bottom: 1px solid var(--brand-primary-border);
+  padding: 1.15rem 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--brand-primary) 8%, #eadfd6);
 }
 
-.rongonaa-checkout-section:first-child {
-  padding-top: 0;
+.rongonaa-checkout-section:last-of-type {
+  border-bottom: 0;
+  padding-bottom: 0.35rem;
 }
 
 .rongonaa-checkout-section-title {
-  margin: 0 0 1rem;
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--brand-cta);
+  margin: 0 0 0.85rem;
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--brand-secondary);
 }
 
 .rongonaa-checkout-fields {
   display: flex;
   flex-direction: column;
   gap: 0.85rem;
+}
+
+.rongonaa-checkout-field-pair {
+  display: grid;
+  gap: 0.85rem;
+}
+
+@media (min-width: 720px) {
+  .rongonaa-checkout-field-pair {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
 .rongonaa-checkout-fields > div {
@@ -3466,6 +3498,8 @@ input[type=number] {
   margin-bottom: 0.4rem !important;
   font-size: 0.82rem !important;
   font-weight: 600 !important;
+  letter-spacing: 0;
+  text-transform: none;
   color: var(--brand-secondary) !important;
 }
 
@@ -3473,11 +3507,11 @@ input[type=number] {
 .rongonaa-checkout-fields textarea {
   width: 100%;
   border: 1px solid var(--brand-primary-border) !important;
-  border-radius: 0.55rem !important;
-  background: #fff !important;
-  padding: 0.7rem 0.9rem !important;
-  min-height: 2.9rem;
-  box-shadow: 0 1px 3px rgba(81, 45, 85, 0.06) !important;
+  border-radius: 0.85rem !important;
+  background: color-mix(in srgb, var(--brand-ivory, #faf7f2) 65%, white) !important;
+  padding: 0.8rem 0.95rem !important;
+  min-height: 3rem;
+  box-shadow: none !important;
   color: var(--brand-secondary);
   font-size: 0.875rem !important;
 }
@@ -3497,8 +3531,9 @@ input[type=number] {
 .rongonaa-checkout-fields input:focus,
 .rongonaa-checkout-fields textarea:focus {
   border-color: var(--brand-cta) !important;
+  background: #fff !important;
   outline: none !important;
-  box-shadow: 0 0 0 3px rgba(81, 45, 85, 0.14) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-primary) 16%, transparent) !important;
 }
 
 .rongonaa-checkout-fields input.border-green-500,
@@ -3517,17 +3552,15 @@ input[type=number] {
   box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.12) !important;
 }
 
-.rongonaa-checkout-aside {
-  min-width: 0;
-}
-
 @media (min-width: 1024px) {
   .rongonaa-checkout-aside {
     position: sticky;
     top: 5rem;
-    padding-left: 2rem;
-    border-left: 1px solid var(--brand-primary-border);
   }
+}
+
+.rongonaa-checkout-aside {
+  padding: 1.25rem 1.2rem 1.3rem;
 }
 
 .rongonaa-checkout-order {
@@ -3545,97 +3578,131 @@ input[type=number] {
 .rongonaa-checkout-order-title {
   margin: 0;
   font-family: var(--font-display);
-  font-size: 1.25rem;
+  font-size: 1.45rem;
   font-weight: 500;
   color: var(--brand-secondary);
 }
 
 .rongonaa-checkout-order-count {
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
   color: color-mix(in oklab, var(--brand-secondary) 48%, transparent);
 }
 
 .rongonaa-checkout-item {
   display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-  padding: 0.85rem 0;
-  border-bottom: 1px solid var(--brand-primary-border);
+  align-items: center;
+  gap: 0.7rem;
+  margin-bottom: 0.15rem;
+  padding: 0.45rem 0.15rem 0.55rem;
+  border-bottom: none;
 }
 
 .rongonaa-checkout-item:last-of-type {
   border-bottom: none;
 }
 
-.rongonaa-checkout-item-left {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-  min-width: 0;
-  flex: 1;
+.rongonaa-checkout-item-media {
+  position: relative;
+  flex-shrink: 0;
 }
 
 .rongonaa-checkout-item-remove {
+  position: absolute;
+  top: 0.22rem;
+  left: 0.22rem;
+  z-index: 1;
   display: inline-flex;
-  flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  width: 1.5rem;
-  height: 1.5rem;
-  margin-top: 0.15rem;
+  width: 1.3rem;
+  height: 1.3rem;
   padding: 0;
-  border: none;
-  background: transparent;
-  color: color-mix(in oklab, var(--brand-secondary) 45%, transparent);
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--brand-primary) 14%, #eadfd6);
+  background: #fff;
+  color: color-mix(in oklab, var(--brand-secondary) 55%, transparent);
+  box-shadow: 0 2px 6px rgba(92, 21, 21, 0.1);
   cursor: pointer;
-  transition: color 0.2s ease;
+  transition: color 0.2s ease, border-color 0.2s ease;
 }
 
 .rongonaa-checkout-item-remove:hover {
   color: var(--brand-danger);
+  border-color: color-mix(in srgb, var(--brand-danger) 40%, #eadfd6);
 }
 
 .rongonaa-checkout-item-thumb {
   position: relative;
   flex-shrink: 0;
-  width: 3.25rem;
-  height: 3.25rem;
+  width: 4.25rem;
+  height: 4.25rem;
   overflow: hidden;
-  border-radius: 0.35rem;
+  border-radius: 0.95rem;
+  border: 1px solid color-mix(in srgb, var(--brand-primary) 10%, #eadfd6);
   background: var(--brand-pearl);
+  box-shadow: 0 6px 14px rgba(92, 21, 21, 0.06);
 }
 
 .rongonaa-checkout-item-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: 0.6rem;
+  row-gap: 0.1rem;
+  align-items: center;
   min-width: 0;
   flex: 1;
 }
 
 .rongonaa-checkout-item-title {
+  grid-column: 1;
+  grid-row: 1;
   display: -webkit-box;
   overflow: hidden;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
-  font-size: 0.8rem;
-  font-weight: 500;
-  line-height: 1.4;
+  font-size: 0.84rem;
+  font-weight: 600;
+  line-height: 1.35;
   color: var(--brand-secondary);
 }
 
 .rongonaa-checkout-item-price {
-  margin-top: 0.2rem;
-  font-size: 0.88rem;
+  grid-column: 2;
+  grid-row: 1;
+  align-self: start;
+  margin-top: 0;
+  font-size: 0.9rem;
   font-weight: 600;
   color: var(--brand-secondary);
+}
+
+.rongonaa-checkout-item-size {
+  grid-column: 1;
+  grid-row: 2;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: color-mix(in oklab, var(--brand-secondary) 52%, transparent);
+}
+
+.rongonaa-checkout-item-body .rongonaa-checkout-qty {
+  grid-column: 1;
+  grid-row: 3;
+  justify-self: start;
+  width: max-content;
 }
 
 .rongonaa-checkout-qty {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
-  margin-top: 0.4rem;
+  gap: 0.05rem;
+  margin-top: 0.3rem;
+  padding: 0.08rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--brand-primary) 14%, #eadfd6);
+  background: #fff;
 }
 
 .rongonaa-checkout-qty-btn {
@@ -3685,29 +3752,40 @@ input[type=number] {
 }
 
 .rongonaa-checkout-coupon-row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 0.55rem;
-  align-items: start;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.22rem 0.22rem 0.22rem 0.85rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--brand-primary) 16%, #eadfd6);
+  background: color-mix(in srgb, var(--brand-ivory, #faf7f2) 55%, white);
+}
+
+.rongonaa-checkout-coupon-row:focus-within {
+  border-color: var(--brand-cta);
+  background: #fff;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-primary) 14%, transparent);
 }
 
 .rongonaa-checkout-coupon-field {
   min-width: 0;
+  flex: 1;
 }
 
 .rongonaa-checkout-coupon-row input {
-  border: 1px solid var(--brand-primary-border) !important;
-  border-radius: 0.55rem !important;
-  background: #fff !important;
-  padding: 0.65rem 0.85rem !important;
-  min-height: 2.75rem;
-  height: 2.75rem;
-  box-shadow: 0 1px 3px rgba(81, 45, 85, 0.06) !important;
+  border: none !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  padding: 0.45rem 0 !important;
+  min-height: 2.35rem;
+  height: 2.35rem;
+  box-shadow: none !important;
 }
 
 .rongonaa-checkout-coupon-row input:focus {
-  border-color: var(--brand-cta) !important;
-  box-shadow: 0 0 0 3px rgba(81, 45, 85, 0.14) !important;
+  border-color: transparent !important;
+  background: transparent !important;
+  box-shadow: none !important;
 }
 
 .rongonaa-checkout-coupon-btn {
@@ -3715,19 +3793,19 @@ input[type=number] {
   align-items: center !important;
   justify-content: center !important;
   flex-shrink: 0;
-  align-self: start;
-  min-width: 5.25rem;
+  align-self: center;
+  min-width: 4.75rem;
   width: auto !important;
-  height: 2.75rem !important;
-  padding: 0 1.1rem !important;
+  height: 2.35rem !important;
+  padding: 0 1rem !important;
   border: none !important;
-  border-radius: 0.55rem !important;
+  border-radius: 999px !important;
   background: var(--brand-cta) !important;
   color: #fff !important;
   font-size: 0.78rem !important;
   font-weight: 600 !important;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  text-transform: none;
   box-shadow: none !important;
   cursor: pointer;
   transition: background 0.2s ease, opacity 0.2s ease;
@@ -3737,10 +3815,10 @@ input[type=number] {
   background: var(--brand-cta-dark) !important;
 }
 
-.rongonaa-checkout-coupon-btn.is-disabled,
 .rongonaa-checkout-coupon-btn:disabled {
-  background: color-mix(in oklab, var(--brand-cta) 35%, var(--brand-pearl)) !important;
-  color: color-mix(in oklab, var(--brand-secondary) 45%, transparent) !important;
+  background: color-mix(in srgb, var(--brand-cta) 16%, white) !important;
+  color: var(--brand-primary-dark) !important;
+  border: none !important;
   cursor: not-allowed;
   opacity: 1 !important;
 }
@@ -3766,19 +3844,26 @@ input[type=number] {
 }
 
 .rongonaa-checkout-total-row--grand {
-  margin-top: 0.65rem;
-  padding-top: 0.85rem;
-  border-top: 1px solid var(--brand-primary-border);
-  font-size: 1rem;
+  margin-top: 0.55rem;
+  padding: 0.7rem 0.9rem;
+  border-radius: 0.95rem;
+  border: 1px solid color-mix(in srgb, var(--brand-primary) 14%, transparent);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--brand-primary) 8%, white) 0%,
+      color-mix(in srgb, var(--brand-primary) 4%, white) 100%
+    );
+  font-size: 0.95rem;
   font-weight: 600;
   color: var(--brand-secondary);
 }
 
 .rongonaa-checkout-total-row--grand span:last-child {
   font-family: var(--font-display);
-  font-size: 1.35rem;
+  font-size: 1.45rem;
   font-weight: 500;
-  color: var(--brand-cta);
+  color: var(--brand-primary-dark);
 }
 
 .rongonaa-checkout-emi-badge {
@@ -3827,11 +3912,48 @@ input[type=number] {
 
 .rongonaa-checkout-submit {
   width: 100%;
-  min-height: 3rem;
-  border-radius: 0 !important;
+  min-height: 3.15rem;
+  border-radius: 999px !important;
   font-weight: 600 !important;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  text-transform: none;
+  box-shadow: 0 10px 22px color-mix(in srgb, var(--brand-primary) 28%, transparent) !important;
+}
+
+.rongonaa-checkout-section label.cursor-pointer {
+  margin-bottom: 0.45rem !important;
+  padding: 0.45rem 0.9rem !important;
+  border-radius: 0.8rem !important;
+  background: #fff !important;
+  border-color: color-mix(in srgb, var(--brand-primary) 12%, #eadfd6) !important;
+}
+
+.rongonaa-checkout-payment label.cursor-pointer {
+  padding-top: 0.8rem !important;
+  padding-bottom: 0.8rem !important;
+}
+
+.rongonaa-checkout-section label.bg-green-50,
+.rongonaa-checkout-section label.border-green-500 {
+  background: color-mix(in srgb, var(--brand-primary) 7%, white) !important;
+  border-color: var(--brand-primary) !important;
+}
+
+.rongonaa-checkout-section label .text-green-600 {
+  color: var(--brand-primary-dark) !important;
+}
+
+.rongonaa-checkout-section input[type="radio"] {
+  border-color: color-mix(in srgb, var(--brand-primary) 28%, #eadfd6) !important;
+}
+
+.rongonaa-checkout-section input[type="radio"]:checked {
+  border-color: var(--brand-primary) !important;
+  --tw-ring-color: color-mix(in srgb, var(--brand-primary) 22%, transparent) !important;
+}
+
+.rongonaa-checkout-section input[type="radio"]:checked::after {
+  background: var(--brand-primary) !important;
 }
 
 .rongonaa-checkout-submit-wrap {
@@ -3873,16 +3995,19 @@ input[type=number] {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: 1.1rem 0.85rem 1rem;
-  border-radius: 1rem;
-  border: 1px solid rgba(127, 29, 29, 0.28);
-  background: linear-gradient(
-    165deg,
-    rgba(255, 255, 255, 0.96) 0%,
-    rgba(255, 248, 244, 0.9) 55%,
-    rgba(145, 27, 48, 0.04) 100%
-  );
-  box-shadow: 0 12px 36px rgba(26, 10, 14, 0.07);
+  padding: 1.75rem 1.15rem 1.45rem;
+  border-radius: 1.35rem;
+  border: 1px solid color-mix(in srgb, var(--brand-primary) 16%, transparent);
+  background:
+    radial-gradient(
+      120% 80% at 50% -10%,
+      color-mix(in srgb, var(--brand-primary) 10%, white) 0%,
+      transparent 55%
+    ),
+    #fff;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.8) inset,
+    0 18px 40px rgba(92, 21, 21, 0.06);
   overflow: hidden;
 }
 
@@ -3964,9 +4089,11 @@ input[type=number] {
 }
 
 .rongonaa-received-title {
-  margin-top: 0.2rem;
-  font-size: clamp(1.2rem, 3.5vw, 1.65rem);
-  font-weight: 900;
+  margin-top: 0.25rem;
+  font-family: var(--font-playfair), Georgia, serif;
+  font-size: clamp(1.55rem, 3.6vw, 2rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
   color: var(--brand-secondary);
 }
 
@@ -3979,15 +4106,15 @@ input[type=number] {
 
 .rongonaa-received-order-id {
   display: inline-flex;
-  margin-top: 0.55rem;
-  padding: 0.28rem 0.65rem;
+  margin-top: 0.7rem;
+  padding: 0.32rem 0.75rem;
   border-radius: 9999px;
-  border: 1px dashed rgba(127, 29, 29, 0.45);
-  background: rgba(255, 255, 255, 0.82);
-  font-size: 0.68rem;
-  font-weight: 800;
+  border: 1px solid color-mix(in srgb, var(--brand-primary) 18%, transparent);
+  background: color-mix(in srgb, var(--brand-primary) 6%, white);
+  font-size: 0.72rem;
+  font-weight: 700;
   letter-spacing: 0.04em;
-  color: rgba(26, 10, 14, 0.62);
+  color: var(--brand-primary-dark);
 }
 
 .rongonaa-received-message {
@@ -4016,11 +4143,11 @@ input[type=number] {
 .rongonaa-received-receipt {
   position: relative;
   width: 100%;
-  padding: 0.9rem 0.95rem 1rem;
-  border-radius: 1rem;
-  border: 1px solid rgba(127, 29, 29, 0.26);
-  background: rgba(255, 255, 255, 0.94);
-  box-shadow: 0 10px 32px rgba(26, 10, 14, 0.06);
+  padding: 1.15rem 1.1rem 1.15rem;
+  border-radius: 1.25rem;
+  border: 1px solid color-mix(in srgb, var(--brand-primary) 12%, #efe6e0);
+  background: #fff;
+  box-shadow: 0 16px 36px rgba(92, 21, 21, 0.05);
 }
 
 @media (min-width: 1024px) {
@@ -4050,8 +4177,8 @@ input[type=number] {
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
-  padding-bottom: 0.65rem;
-  border-bottom: 1px dashed rgba(127, 29, 29, 0.32);
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--brand-primary) 10%, #efe6e0);
 }
 
 .rongonaa-received-receipt-title {
@@ -4100,9 +4227,12 @@ input[type=number] {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.65rem;
-  padding: 0.65rem 0;
-  border-bottom: 1px solid rgba(228, 212, 204, 0.7);
+  gap: 0.75rem;
+  margin-top: 0.7rem;
+  padding: 0.65rem;
+  border-radius: 0.95rem;
+  border: 1px solid color-mix(in srgb, var(--brand-primary) 10%, #efe6e0);
+  background: color-mix(in srgb, var(--brand-ivory, #faf7f2) 70%, white);
 }
 
 .rongonaa-received-line-item:last-child {
@@ -4120,11 +4250,11 @@ input[type=number] {
 .rongonaa-received-line-thumb {
   position: relative;
   flex-shrink: 0;
-  width: 3.25rem;
-  height: 3.25rem;
+  width: 3.6rem;
+  height: 3.6rem;
   overflow: hidden;
-  border-radius: 0.6rem;
-  border: 1px solid rgba(127, 29, 29, 0.22);
+  border-radius: 0.8rem;
+  border: 1px solid color-mix(in srgb, var(--brand-primary) 12%, #efe6e0);
   background: #fff;
 }
 
@@ -4158,9 +4288,8 @@ input[type=number] {
 }
 
 .rongonaa-received-totals {
-  margin-top: 0.35rem;
-  padding-top: 0.55rem;
-  border-top: 1px dashed rgba(127, 29, 29, 0.32);
+  margin-top: 0.75rem;
+  padding-top: 0.35rem;
 }
 
 .rongonaa-received-total-row {
@@ -4179,13 +4308,13 @@ input[type=number] {
 }
 
 .rongonaa-received-total-row--grand {
-  margin-top: 0.35rem;
-  padding: 0.55rem 0.65rem;
-  border-radius: 0.65rem;
-  border: 1px dashed rgba(127, 29, 29, 0.38);
-  background: rgba(255, 248, 244, 0.88);
+  margin-top: 0.45rem;
+  padding: 0.7rem 0.8rem;
+  border-radius: 0.85rem;
+  border: 1px solid color-mix(in srgb, var(--brand-primary) 16%, transparent);
+  background: color-mix(in srgb, var(--brand-primary) 7%, white);
   font-size: 0.92rem;
-  font-weight: 900;
+  font-weight: 700;
   color: var(--brand-secondary);
 }
 
@@ -4196,7 +4325,19 @@ input[type=number] {
 .rongonaa-received-receipt-actions {
   display: flex;
   justify-content: center;
-  margin-top: 0.85rem;
+  margin-top: 1rem;
+}
+
+.rongonaa-received-home-link {
+  display: inline-flex;
+}
+
+.rongonaa-received-home {
+  min-width: 11rem;
+  border-radius: 999px !important;
+  padding: 0.7rem 1.4rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.01em;
 }
 
 .rongonaa-received-side {
@@ -4215,21 +4356,21 @@ input[type=number] {
 }
 
 .rongonaa-received-card {
-  padding: 0.85rem 0.9rem 0.95rem;
-  border-radius: 0.95rem;
-  border: 1px solid rgba(228, 212, 204, 0.95);
-  background: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 8px 26px rgba(26, 10, 14, 0.05);
+  padding: 1rem 1rem 1.05rem;
+  border-radius: 1.25rem;
+  border: 1px solid color-mix(in srgb, var(--brand-primary) 12%, #efe6e0);
+  background: #fff;
+  box-shadow: 0 16px 36px rgba(92, 21, 21, 0.05);
 }
 
 .rongonaa-received-card-head {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
-  padding-bottom: 0.6rem;
-  border-bottom: 1px dashed rgba(127, 29, 29, 0.28);
-  font-size: 0.9rem;
-  font-weight: 800;
+  gap: 0.45rem;
+  padding-bottom: 0.7rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--brand-primary) 10%, #efe6e0);
+  font-size: 0.92rem;
+  font-weight: 700;
   color: var(--brand-secondary);
 }
 
@@ -4289,24 +4430,28 @@ input[type=number] {
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  width: 1.5rem;
-  height: 1.5rem;
+  width: 1.55rem;
+  height: 1.55rem;
   border-radius: 9999px;
+  background: #fff;
+  border: 1px solid color-mix(in srgb, var(--brand-primary) 28%, #efe6e0);
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--brand-primary);
+  box-shadow: 0 0 0 3px #fff;
+}
+
+.rongonaa-received-journey-step--active .rongonaa-received-journey-dot {
+  border-color: transparent;
   background: linear-gradient(
     135deg,
     var(--brand-primary-dark),
     var(--brand-primary)
   );
-  font-size: 0.65rem;
-  font-weight: 900;
   color: #fff;
-  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.95);
-}
-
-.rongonaa-received-journey-step--active .rongonaa-received-journey-dot {
   box-shadow:
-    0 0 0 3px rgba(255, 255, 255, 0.95),
-    0 0 0 5px rgba(127, 29, 29, 0.35);
+    0 0 0 3px #fff,
+    0 0 0 5px color-mix(in srgb, var(--brand-primary) 28%, transparent);
 }
 
 .rongonaa-received-journey-title {
@@ -4323,16 +4468,12 @@ input[type=number] {
 }
 
 .rongonaa-received-community {
-  margin-top: 0.85rem;
-  padding: 0.9rem 0.95rem;
-  border-radius: 1rem;
-  border: 1px solid rgba(127, 29, 29, 0.28);
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.94),
-    rgba(255, 248, 244, 0.88)
-  );
-  box-shadow: 0 8px 28px rgba(26, 10, 14, 0.05);
+  margin-top: 1rem;
+  padding: 1.1rem 1.05rem 1.15rem;
+  border-radius: 1.25rem;
+  border: 1px solid color-mix(in srgb, var(--brand-primary) 12%, #efe6e0);
+  background: #fff;
+  box-shadow: 0 16px 36px rgba(92, 21, 21, 0.05);
 }
 
 .rongonaa-received-community-title {
@@ -4414,11 +4555,12 @@ input[type=number] {
 }
 
 .rongonaa-received-help {
-  margin-top: 0.75rem;
-  padding: 0.85rem 0.9rem;
-  border-radius: 0.95rem;
-  border: 1px solid rgba(228, 212, 204, 0.95);
-  background: rgba(255, 255, 255, 0.88);
+  margin-top: 0.85rem;
+  padding: 1rem 1.05rem 1.05rem;
+  border-radius: 1.25rem;
+  border: 1px solid color-mix(in srgb, var(--brand-primary) 12%, #efe6e0);
+  background: #fff;
+  box-shadow: 0 16px 36px rgba(92, 21, 21, 0.05);
 }
 
 .rongonaa-received-help-title {
@@ -4470,9 +4612,286 @@ input[type=number] {
 
 .rongonaa-received-cta {
   width: 100%;
-  margin-top: 0.65rem;
-  border-radius: 0.75rem !important;
-  font-weight: 800 !important;
+  margin-top: 0.85rem;
+  border-radius: 999px !important;
+  padding: 0.72rem 1rem !important;
+  font-weight: 700 !important;
+}
+
+.order-confirm {
+  max-width: 52rem;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 3rem;
+}
+
+.order-confirm-hero {
+  max-width: 34rem;
+  margin: 0 auto 1.75rem;
+  text-align: center;
+}
+
+.order-confirm-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  margin-bottom: 0.85rem;
+  border-radius: 999px;
+  background: var(--brand-primary);
+  color: #fff;
+}
+
+.order-confirm-kicker {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--brand-primary);
+}
+
+.order-confirm-title {
+  margin-top: 0.35rem;
+  font-family: var(--font-playfair), Georgia, serif;
+  font-size: clamp(2rem, 5vw, 2.75rem);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  color: var(--brand-secondary);
+}
+
+.order-confirm-lead {
+  margin: 0.75rem auto 0;
+  max-width: 28rem;
+  font-size: 0.92rem;
+  line-height: 1.7;
+  color: color-mix(in srgb, var(--brand-secondary) 62%, transparent);
+}
+
+.order-confirm-id {
+  display: flex;
+  justify-content: center;
+  gap: 0.45rem;
+  margin-top: 0.85rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--brand-primary-dark);
+}
+
+.order-confirm-id span {
+  opacity: 0.45;
+}
+
+.order-confirm-sheet {
+  display: grid;
+  gap: 0;
+  overflow: hidden;
+  border-radius: 1.35rem;
+  background: #fff;
+  border: 1px solid color-mix(in srgb, var(--brand-primary) 10%, #eadfd6);
+  box-shadow: 0 24px 50px rgba(92, 21, 21, 0.05);
+}
+
+@media (min-width: 900px) {
+  .order-confirm-sheet {
+    grid-template-columns: 1.35fr 0.85fr;
+  }
+}
+
+.order-confirm-receipt,
+.order-confirm-aside {
+  padding: 1.25rem 1.2rem 1.35rem;
+}
+
+.order-confirm-aside {
+  background: color-mix(in srgb, var(--brand-ivory, #faf7f2) 55%, white);
+  border-top: 1px solid color-mix(in srgb, var(--brand-primary) 8%, #eadfd6);
+}
+
+@media (min-width: 900px) {
+  .order-confirm-aside {
+    border-top: 0;
+    border-left: 1px solid color-mix(in srgb, var(--brand-primary) 8%, #eadfd6);
+  }
+}
+
+.order-confirm-section-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.85rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--brand-secondary) 45%, transparent);
+}
+
+.order-confirm-section-label em {
+  font-style: normal;
+  letter-spacing: 0.04em;
+  color: var(--brand-primary);
+}
+
+.order-confirm-item {
+  display: grid;
+  grid-template-columns: 4rem 1fr auto;
+  gap: 0.8rem;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-top: 1px solid color-mix(in srgb, var(--brand-primary) 8%, #eadfd6);
+}
+
+.order-confirm-thumb {
+  position: relative;
+  width: 4rem;
+  height: 4rem;
+  overflow: hidden;
+  border-radius: 0.85rem;
+  background: var(--brand-ivory, #faf7f2);
+}
+
+.order-confirm-item-copy p {
+  font-size: 0.92rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--brand-secondary);
+}
+
+.order-confirm-item-copy span,
+.order-confirm-address,
+.order-confirm-pay {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: color-mix(in srgb, var(--brand-secondary) 55%, transparent);
+}
+
+.order-confirm-item strong {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--brand-secondary);
+}
+
+.order-confirm-totals {
+  margin-top: 0.4rem;
+  padding-top: 0.35rem;
+}
+
+.order-confirm-totals div {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.28rem 0;
+  font-size: 0.84rem;
+  color: color-mix(in srgb, var(--brand-secondary) 62%, transparent);
+}
+
+.order-confirm-totals .is-total {
+  margin-top: 0.35rem;
+  padding-top: 0.7rem;
+  border-top: 1px solid color-mix(in srgb, var(--brand-primary) 12%, #eadfd6);
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--brand-secondary);
+}
+
+.order-confirm-name {
+  font-family: var(--font-playfair), Georgia, serif;
+  font-size: 1.25rem;
+  color: var(--brand-secondary);
+}
+
+.order-confirm-steps {
+  margin-top: 1.35rem;
+  display: grid;
+  gap: 0.85rem;
+}
+
+.order-confirm-steps li {
+  display: grid;
+  grid-template-columns: 1.4rem 1fr;
+  gap: 0.65rem;
+  align-items: start;
+}
+
+.order-confirm-steps li > span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.4rem;
+  height: 1.4rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--brand-primary) 25%, #eadfd6);
+  font-size: 0.68rem;
+  color: var(--brand-primary);
+}
+
+.order-confirm-steps li.is-now > span {
+  border-color: transparent;
+  background: var(--brand-primary);
+  color: #fff;
+}
+
+.order-confirm-steps p {
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--brand-secondary);
+}
+
+.order-confirm-steps small {
+  display: block;
+  margin-top: 0.12rem;
+  font-size: 0.75rem;
+  line-height: 1.45;
+  color: color-mix(in srgb, var(--brand-secondary) 52%, transparent);
+}
+
+.order-confirm-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem 1.25rem;
+  margin-top: 1.35rem;
+}
+
+.order-confirm-primary {
+  min-width: 14rem;
+  border-radius: 999px !important;
+  padding: 0.78rem 1.5rem !important;
+  font-weight: 600 !important;
+}
+
+.order-confirm-secondary {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--brand-primary-dark);
+  text-decoration: underline;
+  text-underline-offset: 0.22em;
+}
+
+.order-confirm-foot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.45rem 1.1rem;
+  margin-top: 2rem;
+  padding-top: 1rem;
+  font-size: 0.78rem;
+  color: color-mix(in srgb, var(--brand-secondary) 55%, transparent);
+}
+
+.order-confirm-foot a,
+.order-confirm-foot button {
+  color: inherit;
+  cursor: pointer;
+}
+
+.order-confirm-foot a:hover,
+.order-confirm-foot button:hover {
+  color: var(--brand-primary);
 }
 
 /* ── Flash Sale — professional Ruby Noir section ── */
@@ -8524,6 +8943,35 @@ button[aria-label="Clear all filters"]:hover {
 .rongonaa-pdp__desc-body .editor-preview td {
   background: transparent !important;
   background-color: transparent !important;
+}
+
+.rongonaa-pdp__desc-body .editor-preview img {
+  margin-left: 0 !important;
+  margin-right: auto !important;
+}
+
+.rongonaa-pdp__desc-body .size-guide-pair {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.rongonaa-pdp__desc-body .size-guide-pair img {
+  width: calc(50% - 0.5rem) !important;
+  max-width: calc(50% - 0.5rem) !important;
+  margin: 0 !important;
+  height: auto !important;
+}
+
+@media (max-width: 720px) {
+  .rongonaa-pdp__desc-body .size-guide-pair {
+    flex-direction: column;
+  }
+
+  .rongonaa-pdp__desc-body .size-guide-pair img {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
 }
 
 .rongonaa-pdp__seo {

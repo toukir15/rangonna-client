@@ -1,8 +1,9 @@
 "use client";
 import useTableRefreshRegister from "@admin/components/Table/useTableRefreshRegister";
 import Icon from "@admin/components/core/Icon/Icon";
-import AuthLayout, { NoScrollLayout } from "@admin/layouts/AuthLayout";
-import React, { useState, useEffect, useRef } from "react";
+import AuthLayout from "@admin/layouts/AuthLayout";
+import PageHeader from "@admin/components/layout/PageHeader";
+import React, { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import Button from "@admin/components/core/Button/Button";
 import { PurchasesService } from "@admin/@services/apis/PurchasesService/Purchases.service";
 import { ToastService } from "@admin/utils/toastr.service";
@@ -15,6 +16,11 @@ import html2pdf from "html2pdf.js";
 import PurchasePdf from "@admin/components/pdf/PurchasePdf";
 import PurchaseSkeleton from "@admin/components/Skeleton/Purchase/purchase.skeleton";
 import EditProductInfoSkeleton from "@admin/components/Skeleton/Orders/EditOrder/EditProductInfoSkeleton";
+
+const sizeRank = (size: string) => {
+  const value = parseFloat(String(size || "").replace(/[^\d.]/g, ""));
+  return Number.isNaN(value) ? Number.POSITIVE_INFINITY : value;
+};
 
 const Page: React.FC = () => {
   const { permissionList } = useGlobalContext();
@@ -48,7 +54,6 @@ const Page: React.FC = () => {
   }, [pId]);
 
   const handlePdf = () => {
-    console.log("pdf a click korci");
     if (!pdfRef.current) return;
 
     const element = pdfRef.current;
@@ -63,230 +68,267 @@ const Page: React.FC = () => {
     html2pdf().set(options).from(element).save();
   };
   const handlePrint = () => {
-    console.log("print a click korci");
+    window.print();
   };
   useTableRefreshRegister(getPurchases);
 
+  const money = (value: unknown) =>
+    `৳ ${Number(value || 0).toLocaleString("en-BD")}`;
+
+  const totalQty = singleData?.purchase_products?.reduce(
+    (sum: number, product: any) => sum + (product?.quantity || 0),
+    0,
+  );
+
+  const groupedProducts = useMemo(() => {
+    const lines = singleData?.purchase_products || [];
+    const groups: {
+      id: string;
+      title: string;
+      image?: { src?: string; title?: string };
+      lines: any[];
+    }[] = [];
+    const index = new Map<string, (typeof groups)[number]>();
+
+    lines.forEach((line: any, lineIndex: number) => {
+      const id = String(line?.product?._id || line?.product || lineIndex);
+      let group = index.get(id);
+      if (!group) {
+        group = {
+          id,
+          title: line?.product?.title || "Product",
+          image: line?.product?.featured_image,
+          lines: [],
+        };
+        index.set(id, group);
+        groups.push(group);
+      }
+      group.lines.push(line);
+    });
+
+    groups.forEach((group) => {
+      group.lines.sort((a, b) => {
+        const diff = sizeRank(a?.size) - sizeRank(b?.size);
+        if (diff !== 0) return diff;
+        return String(a?.size || a?.sku || "").localeCompare(
+          String(b?.size || b?.sku || ""),
+        );
+      });
+    });
+
+    return groups;
+  }, [singleData]);
 
   return (
     <AuthLayout>
-      <NoScrollLayout>
-        <div className="md:flex items-center justify-between 2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 md:pb-0 mb-2">
-          <div className="flex items-center gap-4">
-            <h2 className="2xl:text-2xl lg:text-xl text-lg font-semibold text-app">
-              Purchase Detail : {singleData?.invoice}
-            </h2>
-          </div>
-          <div className="flex items-center gap-3">
-            {hasPermission(permissionList, "purchase_edit") && (
+      <div className="2xl:px-4 px-3 2xl:pt-4 md:pt-3 pt-2 pb-4">
+        <PageHeader
+          title={`Purchase Detail${singleData?.invoice ? ` · ${singleData.invoice}` : ""}`}
+          action={
+            <div className="flex flex-wrap items-center gap-2">
+              {hasPermission(permissionList, "purchase_edit") && (
+                <Button
+                  className="btn-primary btn-primary-inline inline-flex items-center gap-2"
+                  onClick={() =>
+                    router.push(
+                      `/admin/purchase/purchase/edit-purchases/${singleData?._id}`,
+                    )
+                  }
+                  disabled={isLoading}
+                >
+                  <Icon name="edit_document" size={16} />
+                  Edit
+                </Button>
+              )}
               <Button
-                className="flex items-center bg-green-500 !px-4 !py-1"
-                onClick={() =>
-                  router.push(
-                    `/admin/purchase/purchase/edit-purchases/${singleData?._id}`
-                  )
-                }
+                className="btn-secondary inline-flex items-center gap-2"
+                onClick={handlePdf}
                 disabled={isLoading}
               >
-                <Icon name={"edit_document"} />
-                <span className="ml-1">Edit</span>
+                <Icon name="picture_as_pdf" size={16} />
+                PDF
               </Button>
-            )}
+              <Button
+                className="btn-secondary inline-flex items-center gap-2"
+                onClick={handlePrint}
+                disabled={isLoading}
+              >
+                <Icon name="print" size={16} />
+                Print
+              </Button>
+            </div>
+          }
+        />
 
-            <Button
-              className="flex items-center bg-purple-500 !px-4 !py-1"
-              onClick={handlePdf}
-              disabled={isLoading}
-            >
-              <Icon name={"picture_as_pdf"} />
-              <span className="ml-1">Pdf</span>
-            </Button>
-            <Button
-              className="flex items-center bg-orange-500 !px-4 !py-1"
-              onClick={handlePrint}
-            >
-              <Icon name={"adf_scanner"} />
-              <span className="ml-1">Print</span>
-            </Button>
-            {/* <Button
-              className="flex items-center bg-red-500 !px-4 !py-1"
-              //   onClick={handleAddClick}
-            >
-              <Icon name={"auto_delete"} />
-              <span className="ml-1">Delete</span>
-            </Button> */}
+        <div className="hidden">
+          <div ref={pdfRef}>
+            <PurchasePdf data={singleData} />
           </div>
         </div>
-      </NoScrollLayout>
-      <div className="hidden">
-        <div ref={pdfRef}>
-          <PurchasePdf data={singleData} />
-        </div>
-      </div>
 
-      <div className="min-h-[72vh] 2xl:mx-4 mx-3 bg-white dark:bg-gray-700 dark:text-gray-300 mt-6 p-4 rounded-lg">
         {isLoading ? (
           <PurchaseSkeleton />
         ) : (
-          <div className="flex flex-wrap gap-5 items-center justify-between pr-20">
-            <div>
-              <h3 className="text-lg font-semibold">Supplier Info</h3>
-              <p>{singleData?.supplier?.name}</p>
-              <p>{singleData?.supplier?.email}</p>
-              <p>{singleData?.supplier?.phone}</p>
-              <p>{singleData?.supplier?.address}</p>
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold">Company Info</h3>
-              <p>Naviforce</p>
-              <p>admin@example.com</p>
-              <p>01841544590</p>
-              <p>14, Purana Paltan, Dhaka-1000</p>
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold">Purchase Info</h3>
-              <p>Reference : {singleData?.invoice}</p>
-              <p>
-                Status:{" "}
-                <span
-                  className={`${getStatusStyle(
-                    singleData?.status
-                  )} px-2 text-xs`}
-                >
+          <div className="purchase-detail-grid">
+            <section className="purchase-detail-card">
+              <h3>Supplier</h3>
+              <p className="purchase-detail-name">{singleData?.supplier?.name}</p>
+              <p className="purchase-detail-meta">{singleData?.supplier?.email}</p>
+              <p className="purchase-detail-meta">{singleData?.supplier?.phone}</p>
+              <p className="purchase-detail-meta">{singleData?.supplier?.address}</p>
+            </section>
+            <section className="purchase-detail-card">
+              <h3>Company</h3>
+              <p className="purchase-detail-name">Naviforce</p>
+              <p className="purchase-detail-meta">admin@example.com</p>
+              <p className="purchase-detail-meta">01841544590</p>
+              <p className="purchase-detail-meta">14, Purana Paltan, Dhaka-1000</p>
+            </section>
+            <section className="purchase-detail-card">
+              <h3>Purchase</h3>
+              <div className="purchase-detail-line">
+                <span>Reference</span>
+                <strong>{singleData?.invoice}</strong>
+              </div>
+              <div className="purchase-detail-line">
+                <span>Status</span>
+                <span className={getStatusStyle(singleData?.status)}>
                   {singleData?.status}
                 </span>
-              </p>
-              <p>Warehouse : {singleData?.warehouse?.title}</p>
-              <p>
-                Payment Status :{" "}
-                <span className="uppercase">{singleData?.payment_status}</span>
-              </p>
-            </div>
+              </div>
+              <div className="purchase-detail-line">
+                <span>Warehouse</span>
+                <strong>{singleData?.warehouse?.title}</strong>
+              </div>
+              <div className="purchase-detail-line">
+                <span>Payment</span>
+                <span className={getStatusStyle(singleData?.payment_status)}>
+                  {singleData?.payment_status}
+                </span>
+              </div>
+            </section>
           </div>
         )}
 
-        <div className="overflow-x-auto mt-10">
-          <h2 className="font-bold text-lg py-3">Order Summary:</h2>
+        <div className="edit-order-products-card mt-4">
+          <div className="premium-table-toolbar">
+            <p className="premium-table-toolbar-title">Order summary</p>
+            <p className="premium-table-toolbar-meta">
+              {groupedProducts.length}{" "}
+              {groupedProducts.length === 1 ? "product" : "products"} ·{" "}
+              {totalQty || 0} pcs
+            </p>
+          </div>
           {isLoading ? (
-            <EditProductInfoSkeleton />
+            <div className="p-4">
+              <EditProductInfoSkeleton />
+            </div>
           ) : (
-            <table className="edit-order-products-table">
-              <thead className="dark:bg-gray-700 h-[55px] shadow-sm border-b border-gray-300 dark:border-gray-700 p-20">
-                <tr>
-                  <th className="dark:border-gray-600 px-4 py-2 dark:text-gray-300">
-                    Product
-                  </th>
-                  <th className="border dark:border-gray-600 px-4 py-2 dark:text-gray-300">
-                    Net Unit Cost
-                  </th>
-                  <th className="border dark:border-gray-600 px-4 py-2 whitespace-nowrap dark:text-gray-300">
-                    Quantity (
-                    {singleData?.purchase_products?.reduce(
-                      (sum: number, product: any) =>
-                        sum + (product?.quantity || 0),
-                      0
-                    )}
-                    )
-                  </th>
-                  <th className="border dark:border-gray-600 px-4 py-2 w-28 dark:text-gray-300">
-                    Unit cost
-                  </th>
-                  <th className="border dark:border-gray-600 px-4 py-2 dark:text-gray-300">
-                    Discount
-                  </th>
-
-                  <th className="border dark:border-gray-600 px-4 py-2 dark:text-gray-300">
-                    Subtotal
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {singleData?.purchase_products?.map(
-                  (productData: any, index: string) => (
-                    <tr key={index}>
-                      <td className="border dark:border-gray-600 px-4 py-2 text-center min-w-52">
-                        <div className="flex items-center gap-4">
-                          <Image
-                            src={productData?.product?.featured_image?.src}
-                            alt={productData?.product?.featured_image?.title}
-                            width={50}
-                            height={50}
-                            className="rounded-lg"
-                          />
-                          <p>{productData?.product?.title}</p>
-                        </div>
-                      </td>
-                      <td className="border dark:border-gray-600 dark:text-gray-300 px-4 py-2 font-medium min-w-36">
-                        {productData?.unit_cost}
-                      </td>
-                      <td className="border dark:border-gray-600 px-4 py-2 text-center dark:text-gray-400">
-                        {productData?.quantity}
-                      </td>
-                      <td className="border dark:border-gray-600 px-4 py-2 text-right dark:text-gray-400">
-                        {productData?.unit_cost}
-                      </td>
-                      <td className="border dark:border-gray-600 px-4 py-2 text-right dark:text-gray-400">
-                        {productData?.discount}
-                      </td>
-
-                      <td className="border dark:border-gray-600 px-4 py-2 text-right dark:text-gray-400">
-                        {productData?.subtotal}
-                      </td>
+            <>
+              <div className="overflow-x-auto">
+                <table className="edit-order-products-table">
+                  <thead>
+                    <tr>
+                      <th>Product</th>
+                      <th className="is-right">Net unit cost</th>
+                      <th className="is-center">Quantity</th>
+                      <th className="is-right">Unit cost</th>
+                      <th className="is-right">Discount</th>
+                      <th className="is-right">Subtotal</th>
                     </tr>
-                  )
-                )}
+                  </thead>
+                  <tbody>
+                    {groupedProducts.map((group) => {
+                      const groupQty = group.lines.reduce(
+                        (sum, line) => sum + (Number(line?.quantity) || 0),
+                        0,
+                      );
+                      const groupDiscount = group.lines.reduce(
+                        (sum, line) => sum + (Number(line?.discount) || 0),
+                        0,
+                      );
+                      const groupSubtotal = group.lines.reduce(
+                        (sum, line) => sum + (Number(line?.subtotal) || 0),
+                        0,
+                      );
+                      const unitCost = group.lines[0]?.unit_cost;
 
-                <tr>
-                  <td colSpan={4}></td>
-                  <td className="border dark:border-gray-600 px-4 py-2 text-right font-semibold dark:text-gray-400">
-                    Discount:
-                  </td>
-
-                  <td className="border dark:border-gray-600 px-4 py-2 text-right dark:text-gray-400">
-                    {singleData?.discount}
-                  </td>
-                </tr>
-
-                <tr>
-                  <td colSpan={4}></td>
-                  <td className="border dark:border-gray-600 px-4 py-2 text-right font-semibold dark:text-gray-400">
-                    Shipping:
-                  </td>
-                  <td className="border dark:border-gray-600 px-4 py-2 text-right dark:text-gray-400">
-                    {singleData?.shipping}
-                  </td>
-                </tr>
-
-                <tr>
-                  <td colSpan={4}></td>
-                  <td className="border dark:border-gray-600 px-4 py-2 text-right font-semibold dark:text-gray-400 text-nowrap">
-                    Grand Total :
-                  </td>
-                  <td className="border dark:border-gray-600 px-4 py-2 text-right dark:text-gray-400">
-                    {singleData?.grand_total}
-                  </td>
-                </tr>
-
-                <tr>
-                  <td colSpan={4}></td>
-                  <td className="border dark:border-gray-600 px-4 py-2 text-right font-semibold dark:text-gray-400">
-                    Paid:
-                  </td>
-                  <td className="border dark:border-gray-600 px-4 py-2 text-right dark:text-gray-400">
-                    {singleData?.paid}
-                  </td>
-                </tr>
-                <tr>
-                  <td colSpan={4}></td>
-                  <td className="border dark:border-gray-600 px-4 py-2 text-right font-semibold dark:text-gray-400 text-nowrap">
-                    Due:
-                  </td>
-                  <td className="border dark:border-gray-600 px-4 py-2 text-right dark:text-gray-400">
-                    {singleData?.due}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+                      return (
+                        <Fragment key={group.id}>
+                          <tr className="edit-order-group-row">
+                            <td>
+                              <div className="edit-order-group-product">
+                                {group.image?.src ? (
+                                  <Image
+                                    src={group.image.src}
+                                    alt={group.image.title || group.title}
+                                    width={44}
+                                    height={44}
+                                    className="rounded-lg object-cover"
+                                  />
+                                ) : null}
+                                <div className="min-w-0">
+                                  <p className="data-table-primary">{group.title}</p>
+                                  <p className="purchase-detail-meta">
+                                    {group.lines.length}{" "}
+                                    {group.lines.length === 1 ? "size" : "sizes"} ·{" "}
+                                    {groupQty} pcs
+                                  </p>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="is-right">{money(unitCost)}</td>
+                            <td className="is-center">{groupQty}</td>
+                            <td className="is-right">{money(unitCost)}</td>
+                            <td className="is-right">{money(groupDiscount)}</td>
+                            <td className="is-right">{money(groupSubtotal)}</td>
+                          </tr>
+                          {group.lines.map((line, lineIndex) => (
+                            <tr
+                              key={`${group.id}-${line?.sku || line?.size || lineIndex}`}
+                              className="edit-order-size-row"
+                            >
+                              <td>
+                                <span className="purchase-size-tag is-row">
+                                  {line?.size || line?.sku || "—"}
+                                </span>
+                              </td>
+                              <td />
+                              <td className="is-center">{line?.quantity}</td>
+                              <td />
+                              <td className="is-right">{money(line?.discount)}</td>
+                              <td className="is-right">{money(line?.subtotal)}</td>
+                            </tr>
+                          ))}
+                        </Fragment>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+              <div className="purchase-detail-totals">
+                <div className="purchase-detail-total-row">
+                  <span>Discount</span>
+                  <strong>{money(singleData?.discount)}</strong>
+                </div>
+                <div className="purchase-detail-total-row">
+                  <span>Shipping</span>
+                  <strong>{money(singleData?.shipping)}</strong>
+                </div>
+                <div className="purchase-detail-total-row">
+                  <span>Grand total</span>
+                  <strong>{money(singleData?.grand_total)}</strong>
+                </div>
+                <div className="purchase-detail-total-row">
+                  <span>Paid</span>
+                  <strong>{money(singleData?.paid)}</strong>
+                </div>
+                <div className="purchase-detail-total-row is-due">
+                  <span>Due</span>
+                  <strong>{money(singleData?.due)}</strong>
+                </div>
+              </div>
+            </>
           )}
         </div>
       </div>

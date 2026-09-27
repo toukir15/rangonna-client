@@ -153,7 +153,7 @@ const TableWrapper: React.FC<TableWrapperProps> = ({
         </div>
       )}
 
-      <div className="data-table-viewport">
+      <div className={`data-table-viewport${isLoading ? " is-loading" : ""}`}>
         {isLoading ? (
           <div className="data-table-loading">
             <TableLoading />

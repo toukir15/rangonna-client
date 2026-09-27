@@ -140,7 +140,7 @@ const RefunTrack: React.FC<ShippingTrackerProps> = ({
                                         {(statusLoading || loading) &&
                                             loadingName === step.label && (
                                                 <div className="absolute inset-0 flex items-center justify-center mt-4">
-                                                    <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-green-600"></div>
+                                                    <div className="animate-spin rounded-full h-12 w-12 border-b-4 theme-loader-arc"></div>
                                                 </div>
                                             )}
                                     </div>

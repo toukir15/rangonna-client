@@ -54,6 +54,7 @@ export const getStatusStyle = (status?: string) => {
     case "exchange":
     case "exchanged":
       return `${base} is-neutral`;
+    case "received":
     case "received-product":
     case "received-from-supplier":
       return `${base} is-teal`;

@@ -163,248 +163,151 @@ const ReceivedOrder: React.FC<ReceivedOrderProps> = ({
   }
 
   return (
-    <div className="rongonaa-received-page">
-      <section className="rongonaa-received-celebration">
-        <div className="rongonaa-received-seal" aria-hidden="true">
-          <span className="rongonaa-received-seal-ring" />
-          <span className="rongonaa-received-seal-ring rongonaa-received-seal-ring--inner" />
-          <span className="rongonaa-received-seal-core">
-            <Icon name="check" size={28} />
-          </span>
-        </div>
-
-        <p className="rongonaa-received-kicker">Thank You</p>
-        <h1 className="rongonaa-received-title">অর্ডার সফল!</h1>
-        <p className="rongonaa-received-subtitle">Order Confirmed</p>
-
-        <span className="rongonaa-received-order-id">
-          Order ID: {formatOrderId(orderedItems?._id)}
+    <div className="order-confirm">
+      <header className="order-confirm-hero">
+        <span className="order-confirm-mark" aria-hidden="true">
+          <Icon name="check" size={18} />
         </span>
-
-        <p className="rongonaa-received-message">
+        <p className="order-confirm-kicker">Thank you</p>
+        <h1 className="order-confirm-title">অর্ডার সফল</h1>
+        <p className="order-confirm-lead">
           আপনার অর্ডারটি গ্রহণ করা হয়েছে। কিছু সময়ের মধ্যে আমাদের প্রতিনিধি
-          আপনাকে কল করে অর্ডার কনফার্ম করবেন।
+          কল করে অর্ডার কনফার্ম করবেন।
         </p>
-      </section>
+        <p className="order-confirm-id">
+          Order {formatOrderId(orderedItems?._id)}
+          <span>·</span>
+          {orderedItems?.createdAt
+            ? formateDateWithMonth(orderedItems.createdAt)
+            : "—"}
+        </p>
+      </header>
 
-      <div className="rongonaa-received-layout">
-        <article className="rongonaa-received-receipt">
-          <div className="rongonaa-received-receipt-head">
-            <h2 className="rongonaa-received-receipt-title">Order Receipt</h2>
-            <span className="rongonaa-received-receipt-badge">
-              {orderedItems?.status || "confirmed"}
-            </span>
+      <div className="order-confirm-sheet">
+        <section className="order-confirm-receipt">
+          <div className="order-confirm-section-label">
+            <span>Receipt</span>
+            <em className="capitalize">{orderedItems?.status || "confirmed"}</em>
           </div>
 
-          <div className="rongonaa-received-meta">
-            <div className="rongonaa-received-meta-row">
-              <span>Order Date</span>
-              <strong>
-                {orderedItems?.createdAt
-                  ? formateDateWithMonth(orderedItems.createdAt)
-                  : "—"}
-              </strong>
-            </div>
-            <div className="rongonaa-received-meta-row">
-              <span>Payment</span>
-              <strong className="capitalize">
-                {orderedItems?.payment?.title || "—"}
-              </strong>
-            </div>
-          </div>
-
-          <div>
-            {orderedItems?.line_items?.map((item: any, index: number) => (
-              <div className="rongonaa-received-line-item" key={index}>
-                <div className="rongonaa-received-line-left">
-                  <div className="rongonaa-received-line-thumb">
-                    <Image
-                      className="object-cover"
-                      fill
-                      sizes="52px"
-                      src={item?.product_id?.featured_image?.src}
-                      alt={item?.product_title || "Product"}
-                    />
-                  </div>
-                  <div className="rongonaa-received-line-body">
-                    <p className="rongonaa-received-line-title">
-                      {item?.product_title}
-                    </p>
-                    <p className="rongonaa-received-line-qty">
-                      Qty: {item?.quantity}
-                    </p>
-                  </div>
-                </div>
-                <p className="rongonaa-received-line-price">৳{item?.subtotal}</p>
+          {orderedItems?.line_items?.map((item: any, index: number) => (
+            <div className="order-confirm-item" key={index}>
+              <div className="order-confirm-thumb">
+                <Image
+                  className="object-cover"
+                  fill
+                  sizes="72px"
+                  src={item?.product_id?.featured_image?.src}
+                  alt={item?.product_title || "Product"}
+                />
               </div>
-            ))}
-          </div>
-
-          <div className="rongonaa-received-totals">
-            <div className="rongonaa-received-total-row">
-              <span>Subtotal</span>
-              <span>৳{calculateSubtotal()}</span>
+              <div className="order-confirm-item-copy">
+                <p>{item?.product_title}</p>
+                <span>
+                  {item?.size ? `Size ${item.size} · ` : ""}
+                  Qty {item?.quantity}
+                </span>
+              </div>
+              <strong>৳{item?.subtotal}</strong>
             </div>
-            <div className="rongonaa-received-total-row">
-              <span>Shipping</span>
-              <span>৳{orderedItems?.shipping_line?.total || 0}</span>
+          ))}
+
+          <dl className="order-confirm-totals">
+            <div>
+              <dt>Subtotal</dt>
+              <dd>৳{calculateSubtotal()}</dd>
+            </div>
+            <div>
+              <dt>Shipping</dt>
+              <dd>৳{orderedItems?.shipping_line?.total || 0}</dd>
             </div>
             {orderedItems?.discount_total ? (
-              <div className="rongonaa-received-total-row">
-                <span>Discount (−)</span>
-                <span>৳{orderedItems.discount_total}</span>
+              <div>
+                <dt>Discount</dt>
+                <dd>−৳{orderedItems.discount_total}</dd>
               </div>
             ) : null}
-            <div className="rongonaa-received-total-row rongonaa-received-total-row--grand">
-              <span>Total Paid</span>
-              <span>৳{grandTotal.toFixed(0)}</span>
+            <div className="is-total">
+              <dt>Total</dt>
+              <dd>৳{grandTotal.toFixed(0)}</dd>
             </div>
+          </dl>
+        </section>
+
+        <aside className="order-confirm-aside">
+          <div>
+            <p className="order-confirm-section-label">
+              <span>Deliver to</span>
+            </p>
+            <p className="order-confirm-name">
+              {orderedItems?.customer?.first_name}
+            </p>
+            <p className="order-confirm-address">
+              {orderedItems?.customer?.address}
+            </p>
+            <p className="order-confirm-address">
+              {orderedItems?.customer?.phone}
+            </p>
+            {orderedItems?.customer?.email ? (
+              <p className="order-confirm-address">
+                {orderedItems.customer.email}
+              </p>
+            ) : null}
+            <p className="order-confirm-pay capitalize">
+              Payment · {orderedItems?.payment?.title || "—"}
+            </p>
           </div>
 
-          <div className="rongonaa-received-receipt-actions">
-            <Link href="/">
-              <Button className="premium-cta cursor-pointer !font-bold">
-                Back To Home
-              </Button>
-            </Link>
-          </div>
-        </article>
-
-        <aside className="rongonaa-received-side">
-          <div className="rongonaa-received-card">
-            <div className="rongonaa-received-card-head">
-              <Icon
-                name="local_shipping"
-                variant="outlined"
-                className="text-primary"
-              />
-              Delivery Address
-            </div>
-            <div className="rongonaa-received-address">
-              <address>{orderedItems?.customer?.first_name}</address>
-              <address>{orderedItems?.customer?.address}</address>
-              <address>{orderedItems?.customer?.phone}</address>
-              {orderedItems?.customer?.email ? (
-                <address>{orderedItems.customer.email}</address>
-              ) : null}
-            </div>
-          </div>
-
-          <div className="rongonaa-received-card">
-            <div className="rongonaa-received-card-head">
-              <Icon
-                name="route"
-                variant="outlined"
-                className="text-primary"
-              />
-              Order Journey
-            </div>
-            <div className="rongonaa-received-journey">
-              {JOURNEY_STEPS.map((step, index) => (
-                <div
-                  className={`rongonaa-received-journey-step ${
-                    step.active ? "rongonaa-received-journey-step--active" : ""
-                  }`}
-                  key={index}
-                >
-                  <span className="rongonaa-received-journey-dot">
-                    {index + 1}
-                  </span>
-                  <div>
-                    <p className="rongonaa-received-journey-title">
-                      {step.title}
-                    </p>
-                    <p className="rongonaa-received-journey-text">
-                      {step.text}
-                    </p>
-                  </div>
+          <ol className="order-confirm-steps">
+            {JOURNEY_STEPS.map((step, index) => (
+              <li
+                key={step.title}
+                className={step.active ? "is-now" : undefined}
+              >
+                <span>{index + 1}</span>
+                <div>
+                  <p>{step.title}</p>
+                  <small>{step.text}</small>
                 </div>
-              ))}
-            </div>
-            <Link href="/churi">
-              <Button className="rongonaa-received-cta !bg-primary-light !text-primary border border-primary hover:!bg-primary-lighter cursor-pointer">
-                Continue Shopping
-              </Button>
-            </Link>
-          </div>
+              </li>
+            ))}
+          </ol>
         </aside>
       </div>
 
-      <section className="rongonaa-received-community">
-        <p className="rongonaa-received-community-title">
-          Rongonaa পরিবারের অংশ হোন
-        </p>
-        <p className="rongonaa-received-community-sub">
-          অফার, আপডেট ও কমিউনিটি সাপোর্ট পেতে যুক্ত হোন
-        </p>
-        <div className="rongonaa-received-community-grid">
-          <a
-            href="https://www.facebook.com/Naviforce.com.bd"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="rongonaa-received-community-link"
-          >
-            <span className="rongonaa-received-community-icon rongonaa-received-community-icon--fb">
-              <Icon name="group" variant="outlined" className="text-white" />
-            </span>
-            <span>
-              <p className="rongonaa-received-community-label">Facebook Group</p>
-              <p className="rongonaa-received-community-hint">
-                কমিউনিটিতে যোগ দিন
-              </p>
-            </span>
-          </a>
-          <button
-            type="button"
-            onClick={() =>
-              window.open(
-                "https://whatsapp.com/channel/0029VasAjp5HQbS30uKAIl47",
-                "_blank",
-              )
-            }
-            className="rongonaa-received-community-link w-full"
-          >
-            <span className="rongonaa-received-community-icon rongonaa-received-community-icon--wa">
-              <Icon
-                name="chat_bubble"
-                variant="outlined"
-                className="text-white"
-              />
-            </span>
-            <span>
-              <p className="rongonaa-received-community-label">
-                WhatsApp Channel
-              </p>
-              <p className="rongonaa-received-community-hint">
-                ইনস্ট্যান্ট আপডেট পান
-              </p>
-            </span>
-          </button>
-        </div>
-      </section>
+      <div className="order-confirm-actions">
+        <Link href="/churi">
+          <Button className="premium-cta order-confirm-primary cursor-pointer">
+            Continue Shopping
+          </Button>
+        </Link>
+        <Link href="/" className="order-confirm-secondary">
+          Back to home
+        </Link>
+      </div>
 
-      <section className="rongonaa-received-help">
-        <p className="rongonaa-received-help-title">Need Help?</p>
-        <div className="rongonaa-received-help-grid">
-          <a
-            href="mailto:support@rongonaa.com"
-            className="rongonaa-received-help-link"
-          >
-            <Icon name="mail" variant="outlined" className="text-primary shrink-0" />
-            <span>
-              <p className="rongonaa-received-help-label">Email Support</p>
-              <p className="rongonaa-received-help-value">support@rongonaa.com</p>
-            </span>
-          </a>
-          <a href="tel:01805049380" className="rongonaa-received-help-link">
-            <Icon name="call" variant="outlined" className="text-primary shrink-0" />
-            <span>
-              <p className="rongonaa-received-help-label">Phone Support</p>
-              <p className="rongonaa-received-help-value">01805049380</p>
-            </span>
-          </a>
-        </div>
-      </section>
+      <footer className="order-confirm-foot">
+        <a
+          href="https://www.facebook.com/Naviforce.com.bd"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Facebook
+        </a>
+        <button
+          type="button"
+          onClick={() =>
+            window.open(
+              "https://whatsapp.com/channel/0029VasAjp5HQbS30uKAIl47",
+              "_blank",
+            )
+          }
+        >
+          WhatsApp
+        </button>
+        <a href="mailto:support@rongonaa.com">support@rongonaa.com</a>
+        <a href="tel:01805049380">01805049380</a>
+      </footer>
     </div>
   );
 };

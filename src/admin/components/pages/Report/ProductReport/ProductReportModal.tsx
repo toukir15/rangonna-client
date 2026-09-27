@@ -2,7 +2,6 @@
 import { productService } from "@admin/@services/apis/ProductService/Product.service";
 import Icon from "@admin/components/core/Icon/Icon";
 import Modal from "@admin/components/core/ModalFrom/ModalFrom";
-import ProductReportSkeleton from "@admin/components/Skeleton/Product/ProductReport.skeleton";
 import { ToastService } from "@admin/utils/toastr.service";
 import { useEffect, useState } from "react";
 
@@ -40,107 +39,105 @@ const ProductReportModal = ({
     }
   }, [isModalOpen, productId]);
 
+  const sizeRows = productStatus?.sizes ?? [];
+  const branchRows = productStatus?.data ?? [];
+  const usingSizes = sizeRows.length > 0;
+
+  const rows = usingSizes
+    ? sizeRows.map((item: any) => ({
+        key: item?.sku || item?.size,
+        label: item?.size || "N/A",
+        quantity: Number(item?.quantity || 0),
+        active: Number(item?.active_orders_quantity || 0),
+      }))
+    : branchRows.map((item: any, index: number) => ({
+        key: item?.warehouse_title || index,
+        label: item?.warehouse_title || "N/A",
+        quantity: Number(
+          item?.remaining_stock -
+            item?.transit_quantity -
+            item?.active_orders_quantity || 0,
+        ),
+        active: Number(item?.active_orders_quantity || 0),
+      }));
+
+  const totalQty = rows.reduce(
+    (sum: number, row: { quantity: number }) => sum + row.quantity,
+    0,
+  );
+  const totalActive = rows.reduce(
+    (sum: number, row: { active: number }) => sum + row.active,
+    0,
+  );
+
   return (
     <Modal
       isOpen={isModalOpen}
       onClose={() => setIsModalOpen(false)}
-      width="w-full md:w-3/4"
-      maxWidth="max-w-2xl"
+      width="w-full"
+      maxWidth="max-w-xl"
+      className="stock-report-modal"
     >
-      <Modal.Header className="flex items-center justify-between">
-        <h3 className="text-lg font-medium leading-6 text-gray-900 dark:text-white">
-          {productStatus?.product_title || "Product Report"}
-        </h3>
-
-        <Icon
-          name="close"
+      <Modal.Header className="stock-report-head">
+        <div>
+          <p className="stock-report-kicker">Stock by size</p>
+          <h3 className="stock-report-title">
+            {productStatus?.product_title || "Product Report"}
+          </h3>
+        </div>
+        <button
+          type="button"
+          className="stock-report-close"
           onClick={() => setIsModalOpen(false)}
-          className="text-gray-600 cursor-pointer dark:text-gray-300"
-        />
+          aria-label="Close"
+        >
+          <Icon name="close" size={18} />
+        </button>
       </Modal.Header>
 
-      <Modal.Body>
-        <div className="w-full gap-5 min-h-96">
-          {loading ? (
-            <ProductReportSkeleton />
-          ) : (
-            <div className="w-full overflow-x-auto">
-              {productStatus?.sizes?.length > 0 ? (
-                <table className="w-full border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
-                  <thead className="bg-gray-100 dark:bg-gray-800">
-                    <tr>
-                      <th className="text-left px-4 py-2 text-sm font-semibold uppercase">
-                        Size
-                      </th>
-                      <th className="text-left px-4 py-2 text-sm font-semibold uppercase">
-                        Quantity
-                      </th>
-                      <th className="text-left px-4 py-2 text-sm font-semibold uppercase">
-                        Active Orders
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {productStatus.sizes.map((item: any, index: number) => (
-                      <tr
-                        key={item?.sku || item?.size || index}
-                        className="border-t border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
-                      >
-                        <td className="px-4 py-2 font-medium">
-                          {item?.size || "N/A"}
-                        </td>
-                        <td className="px-4 py-2">{item?.quantity || 0}</td>
-                        <td className="px-4 py-2">
-                          {item?.active_orders_quantity || 0}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              ) : productStatus?.data?.length > 0 ? (
-                <table className="w-full border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
-                  <thead className="bg-gray-100 dark:bg-gray-800">
-                    <tr>
-                      <th className="text-left px-4 py-2 text-sm font-semibold uppercase">
-                        Branch Name
-                      </th>
-                      <th className="text-left px-4 py-2 text-sm font-semibold uppercase">
-                        Quantity
-                      </th>
-                      <th className="text-left px-4 py-2 text-sm font-semibold uppercase">
-                        Active Orders
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {productStatus.data.map((item: any, index: number) => (
-                      <tr
-                        key={index}
-                        className="border-t border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
-                      >
-                        <td className="px-4 py-2">
-                          {item?.warehouse_title || "N/A"}
-                        </td>
-                        <td className="px-4 py-2">
-                          {item?.remaining_stock -
-                            item?.transit_quantity -
-                            item?.active_orders_quantity || 0}
-                        </td>
-                        <td className="px-4 py-2">
-                          {item?.active_orders_quantity || 0}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              ) : (
-                <p className="text-center text-gray-500 dark:text-gray-400 py-4">
-                  No report data found
-                </p>
-              )}
+      <Modal.Body className="!px-5 !pb-5 !pt-4">
+        {loading ? (
+          <div className="stock-report-loading" role="status">
+            <span className="page-loader-spin" />
+            <p>Loading</p>
+          </div>
+        ) : rows.length === 0 ? (
+          <p className="stock-report-empty">No report data found</p>
+        ) : (
+          <>
+            <div className="stock-report-stats">
+              <div>
+                <span>{usingSizes ? "Sizes" : "Branches"}</span>
+                <strong>{rows.length}</strong>
+              </div>
+              <div>
+                <span>Quantity</span>
+                <strong>{totalQty}</strong>
+              </div>
+              <div>
+                <span>Active orders</span>
+                <strong>{totalActive}</strong>
+              </div>
             </div>
-          )}
-        </div>
+
+            <div className="stock-report-table">
+              <div className="stock-report-row is-head">
+                <span>{usingSizes ? "Size" : "Branch"}</span>
+                <span>Quantity</span>
+                <span>Active orders</span>
+              </div>
+              {rows.map((row: { key: string; label: string; quantity: number; active: number }) => (
+                <div className="stock-report-row" key={row.key}>
+                  <span className="purchase-size-tag is-report">{row.label}</span>
+                  <strong>{row.quantity}</strong>
+                  <span className={row.active > 0 ? "is-active" : "is-quiet"}>
+                    {row.active}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
       </Modal.Body>
     </Modal>
   );

@@ -18,7 +18,7 @@ const TableRefreshButton: React.FC<TableRefreshButtonProps> = ({
   className,
   showLabel = true,
 }) => {
-  const { canRefresh, isBusy, handleRefresh } = useTableRefresh({
+  const { canRefresh, isBusy, isRefreshing, handleRefresh } = useTableRefresh({
     onRefresh,
     showRefresh,
     isLoading,
@@ -39,7 +39,7 @@ const TableRefreshButton: React.FC<TableRefreshButtonProps> = ({
         name="refresh"
         variant="outlined"
         size={18}
-        className={isBusy ? "animate-spin" : ""}
+        className={isRefreshing ? "theme-spin animate-spin" : ""}
       />
       {showLabel ? <span className="hidden sm:inline">Refresh</span> : null}
     </button>

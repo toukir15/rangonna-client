@@ -100,7 +100,7 @@ const TaskDetailsStatus: React.FC<ShippingTrackerProps> = ({
                   {(statusLoading || loading) &&
                     loadingName === step?.label && (
                       <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-4 text-center pt-5 mt-4 border-green-600"></div>
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-4 text-center pt-5 mt-4 theme-loader-arc"></div>
                       </div>
                     )}
                 </div>
