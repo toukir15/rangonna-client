@@ -4,9 +4,9 @@ import GlobalLoading from "@/@components/pages/GlobalLoading/GlobalLoading";
 import WomenWatches from "@/@components/pages/Shop/Women/WomenWatches";
 
 export const metadata: Metadata = {
-  title: "Branded Women Watches in Bangladesh",
+  title: "Women's Churi & Bangles in Bangladesh",
   description:
-    "Buy Original Women Watches Best prices in Bangladesh at Naviforce Bangladesh. Women Watches in BD",
+    "Shop women's handcrafted churi and bangle sets at Rangonaa, with Cash on Delivery across Bangladesh.",
   robots: { index: true, follow: true },
 };
 

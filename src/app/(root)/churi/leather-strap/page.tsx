@@ -5,9 +5,9 @@ import LeatherStrap from "@/@components/pages/Collection/LeatherStrap/LeatherStr
 
 // ✅ DYNAMIC METADATA
 export const metadata: Metadata = {
-  title: "Branded Leather Strap Watches in Bangladesh",
+  title: "Leather Strap Churi in Bangladesh",
   description:
-    "Buy Original Leather Strap Watches Best prices in Bangladesh at Naviforce Bangladesh. Leather Strap Watches in BD",
+    "Shop leather-strap churi at Rangonaa for a classic finish, with Cash on Delivery across Bangladesh.",
   robots: { index: true, follow: true },
 };
 

@@ -66,12 +66,12 @@ const VoucherTerms: React.FC = () => {
             <br />
             🌐 Website:{" "}
             <a
-              href="https://naviforce.com.bd/"
+              href="https://rangonaa.com/"
               target="_blank"
               rel="noreferrer"
               className="underline font-medium"
             >
-              naviforce.com.bd
+              rangonaa.com
             </a>
           </p>
         </div>

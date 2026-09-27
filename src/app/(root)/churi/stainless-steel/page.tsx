@@ -5,9 +5,9 @@ import StainlessSteel from "@/@components/pages/Collection/StainlessSteel/Stainl
 
 // ✅ DYNAMIC METADATA
 export const metadata: Metadata = {
-  title: "Branded Stainless Steel Watches in Bangladesh",
+  title: "Stainless Steel Churi in Bangladesh",
   description:
-    "Buy Original Stainless Steel Watches Best prices in Bangladesh at Naviforce Bangladesh. Stainless Steel Watches in BD",
+    "Shop stainless steel churi at Rangonaa for a polished everyday look, with delivery across Bangladesh.",
   robots: { index: true, follow: true },
 };
 

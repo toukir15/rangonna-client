@@ -5,7 +5,7 @@ const RefundPolicy: React.FC = () => {
   return (
     <div className="max-w-layout mx-auto text-justify px-3 bg-white border-primary-border border xl:my-8 lg:my-6 pt-6 rounded-lg">
       <h2 className="lg:text-2xl text-xl font-bold ">
-        NAVIFORCE.COM.BD এর রিফান্ড পলিসি
+        rangonaa.com এর রিফান্ড পলিসি
       </h2>
 
       <p className="text-[#777777]">

@@ -5,9 +5,9 @@ import DualStrap from "@/@components/pages/Collection/DualStrap/DualStrap";
 
 // ✅ DYNAMIC METADATA
 export const metadata: Metadata = {
-  title: "Branded Dual Strap Watches in Bangladesh",
+  title: "Dual Strap Churi in Bangladesh",
   description:
-    "Buy Original Dual Strap Watches Best prices in Bangladesh at Naviforce Bangladesh. Dual Strap Watches in BD",
+    "Browse dual-strap churi at Rangonaa, with two looks in one set and delivery across Bangladesh.",
   robots: { index: true, follow: true },
 };
 

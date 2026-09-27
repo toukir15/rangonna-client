@@ -5,9 +5,9 @@ import QuartzCalendar from "@/@components/pages/Collection/QuartzCalendar/Quartz
 
 // ✅ DYNAMIC METADATA
 export const metadata: Metadata = {
-  title: "Branded Quartz Calendar Watches in Bangladesh",
+  title: "Calendar Churi in Bangladesh",
   description:
-    "Buy Original Quartz Calendar Watches Best prices in Bangladesh at Naviforce Bangladesh. Quartz Calendar Watches in BD",
+    "Shop calendar-style churi at Rangonaa, a detailed collection for gifts and daily wear in Bangladesh.",
   robots: { index: true, follow: true },
 };
 

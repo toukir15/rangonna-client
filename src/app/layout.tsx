@@ -13,6 +13,7 @@ import "./globals.css";
 import "material-icons/iconfont/material-icons.css";
 import { GoogleTagManager } from "@next/third-parties/google";
 import { ENV } from "@/@config/env.config";
+import { SITE_ORIGIN } from "@/@config/site";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -48,10 +49,7 @@ const inter = Inter({
   variable: "--font-inter",
 });
 
-const CANONICAL_URL =
-  ENV.APP_URL && typeof ENV.APP_URL === "string" && ENV.APP_URL.trim() !== ""
-    ? ENV.APP_URL
-    : "http://localhost:3000";
+const CANONICAL_URL = SITE_ORIGIN;
 
 export const metadata: Metadata = {
   title: {

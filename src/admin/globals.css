@@ -2215,6 +2215,64 @@ html:not(.dark) .input-app {
   transform: none;
 }
 
+.data-table-bulk-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  height: 2.25rem;
+  padding: 0 0.9rem;
+  border: none;
+  border-radius: 0.75rem;
+  background: linear-gradient(
+    135deg,
+    var(--color-primary) 0%,
+    var(--color-primary-hover) 100%
+  );
+  color: #fff;
+  font-family: var(--font-inter), system-ui, sans-serif;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: normal;
+  white-space: nowrap;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.data-table-bulk-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px var(--accent-glow);
+}
+
+.data-table-bulk-btn .material-icons,
+.data-table-bulk-btn .material-icons-outlined {
+  font-family: "Material Icons Outlined" !important;
+  font-size: 18px !important;
+  width: 18px;
+  height: 18px;
+  line-height: 18px;
+  overflow: hidden;
+  flex-shrink: 0;
+  letter-spacing: normal;
+  text-transform: none;
+  font-feature-settings: "liga";
+  font-variant-ligatures: normal;
+  color: #fff;
+}
+
+.data-table-bulk-btn .material-icons {
+  font-family: "Material Icons" !important;
+}
+
+.data-table-bulk-btn__label {
+  font-family: var(--font-inter), system-ui, sans-serif;
+  font-feature-settings: normal;
+  line-height: 1;
+  white-space: nowrap;
+  color: #fff;
+}
+
 .btn-secondary,
 .btn-cashflow-secondary {
   padding: 0.625rem 1.25rem;

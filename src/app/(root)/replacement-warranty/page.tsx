@@ -6,11 +6,11 @@ const page: React.FC = () => {
     <div className="max-w-layout mx-auto text-justify px-3 bg-white border-primary-border border xl:my-8 lg:my-6 pt-6 rounded-lg">
       {/* Bangla Section */}
       <h2 className="lg:text-2xl text-xl font-bold ">
-        NAVIFORCE রিপ্লেসমেন্ট ওয়ারেন্টি পলিসি
+        Rangonaa রিপ্লেসমেন্ট ওয়ারেন্টি পলিসি
       </h2>
 
       <p className="text-[#777777]">
-        আমরা NAVIFORCE.COM.BD এ সবসময় অরিজিনাল এবং অথেনটিক প্রোডাক্ট বিক্রয় করি।
+        আমরা rangonaa.com এ সবসময় অরিজিনাল এবং অথেনটিক প্রোডাক্ট বিক্রয় করি।
         আমাদের বেশিরভাগ প্রোডাক্টেই ব্র্যান্ড ওয়ারেন্টি থাকে, কিছু প্রোডাক্ট
         থাকে ওয়ারেন্টি ছাড়া। যেসব প্রোডাক্টে ওয়ারেন্টি থাকে, সেগুলো ওয়েবসাইটে
         উল্লেখ থাকে অথবা ক্ষেত্র বিশেষে ওয়ারেন্টি কার্ড থাকে। যেকোন প্রোডাক্টের{" "}
@@ -83,7 +83,7 @@ const page: React.FC = () => {
       </h2>
 
       <p className="text-[#777777]">
-        We at <strong>NAVIFORCE.COM.BD</strong> offer genuine, authentic
+        We at <strong>rangonaa.com</strong> offer genuine, authentic
         products. Many items come with brand warranty and some do not. If a
         product has a warranty, it will be clearly mentioned on the website,
         invoice, or provided via a warranty card. A{" "}

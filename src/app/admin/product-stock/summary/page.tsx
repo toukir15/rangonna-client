@@ -18,9 +18,7 @@ const Page: React.FC = () => {
   const [summaryData, setSummaryData] = useState<any>();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isAlertOpen, setIsAlertOpen] = useState<boolean>(false);
-  const [isSearchAlertOpen, setIsSearchAlertOpen] = useState<boolean>(false);
   const [syncLoading, setSyncLoading] = useState<boolean>(false);
-  const [syncSearchLoading, setSyncSearchLoading] = useState<boolean>(false);
 
   const getProductStockSummary = () => {
     setIsLoading(true);
@@ -95,31 +93,8 @@ const Page: React.FC = () => {
       setSyncLoading(false);
     }
   };
-  const confirmSearchSync = async () => {
-    setSyncSearchLoading(true);
-
-    try {
-      const res = await WarehouseService.createProductSearchSync();
-      if (res?.success) {
-        ToastService.success(res?.message);
-        getProductStockSummary();
-      } else {
-        ToastService.error(res?.message);
-      }
-    } catch (err: any) {
-      ToastService.error(err.message);
-    } finally {
-      setIsAlertOpen(false);
-
-      setSyncSearchLoading(false);
-    }
-  };
-
   const cancelRemove = () => {
     setIsAlertOpen(false);
-  };
-  const cancelSearchRemove = () => {
-    setIsSearchAlertOpen(false);
   };
   useTableRefreshRegister(getProductStockSummary);
 
@@ -147,27 +122,6 @@ const Page: React.FC = () => {
           />
         </div>
       </Alert>
-      <Alert
-        isOpen={isSearchAlertOpen}
-        confirmLabel="Yes, Sync"
-        cancelLabel="Cancel"
-        onConfirm={confirmSearchSync}
-        onCancel={cancelSearchRemove}
-        isLoading={syncSearchLoading}
-      >
-        <h3 className="text-2xl font-bold text-center">Search Update</h3>
-        <h6 className="text-md my-4 text-center">
-          Are you sure you want to product Search sync?
-        </h6>
-        <div className="flex items-center justify-center my-8">
-          <Icon
-            name="sync_alt"
-            variant="outlined"
-            size={130}
-            className="text-blue-400"
-          />
-        </div>
-      </Alert>
       <NoScrollLayout>
         <div className="2xl:pt-4 pt-2 2xl:px-4 px-3 w-full">
           <div className="lg:flex lg:flex-wrap  items-center md:justify-between pb-2">
@@ -185,16 +139,6 @@ const Page: React.FC = () => {
                   >
                     <Icon name={"sync"} />
                     <span className="ml-1 text-nowrap">Stock Sync </span>
-                  </Button>
-                )}
-
-                {hasPermission(permissionList, "product_search_sync") && (
-                  <Button
-                    className="btn-primary btn-primary-inline inline-flex items-center gap-2"
-                    onClick={() => setIsSearchAlertOpen(true)}
-                  >
-                    <Icon name={"sync"} />
-                    <span className="ml-1 text-nowrap">Search Sync </span>
                   </Button>
                 )}
               </div> */}

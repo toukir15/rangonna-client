@@ -4,9 +4,9 @@ import GlobalLoading from "@/@components/pages/GlobalLoading/GlobalLoading";
 import Sunglass from "@/@components/pages/Sunglass/Sunglass";
 
 export const metadata: Metadata = {
-  title: "Branded Sunglass in Bangladesh",
+  title: "Sunglasses in Bangladesh",
   description:
-    "Buy Original Sunglass Best prices in Bangladesh at Naviforce Bangladesh. Sunglass in BD",
+    "Shop sunglasses at Rangonaa, with styles for everyday wear and Cash on Delivery in Bangladesh.",
   robots: { index: true, follow: true },
 };
 

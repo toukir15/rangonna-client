@@ -5,9 +5,9 @@ import KidsWatch from "@/@components/pages/Shop/Kids/KidsWatch";
 
 // ✅ DYNAMIC METADATA
 export const metadata: Metadata = {
-  title: "Branded Kids Watches in Bangladesh",
+  title: "Kids' Churi & Bangles in Bangladesh",
   description:
-    "Buy Original Kids Watches Best prices in Bangladesh at Naviforce Bangladesh. Kids Watches in BD",
+    "Browse kids' churi and bangles at Rangonaa, with colorful sets and Cash on Delivery in Bangladesh.",
   robots: { index: true, follow: true },
 };
 

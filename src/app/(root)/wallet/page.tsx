@@ -4,9 +4,9 @@ import GlobalLoading from "@/@components/pages/GlobalLoading/GlobalLoading";
 import Wallet from "@/@components/pages/Wallet/Wallet";
 
 export const metadata: Metadata = {
-  title: "Branded Wallet in Bangladesh",
+  title: "Wallets in Bangladesh",
   description:
-    "Buy Original Wallet Best prices in Bangladesh at Naviforce Bangladesh. Watch Wallet in BD",
+    "Shop wallets at Rangonaa alongside handcrafted churi collections, with delivery across Bangladesh.",
   robots: { index: true, follow: true },
 };
 

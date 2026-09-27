@@ -5,9 +5,9 @@ import CoupleWatches from "@/@components/pages/Shop/Couple/CoupleWatches";
 
 // ✅ DYNAMIC METADATA
 export const metadata: Metadata = {
-  title: "Branded Couple Watches in Bangladesh",
+  title: "Couple Churi Sets in Bangladesh",
   description:
-    "Buy Original Couple Watches Best prices in Bangladesh at Naviforce Bangladesh. Couple Watches in BD",
+    "Find matching couple churi sets at Rangonaa for weddings, anniversaries, and gifts across Bangladesh.",
   robots: { index: true, follow: true },
 };
 

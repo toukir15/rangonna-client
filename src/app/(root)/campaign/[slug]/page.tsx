@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 
 import BlogDescriptionParser from "@/@components/core/HtmlParser/BlogDescriptionParser";
 import { ENV } from "@/@config/env.config";
+import { absoluteUrl, SITE_NAME } from "@/@config/site";
 import { ICampaignPage } from "@/@interfaces/Campaign/campaign.interface";
 
 type Params = { slug: string };
@@ -40,12 +41,13 @@ export async function generateMetadata({
 
   if (!campaign) {
     return {
-      title: "Campaign Not Found | Naviforce Bangladesh",
+      title: "Campaign Not Found",
       description: "This campaign page does not exist.",
+      alternates: { canonical: absoluteUrl(`/campaign/${slug}`) },
     };
   }
 
-  const title = `${campaign.title} | Naviforce Bangladesh`;
+  const title = campaign.title;
   const description =
     campaign.description?.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim() ||
     campaign.title;
@@ -57,7 +59,10 @@ export async function generateMetadata({
       title: campaign.title,
       description,
       type: "website",
+      url: absoluteUrl(`/campaign/${slug}`),
+      siteName: SITE_NAME,
     },
+    alternates: { canonical: absoluteUrl(`/campaign/${slug}`) },
   };
 }
 

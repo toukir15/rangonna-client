@@ -6,9 +6,9 @@ import PremiumSegment from "@/@components/pages/Collection/PremiumSegment/Premiu
 
 // ✅ DYNAMIC METADATA
 export const metadata: Metadata = {
-  title: "Branded Premium Watches in Bangladesh",
+  title: "Premium Churi & Bangles in Bangladesh",
   description:
-    "Buy Original Premium Watches Best prices in Bangladesh at Naviforce Bangladesh. Premium Watches in BD",
+    "Shop premium and luxury churi at Rangonaa, including bridal and festival sets with delivery in Bangladesh.",
   robots: { index: true, follow: true },
 };
 

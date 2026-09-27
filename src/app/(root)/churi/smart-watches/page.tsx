@@ -5,9 +5,9 @@ import SmartWatch from "@/@components/pages/Shop/SmartWatch/SmartWatch";
 
 // ✅ DYNAMIC METADATA
 export const metadata: Metadata = {
-  title: "Branded Smart Watches in Bangladesh",
+  title: "Smart Style Churi in Bangladesh",
   description:
-    "Buy Original Smart Watches Best prices in Bangladesh at Naviforce Bangladesh. Smart Watches in BD",
+    "Explore modern smart-style churi at Rangonaa, designed for daily wear and gifting in Bangladesh.",
   robots: { index: true, follow: true },
 };
 

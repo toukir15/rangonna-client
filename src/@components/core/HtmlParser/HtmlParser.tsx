@@ -48,7 +48,7 @@ function stripGoogleLinkerParams(href: string, baseOrigin: string): string {
 
 function shouldSanitizeHostname(hostname: string): boolean {
   const h = hostname.replace(/^www\./i, "").toLowerCase();
-  if (h === "naviforce.com.bd") return true;
+  if (h === "rangonaa.com") return true;
   if (typeof window !== "undefined") {
     const current = window.location.hostname
       .replace(/^www\./i, "")
@@ -218,7 +218,7 @@ const CustomHTMLParser: React.FC<HTMLContentProps> = ({ htmlContent }) => {
     const baseOrigin =
       typeof window !== "undefined"
         ? window.location.origin
-        : "https://naviforce.com.bd";
+        : "https://rangonaa.com";
 
     /**
      * Strip GTM / Ads linker junk from same-site URLs (href + click).

@@ -1,6 +1,14 @@
+import type { Metadata } from "next";
 import React from "react";
+import { SITE_ORIGIN } from "@/@config/site";
 
-const OFFICE_NAME = "Naviforce Bangladesh";
+export const metadata: Metadata = {
+  title: "Contact Us",
+  description:
+    "Contact Rangonaa in Purana Paltan, Dhaka for handcrafted churi and bangles. Open every day from 10am to 8pm.",
+};
+
+const OFFICE_NAME = "Rangonaa";
 const ADDRESS_LINE = "Majumder House (5th Floor), 39, Purana Paltan";
 const CITY = "Dhaka";
 const POSTAL_CODE = "1000";
@@ -22,7 +30,7 @@ const OfficeAddress: React.FC = () => {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
     name: OFFICE_NAME,
-    url: "https://naviforce.com.bd",
+    url: SITE_ORIGIN,
     telephone: PHONE_E164,
     address: {
       "@type": "PostalAddress",
@@ -53,14 +61,14 @@ const OfficeAddress: React.FC = () => {
   return (
     <div className="max-w-layout mx-auto text-justify px-3 bg-white border-primary-border border xl:my-8 lg:my-6 pt-6 rounded-lg">
       <h1 className="lg:text-3xl md:text-2xl text-xl font-bold ">
-        Naviforce.com.bd এর অফিসের ঠিকানা
+        Rangonaa-এর অফিসের ঠিকানা
       </h1>
 
       {/* Show in map */}
       <div className="mb-5">
         <div className="w-full h-72 sm:h-96 rounded-2xl overflow-hidden border border-gray-200">
           <iframe
-            title="Naviforce Bangladesh - Location"
+            title="Rangonaa - Location"
             src={MAPS_EMBED}
             width="100%"
             height="100%"
@@ -85,7 +93,7 @@ const OfficeAddress: React.FC = () => {
       <div className="bg-white border border-primary-border rounded-2xl p-4 md:p-6 shadow-sm mb-5">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h2 className="text-xl font-semibold">Naviforce Bangladesh</h2>
+            <h2 className="text-xl font-semibold">Rangonaa</h2>
             <address className="not-italic text-neutral-600 leading-relaxed">
               {FULL_ADDRESS}
             </address>
@@ -121,12 +129,10 @@ const OfficeAddress: React.FC = () => {
         </div>
       </div>
 
-      {/* SEO: LocalBusiness schema */}
-      {/* <script
+      <script
         type="application/ld+json"
-        // @ts-ignore
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      /> */}
+      />
     </div>
   );
 };

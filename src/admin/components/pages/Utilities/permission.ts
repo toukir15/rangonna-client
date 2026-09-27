@@ -28,20 +28,8 @@ export const permissions = [
   {
     sectionName: "Dashboard",
     section: "dashboard",
-    label: "TimeVerse",
-    value: "dashboard_timeverse_view",
-  },
-  {
-    sectionName: "Dashboard",
-    section: "dashboard",
     label: "Bikreta",
     value: "dashboard_bikreta_view",
-  },
-  {
-    sectionName: "Dashboard",
-    section: "dashboard",
-    label: "Olevs",
-    value: "dashboard_olevs_view",
   },
   {
     sectionName: "Dashboard",
@@ -160,20 +148,8 @@ export const permissions = [
   {
     sectionName: "Order",
     section: "order",
-    label: "TimeVerse",
-    value: "order_timeverse_view",
-  },
-  {
-    sectionName: "Order",
-    section: "order",
     label: "Bikreta",
     value: "order_bikreta_view",
-  },
-  {
-    sectionName: "Order",
-    section: "order",
-    label: "Olevs",
-    value: "order_olevs_view",
   },
   {
     sectionName: "Order",
@@ -1240,13 +1216,6 @@ export const permissions = [
     label: "Category Report View",
     value: "product_category_report_view",
   },
-  {
-    sectionName: "Product",
-    section: "product",
-    label: "Product Search Sync",
-    value: "product_search_sync",
-  },
-
   // Product Stock
 
   {

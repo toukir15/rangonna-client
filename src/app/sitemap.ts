@@ -1,0 +1,92 @@
+import type { MetadataRoute } from "next";
+import { ENV } from "@/@config/env.config";
+import { absoluteUrl } from "@/@config/site";
+
+const STATIC_PATHS = [
+  "/",
+  "/churi",
+  "/churi/women",
+  "/churi/men",
+  "/churi/kids",
+  "/churi/couple",
+  "/churi/premium-segment",
+  "/churi/flash-sale",
+  "/churi/stainless-steel",
+  "/churi/silicone-strap",
+  "/churi/leather-strap",
+  "/churi/nylon-strap",
+  "/churi/smart-watches",
+  "/churi/quartz-standard",
+  "/churi/quartz-chronograph",
+  "/churi/quartz-calendar",
+  "/churi/multi-function-quartz",
+  "/churi/mechanical-watch",
+  "/churi/dual-time-watch",
+  "/churi/dual-strap",
+  "/churi/digital-watch",
+  "/churi/box",
+  "/churi/belt",
+  "/wallet",
+  "/sunglass",
+  "/perfume",
+  "/about-us",
+  "/contact-us",
+  "/how-to-buy",
+  "/reviews",
+  "/privacy-policy",
+  "/refund-policy",
+  "/delivery-return-policy",
+  "/replacement-warranty",
+  "/terms-conditions",
+  "/voucher-terms-conditions",
+];
+
+type ProductRow = { slug?: string; updatedAt?: string };
+
+async function fetchProductSlugs(): Promise<ProductRow[]> {
+  const api = ENV.ApiEndpoint?.trim().replace(/\/+$/, "");
+  if (!api) return [];
+
+  const rows: ProductRow[] = [];
+  const limit = 100;
+
+  for (let page = 1; page <= 50; page += 1) {
+    try {
+      const res = await fetch(`${api}/product?page=${page}&limit=${limit}`, {
+        next: { revalidate: 3600 },
+      });
+      if (!res.ok) break;
+
+      const json = await res.json();
+      const batch: ProductRow[] = json?.data?.data ?? [];
+      rows.push(...batch.filter((item) => item?.slug));
+
+      const totalPage = Number(json?.data?.meta?.total_page || 1);
+      if (page >= totalPage || batch.length === 0) break;
+    } catch {
+      break;
+    }
+  }
+
+  return rows;
+}
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const now = new Date();
+  const staticEntries: MetadataRoute.Sitemap = STATIC_PATHS.map((path) => ({
+    url: absoluteUrl(path),
+    lastModified: now,
+    changeFrequency: path === "/" ? "daily" : "weekly",
+    priority: path === "/" ? 1 : 0.7,
+  }));
+
+  const products = await fetchProductSlugs();
+  const productEntries: MetadataRoute.Sitemap = products.map((product) => ({
+    url: absoluteUrl(`/product/${product.slug}`),
+    lastModified: product.updatedAt ? new Date(product.updatedAt) : now,
+    changeFrequency: "weekly",
+    priority: 0.8,
+  }));
+
+  return [...staticEntries, ...productEntries];
+}

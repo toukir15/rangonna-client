@@ -5,9 +5,9 @@ import QuartzStandard from "@/@components/pages/Collection/QuartzStandard/Quartz
 
 // ✅ DYNAMIC METADATA
 export const metadata: Metadata = {
-  title: "Branded Men Watches in Bangladesh",
+  title: "Quartz Churi Collection in Bangladesh",
   description:
-    "Buy Original Quartz Standard Watches Best prices in Bangladesh at Naviforce Bangladesh. Quartz Standard Watches in BD",
+    "Shop the quartz churi collection at Rangonaa, with classic styles and Cash on Delivery in Bangladesh.",
   robots: { index: true, follow: true },
 };
 

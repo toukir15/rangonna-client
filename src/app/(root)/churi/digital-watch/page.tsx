@@ -4,9 +4,9 @@ import GlobalLoading from "@/@components/pages/GlobalLoading/GlobalLoading";
 import DigitalWatch from "@/@components/pages/Collection/DigitalWatch/DigitalWatch";
 
 export const metadata: Metadata = {
-  title: "Branded Digital Watches in Bangladesh",
+  title: "Digital Style Churi in Bangladesh",
   description:
-    "Buy Original Digital Watches Best prices in Bangladesh at Naviforce Bangladesh. Digital Watches in BD",
+    "Shop digital-style churi at Rangonaa for a modern look, with Cash on Delivery in Bangladesh.",
   robots: { index: true, follow: true },
 };
 

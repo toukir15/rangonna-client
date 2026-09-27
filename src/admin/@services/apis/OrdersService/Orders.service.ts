@@ -21,18 +21,9 @@ export const OrdersService = {
       `/order/naviforce` + queryStringMapper(queryParams),
     );
   },
-  getTimeVerseOrders: async (queryParams?: any): Promise<any> => {
-    return await apiIns.get(
-      `/order/timeverse` + queryStringMapper(queryParams),
-    );
-  },
   getBikretaOrders: async (queryParams?: any): Promise<any> => {
     return await apiIns.get(`/order/bikreta` + queryStringMapper(queryParams));
   },
-  getOlevsOrders: async (queryParams?: any): Promise<any> => {
-    return await apiIns.get(`/order/olevs` + queryStringMapper(queryParams));
-  },
-
   getStatusCount: async (queryParams?: any): Promise<any> => {
     return await apiIns.get(
       `/courier-booking/booking-count` + queryStringMapper(queryParams),

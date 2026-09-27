@@ -5,9 +5,9 @@ import DualTimeWatch from "@/@components/pages/Collection/DualTimeWatch/DualTime
 
 // ✅ DYNAMIC METADATA
 export const metadata: Metadata = {
-  title: "Branded Dual Time Watches in Bangladesh",
+  title: "Dual Time Churi in Bangladesh",
   description:
-    "Buy Original Dual Time Watches Best prices in Bangladesh at Naviforce Bangladesh. Dual Time Watches in BD",
+    "Shop dual-time style churi at Rangonaa, a distinctive collection delivered across Bangladesh.",
   robots: { index: true, follow: true },
 };
 

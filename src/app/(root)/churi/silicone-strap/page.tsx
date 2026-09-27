@@ -5,9 +5,9 @@ import SiliconStrap from "@/@components/pages/Collection/SiliconStrap/SiliconStr
 
 // ✅ DYNAMIC METADATA
 export const metadata: Metadata = {
-  title: "Branded Silicon Strap Watches in Bangladesh",
+  title: "Silicone Strap Churi in Bangladesh",
   description:
-    "Buy Original Silicon Strap Watches Best prices in Bangladesh at Naviforce Bangladesh. Silicon Strap Watches in BD",
+    "Browse lightweight silicone-strap churi at Rangonaa, comfortable for all-day wear across Bangladesh.",
   robots: { index: true, follow: true },
 };
 

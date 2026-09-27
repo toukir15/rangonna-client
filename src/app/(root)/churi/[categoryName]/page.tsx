@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { Metadata } from "next";
 import GlobalLoading from "@/@components/pages/GlobalLoading/GlobalLoading";
 import CategoryPageClient from "@/@components/pages/CategoryPageClient/CategoryPageClient";
+import { absoluteUrl, SITE_NAME } from "@/@config/site";
 
 type PageProps = {
     params: Promise<{
@@ -22,26 +23,26 @@ export async function generateMetadata({
     const categoryName = formatCategoryName(categoryNameParam || "category");
 
     return {
-        title: `${categoryName} Churi & Bangles in Bangladesh | Rangonaa`,
+        title: `${categoryName} Churi & Bangles in Bangladesh`,
         description: `Shop ${categoryName} churi and bangles at Rangonaa — handcrafted women's collections with Cash on Delivery across Bangladesh.`,
         robots: {
             index: true,
             follow: true,
         },
         openGraph: {
-            title: `${categoryName} Churi & Bangles | Rangonaa`,
+            title: `${categoryName} Churi & Bangles`,
             description: `Explore ${categoryName} churi and bangle sets at Rangonaa.`,
-            url: `https://rangonaa.com/churi/${categoryNameParam}`,
-            siteName: "Rangonaa",
+            url: absoluteUrl(`/churi/${categoryNameParam}`),
+            siteName: SITE_NAME,
             type: "website",
         },
         twitter: {
             card: "summary_large_image",
-            title: `${categoryName} Churi & Bangles | Rangonaa`,
+            title: `${categoryName} Churi & Bangles`,
             description: `Shop ${categoryName} churi and bangles at Rangonaa.`,
         },
         alternates: {
-            canonical: `https://rangonaa.com/churi/${categoryNameParam}`,
+            canonical: absoluteUrl(`/churi/${categoryNameParam}`),
         },
     };
 }

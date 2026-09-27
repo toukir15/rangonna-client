@@ -1,27 +1,30 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import React from "react";
 import sslpayment from "@/@assets/SSLCommerz-Pay-With-logo.png";
 
-const NaviforceAbout: React.FC = () => {
+export const metadata: Metadata = {
+  title: "About Us",
+  description:
+    "Rangonaa makes handcrafted women's churi and bangles in Bangladesh — bridal, glass, festival, and everyday collections with Cash on Delivery.",
+};
+
+const RangonaaAbout: React.FC = () => {
   return (
     <div className="max-w-layout mx-auto text-justify px-3 bg-white border-primary-border border xl:my-8 lg:my-6 pt-6 rounded-lg lg:pb-8 md:pb-6 pb-4">
       <h1 className="lg:text-3xl md:text-2xl text-xl font-bold md:pt-6 pt-4 md:pb-4 pb-2 ">
-        NAVIFORCE — For Dream
+        Rangonaa — Handcrafted Churi
       </h1>
 
       <p className="text-[#777777]">
-        NAVIFORCE, which combines the words <strong>NAVY</strong> and{" "}
-        <strong>FORCE</strong>, expresses its purpose of being a dominant force
-        and a leader in the watch industry. Every NAVIFORCE watch has the words{" "}
-        <strong>“For Dream”</strong> on its back cover—intended to remind us of
-        our dreams as kids and students, and the dreams we pursue for the
-        future. Time is the engine that drives our dream-chasing, so cherish the
-        time and treasure the spirit that inspires us to be who we are.
+        Rangonaa designs handcrafted women&apos;s churi and bangles in
+        Bangladesh. The collections cover bridal sets, glass bangles, festival
+        looks, and pieces for everyday wear.
       </p>
 
       <p className="text-[#777777] md:pt-3 pt-2">
-        <em>For anyone with a dream</em> — that’s the idea behind the design of
-        every NAVIFORCE watch!
+        Each set is made to be worn, gifted, and kept. Orders ship across
+        Bangladesh with Cash on Delivery.
       </p>
 
       <div className="h-px bg-gray-200 lg:my-8 md:my-6 my-4" />
@@ -31,8 +34,8 @@ const NaviforceAbout: React.FC = () => {
       </h2>
 
       <p className="text-[#777777]">
-        Naviforce Bangladesh provides over 20 payment methods through secure
-        server of the <strong>SSL COMMERZ</strong>. Naviforce Bangladesh risk
+        Rangonaa provides over 20 payment methods through secure
+        server of the <strong>SSL COMMERZ</strong>. Rangonaa risk
         control system ensures your payment security. Your payment will be made
         through your bank server which make sure that your payment is secure. We
         provide Debit/Credit Cards, Bkash, Mobile Banking, Internet Banking as
@@ -62,4 +65,4 @@ const NaviforceAbout: React.FC = () => {
   );
 };
 
-export default NaviforceAbout;
+export default RangonaaAbout;

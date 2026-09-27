@@ -1,7 +1,6 @@
 "use client";
 import React, { ReactNode, useEffect, useState } from "react";
 import TableNoData from "./TableNoData";
-import Button from "../core/Button/Button";
 import Icon from "../core/Icon/Icon";
 import BulkAction from "../pages/Orders/BulkAction";
 import TableLoading from "./TableLoading";
@@ -36,9 +35,6 @@ interface TableWrapperProps {
   bulkActionBtn?: boolean;
   openBulk?: boolean;
 }
-
-const bulkBtnClass =
-  "!inline-flex !h-8 !items-center !gap-1.5 !rounded-xl !border !border-[var(--brand-border-soft)] !bg-[var(--color-primary-soft)] !px-3 !py-0 !text-sm !font-medium !text-[var(--accent)] hover:!bg-[var(--brand-bg-medium)]";
 
 const TableWrapper: React.FC<TableWrapperProps> = ({
   isSwitchOn,
@@ -112,31 +108,44 @@ const TableWrapper: React.FC<TableWrapperProps> = ({
           <div className="data-table-toolbar">
             <div className="data-table-toolbar-start relative flex flex-wrap items-center gap-2">
               {orderListPrintBtn && (
-                <Button onClick={handleListPrintSelected} className={bulkBtnClass}>
+                <button
+                  type="button"
+                  onClick={handleListPrintSelected}
+                  className="data-table-bulk-btn"
+                >
                   <Icon name="list_alt" variant="outlined" size={18} />
-                  <span>Order List</span>
-                </Button>
+                  <span className="data-table-bulk-btn__label">Order List</span>
+                </button>
               )}
               {orderInvoicePrintBtn && (
-                <Button onClick={handleOrderInvoicePrint} className={bulkBtnClass}>
+                <button
+                  type="button"
+                  onClick={handleOrderInvoicePrint}
+                  className="data-table-bulk-btn"
+                >
                   <Icon name="inventory" variant="outlined" size={18} />
-                  <span>Order Invoice</span>
-                </Button>
+                  <span className="data-table-bulk-btn__label">Order Invoice</span>
+                </button>
               )}
               {labelPrintBtn && (
-                <Button
+                <button
+                  type="button"
                   onClick={handleOrderLabelPrintSelected}
-                  className={bulkBtnClass}
+                  className="data-table-bulk-btn"
                 >
                   <Icon name="label_important" variant="outlined" size={18} />
-                  <span>{printLabel}</span>
-                </Button>
+                  <span className="data-table-bulk-btn__label">{printLabel}</span>
+                </button>
               )}
               {labelPrintBtn && (
-                <Button onClick={handleOrderCouponPrint} className={bulkBtnClass}>
+                <button
+                  type="button"
+                  onClick={handleOrderCouponPrint}
+                  className="data-table-bulk-btn"
+                >
                   <Icon name="label_important" variant="outlined" size={18} />
-                  <span>{printCoupon}</span>
-                </Button>
+                  <span className="data-table-bulk-btn__label">{printCoupon}</span>
+                </button>
               )}
             </div>
             {bulkActionBtn && openBulk && (

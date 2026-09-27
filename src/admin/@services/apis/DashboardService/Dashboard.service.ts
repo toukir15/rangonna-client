@@ -16,19 +16,9 @@ export const dashBoardService = {
       `/dashboard/naviforce` + queryStringMapper(queryParams)
     );
   },
-  getTimeverse: async (queryParams?: any): Promise<any> => {
-    return await apiIns.get(
-      `/dashboard/timeverse` + queryStringMapper(queryParams)
-    );
-  },
   getBikreta: async (queryParams?: any): Promise<any> => {
     return await apiIns.get(
       `/dashboard/bikreta` + queryStringMapper(queryParams)
-    );
-  },
-  getOlevs: async (queryParams?: any): Promise<any> => {
-    return await apiIns.get(
-      `/dashboard/olevs` + queryStringMapper(queryParams)
     );
   },
   getOrderSkipTwentySummary: async (queryParams?: any): Promise<any> => {

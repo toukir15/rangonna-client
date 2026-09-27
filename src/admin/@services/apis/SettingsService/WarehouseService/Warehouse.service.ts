@@ -28,8 +28,6 @@ export const WarehouseService = {
 
   createProductStockSync: async (): Promise<any> =>
     await apiIns.post("/product-stock-report/product-stock-sync"),
-  createProductSearchSync: async (): Promise<any> =>
-    await apiIns.post("product/sync-products-to-meili"),
 
   // getWarehouseReport: async (queryParams?: any): Promise<any> => {
   //   return await apiIns.get(`/current-value` + queryStringMapper(queryParams));

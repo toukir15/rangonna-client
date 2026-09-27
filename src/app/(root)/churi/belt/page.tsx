@@ -4,9 +4,9 @@ import GlobalLoading from "@/@components/pages/GlobalLoading/GlobalLoading";
 import WatchBelt from "@/@components/pages/Accessories/WatchBelt/WatchBelt";
 
 export const metadata: Metadata = {
-  title: "Branded Watch Belt in Bangladesh",
+  title: "Churi Belts in Bangladesh",
   description:
-    "Buy Original Watch Belt Best prices in Bangladesh at Naviforce Bangladesh. Watch Belt Watches in BD",
+    "Browse churi belts and straps at Rangonaa, matched to everyday and occasion sets in Bangladesh.",
   robots: { index: true, follow: true },
 };
 

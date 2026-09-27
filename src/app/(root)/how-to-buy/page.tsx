@@ -1,4 +1,11 @@
+import type { Metadata } from "next";
 import React from "react";
+
+export const metadata: Metadata = {
+  title: "How to Buy",
+  description:
+    "Learn how to place an order for handcrafted churi and bangles at Rangonaa, including delivery and payment.",
+};
 
 const HowToOrder: React.FC = () => {
   return (

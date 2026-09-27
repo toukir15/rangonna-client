@@ -7,11 +7,11 @@ const page: React.FC = () => {
 
       <p className="font-bold md:text-xl text-lg">প্রোডাক্ট ডেলিভারিঃ</p>
       <p className="md:pt-2 pt-1 text-[#777777]">
-        Naviforce এর সকল পার্সেল ক্লোজড বক্স ডেলিভারি হবে অর্থাৎ ডেলিভারির সময়
+        Rangonaa এর সকল পার্সেল ক্লোজড বক্স ডেলিভারি হবে অর্থাৎ ডেলিভারির সময়
         আগে পেমেন্ট করে পার্সেল রিসিভ করতে হবে এবং ডেলিভারির সময় প্রোডাক্ট চেক
         করে দেখে পছন্দ হলে নেবে পছন্দ না হলে রিটার্ন করার বা ডেলিভারি নেয়ার কোন
         সুযোগ নেই। ডেলিভারি কোম্পানির কাজ শুধু ডেলিভারি করা। কোন সমস্যা হলে
-        Naviforce এর সাথে সরাসরি যোগাযোগ করবেন।
+        Rangonaa এর সাথে সরাসরি যোগাযোগ করবেন।
       </p>
 
       <p className="pt-2 text-[#777777]">
@@ -66,7 +66,7 @@ const page: React.FC = () => {
         আমাদের কাছে কুরিয়ার করার ঠিকানাঃ
       </p>
       <p className="pt-2 text-[#777777]">
-        <strong>Naviforce</strong> <br />
+        <strong>Rangonaa</strong> <br />
         Room # 5D, Majumder House (5th Floor) 39, Purana Paltan, Dhaka. <br />
         Contact Person: Saiful Islam <br />
         Contact Number: 01841800593 (অবশ্যই এই নাম্বারটি দেবেন, ভুলেও হেল্পলাইন

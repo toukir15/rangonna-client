@@ -5,9 +5,9 @@ import WatchBox from "@/@components/pages/Accessories/WatchBox/WatchBox";
 
 // ✅ DYNAMIC METADATA
 export const metadata: Metadata = {
-  title: "Branded Watch Box in Bangladesh",
+  title: "Churi Gift Boxes in Bangladesh",
   description:
-    "Buy Original Watch Box Best prices in Bangladesh at Naviforce Bangladesh. Watch Box in BD",
+    "Shop churi gift boxes at Rangonaa to store and present bangle sets, delivered across Bangladesh.",
   robots: { index: true, follow: true },
 };
 

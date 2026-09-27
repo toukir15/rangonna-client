@@ -5,9 +5,9 @@ import MechanicalWatch from "@/@components/pages/Collection/MechanicalWatch/Mech
 
 // ✅ DYNAMIC METADATA
 export const metadata: Metadata = {
-  title: "Branded Mechanical Watches in Bangladesh",
+  title: "Mechanical Style Churi in Bangladesh",
   description:
-    "Buy Original Mechanical Watches Best prices in Bangladesh at Naviforce Bangladesh. Mechanical Watches in BD",
+    "Explore mechanical-style churi at Rangonaa, crafted for collectors and daily wear in Bangladesh.",
   robots: { index: true, follow: true },
 };
 

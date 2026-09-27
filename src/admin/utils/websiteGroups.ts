@@ -13,15 +13,7 @@ export type WebsiteSelectOption = {
 const WEBSITE_GROUPS = [
   {
     label: "Watch",
-    urls: [
-      "https://naviforce.com.bd",
-      "https://timeverse.com.bd",
-      "https://olevs.com.bd",
-    ],
-  },
-  {
-    label: "Sunglass & Perfume",
-    urls: ["https://navorabd.com"],
+    urls: ["https://rangonaa.com"],
   },
 ] as const;
 

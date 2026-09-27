@@ -5,9 +5,9 @@ import MultiFunctionQuartz from "@/@components/pages/Collection/MultiFunctionQua
 
 // ✅ DYNAMIC METADATA
 export const metadata: Metadata = {
-  title: "Branded Multi Function Quartz Watches in Bangladesh",
+  title: "Multi-Function Churi in Bangladesh",
   description:
-    "Buy Original Multi Function Quartz Watches Best prices in Bangladesh at Naviforce Bangladesh. Multi Function Quartz Watches in BD",
+    "Browse multi-function churi designs at Rangonaa, made for everyday and occasion wear in Bangladesh.",
   robots: { index: true, follow: true },
 };
 

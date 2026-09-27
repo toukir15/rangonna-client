@@ -6,9 +6,9 @@ import QuartzChronograph from "@/@components/pages/Collection/QuartzChronograph/
 
 // ✅ DYNAMIC METADATA
 export const metadata: Metadata = {
-  title: "Branded Quartz Chronograph Watches in Bangladesh",
+  title: "Chronograph Churi in Bangladesh",
   description:
-    "Buy Original Quartz Chronograph Watches Best prices in Bangladesh at Naviforce Bangladesh. Quartz Chronograph Watches in BD",
+    "Discover chronograph-style churi at Rangonaa for statement looks, delivered across Bangladesh.",
   robots: { index: true, follow: true },
 };
 

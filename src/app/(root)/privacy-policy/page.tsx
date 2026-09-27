@@ -1,16 +1,23 @@
 // app/privacy-policy/page.tsx  (Next.js App Router)
 // or components/PrivacyPolicy.tsx (as a reusable component)
+import type { Metadata } from "next";
 import React from "react";
+
+export const metadata: Metadata = {
+  title: "Privacy Policy",
+  description:
+    "Read how Rangonaa collects, uses, and protects your personal information when you shop for churi and bangles.",
+};
 
 const PrivacyPolicy: React.FC = () => {
   return (
     <div className="max-w-layout mx-auto text-justify px-3 bg-white border-primary-border border xl:my-8 lg:my-6 pt-6 rounded-lg">
       <h1 className="md:text-3xl text-xl font-bold  text-start">
-        Privacy Policy – Naviforce Authentic Watch
+        Privacy Policy – Rangonaa
       </h1>
 
       <p className="text-[#777777]">
-        Welcome to Naviforce Authentic Watch. We respect your privacy and want
+        Welcome to Rangonaa. We respect your privacy and want
         to protect your personal information. To learn more, please read this
         Privacy Policy. This Privacy Policy explains how we collect, use and
         (under certain conditions) disclose your personal information, the steps

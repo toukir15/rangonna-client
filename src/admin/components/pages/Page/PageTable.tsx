@@ -10,7 +10,7 @@ import { useGlobalContext } from "@admin/context/GlobalContext";
 import { hasPermission, noData } from "@admin/utils";
 import { IPageItem } from "@admin/@interfaces/page/page.interface";
 
-const STOREFRONT_BASE_URL = "https://naviforce.com.bd";
+const STOREFRONT_BASE_URL = "https://rangonaa.com";
 
 const stripHtml = (html?: string) => {
   if (!html) return "";
