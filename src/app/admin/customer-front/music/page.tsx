@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import AuthLayout from "@admin/layouts/AuthLayout";
 import PageHeader from "@admin/components/layout/PageHeader";
 import Icon from "@admin/components/core/Icon/Icon";
@@ -21,6 +21,8 @@ export default function StorefrontMusicPage() {
   const [saving, setSaving] = useState(false);
   const [title, setTitle] = useState("");
   const [src, setSrc] = useState("");
+  const [playingId, setPlayingId] = useState<string | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const load = async () => {
     setLoading(true);
@@ -108,6 +110,26 @@ export default function StorefrontMusicPage() {
     }
   };
 
+  const playSong = (song: Song) => {
+    const audio = audioRef.current;
+    if (!audio || !song.src) return;
+
+    if (playingId === song._id && !audio.paused) {
+      audio.pause();
+      setPlayingId(null);
+      return;
+    }
+
+    if (audio.getAttribute("src") !== song.src) {
+      audio.src = song.src;
+    }
+    audio.volume = 0.6;
+    void audio.play().then(() => setPlayingId(song._id)).catch(() => {
+      setPlayingId(null);
+      ToastService.error("Could not play this song");
+    });
+  };
+
   const toggle = async (song: Song) => {
     try {
       const res = await StorefrontMusicService.update(song._id, {
@@ -133,6 +155,10 @@ export default function StorefrontMusicPage() {
       if (!res?.success) {
         ToastService.error(res?.message || "Could not delete song");
         return;
+      }
+      if (playingId === id) {
+        audioRef.current?.pause();
+        setPlayingId(null);
       }
       setSongs((prev) => prev.filter((item) => item._id !== id));
       ToastService.success("Song deleted");
@@ -235,15 +261,29 @@ export default function StorefrontMusicPage() {
               </p>
             </div>
           ) : (
+            <>
+            <audio
+              ref={audioRef}
+              hidden
+              preload="none"
+              onEnded={() => setPlayingId(null)}
+            />
             <ul>
-              {songs.map((song) => (
+              {songs.map((song) => {
+                const isPlaying = playingId === song._id;
+                return (
                 <li
                   key={song._id}
                   className="flex flex-wrap items-center gap-3 border-t border-[var(--border)] px-4 py-3.5 md:px-5"
                 >
-                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[color-mix(in_srgb,var(--color-primary)_12%,var(--bg-surface))] text-[var(--color-primary)]">
-                    <Icon name="music_note" size={18} />
-                  </span>
+                  <button
+                    type="button"
+                    aria-label={isPlaying ? "Pause song" : "Play song"}
+                    className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[color-mix(in_srgb,var(--color-primary)_12%,var(--bg-surface))] text-[var(--color-primary)] transition hover:bg-[color-mix(in_srgb,var(--color-primary)_20%,var(--bg-surface))]"
+                    onClick={() => playSong(song)}
+                  >
+                    <Icon name={isPlaying ? "pause" : "play_arrow"} size={20} />
+                  </button>
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-semibold text-[var(--text-primary)]">
                       {song.title}
@@ -266,8 +306,10 @@ export default function StorefrontMusicPage() {
                     Delete
                   </button>
                 </li>
-              ))}
+                );
+              })}
             </ul>
+            </>
           )}
         </div>
       </div>

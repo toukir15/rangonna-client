@@ -16,14 +16,17 @@ const shuffle = (list: Song[]) => {
   return next;
 };
 
+type SavedMusic = {
+  src?: string;
+  title?: string;
+  time?: number;
+  paused?: boolean;
+  reloads?: number;
+};
+
 const readSaved = () => {
   try {
-    return JSON.parse(sessionStorage.getItem(STORAGE_KEY) || "null") as {
-      src?: string;
-      title?: string;
-      time?: number;
-      paused?: boolean;
-    } | null;
+    return JSON.parse(sessionStorage.getItem(STORAGE_KEY) || "null") as SavedMusic | null;
   } catch {
     return null;
   }
@@ -34,11 +37,34 @@ const writeSaved = (value: {
   title: string;
   time: number;
   paused: boolean;
+  reloads?: number;
 }) => {
   try {
-    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(value));
+    const prev = readSaved();
+    sessionStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({
+        reloads: prev?.reloads ?? 0,
+        ...value,
+      })
+    );
   } catch {
     /* ignore quota */
+  }
+};
+
+let reloadCountedThisDocument = false;
+
+const takeDocumentReload = () => {
+  if (reloadCountedThisDocument) return false;
+  reloadCountedThisDocument = true;
+  try {
+    const entry = performance.getEntriesByType("navigation")[0] as
+      | PerformanceNavigationTiming
+      | undefined;
+    return entry?.type === "reload";
+  } catch {
+    return false;
   }
 };
 
@@ -64,13 +90,49 @@ export default function StorefrontMusic() {
         if (!playable.length) return;
 
         const saved = readSaved();
-        const ordered = shuffle(playable);
-        const savedIndex = saved?.src
-          ? ordered.findIndex((item) => item.src === saved.src)
-          : -1;
-        if (savedIndex > 0) {
-          const [picked] = ordered.splice(savedIndex, 1);
-          ordered.unshift(picked);
+        let reloads = Number(saved?.reloads) || 0;
+        const reloaded = takeDocumentReload();
+        if (reloaded) reloads += 1;
+        const changeSong = reloaded && reloads >= 2 && playable.length > 1;
+        if (changeSong) reloads = 0;
+
+        let ordered = shuffle(playable);
+        const pool =
+          changeSong && saved?.src
+            ? ordered.filter((item) => item.src !== saved.src)
+            : [];
+        if (pool.length) {
+          const next = pool[Math.floor(Math.random() * pool.length)];
+          ordered = [next, ...ordered.filter((item) => item.src !== next.src)];
+          writeSaved({
+            src: next.src,
+            title: next.title,
+            time: 0,
+            paused: false,
+            reloads,
+          });
+        } else if (saved?.src) {
+          const savedIndex = ordered.findIndex((item) => item.src === saved.src);
+          if (savedIndex > 0) {
+            const [picked] = ordered.splice(savedIndex, 1);
+            ordered.unshift(picked);
+          }
+          const sameSong = ordered[0].src === saved.src;
+          writeSaved({
+            src: ordered[0].src,
+            title: ordered[0].title,
+            time: sameSong ? Number(saved.time) || 0 : 0,
+            paused: false,
+            reloads,
+          });
+        } else {
+          writeSaved({
+            src: ordered[0].src,
+            title: ordered[0].title,
+            time: 0,
+            paused: false,
+            reloads,
+          });
         }
         userPausedRef.current = false;
         setSongs(ordered);
@@ -83,22 +145,12 @@ export default function StorefrontMusic() {
     const audio = audioRef.current;
     if (!audio || !song?.src) return;
 
-    const saved = readSaved();
-    if (audio.getAttribute("src") !== song.src) {
-      audio.src = song.src;
-    }
+    let stopped = false;
+    let didSeek = false;
+    userPausedRef.current = false;
     audio.volume = 0.6;
     audio.loop = songs.length < 2;
-
-    const applySavedTime = () => {
-      if (saved?.src === song.src && Number(saved.time) > 1) {
-        try {
-          audio.currentTime = Number(saved.time);
-        } catch {
-          /* ignore seek */
-        }
-      }
-    };
+    audio.autoplay = true;
 
     const persist = () => {
       writeSaved({
@@ -109,33 +161,65 @@ export default function StorefrontMusic() {
       });
     };
 
-    const start = async () => {
-      applySavedTime();
-      if (userPausedRef.current) {
-        setPlaying(false);
+    const seekAfterStart = () => {
+      if (didSeek || stopped) return;
+      didSeek = true;
+      const saved = readSaved();
+      const time = Number(saved?.time);
+      if (saved?.src !== song.src || time <= 1) return;
+      if (Math.abs(audio.currentTime - time) <= 1) return;
+      const resume = () => {
+        audio.removeEventListener("seeked", resume);
+        if (stopped || userPausedRef.current || !audio.paused) return;
+        void audio.play().catch(() => {
+          audio.muted = true;
+          void audio.play().catch(() => undefined);
+        });
+      };
+      audio.addEventListener("seeked", resume);
+      try {
+        audio.currentTime = time;
+      } catch {
+        audio.removeEventListener("seeked", resume);
+      }
+    };
+
+    const ensurePlaying = async () => {
+      if (stopped || userPausedRef.current || !audio.paused) {
+        if (!audio.paused && !stopped) setPlaying(true);
         return;
       }
-      audio.muted = false;
       try {
+        audio.muted = false;
         await audio.play();
-        setPlaying(true);
-      } catch {
+        if (!stopped) setPlaying(true);
+      } catch (err) {
+        if (stopped || userPausedRef.current) return;
+        if (err instanceof DOMException && err.name === "AbortError") return;
         audio.muted = true;
         try {
           await audio.play();
-          setPlaying(true);
+          if (!stopped) setPlaying(true);
         } catch {
-          setPlaying(false);
+          if (!stopped) setPlaying(false);
         }
       }
     };
 
-    audio.addEventListener("loadedmetadata", applySavedTime);
+    const onPlaying = () => {
+      if (stopped) return;
+      setPlaying(true);
+      seekAfterStart();
+    };
+
+    audio.addEventListener("playing", onPlaying);
     audio.addEventListener("timeupdate", persist);
-    void start();
+    const kick = window.setTimeout(() => void ensurePlaying(), 0);
 
     return () => {
-      audio.removeEventListener("loadedmetadata", applySavedTime);
+      stopped = true;
+      window.clearTimeout(kick);
+      audio.removeEventListener("playing", onPlaying);
       audio.removeEventListener("timeupdate", persist);
     };
   }, [song?.src, song?.title, songs.length]);
@@ -199,32 +283,33 @@ export default function StorefrontMusic() {
     });
   };
 
-  if (!song) return <audio ref={audioRef} hidden playsInline preload="auto" />;
-
   return (
     <div
       data-rangonaa-player=""
-      className="fixed bottom-20 right-4 z-[80] lg:bottom-6"
+      className={`fixed bottom-20 right-4 z-[80] lg:bottom-6 ${song ? "" : "pointer-events-none"}`}
     >
       <audio
         ref={audioRef}
+        src={song?.src}
         autoPlay
         playsInline
         preload="auto"
         onEnded={nextSong}
         onPlay={() => setPlaying(true)}
         onPause={() => {
-          if (!audioRef.current?.ended) setPlaying(false);
+          if (userPausedRef.current) setPlaying(false);
         }}
       />
-      <button
-        type="button"
-        aria-label={playing ? "Pause music" : "Play music"}
-        className="grid h-9 w-9 place-items-center rounded-full bg-[#9b1b30] text-[11px] text-white shadow-lg"
-        onClick={toggle}
-      >
-        {playing ? "II" : "▶"}
-      </button>
+      {song ? (
+        <button
+          type="button"
+          aria-label={playing ? "Pause music" : "Play music"}
+          className="grid h-9 w-9 place-items-center rounded-full bg-[#9b1b30] text-[11px] text-white shadow-lg"
+          onClick={toggle}
+        >
+          {playing ? "II" : "▶"}
+        </button>
+      ) : null}
     </div>
   );
 }
