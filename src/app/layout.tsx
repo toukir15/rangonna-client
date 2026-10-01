@@ -14,6 +14,7 @@ import "material-icons/iconfont/material-icons.css";
 import { GoogleTagManager } from "@next/third-parties/google";
 import { ENV } from "@/@config/env.config";
 import { SITE_ORIGIN } from "@/@config/site";
+import StorefrontMusic from "@/@components/pages/StorefrontMusic/StorefrontMusic";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -138,6 +139,7 @@ export default function RootLayout({
         <div className="!w-[100%] font-poppins">
           <div className="bg-background 2xl:p-0">{children}</div>
         </div>
+        <StorefrontMusic />
 
         {ENV.env === "production" ? (
           <script

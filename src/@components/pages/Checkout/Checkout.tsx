@@ -53,6 +53,9 @@ const ProductSchema = yup.object({
   payment: yup.mixed().required("Payment method is required"),
   shipping: yup.mixed().required("Shipping method is required"),
   email: yup.string(),
+  customer_note: yup
+    .string()
+    .max(300, "Note must not exceed 300 characters"),
 });
 
 const defaultValue = {
@@ -60,6 +63,7 @@ const defaultValue = {
   phone: "",
   address: "",
   email: "",
+  customer_note: "",
   // payment: "pay on bkash",
   payment: "cash on delivery",
   shipping: "all bangladesh",
@@ -212,6 +216,7 @@ const Checkout: React.FC = () => {
         if (parsed.phone) setValue("phone", parsed.phone);
         if (parsed.address) setValue("address", parsed.address);
         if (parsed.email) setValue("email", parsed.email);
+        if (parsed.customer_note) setValue("customer_note", parsed.customer_note);
 
         if (parsed.phone && String(parsed.phone).length === 11) {
           handleInComplete(parsed.phone);
@@ -225,6 +230,7 @@ const Checkout: React.FC = () => {
   const watchedPhone = watch("phone");
   const watchedEmail = watch("email");
   const watchedAddress = watch("address");
+  const watchedCustomerNote = watch("customer_note");
 
   useEffect(() => {
     if (saveCookieTimerRef.current) clearTimeout(saveCookieTimerRef.current);
@@ -235,6 +241,7 @@ const Checkout: React.FC = () => {
         phone: (watchedPhone || "").replace(/[^\d]/g, ""),
         email: watchedEmail || "",
         address: watchedAddress || "",
+        customer_note: watchedCustomerNote || "",
       };
 
       try {
@@ -249,7 +256,7 @@ const Checkout: React.FC = () => {
     return () => {
       if (saveCookieTimerRef.current) clearTimeout(saveCookieTimerRef.current);
     };
-  }, [watchedFirstName, watchedPhone, watchedEmail, watchedAddress]);
+  }, [watchedFirstName, watchedPhone, watchedEmail, watchedAddress, watchedCustomerNote]);
 
   const updateQuantity = (index: number, newQuantity: number) => {
     if (newQuantity < 1) return;
@@ -275,6 +282,12 @@ const Checkout: React.FC = () => {
     typeof window !== "undefined"
       ? JSON.parse(localStorage.getItem("campaign_paths") || "[]")
       : [];
+
+  const customerNotePayload = (note?: string) => {
+    const text = String(note || "").trim();
+    if (!text) return {};
+    return { customer_note: { text } };
+  };
 
   const formSubmit = async (formData: any) => {
     const lineItems = cartItems.map((item) => ({
@@ -320,6 +333,7 @@ const Checkout: React.FC = () => {
         user: null,
         source: "website",
         domain: window.location.origin,
+        ...customerNotePayload(formData.customer_note),
       };
       ProductService.createBkashPayment(payload)
         .then((res: any) => {
@@ -360,6 +374,7 @@ const Checkout: React.FC = () => {
         }),
         user: null,
         source: "website",
+        ...customerNotePayload(formData.customer_note),
       };
 
       ProductService.createSslCommerzPayment(payload)
@@ -423,6 +438,7 @@ const Checkout: React.FC = () => {
             title: formData.payment,
           },
           campaign: campaignPaths,
+          ...customerNotePayload(formData.customer_note),
         };
 
         ProductService.createOrder(orderData)
@@ -770,7 +786,6 @@ const Checkout: React.FC = () => {
               errorText={errors?.first_name?.message}
               type="text"
               isRequired
-              classNames="md:mb-5 mb-4"
             />
 
             <Input
@@ -780,7 +795,6 @@ const Checkout: React.FC = () => {
               type="text"
               isRequired
               inputmode="numeric"
-              classNames="md:mb-5 mb-4"
               onChange={(e: any) => {
                 const formattedValue = String(e.target.value || "").replace(
                   /[^\d]/g,
@@ -806,7 +820,6 @@ const Checkout: React.FC = () => {
               errorText={errors?.address?.message}
               type="textarea"
               isRequired
-              classNames="md:mb-4 mb-1"
             />
 
             <Input
@@ -814,7 +827,14 @@ const Checkout: React.FC = () => {
               registerProperty={register("email")}
               errorText={errors?.email?.message}
               type="email"
-              classNames="md:mb-5 mb-4"
+            />
+
+            <Input
+              label="Customer note"
+              registerProperty={register("customer_note")}
+              errorText={errors?.customer_note?.message}
+              type="textarea"
+              placeholder="Add a note for your order"
             />
             </div>
           </section>
@@ -873,10 +893,6 @@ const Checkout: React.FC = () => {
               </div>
             )} */}
           </section>
-
-          <div className="rongonaa-checkout-submit-wrap rongonaa-checkout-submit-wrap--desktop">
-            {renderSubmitButton()}
-          </div>
         </div>
 
         <aside className="rongonaa-checkout-aside">
@@ -1021,13 +1037,17 @@ const Checkout: React.FC = () => {
                 <span>৳{calculateDue().toFixed(0)}</span>
               </div>
             </div>
+            <div className="rongonaa-checkout-finish">
+              <p className="rongonaa-checkout-reassure">
+                Cash on delivery · Easy exchange
+              </p>
+              <div className="rongonaa-checkout-submit-wrap">
+                {renderSubmitButton()}
+              </div>
+            </div>
           </div>
 
         </aside>
-
-        <div className="rongonaa-checkout-submit-wrap rongonaa-checkout-submit-wrap--mobile">
-          {renderSubmitButton()}
-        </div>
       </form>
 
       {/* <OtpModal
