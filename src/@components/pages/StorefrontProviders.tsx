@@ -6,6 +6,7 @@ import { ToastComponent } from "@/@components/pages/ToastComponent/ToastComponen
 import CampaignTracker from "@/@components/pages/CampaingTracker/CampainTracker";
 import GlobalLoading from "@/@components/pages/GlobalLoading/GlobalLoading";
 import ColorThemeBootstrap from "@/@components/pages/Header/ColorThemeBootstrap";
+import StorefrontMusic from "@/@components/pages/StorefrontMusic/StorefrontMusic";
 
 export default function StorefrontProviders({
   children,
@@ -20,6 +21,7 @@ export default function StorefrontProviders({
         <CampaignTracker />
       </Suspense>
       {children}
+      <StorefrontMusic />
     </GlobalProvider>
   );
 }

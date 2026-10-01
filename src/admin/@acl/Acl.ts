@@ -336,6 +336,7 @@ export const labelPermissionMap: Record<string, string[]> = {
   "customerfront/girlsemotion": ["customer_front_menu"],
   "customerfront/instagramgallery": ["customer_front_menu"],
   "customerfront/brandstory": ["customer_front_menu"],
+  "customerfront/music": ["customer_front_menu"],
   // ===== Blog Page =====
   blog: ["blog_view"],
   pages: ["campaign_page_view"],

@@ -652,6 +652,11 @@ export const sideBarItems: ISideBarItems[] = [
         label: "Brand Story",
         icon: "auto_awesome",
       },
+      {
+        href: "/admin/customer-front/music",
+        label: "Music",
+        icon: "music_note",
+      },
     ],
     mainSubLink: true,
   },
