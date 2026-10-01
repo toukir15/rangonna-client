@@ -217,24 +217,14 @@ export default function StorefrontMusic() {
           if (!audioRef.current?.ended) setPlaying(false);
         }}
       />
-      <div className="flex items-center gap-2 rounded-full border border-black/10 bg-white px-2 py-2 shadow-xl">
-        <button
-          type="button"
-          aria-label={playing ? "Pause music" : "Play music"}
-          className="grid h-11 w-11 place-items-center rounded-full bg-[#9b1b30] text-white"
-          onClick={toggle}
-        >
-          {playing ? "II" : "▶"}
-        </button>
-        <div className="pr-3">
-          <p className="max-w-40 truncate text-sm font-semibold text-[#3a2418]">
-            {song.title}
-          </p>
-          <p className="text-[11px] text-[#3a2418]/60">
-            {playing ? "Now playing" : "Tap to play"}
-          </p>
-        </div>
-      </div>
+      <button
+        type="button"
+        aria-label={playing ? "Pause music" : "Play music"}
+        className="grid h-9 w-9 place-items-center rounded-full bg-[#9b1b30] text-[11px] text-white shadow-lg"
+        onClick={toggle}
+      >
+        {playing ? "II" : "▶"}
+      </button>
     </div>
   );
 }
