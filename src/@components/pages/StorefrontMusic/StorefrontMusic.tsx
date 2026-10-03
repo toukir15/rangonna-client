@@ -191,7 +191,7 @@ if (typeof window !== "undefined" && !isQuietPath(window.location.pathname)) {
 export default function StorefrontMusic() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const userPausedRef = useRef(false);
-  const volumeRef = useRef(0.4);
+  const volumeRef = useRef(0.5);
   const overRef = useRef(false);
   const draggingRef = useRef(false);
   const skipClickRef = useRef(false);
@@ -207,7 +207,7 @@ export default function StorefrontMusic() {
   const [index, setIndex] = useState(0);
   const [playing, setPlaying] = useState(false);
   const [open, setOpen] = useState(false);
-  const [volume, setVolume] = useState(0.4);
+  const [volume, setVolume] = useState(0.5);
 
   const song = songs[index];
   const loadedSrcRef = useRef("");

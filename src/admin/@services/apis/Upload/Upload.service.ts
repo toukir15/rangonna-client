@@ -6,6 +6,6 @@ export const UploadService = {
     const formData = new FormData();
     formData.append("file", file);
     formData.append("folder", folder);
-    return await apiIns.post("/upload/direct", formData);
+    return await apiIns.post("/upload/direct", formData, { timeout: 180000 });
   },
 };
