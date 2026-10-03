@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { ENV } from "@/@config/env.config";
 
@@ -54,7 +54,8 @@ const writeSaved = (value: {
   }
 };
 
-const FADE_MS = 1000;
+const FADE_IN_MS = 280;
+const FADE_OUT_MS = 1000;
 
 type FadeJob = {
   id: number | null;
@@ -75,7 +76,7 @@ const fadeVolume = (
   audio: HTMLAudioElement,
   target: number,
   job: FadeJob,
-  ms = FADE_MS,
+  ms = FADE_OUT_MS,
 ) => {
   stopFade(job, false);
   const from = audio.volume;
@@ -120,6 +121,74 @@ const takeDocumentReload = () => {
   }
 };
 
+const warmAudio = (src: string) => {
+  if (typeof document === "undefined" || !src) return;
+  let link = document.getElementById("rangonaa-audio-preload") as HTMLLinkElement | null;
+  if (link?.getAttribute("href") === src) return;
+  if (!link) {
+    link = document.createElement("link");
+    link.id = "rangonaa-audio-preload";
+    link.rel = "preload";
+    link.as = "audio";
+    document.head.appendChild(link);
+  }
+  link.setAttribute("fetchpriority", "high");
+  link.href = src;
+};
+
+type Opening = { src: string; time: number; reloads: number; changeSong: boolean };
+
+let openingCache: Opening | null = null;
+
+const decideOpening = (): Opening => {
+  if (openingCache) return openingCache;
+  const saved = readSaved();
+  let reloads = Number(saved?.reloads) || 0;
+  const reloaded = typeof window !== "undefined" && takeDocumentReload();
+  if (reloaded) reloads += 1;
+  const changeSong = Boolean(reloaded && reloads >= 2 && saved?.src);
+  openingCache = {
+    src: changeSong ? "" : String(saved?.src || ""),
+    time: changeSong ? 0 : Number(saved?.time) || 0,
+    reloads,
+    changeSong,
+  };
+  if (
+    openingCache.src &&
+    typeof window !== "undefined" &&
+    !isQuietPath(window.location.pathname)
+  ) {
+    warmAudio(openingCache.src);
+  }
+  return openingCache;
+};
+
+let playlistPromise: Promise<Song[]> | null = null;
+
+const fetchPlaylist = () => {
+  if (playlistPromise) return playlistPromise;
+  const endpoint = ENV.ApiEndpoint?.trim();
+  if (!endpoint || typeof window === "undefined") {
+    playlistPromise = Promise.resolve([]);
+    return playlistPromise;
+  }
+  playlistPromise = fetch(`${endpoint.replace(/\/$/, "")}/storefront-music`)
+    .then((res) => (res.ok ? res.json() : null))
+    .then((body) => {
+      const playable = (Array.isArray(body?.data) ? body.data : []).filter(
+        (item: Song) => item?.src
+      ) as Song[];
+      return playable;
+    })
+    .catch(() => [] as Song[]);
+  return playlistPromise;
+};
+
+if (typeof window !== "undefined" && !isQuietPath(window.location.pathname)) {
+  decideOpening();
+  void fetchPlaylist();
+}
+
 export default function StorefrontMusic() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const userPausedRef = useRef(false);
@@ -128,6 +197,8 @@ export default function StorefrontMusic() {
   const draggingRef = useRef(false);
   const skipClickRef = useRef(false);
   const holdRef = useRef<number | null>(null);
+  const pressOriginRef = useRef<{ x: number; y: number } | null>(null);
+  const handledPointerRef = useRef(false);
   const fadeJobRef = useRef<FadeJob>({ id: null, settle: null });
   const quietRef = useRef(false);
   const pathname = usePathname() || "";
@@ -140,81 +211,168 @@ export default function StorefrontMusic() {
   const [volume, setVolume] = useState(0.4);
 
   const song = songs[index];
+  const loadedSrcRef = useRef("");
+
+  const pendingSrcRef = useRef("");
+
+  const fadeIn = (audio: HTMLAudioElement) => {
+    if (userPausedRef.current || quietRef.current) return;
+    void fadeVolume(audio, volumeRef.current, fadeJobRef.current, FADE_IN_MS);
+  };
+
+  const startPlayback = (audio: HTMLAudioElement, time = 0) => {
+    if (quietRef.current || userPausedRef.current) return;
+    if (!audio.paused && !audio.muted) return;
+    if (pendingSrcRef.current && pendingSrcRef.current === loadedSrcRef.current) return;
+    const src = loadedSrcRef.current;
+    pendingSrcRef.current = src;
+    audio.autoplay = true;
+    audio.muted = false;
+    audio.volume = Math.min(0.12, volumeRef.current);
+
+    let tries = 0;
+    const finish = () => {
+      if (pendingSrcRef.current === src) pendingSrcRef.current = "";
+    };
+    const play = () => {
+      if (quietRef.current || userPausedRef.current) {
+        finish();
+        return;
+      }
+      void audio.play().then(() => {
+        finish();
+        if (quietRef.current || userPausedRef.current) return;
+        if (loadedSrcRef.current !== src) return;
+        setPlaying(true);
+        fadeIn(audio);
+      }).catch((err) => {
+        if (quietRef.current || userPausedRef.current) {
+          finish();
+          return;
+        }
+        const name = err instanceof DOMException ? err.name : "";
+        if (name === "AbortError" && tries < 3) {
+          tries += 1;
+          window.setTimeout(play, 120);
+          return;
+        }
+        finish();
+        audio.muted = true;
+        void audio.play().then(() => setPlaying(false)).catch(() => setPlaying(false));
+      });
+    };
+
+    if (time > 1 && Math.abs((audio.currentTime || 0) - time) > 1) {
+      const seekThenPlay = () => {
+        try {
+          audio.currentTime = time;
+        } catch {
+          /* metadata not ready */
+        }
+        play();
+      };
+      if (audio.readyState >= 1) seekThenPlay();
+      else audio.addEventListener("loadedmetadata", seekThenPlay, { once: true });
+      return;
+    }
+    play();
+  };
+
+  const bindSrc = (audio: HTMLAudioElement, src: string, time = 0) => {
+    warmAudio(src);
+    const changed = loadedSrcRef.current !== src;
+    if (changed) {
+      loadedSrcRef.current = src;
+      audio.preload = "auto";
+      audio.loop = false;
+      audio.src = src;
+    }
+    startPlayback(audio, time);
+  };
+
+  useLayoutEffect(() => {
+    if (quietRef.current) return;
+    const opening = decideOpening();
+    const audio = audioRef.current;
+    if (!audio || !opening.src) return;
+    userPausedRef.current = false;
+    bindSrc(audio, opening.src, opening.time);
+  }, []);
 
   useEffect(() => {
-    const endpoint = ENV.ApiEndpoint?.trim();
-    if (!endpoint) return;
+    let cancelled = false;
+    void fetchPlaylist().then((playable) => {
+      if (cancelled || !playable.length) return;
+      const opening = decideOpening();
+      const saved = readSaved();
+      const changeSong = opening.changeSong && playable.length > 1;
+      const reloads = changeSong ? 0 : opening.reloads;
 
-    fetch(`${endpoint.replace(/\/$/, "")}/storefront-music`)
-      .then((res) => (res.ok ? res.json() : null))
-      .then((body) => {
-        const playable = (Array.isArray(body?.data) ? body.data : []).filter(
-          (item: Song) => item?.src
-        ) as Song[];
-        if (!playable.length) return;
-
-        const saved = readSaved();
-        let reloads = Number(saved?.reloads) || 0;
-        const reloaded = takeDocumentReload();
-        if (reloaded) reloads += 1;
-        const changeSong = reloaded && reloads >= 2 && playable.length > 1;
-        if (changeSong) reloads = 0;
-
-        let ordered = shuffle(playable);
-        const pool =
-          changeSong && saved?.src
-            ? ordered.filter((item) => item.src !== saved.src)
-            : [];
-        if (pool.length) {
-          const next = pool[Math.floor(Math.random() * pool.length)];
-          ordered = [next, ...ordered.filter((item) => item.src !== next.src)];
-          writeSaved({
-            src: next.src,
-            title: next.title,
-            time: 0,
-            paused: false,
-            reloads,
-          });
-        } else if (saved?.src) {
-          const savedIndex = ordered.findIndex((item) => item.src === saved.src);
-          if (savedIndex > 0) {
-            const [picked] = ordered.splice(savedIndex, 1);
-            ordered.unshift(picked);
-          }
-          const sameSong = ordered[0].src === saved.src;
-          writeSaved({
-            src: ordered[0].src,
-            title: ordered[0].title,
-            time: sameSong ? Number(saved.time) || 0 : 0,
-            paused: false,
-            reloads,
-          });
-        } else {
-          writeSaved({
-            src: ordered[0].src,
-            title: ordered[0].title,
-            time: 0,
-            paused: false,
-            reloads,
-          });
+      let ordered = shuffle(playable);
+      const pool =
+        changeSong && saved?.src
+          ? ordered.filter((item) => item.src !== saved.src)
+          : [];
+      if (pool.length) {
+        const next = pool[Math.floor(Math.random() * pool.length)];
+        ordered = [next, ...ordered.filter((item) => item.src !== next.src)];
+        writeSaved({
+          src: next.src,
+          title: next.title,
+          time: 0,
+          paused: false,
+          reloads,
+        });
+      } else if (saved?.src) {
+        const savedIndex = ordered.findIndex((item) => item.src === saved.src);
+        if (savedIndex > 0) {
+          const [picked] = ordered.splice(savedIndex, 1);
+          ordered.unshift(picked);
         }
+        const sameSong = ordered[0].src === saved.src;
+        writeSaved({
+          src: ordered[0].src,
+          title: ordered[0].title,
+          time: sameSong ? Number(saved.time) || 0 : 0,
+          paused: false,
+          reloads,
+        });
+      } else {
+        writeSaved({
+          src: ordered[0].src,
+          title: ordered[0].title,
+          time: 0,
+          paused: false,
+          reloads,
+        });
+      }
+
+      const first = ordered[0];
+      warmAudio(first.src);
+      const audio = audioRef.current;
+      if (audio && !quietRef.current) {
+        const resumeTime =
+          first.src === saved?.src && !changeSong ? Number(saved?.time) || 0 : 0;
         userPausedRef.current = false;
-        setSongs(ordered);
-        setIndex(0);
-      })
-      .catch(() => undefined);
+        bindSrc(audio, first.src, resumeTime);
+      }
+      setSongs(ordered);
+      setIndex(0);
+    });
+    return () => {
+      cancelled = true;
+    };
+    // bindSrc is stable enough for the first playlist load
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     const audio = audioRef.current;
-    if (!audio || !song?.src) return;
+    if (!audio || !song?.src || quietRef.current) return;
 
-    let stopped = false;
-    let didSeek = false;
-    if (!quietRef.current) userPausedRef.current = false;
-    audio.volume = 0;
-    audio.loop = false;
-    audio.autoplay = !quietRef.current;
+    const saved = readSaved();
+    const time = saved?.src === song.src ? Number(saved.time) || 0 : 0;
+    if (!userPausedRef.current) bindSrc(audio, song.src, time);
 
     const persist = () => {
       writeSaved({
@@ -224,84 +382,15 @@ export default function StorefrontMusic() {
         paused: userPausedRef.current,
       });
     };
-
-    const seekAfterStart = () => {
-      if (didSeek || stopped) return;
-      didSeek = true;
-      const saved = readSaved();
-      const time = Number(saved?.time);
-      if (saved?.src !== song.src || time <= 1) return;
-      if (Math.abs(audio.currentTime - time) <= 1) return;
-      const resume = () => {
-        audio.removeEventListener("seeked", resume);
-        if (stopped || userPausedRef.current || !audio.paused) return;
-        void audio.play().catch(() => {
-          audio.muted = true;
-          void audio.play().catch(() => undefined);
-        });
-      };
-      audio.addEventListener("seeked", resume);
-      try {
-        audio.currentTime = time;
-      } catch {
-        audio.removeEventListener("seeked", resume);
-      }
-    };
-
-    const fadeIn = () => {
-      if (stopped || userPausedRef.current || quietRef.current) return;
-      void fadeVolume(audio, volumeRef.current, fadeJobRef.current);
-    };
-
-    let tries = 0;
-    const ensurePlaying = async () => {
-      if (stopped || userPausedRef.current || quietRef.current) return;
-      if (!audio.paused && !audio.muted) {
-        setPlaying(true);
-        fadeIn();
-        return;
-      }
-      try {
-        audio.muted = false;
-        audio.volume = 0;
-        await audio.play();
-        if (!stopped) setPlaying(true);
-        fadeIn();
-      } catch (err) {
-        if (stopped || userPausedRef.current) return;
-        const name = err instanceof DOMException ? err.name : "";
-        if (name === "AbortError" && tries < 3) {
-          tries += 1;
-          window.setTimeout(() => void ensurePlaying(), 200);
-          return;
-        }
-        audio.muted = true;
-        try {
-          await audio.play();
-          if (!stopped) setPlaying(false);
-        } catch {
-          if (!stopped) setPlaying(false);
-        }
-      }
-    };
-
-    const onPlaying = () => {
-      if (stopped) return;
-      setPlaying(!audio.muted);
-      seekAfterStart();
-    };
-
+    const onPlaying = () => setPlaying(!audio.muted);
     audio.addEventListener("playing", onPlaying);
     audio.addEventListener("timeupdate", persist);
-    const kick = window.setTimeout(() => void ensurePlaying(), 0);
-
     return () => {
-      stopped = true;
-      window.clearTimeout(kick);
       audio.removeEventListener("playing", onPlaying);
       audio.removeEventListener("timeupdate", persist);
     };
-  }, [song?.src, song?.title, songs.length]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [song?.src, quiet]);
 
   useEffect(() => {
     const unlock = (event: Event) => {
@@ -316,7 +405,7 @@ export default function StorefrontMusic() {
       audio.volume = 0;
       void audio.play().then(() => {
         setPlaying(true);
-        void fadeVolume(audio, volumeRef.current, fadeJobRef.current);
+        void fadeVolume(audio, volumeRef.current, fadeJobRef.current, FADE_IN_MS);
       }).catch(() => undefined);
     };
     window.addEventListener("pointerdown", unlock, true);
@@ -338,7 +427,7 @@ export default function StorefrontMusic() {
       audio.volume = 0;
       void audio.play().then(() => {
         setPlaying(true);
-        void fadeVolume(audio, volumeRef.current, fadeJobRef.current);
+        void fadeVolume(audio, volumeRef.current, fadeJobRef.current, FADE_IN_MS);
       }).catch(() => undefined);
       return;
     }
@@ -393,7 +482,7 @@ export default function StorefrontMusic() {
     void audio.play().then(() => {
       if (quietRef.current || userPausedRef.current) return;
       setPlaying(true);
-      void fadeVolume(audio, volumeRef.current, fadeJobRef.current);
+      void fadeVolume(audio, volumeRef.current, fadeJobRef.current, FADE_IN_MS);
     }).catch(() => undefined);
   }, [quiet]);
 
@@ -431,7 +520,7 @@ export default function StorefrontMusic() {
       audio.volume = 0;
       void audio.play().then(() => {
         setPlaying(true);
-        void fadeVolume(audio, volumeRef.current, fadeJobRef.current);
+        void fadeVolume(audio, volumeRef.current, fadeJobRef.current, FADE_IN_MS);
         writeSaved({
           src: song.src,
           title: song.title,
@@ -462,7 +551,6 @@ export default function StorefrontMusic() {
     >
       <audio
         ref={audioRef}
-        src={song?.src}
         autoPlay
         playsInline
         preload="auto"
@@ -485,6 +573,7 @@ export default function StorefrontMusic() {
           }}
           onPointerDown={(event) => {
             if (event.pointerType !== "touch") return;
+            if (event.target instanceof Element && event.target.closest("[data-rangonaa-play]")) return;
             clearHold();
             holdRef.current = window.setTimeout(() => {
               holdRef.current = null;
@@ -529,11 +618,49 @@ export default function StorefrontMusic() {
           </div>
           <button
             type="button"
+            data-rangonaa-play=""
             aria-label={playing ? "Pause music" : "Play music"}
-            className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#9b1b30] text-[11px] text-white shadow-lg"
-            onClick={toggle}
+            className="relative z-10 grid h-11 w-11 shrink-0 touch-manipulation select-none place-items-center rounded-full bg-[#9b1b30] text-[11px] text-white shadow-lg lg:h-9 lg:w-9"
+            onPointerDown={(event) => {
+              event.stopPropagation();
+              handledPointerRef.current = false;
+              pressOriginRef.current = { x: event.clientX, y: event.clientY };
+              clearHold();
+              if (event.pointerType !== "touch") return;
+              holdRef.current = window.setTimeout(() => {
+                holdRef.current = null;
+                skipClickRef.current = true;
+                setOpen(true);
+              }, 420);
+            }}
+            onPointerUp={(event) => {
+              event.stopPropagation();
+              const origin = pressOriginRef.current;
+              pressOriginRef.current = null;
+              const wasLong = holdRef.current === null && skipClickRef.current;
+              clearHold();
+              if (!origin || wasLong) return;
+              const moved = Math.hypot(event.clientX - origin.x, event.clientY - origin.y) > 12;
+              if (moved) {
+                skipClickRef.current = false;
+                return;
+              }
+              handledPointerRef.current = true;
+              toggle();
+            }}
+            onPointerCancel={() => {
+              pressOriginRef.current = null;
+              clearHold();
+            }}
+            onClick={() => {
+              if (handledPointerRef.current) {
+                handledPointerRef.current = false;
+                return;
+              }
+              toggle();
+            }}
           >
-            {playing ? "II" : "▶"}
+            <span className="pointer-events-none">{playing ? "II" : "▶"}</span>
           </button>
         </div>
       ) : null}
