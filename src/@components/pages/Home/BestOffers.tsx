@@ -3,6 +3,7 @@ import { IProduct } from "@/@interfaces/common.interface";
 import DayDealCount from "../DayDealCount/DayDealCount";
 import FlashSaleCard from "./FlashSaleCard";
 import { ENV } from "@/@config/env.config";
+import { fetchStoreCategory } from "@/utils/storeCategory.server";
 
 export const revalidate = 10;
 
@@ -44,14 +45,17 @@ async function fetchFromApi(params: Record<string, string>): Promise<IProduct[]>
 
 /**
  * Home Flash Sale — API driven, max 6 products (6 on mobile, 5 on desktop).
- * Primary: GET /product?category=flash-sale&limit=5
+ * Primary: products in the Flash Sale category, matched by its _id.
  * If fewer than 5 tagged, fill from best-selling so the grid stays full.
  */
 async function getFlashSaleProducts(): Promise<IProduct[]> {
+  const category = await fetchStoreCategory("flash-sale");
+  if (!category?._id) return [];
+
   const flash = await fetchFromApi({
     limit: String(FLASH_LIMIT),
     page: "1",
-    category: "flash-sale",
+    category: category._id,
     sort: "-updatedAt",
   });
 

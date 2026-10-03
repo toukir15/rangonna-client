@@ -8,6 +8,7 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { ProductService } from "@/@services/apis/Product/Product.service";
 import { IMenuItem } from "@/@interfaces/RouteInterface/route.interface";
+import { menuHref } from "@/utils/nav-menu";
 
 interface IShapingCartDrawer {
   isCartDrawer: boolean;
@@ -36,9 +37,9 @@ const MenuDrawer: React.FC<IShapingCartDrawer> = ({
 
   const isParentActive = (item: IMenuItem) => {
     if (item.submenu?.length) {
-      return item.submenu.some((sub) => pathname === sub.route);
+      return item.submenu.some((sub) => pathname === menuHref(sub));
     }
-    return pathname === item.route;
+    return pathname === menuHref(item);
   };
 
   const handleSuggestionClick = (suggestion: any) => {
@@ -225,12 +226,12 @@ const MenuDrawer: React.FC<IShapingCartDrawer> = ({
                       {activeSubmenu === item.id && (
                         <div className="mt-1 space-y-1 border-l-2 border-[var(--brand-primary-border)] pl-3">
                           {item.submenu.map((subItem) => {
-                            const isActive = pathname === subItem.route;
+                            const isActive = pathname === menuHref(subItem);
 
                             return (
                               <Link
                                 key={subItem.id}
-                                href={subItem.route}
+                                href={menuHref(subItem)}
                                 className={`flex min-h-10 items-center rounded-lg px-3 text-sm transition-colors ${
                                   isActive
                                     ? "bg-[var(--brand-primary-lighter)] font-semibold text-[var(--brand-primary-dark)]"
@@ -247,7 +248,7 @@ const MenuDrawer: React.FC<IShapingCartDrawer> = ({
                     </div>
                   ) : (
                     <Link
-                      href={item.route}
+                      href={menuHref(item)}
                       className={`flex min-h-11 items-center gap-2 rounded-lg px-3 text-sm font-semibold transition-colors ${
                         parentActive
                           ? "bg-[var(--brand-primary)] text-white shadow-sm"

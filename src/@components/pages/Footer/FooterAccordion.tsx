@@ -2,7 +2,8 @@
 
 import Accordion from "@/@components/core/Accordian/Accordian";
 import Link from "next/link";
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
+import { loadStoreCategories } from "@/utils/storeCategories";
 
 interface FaqData {
   id: number;
@@ -14,6 +15,28 @@ const linkClass = "rongonaa-footer-mobile-link";
 
 const FooterAccordion: React.FC = () => {
   const [openAccordion, setOpenAccordion] = useState<number | null>(null);
+  const [shopLinks, setShopLinks] = useState<{ href: string; label: string }[]>([
+    { href: "/churi", label: "All Churi" },
+  ]);
+
+  useEffect(() => {
+    let cancelled = false;
+    loadStoreCategories()
+      .then((rows) => {
+        if (cancelled) return;
+        setShopLinks([
+          { href: "/churi", label: "All Churi" },
+          ...rows
+            .slice()
+            .sort((a, b) => a.key.localeCompare(b.key, undefined, { sensitivity: "base" }))
+            .map((row) => ({ href: `/churi/${row.value}`, label: row.key })),
+        ]);
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const handleAccordionClick = (accordionId: number) => {
     setOpenAccordion((prev) => (prev === accordionId ? null : accordionId));
@@ -25,15 +48,11 @@ const FooterAccordion: React.FC = () => {
       title: "Shop",
       des: (
         <ul className="rongonaa-footer-mobile-links">
-          <li><Link className={linkClass} href="/churi">All Churi</Link></li>
-          <li><Link className={linkClass} href="/churi/bridal">Bridal</Link></li>
-          <li><Link className={linkClass} href="/churi/glass-bangles">Glass Bangles</Link></li>
-          <li><Link className={linkClass} href="/churi/ghungroo-glass-bangles">Ghungroo Glass Bangles</Link></li>
-          <li><Link className={linkClass} href="/churi/metal-bangles">Metal Bangles</Link></li>
-          <li><Link className={linkClass} href="/churi/royale-bangles">Royale Bangles</Link></li>
-          <li><Link className={linkClass} href="/churi/hand-craft">Hand Craft</Link></li>
-          <li><Link className={linkClass} href="/churi/festival">Festival</Link></li>
-          <li><Link className={linkClass} href="/churi/premium-churi">Premium Churi</Link></li>
+          {shopLinks.map((link) => (
+            <li key={link.href}>
+              <Link className={linkClass} href={link.href}>{link.label}</Link>
+            </li>
+          ))}
         </ul>
       ),
     },

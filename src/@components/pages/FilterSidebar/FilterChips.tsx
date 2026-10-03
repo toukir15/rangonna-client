@@ -1,6 +1,7 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Icon from "@/@components/core/Icon/Icon";
+import { categoryLabelMap, loadStoreCategories } from "@/utils/storeCategories";
 
 interface FilterChipsProps {
   minPrice: number;
@@ -10,6 +11,7 @@ interface FilterChipsProps {
   sort: string[];
   brands: string[];
   categories: string[];
+  categoryLabels?: Record<string, string>;
   clearPrice: () => void;
   clearSort: () => void;
   clearBrand: () => void;
@@ -24,11 +26,26 @@ const FilterChips: React.FC<FilterChipsProps> = ({
   sort,
   brands,
   categories,
+  categoryLabels,
   clearPrice,
   clearSort,
   clearBrand,
   clearCategory,
 }) => {
+  const [labels, setLabels] = useState<Record<string, string>>(categoryLabels || {});
+
+  useEffect(() => {
+    let cancelled = false;
+    loadStoreCategories()
+      .then((rows) => {
+        if (!cancelled) setLabels((prev) => ({ ...categoryLabelMap(rows), ...prev }));
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const hasAnyFilterActive =
     minPrice !== DEFAULT_MIN ||
     maxPrice !== DEFAULT_MAX ||
@@ -77,7 +94,7 @@ const FilterChips: React.FC<FilterChipsProps> = ({
           className="text-xs px-2 py-0.5 bg-gray-100 rounded-full border border-gray-400 hover:bg-gray-200 flex items-center gap-1 cursor-pointer"
           aria-label={`Clear category ${c}`}
         >
-          {c} <Icon name={"close"} size={14} />
+          {labels[c] || categoryLabels?.[c] || c} <Icon name={"close"} size={14} />
         </button>
       ))}
     </div>

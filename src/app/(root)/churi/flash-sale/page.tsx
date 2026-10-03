@@ -12,6 +12,7 @@ import {
   WatchData,
 } from "@/@interfaces/Watches/AllWatches/allWatches.interface";
 import { IProduct } from "@/@interfaces/common.interface";
+import { loadStoreCategory } from "@/utils/storeCategories";
 
 const PAGE_SIZE = 24;
 
@@ -24,6 +25,8 @@ export default function WomenWatches() {
   const [loading, setLoading] = useState<boolean>(true);
   const [loadingMore, setLoadingMore] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [categoryId, setCategoryId] = useState("");
+  const [categoryReady, setCategoryReady] = useState(false);
 
   const mergeUniqueWatches = (existing: WatchData[], incoming: WatchData[]) => {
     const ids = new Set(existing.map((i) => i._id));
@@ -47,18 +50,33 @@ export default function WomenWatches() {
   }, [loading, loadingMore, hasMore]);
 
   useEffect(() => {
+    let cancelled = false;
+    loadStoreCategory("flash-sale")
+      .then((row) => {
+        if (!cancelled) setCategoryId(row?._id || "");
+      })
+      .finally(() => {
+        if (!cancelled) setCategoryReady(true);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
     setLimit(PAGE_SIZE);
     setWatchData(null);
     setHasMore(true);
-  }, [search]);
+  }, [search, categoryId]);
 
   const queryParams = useMemo(() => {
     const params: Record<string, any> = {
-      ...{ category: "flash-sale", sort: "-updatedAt" },
+      sort: "-updatedAt",
       limit,
     };
+    if (categoryId) params.category = categoryId;
     return params;
-  }, [limit, search]);
+  }, [limit, search, categoryId]);
 
   useEffect(() => {
     let cancelled = false;
@@ -105,11 +123,18 @@ export default function WomenWatches() {
       }
     };
 
+    if (!categoryReady) return;
+    if (!categoryId) {
+      setLoading(false);
+      setLoadingMore(false);
+      setWatchData(null);
+      return;
+    }
     fetchData();
     return () => {
       cancelled = true;
     };
-  }, [JSON.stringify(queryParams)]);
+  }, [JSON.stringify(queryParams), categoryReady, categoryId]);
 
   return (
     <section

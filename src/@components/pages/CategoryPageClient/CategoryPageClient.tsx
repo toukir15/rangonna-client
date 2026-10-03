@@ -16,6 +16,7 @@ import {
 import FilterChips from "../FilterSidebar/FilterChips";
 import FilterDrawer from "../FilterDrawer/FilterDrawer";
 import NoDataFound from "../NoDataFount/NoDataFount";
+import { loadStoreCategory } from "@/utils/storeCategories";
 
 const PAGE_SIZE = 24;
 const DEFAULT_MIN = 0;
@@ -44,19 +45,38 @@ export default function CategoryPageClient({
     const [categories, setCategories] = useState<string[]>([]);
     const [isFilterDrawer, setIsFilterDrawer] = useState<boolean>(false);
     const [priceClear, setPriceClear] = useState<boolean>(false);
+    const [categoryId, setCategoryId] = useState("");
+    const [categoryTitle, setCategoryTitle] = useState("");
+    const [categoryReady, setCategoryReady] = useState(false);
 
     const safeCategoryName = useMemo(() => {
-        return typeof categoryName === "string"
-            ? categoryName.trim().toLowerCase()
-            : "";
+        return typeof categoryName === "string" ? categoryName.trim() : "";
     }, [categoryName]);
 
-    const formattedCategoryName = useMemo(() => {
-        if (!safeCategoryName) return "Category";
+    useEffect(() => {
+        let cancelled = false;
+        setCategoryReady(false);
+        setCategoryId("");
+        setCategoryTitle("");
 
-        return safeCategoryName
-            .replace(/-/g, " ")
-            .replace(/\b\w/g, (char) => char.toUpperCase());
+        if (!safeCategoryName) {
+            setCategoryReady(true);
+            return;
+        }
+
+        loadStoreCategory(safeCategoryName)
+            .then((row) => {
+                if (cancelled) return;
+                setCategoryId(row?._id || "");
+                setCategoryTitle(row?.key || "");
+            })
+            .finally(() => {
+                if (!cancelled) setCategoryReady(true);
+            });
+
+        return () => {
+            cancelled = true;
+        };
     }, [safeCategoryName]);
 
     const mergeUniqueWatches = (existing: WatchData[], incoming: WatchData[]) => {
@@ -94,13 +114,14 @@ export default function CategoryPageClient({
         JSON.stringify(sort),
         JSON.stringify(brands),
         JSON.stringify(categories),
+        categoryId,
     ]);
 
     const mergedCategories = useMemo(() => {
         return Array.from(
-            new Set([...(categories || []), ...(safeCategoryName ? [safeCategoryName] : [])])
+            new Set([...(categories || []), ...(categoryId ? [categoryId] : [])])
         );
-    }, [categories, safeCategoryName]);
+    }, [categories, categoryId]);
 
     const queryParams = useMemo(() => {
         const params: Record<string, any> = {
@@ -184,12 +205,20 @@ export default function CategoryPageClient({
             }
         };
 
+        if (!categoryReady) return;
+        if (safeCategoryName && !categoryId) {
+            setLoading(false);
+            setLoadingMore(false);
+            setWatchData(null);
+            setError("Category not found");
+            return;
+        }
         fetchData();
 
         return () => {
             cancelled = true;
         };
-    }, [JSON.stringify(queryParams)]);
+    }, [JSON.stringify(queryParams), categoryReady, safeCategoryName, categoryId]);
 
     const hasAnyFilterActive =
         minPrice !== DEFAULT_MIN ||
@@ -232,7 +261,7 @@ export default function CategoryPageClient({
                         setBrands={setBrands}
                         categories={categories}
                         setCategories={setCategories}
-                        filterCategories={safeCategoryName}
+                        filterCategories={categoryId}
                         priceClear={priceClear}
                     />
                 </div>
@@ -242,7 +271,7 @@ export default function CategoryPageClient({
                         <div className="text-sm md:text-base flex flex-wrap items-center gap-1">
                             <Link href="/">Home</Link> /{" "}
                             <Link href="/churi">Churi</Link> /{" "}
-                            <span>{formattedCategoryName}</span>
+                            <span>{categoryTitle || "Category"}</span>
 
                             <div className="ml-3 md:block hidden">
                                 <FilterChips
@@ -354,7 +383,7 @@ export default function CategoryPageClient({
                 setBrands={setBrands}
                 categories={categories}
                 setCategories={setCategories}
-                filterCategories={safeCategoryName}
+                filterCategories={categoryId}
                 priceClear={priceClear}
             />
         </div>

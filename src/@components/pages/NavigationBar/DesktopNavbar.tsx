@@ -3,11 +3,13 @@
 import Link from "next/link";
 import { useState } from "react";
 import Icon from "@/@components/core/Icon/Icon";
+import { menuHref } from "@/utils/nav-menu";
 
 interface SubMenuItem {
   id?: string | number;
   name: string;
   route: string;
+  category?: string;
   icon?: string;
 }
 
@@ -15,6 +17,7 @@ interface NavItem {
   id?: string | number;
   name: string;
   route?: string;
+  category?: string;
   icon?: string;
   submenu?: SubMenuItem[];
   color?: string;
@@ -82,7 +85,7 @@ export default function DesktopNavbar({ navItems }: DesktopNavbarProps) {
                       {item.submenu?.map((subItem, subIndex) => (
                         <li key={subItem.id ?? subIndex}>
                           <Link
-                            href={subItem.route}
+                            href={menuHref(subItem)}
                             onClick={closeSubmenu}
                             className="rongonaa-nav-dropdown-link"
                           >
@@ -105,7 +108,7 @@ export default function DesktopNavbar({ navItems }: DesktopNavbarProps) {
                   </ul>
                 </>
               ) : (
-                <Link href={item.route || "#"} className="rongonaa-nav-link">
+                <Link href={menuHref(item)} className="rongonaa-nav-link">
                   {item?.icon ? (
                     <Icon
                       name={item.icon}

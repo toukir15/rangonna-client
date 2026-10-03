@@ -2,6 +2,7 @@ import { apiIns } from "@/@config/api.config";
 import { ENV } from "@/@config/env.config";
 import { multipartApiIns } from "@/@config/multipartApi.config";
 import { queryStringMapper } from "@/@services/utils";
+import { resolveCategoryQueryParam } from "@/utils/storeCategories";
 
 export const ProductService = {
   // getProduct: async (queryParams?: any): Promise<any> => {
@@ -11,6 +12,9 @@ export const ProductService = {
     const updatedParams = {
       ...queryParams,
     };
+    if (updatedParams.category != null) {
+      updatedParams.category = await resolveCategoryQueryParam(updatedParams.category);
+    }
 
     return await apiIns.get(
       "/product" + queryStringMapper(updatedParams),
@@ -31,6 +35,9 @@ export const ProductService = {
     const updatedParams = {
       ...queryParams,
     };
+    if (updatedParams.category != null) {
+      updatedParams.category = await resolveCategoryQueryParam(updatedParams.category);
+    }
     return await apiIns.get(
       "/product" + queryStringMapper(updatedParams),
     );
@@ -86,14 +93,24 @@ export const ProductService = {
   },
 
   getPriceRange: async (queryParams?: any): Promise<any> => {
+    const updatedParams = { ...queryParams };
+    if (updatedParams.category != null) {
+      updatedParams.category = await resolveCategoryQueryParam(updatedParams.category);
+    }
     return await apiIns.get(
-      "/product/price-range" + queryStringMapper(queryParams),
+      "/product/price-range" + queryStringMapper(updatedParams),
     );
   },
 
   getProductCategories: async (queryParams?: any): Promise<any> => {
     return await apiIns.get(
       "/product-category" + queryStringMapper(queryParams),
+    );
+  },
+
+  getProductCategory: async (slugOrId: string): Promise<any> => {
+    return await apiIns.get(
+      "/product-category/" + encodeURIComponent(slugOrId),
     );
   },
 

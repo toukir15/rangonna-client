@@ -2,21 +2,12 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Mail } from "lucide-react";
 import rongonaaLogo from "@/@assets/rongonaLogo/rongonaa.png";
+import { loadStoreCategories } from "@/utils/storeCategories";
 
-const shopLinks = [
-  { href: "/churi", label: "All Churi" },
-  { href: "/churi/bridal", label: "Bridal" },
-  { href: "/churi/glass-bangles", label: "Glass Bangles" },
-  { href: "/churi/ghungroo-glass-bangles", label: "Ghungroo Glass Bangles" },
-  { href: "/churi/metal-bangles", label: "Metal Bangles" },
-  { href: "/churi/royale-bangles", label: "Royale Bangles" },
-  { href: "/churi/festival", label: "Festival" },
-  { href: "/churi/premium-churi", label: "Premium Churi" },
-  { href: "/churi/hand-craft", label: "Hand Craft" },
-];
+const allChuriLink = { href: "/churi", label: "All Churi" };
 
 const helpLinks = [
   { href: "/how-to-buy", label: "How to Buy" },
@@ -96,6 +87,27 @@ function FooterNewsletter() {
 }
 
 export default function Footer() {
+  const [shopLinks, setShopLinks] = useState([allChuriLink]);
+
+  useEffect(() => {
+    let cancelled = false;
+    loadStoreCategories()
+      .then((rows) => {
+        if (cancelled) return;
+        setShopLinks([
+          allChuriLink,
+          ...rows
+            .slice()
+            .sort((a, b) => a.key.localeCompare(b.key, undefined, { sensitivity: "base" }))
+            .map((row) => ({ href: `/churi/${row.value}`, label: row.key })),
+        ]);
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   return (
     <footer className="rongonaa-site-footer">
       <div className="rongonaa-footer-shimmer" aria-hidden />

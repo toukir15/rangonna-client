@@ -1,31 +1,11 @@
 import type { MetadataRoute } from "next";
 import { ENV } from "@/@config/env.config";
 import { absoluteUrl } from "@/@config/site";
+import { fetchStoreCategories } from "@/utils/storeCategory.server";
 
 const STATIC_PATHS = [
   "/",
   "/churi",
-  "/churi/women",
-  "/churi/men",
-  "/churi/kids",
-  "/churi/couple",
-  "/churi/premium-segment",
-  "/churi/flash-sale",
-  "/churi/stainless-steel",
-  "/churi/silicone-strap",
-  "/churi/leather-strap",
-  "/churi/nylon-strap",
-  "/churi/smart-watches",
-  "/churi/quartz-standard",
-  "/churi/quartz-chronograph",
-  "/churi/quartz-calendar",
-  "/churi/multi-function-quartz",
-  "/churi/mechanical-watch",
-  "/churi/dual-time-watch",
-  "/churi/dual-strap",
-  "/churi/digital-watch",
-  "/churi/box",
-  "/churi/belt",
   "/wallet",
   "/sunglass",
   "/perfume",
@@ -80,6 +60,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: path === "/" ? 1 : 0.7,
   }));
 
+  const categories = await fetchStoreCategories();
+  const categoryEntries: MetadataRoute.Sitemap = categories.map((category) => ({
+    url: absoluteUrl(`/churi/${category.value}`),
+    lastModified: now,
+    changeFrequency: "weekly",
+    priority: 0.7,
+  }));
+
   const products = await fetchProductSlugs();
   const productEntries: MetadataRoute.Sitemap = products.map((product) => ({
     url: absoluteUrl(`/product/${product.slug}`),
@@ -88,5 +76,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
-  return [...staticEntries, ...productEntries];
+  return [...staticEntries, ...categoryEntries, ...productEntries];
 }

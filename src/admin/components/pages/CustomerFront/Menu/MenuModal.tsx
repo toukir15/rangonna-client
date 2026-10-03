@@ -18,23 +18,33 @@ import {
     useForm,
     Control,
     UseFormRegister,
+    UseFormSetValue,
     FieldErrors,
 } from "react-hook-form";
 import * as yup from "yup";
 import { ToastService } from "@admin/utils/toastr.service";
 import { MenuContext } from "@/app/admin/customer-front/menu/page";
 import { MenuService } from "@admin/@services/apis/CustomerFront/MenuService/Menu.service";
+import { ProductCategoryService } from "@admin/@services/apis/ProductService/ProductCategory.service";
+import MenuCategorySelect from "./MenuCategorySelect";
+import {
+    categoryMenuRoute,
+    MenuCategoryOption,
+    resolveMenuCategoryId,
+} from "./menuCategory";
 
 // ====================== Types ======================
 type TSubmenuForm = {
     name: string;
     route: string;
+    category?: string;
     icon?: string;
 };
 
 type TNavItemForm = {
     name: string;
     route: string;
+    category?: string;
     icon?: string;
     submenu: TSubmenuForm[];
 };
@@ -47,6 +57,7 @@ type TSubmenu = {
     id?: number;
     name?: string;
     route?: string;
+    category?: string;
     icon?: string;
 };
 
@@ -54,6 +65,7 @@ type TNavItem = {
     id?: number;
     name?: string;
     route?: string;
+    category?: string;
     icon?: string;
     submenu?: TSubmenu[];
 };
@@ -77,6 +89,7 @@ const defaultValue: FormValues = {
         {
             name: "",
             route: "",
+            category: "",
             icon: "",
             submenu: [],
         },
@@ -90,11 +103,13 @@ const schema: yup.ObjectSchema<any> = yup.object({
         .of(
             yup.object({
                 name: yup.string().trim().required("Menu name is required"),
+                category: yup.string().optional().default(""),
                 route: yup.string().trim().required("Route is required"),
                 icon: yup.string().optional().default(""),
                 submenu: yup.array().of(
                     yup.object({
                         name: yup.string().trim().required("Submenu name is required"),
+                        category: yup.string().optional().default(""),
                         route: yup.string().trim().required("Submenu route is required"),
                         icon: yup.string().optional().default(""),
                     })
@@ -196,15 +211,19 @@ const EmojiPickerField: React.FC<EmojiPickerFieldProps> = ({
 type SubmenuFieldsProps = {
     control: Control<FormValues>;
     register: UseFormRegister<FormValues>;
+    setValue: UseFormSetValue<FormValues>;
     errors: FieldErrors<FormValues>;
     navIndex: number;
+    categories: MenuCategoryOption[];
 };
 
 const SubmenuFields: React.FC<SubmenuFieldsProps> = ({
     control,
     register,
+    setValue,
     errors,
     navIndex,
+    categories,
 }) => {
     const { fields: submenuFields, append, remove } = useFieldArray({
         control,
@@ -286,11 +305,37 @@ const SubmenuFields: React.FC<SubmenuFieldsProps> = ({
 
                                 <div>
                                     <label className="block text-sm font-medium mb-1 dark:text-gray-300">
+                                        Category
+                                    </label>
+                                    <Controller
+                                        name={`navBarItems.${navIndex}.submenu.${subIndex}.category`}
+                                        control={control}
+                                        render={({ field }) => (
+                                            <MenuCategorySelect
+                                                value={field.value}
+                                                options={categories}
+                                                onChange={(categoryId) => {
+                                                    field.onChange(categoryId);
+                                                    if (categoryId) {
+                                                        setValue(
+                                                            `navBarItems.${navIndex}.submenu.${subIndex}.route`,
+                                                            categoryMenuRoute(categoryId),
+                                                            { shouldValidate: true }
+                                                        );
+                                                    }
+                                                }}
+                                            />
+                                        )}
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium mb-1 dark:text-gray-300">
                                         Route
                                     </label>
                                     <input
                                         {...register(`navBarItems.${navIndex}.submenu.${subIndex}.route`)}
-                                        placeholder="/churi/bridal"
+                                        placeholder="/churi or a custom path"
                                         className="w-full border rounded-lg px-3 py-2 bg-white dark:bg-gray-900 dark:border-gray-600 dark:text-white"
                                     />
                                     {submenuErrors?.[subIndex]?.route?.message && (
@@ -336,6 +381,7 @@ const SubmenuFields: React.FC<SubmenuFieldsProps> = ({
                         append({
                             name: "",
                             route: "",
+                            category: "",
                             icon: "",
                         })
                     }
@@ -353,12 +399,14 @@ const MenuModal: React.FC = () => {
         useContext(MenuContext) as TContext;
 
     const [isSubmit, setIsSubmit] = useState(false);
+    const [categories, setCategories] = useState<MenuCategoryOption[]>([]);
 
     const {
         handleSubmit,
         reset,
         control,
         register,
+        setValue,
         formState: { errors },
     } = useForm<FormValues>({
         resolver: yupResolver(schema),
@@ -391,23 +439,55 @@ const MenuModal: React.FC = () => {
 
     useEffect(() => {
         if (!isModalOpen) return;
+        ProductCategoryService.getProductCategory({ page: 1, limit: 100, sort: "key" })
+            .then((res) => {
+                const rows = Array.isArray(res?.data?.data)
+                    ? res.data.data
+                    : Array.isArray(res?.data)
+                        ? res.data
+                        : [];
+                setCategories(
+                    rows
+                        .filter((row: { _id?: string; key?: string; value?: string }) =>
+                            Boolean(row?._id && row?.key && row?.value)
+                        )
+                        .map((row: { _id: string; key: string; value: string }) => ({
+                            _id: String(row._id),
+                            key: row.key,
+                            value: row.value,
+                        }))
+                );
+            })
+            .catch(() => undefined);
+    }, [isModalOpen]);
+
+    useEffect(() => {
+        if (!isModalOpen) return;
 
         if (modalMode === "Edit" && items) {
             const mappedNavItems: TNavItemForm[] =
                 items?.navBarItems && items.navBarItems.length > 0
-                    ? items.navBarItems.map((nav) => ({
+                    ? items.navBarItems.map((nav) => {
+                        const category = resolveMenuCategoryId(nav, categories);
+                        return {
                         name: nav?.name || "",
-                        route: nav?.route || "",
+                        route: category ? categoryMenuRoute(category) : nav?.route || "",
+                        category,
                         icon: nav?.icon || "",
                         submenu:
                             nav?.submenu && nav.submenu.length > 0
-                                ? nav.submenu.map((sub) => ({
+                                ? nav.submenu.map((sub) => {
+                                    const subCategory = resolveMenuCategoryId(sub, categories);
+                                    return {
                                     name: sub?.name || "",
-                                    route: sub?.route || "",
+                                    route: subCategory ? categoryMenuRoute(subCategory) : sub?.route || "",
+                                    category: subCategory,
                                     icon: sub?.icon || "",
-                                }))
+                                };
+                                })
                                 : [],
-                    }))
+                    };
+                    })
                     : defaultValue.navBarItems;
 
             reset({
@@ -419,7 +499,7 @@ const MenuModal: React.FC = () => {
             reset(defaultValue);
             replaceNav(defaultValue.navBarItems);
         }
-    }, [isModalOpen, modalMode, items, reset, replaceNav]);
+    }, [isModalOpen, modalMode, items, categories, reset, replaceNav]);
 
     const onCloseModal = () => {
         setIsModalOpen(false);
@@ -434,12 +514,14 @@ const MenuModal: React.FC = () => {
             navBarItems: (data?.navBarItems || []).map((nav, navIndex) => ({
                 id: navIndex + 1,
                 name: nav?.name,
-                route: nav?.route,
+                category: nav?.category || "",
+                route: nav?.category ? categoryMenuRoute(nav.category) : nav?.route,
                 icon: nav?.icon || "",
                 submenu: (nav?.submenu || []).map((sub, subIndex) => ({
                     id: subIndex + 1,
                     name: sub?.name,
-                    route: sub?.route,
+                    category: sub?.category || "",
+                    route: sub?.category ? categoryMenuRoute(sub.category) : sub?.route,
                     icon: sub?.icon || "",
                 })),
             })),
@@ -551,11 +633,37 @@ const MenuModal: React.FC = () => {
 
                                         <div>
                                             <label className="block text-sm font-medium mb-1 dark:text-gray-300">
+                                                Category
+                                            </label>
+                                            <Controller
+                                                name={`navBarItems.${navIndex}.category`}
+                                                control={control}
+                                                render={({ field }) => (
+                                                    <MenuCategorySelect
+                                                        value={field.value}
+                                                        options={categories}
+                                                        onChange={(categoryId) => {
+                                                            field.onChange(categoryId);
+                                                            if (categoryId) {
+                                                                setValue(
+                                                                    `navBarItems.${navIndex}.route`,
+                                                                    categoryMenuRoute(categoryId),
+                                                                    { shouldValidate: true }
+                                                                );
+                                                            }
+                                                        }}
+                                                    />
+                                                )}
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-medium mb-1 dark:text-gray-300">
                                                 Route
                                             </label>
                                             <input
                                                 {...register(`navBarItems.${navIndex}.route`)}
-                                                placeholder="/shop"
+                                                placeholder="/churi or a custom path"
                                                 className="w-full border rounded-lg px-3 py-2 bg-white dark:bg-gray-900 dark:border-gray-600 dark:text-white"
                                             />
                                             {navBarItemErrors?.[navIndex]?.route?.message && (
@@ -593,8 +701,10 @@ const MenuModal: React.FC = () => {
                                     <SubmenuFields
                                         control={control}
                                         register={register}
+                                        setValue={setValue}
                                         errors={errors}
                                         navIndex={navIndex}
+                                        categories={categories}
                                     />
                                 </div>
                             ))}
@@ -607,6 +717,7 @@ const MenuModal: React.FC = () => {
                                     appendNav({
                                         name: "",
                                         route: "",
+                                        category: "",
                                         icon: "",
                                         submenu: [],
                                     })

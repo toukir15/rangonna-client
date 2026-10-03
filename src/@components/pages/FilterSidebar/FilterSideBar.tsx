@@ -249,11 +249,11 @@ export default function FilterSideBar({
         if (cancelled) return;
         setCategoryItems(
           rows
-            .filter((row: { key?: string; value?: string }) =>
-              Boolean(row?.key && row?.value)
+            .filter((row: { _id?: string; key?: string }) =>
+              Boolean(row?._id && row?.key)
             )
-            .map((row: { key: string; value: string }) => ({
-              name: row.value,
+            .map((row: { _id: string; key: string }) => ({
+              name: String(row._id),
               label: row.key,
               rightLabel: "",
             }))

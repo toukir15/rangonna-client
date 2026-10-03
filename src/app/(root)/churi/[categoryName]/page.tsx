@@ -3,6 +3,7 @@ import { Metadata } from "next";
 import GlobalLoading from "@/@components/pages/GlobalLoading/GlobalLoading";
 import CategoryPageClient from "@/@components/pages/CategoryPageClient/CategoryPageClient";
 import { absoluteUrl, SITE_NAME } from "@/@config/site";
+import { fetchStoreCategory } from "@/utils/storeCategory.server";
 
 type PageProps = {
     params: Promise<{
@@ -20,7 +21,8 @@ export async function generateMetadata({
     params,
 }: PageProps): Promise<Metadata> {
     const { categoryName: categoryNameParam = "" } = await params;
-    const categoryName = formatCategoryName(categoryNameParam || "category");
+    const category = await fetchStoreCategory(categoryNameParam);
+    const categoryName = category?.key || formatCategoryName(categoryNameParam || "category");
 
     return {
         title: `${categoryName} Churi & Bangles in Bangladesh`,
