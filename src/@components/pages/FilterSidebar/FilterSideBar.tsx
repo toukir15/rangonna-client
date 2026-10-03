@@ -377,7 +377,7 @@ export default function FilterSideBar({
         ) : categoryItems.length === 0 ? (
           <p className="rongonaa-filter__hint">No categories found.</p>
         ) : (
-          <div className="rongonaa-filter__list">
+          <div className="rongonaa-filter__list rongonaa-filter__list--scroll">
             {categoryItems.map((item: ISideBarItems) => (
               <TermsCheckbox
                 key={item.name}
