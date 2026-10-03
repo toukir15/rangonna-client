@@ -54,7 +54,6 @@ const writeSaved = (value: {
   }
 };
 
-const FADE_IN_MS = 280;
 const FADE_OUT_MS = 1000;
 
 type FadeJob = {
@@ -214,10 +213,45 @@ export default function StorefrontMusic() {
   const loadedSrcRef = useRef("");
 
   const pendingSrcRef = useRef("");
+  const seekListenerRef = useRef<(() => void) | null>(null);
 
-  const fadeIn = (audio: HTMLAudioElement) => {
-    if (userPausedRef.current || quietRef.current) return;
-    void fadeVolume(audio, volumeRef.current, fadeJobRef.current, FADE_IN_MS);
+  const clearSeek = (audio: HTMLAudioElement) => {
+    const listener = seekListenerRef.current;
+    if (!listener) return;
+    audio.removeEventListener("playing", listener);
+    audio.removeEventListener("progress", listener);
+    seekListenerRef.current = null;
+  };
+
+  const hearNow = (audio: HTMLAudioElement) => {
+    stopFade(fadeJobRef.current, false);
+    audio.muted = false;
+    audio.volume = volumeRef.current;
+  };
+
+  const seekAfterStart = (audio: HTMLAudioElement, src: string, time: number) => {
+    clearSeek(audio);
+    if (time <= 1) return;
+    const listener = () => {
+      if (loadedSrcRef.current !== src) {
+        clearSeek(audio);
+        return;
+      }
+      if (audio.paused || Math.abs((audio.currentTime || 0) - time) <= 1) {
+        if (!audio.paused) clearSeek(audio);
+        return;
+      }
+      try {
+        if (!audio.seekable.length || audio.seekable.end(audio.seekable.length - 1) < time) return;
+        audio.currentTime = time;
+      } catch {
+        return;
+      }
+      clearSeek(audio);
+    };
+    seekListenerRef.current = listener;
+    audio.addEventListener("playing", listener);
+    audio.addEventListener("progress", listener);
   };
 
   const startPlayback = (audio: HTMLAudioElement, time = 0) => {
@@ -227,8 +261,7 @@ export default function StorefrontMusic() {
     const src = loadedSrcRef.current;
     pendingSrcRef.current = src;
     audio.autoplay = true;
-    audio.muted = false;
-    audio.volume = Math.min(0.12, volumeRef.current);
+    hearNow(audio);
 
     let tries = 0;
     const finish = () => {
@@ -239,12 +272,13 @@ export default function StorefrontMusic() {
         finish();
         return;
       }
+      seekAfterStart(audio, src, time);
       void audio.play().then(() => {
         finish();
         if (quietRef.current || userPausedRef.current) return;
         if (loadedSrcRef.current !== src) return;
+        hearNow(audio);
         setPlaying(true);
-        fadeIn(audio);
       }).catch((err) => {
         if (quietRef.current || userPausedRef.current) {
           finish();
@@ -262,19 +296,6 @@ export default function StorefrontMusic() {
       });
     };
 
-    if (time > 1 && Math.abs((audio.currentTime || 0) - time) > 1) {
-      const seekThenPlay = () => {
-        try {
-          audio.currentTime = time;
-        } catch {
-          /* metadata not ready */
-        }
-        play();
-      };
-      if (audio.readyState >= 1) seekThenPlay();
-      else audio.addEventListener("loadedmetadata", seekThenPlay, { once: true });
-      return;
-    }
     play();
   };
 
@@ -401,11 +422,9 @@ export default function StorefrontMusic() {
       }
       if (!audio?.src || userPausedRef.current || quietRef.current) return;
       if (!audio.paused && !audio.muted) return;
-      audio.muted = false;
-      audio.volume = 0;
+      hearNow(audio);
       void audio.play().then(() => {
         setPlaying(true);
-        void fadeVolume(audio, volumeRef.current, fadeJobRef.current, FADE_IN_MS);
       }).catch(() => undefined);
     };
     window.addEventListener("pointerdown", unlock, true);
@@ -424,10 +443,10 @@ export default function StorefrontMusic() {
     if (songs.length < 2) {
       if (!audio) return;
       audio.currentTime = 0;
-      audio.volume = 0;
+      stopFade(fadeJobRef.current, false);
+      audio.volume = volumeRef.current;
       void audio.play().then(() => {
         setPlaying(true);
-        void fadeVolume(audio, volumeRef.current, fadeJobRef.current, FADE_IN_MS);
       }).catch(() => undefined);
       return;
     }
@@ -477,12 +496,10 @@ export default function StorefrontMusic() {
       return;
     }
     if (userPausedRef.current) return;
-    audio.muted = false;
-    audio.volume = 0;
+    hearNow(audio);
     void audio.play().then(() => {
       if (quietRef.current || userPausedRef.current) return;
       setPlaying(true);
-      void fadeVolume(audio, volumeRef.current, fadeJobRef.current, FADE_IN_MS);
     }).catch(() => undefined);
   }, [quiet]);
 
@@ -516,11 +533,11 @@ export default function StorefrontMusic() {
     if (!audio || !song) return;
     if (audio.paused || audio.muted) {
       userPausedRef.current = false;
+      stopFade(fadeJobRef.current, false);
       audio.muted = false;
-      audio.volume = 0;
+      audio.volume = volumeRef.current;
       void audio.play().then(() => {
         setPlaying(true);
-        void fadeVolume(audio, volumeRef.current, fadeJobRef.current, FADE_IN_MS);
         writeSaved({
           src: song.src,
           title: song.title,
